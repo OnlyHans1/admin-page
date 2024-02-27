@@ -24,6 +24,9 @@
 .justify-sb{
   justify-content: space-between;
 }
+.justify-sa{
+  justify-content: space-around;
+}
 
 /* Padding */
 .pd\-\[0\.5\]{
@@ -201,6 +204,15 @@
 }
 .gap-1{
   gap: 1rem;
+}
+.gap-2{
+  gap: 2rem;
+}
+.gap-3{
+  gap: 3rem;
+}
+.gap-4{
+  gap: 4rem;
 }
 
 .top-5{
