@@ -24,6 +24,34 @@ watch(() => route.path, () => {
 });
 
 determineActiveLink(); // Initial determination
+const route = useRoute();
+
+const determineActiveLink = () => {
+    const path = route.path;
+    if (path === '/') {
+        activeLink.value = 0; // Home link active
+    } else if (path.includes('/add')) {
+        activeLink.value = 1; // Add link active
+    } else if (path.includes('/report')) {
+        activeLink.value = 2; // Report link active
+    } else {
+        // Handle other routes accordingly
+        activeLink.value = -1; // No specific link active
+    }
+};
+
+watch(() => route.path, () => {
+    determineActiveLink();
+});
+
+determineActiveLink(); // Initial determination
+</script>
+
+watch(() => route.path, () => {
+    determineActiveLink();
+});
+
+determineActiveLink(); // Initial determination
 </script>
 <template>
 <nav>
@@ -32,9 +60,11 @@ determineActiveLink(); // Initial determination
     </div>
     <div class="navbar-links">
         <div class="navbar-links_container flex fd-col">
-            <RouterLink to="/" :class="{active: activeLink === 0}"><i class="ri-home-2-line"></i></RouterLink>
+            <!-- Menggunakan router-link dengan params -->
+            <RouterLink to="/dashboard" :class="{active: activeLink === 0}"><i class="ri-home-2-line"></i></RouterLink>
             <RouterLink to="/add" :class="{active: activeLink === 1}"><i class="ri-mail-line"></i></RouterLink>
-            <RouterLink to="/report" :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>            
+            <RouterLink to="/report"  :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>
+            
         </div>
         <div class="navbar-links_container-settings flex fd-col">
             <a href="#"><i class="ri-settings-3-line"></i></a>
