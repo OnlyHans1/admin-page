@@ -1,13 +1,30 @@
 <script setup>
-import { ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { useRoute } from 'vue-router';
+import { ref, watch } from 'vue';
+
 const activeLink = ref(0);
+const route = useRoute();
 
-const selected = (index) => {
-    activeLink.value = index;
+const determineActiveLink = () => {
+    const path = route.path;
+    if (path === '/') {
+        activeLink.value = 0; // Home link active
+    } else if (path.includes('/add')) {
+        activeLink.value = 1; // Add link active
+    } else if (path.includes('/report')) {
+        activeLink.value = 2; // Report link active
+    } else {
+        // Handle other routes accordingly
+        activeLink.value = -1; // No specific link active
+    }
 };
-</script>
 
+watch(() => route.path, () => {
+    determineActiveLink();
+});
+
+determineActiveLink(); // Initial determination
+</script>
 <template>
 <nav>
     <div class="logo">
@@ -15,10 +32,9 @@ const selected = (index) => {
     </div>
     <div class="navbar-links">
         <div class="navbar-links_container flex fd-col">
-            <RouterLink to="/dashboard" @click="selected(0)" :class="{active: activeLink === 0}"><i class="ri-home-2-line"></i></RouterLink>
-            <RouterLink to="/add" @click="selected(1)" :class="{active: activeLink === 1}"><i class="ri-mail-line"></i></RouterLink>
-            <RouterLink to="/add" @click="selected(2)" :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>
-            
+            <RouterLink to="/" :class="{active: activeLink === 0}"><i class="ri-home-2-line"></i></RouterLink>
+            <RouterLink to="/add" :class="{active: activeLink === 1}"><i class="ri-mail-line"></i></RouterLink>
+            <RouterLink to="/report" :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>            
         </div>
         <div class="navbar-links_container-settings flex fd-col">
             <a href="#"><i class="ri-settings-3-line"></i></a>

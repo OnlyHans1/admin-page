@@ -1,4 +1,6 @@
-import './assets/main.css'
+import './assets/style/base.css'
+import './assets/style/main.css'
+import './assets/style/layout.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
