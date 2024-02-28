@@ -111,6 +111,12 @@
 }
 
 /* padding top */
+.pd-top-1 {
+  padding-top: 1rem;
+}
+.pd-top\[1\.5\] {
+  padding-top: 1.5rem;
+}
 .pd-top-2 {
   padding-top: 2rem;
 }
@@ -122,6 +128,26 @@
 }
 .pd-top-8 {
   padding-top: 8rem;
+}
+
+/* padding bottom */
+.pd-bottom-1 {
+  padding-bottom: 1rem;
+}
+.pd-bottom\[1\.5\] {
+  padding-bottom: 1.5rem;
+}
+.pd-bottom-2 {
+  padding-bottom: 2rem;
+}
+.pd-bottom-4 {
+  padding-bottom: 4rem;
+}
+.pd-bottom-6 {
+  padding-bottom: 6rem;
+}
+.pd-tbottomop-8 {
+  padding-bottom: 8rem;
 }
 
 /* padding left */

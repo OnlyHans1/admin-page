@@ -25,7 +25,6 @@ const chartOptions = ref({
     type: 'category',
     categories: dataCategory,
     position: 'start',
-    tickPlacement: 'between',
     forceNiceScale: true,
     axisTicks: {
       show: false
