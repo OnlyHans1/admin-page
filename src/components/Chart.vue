@@ -77,8 +77,8 @@ const chartOptions = ref({
 </script>
 
 <template>
-  <div class="revenue-details flex fd-col align-center justify-sb">
-    <div class="revenue-details__desc flex fd-row align-f-start justify-sb w-full">
+  <div class="revenue-details flex fd-col align-items-center justify-content-sb">
+    <div class="revenue-details__desc flex fd-row align-items-f-start justify-content-sb w-full">
       <div class="revenue-details__desc_text flex fd-col">
         <p class="revenue-details__desc_title">Tingkat Keramaian</p>
         <p class="revenue-details__desc_subtitle">{{ targetDate }}</p>

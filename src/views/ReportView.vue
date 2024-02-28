@@ -6,7 +6,7 @@ const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, mont
 </script>
 
 <template>
-  <div class="report_container flex fd-col align-center justify-center gap[2.25]">
+  <div class="report_container flex fd-col align-items-center justify-content-center gap[2.25]">
     <div class="report-information_container flex fd-row">
       <div class="report-information__income_container">
         <p class="fs-h5">Pendapatan hari ini</p>
@@ -16,7 +16,7 @@ const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, mont
       </div>
     </div>
     <div class="report-revenue_container">
-      <div class="report-revenue__chart_container flex fd-row align-center justify-center gap[1.5]">
+      <div class="report-revenue__chart_container flex fd-row align-items-center justify-content-center gap[1.5]">
         <Chart :targetDate="target_year" :dataSeries="yearlyData" :dataCategory="yearlyCategory"/>
         <Chart :targetDate="target_month" :dataSeries="monthlyData" :dataCategory="monthlyCategory"/>
       </div>
