@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps } from 'vue'
+import { ref } from 'vue'
 
 const { targetDate, dataSeries, dataCategory } = defineProps(['targetDate', 'dataSeries', 'dataCategory'])
 
@@ -76,22 +76,21 @@ const chartOptions = ref({
 })
 </script>
 
-
 <template>
-  <div class="details__revenue-graphic flex fd-col align-center justify-center">
-    <div class="revenue__chart-desc flex fd-row align-center justify-sb w-full">
-      <div class="revenue__chart-desc__text flex fd-col">
-        <span class="revenue__chart-title">Tingkat Keramaian</span>
-        <span class="revenue__chart-subtitle">{{ targetDate }}</span>
+  <div class="revenue-details flex fd-col align-center justify-sb">
+    <div class="revenue-details__desc flex fd-row align-f-start justify-sb w-full">
+      <div class="revenue-details__desc_text flex fd-col">
+        <p class="revenue-details__desc_title">Tingkat Keramaian</p>
+        <p class="revenue-details__desc_subtitle">{{ targetDate }}</p>
       </div>
-      <div class="revenue__chart-legend">
-        <div class="revenue__chart-legend-item" v-for="(item, index) in dataSeries" :key="index">
-          <span class="revenue__chart-legend-color" :style="{ backgroundColor: item.color }"></span>
-          <span class="revenue__chart-legend-name">{{ item.name }}</span>
+      <div class="revenue-details__legend">
+        <div class="revenue-details__legend_item" v-for="(item, index) in dataSeries" :key="index">
+          <span class="revenue-details__legend_color" :style="{ backgroundColor: item.color }"></span>
+          <p class="revenue-details__legend_name">{{ item.name }}</p>
         </div>
       </div>
     </div>
-    <div id="chart" class="chart-container">
+    <div id="chart" class="revenue-details__chart_container">
       <apexchart
         type="line"
         height="200"
@@ -104,23 +103,47 @@ const chartOptions = ref({
 </template>
 
 <style>
-.details__revenue-graphic {
-  width: 532px;
-  height: 312px;
+.revenue-details {
+  width: 531px;
+  height: 311px;
   padding: 1rem;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
 }
 
-.revenue__chart-title {
+.revenue-details__desc_title {
   font-size: 14px;
   line-height: 28px;
   font-weight: 600;
 }
 
-.revenue__chart-subtitle {
-  font-size: 14px;
-  line-height: 28px;
+.revenue-details__desc_subtitle {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.revenue-details__legend {
+  display: flex;
+  flex-direction: column;
+  margin-right: 40px;
+  gap: 2px;
+}
+
+.revenue-details__legend_item {
+  display: flex;
+  flex-direction: row;
+}
+
+.revenue-details__legend_color {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 5px;
+  border-radius: 100%;
+}
+
+.revenue-details__legend_name {
+  font-size: 9px;
 }
 
 .apexcharts-xaxis-label tspan {
@@ -133,29 +156,5 @@ const chartOptions = ref({
   font-size: 14px;
   line-height: 21px;
   font-weight: 600;
-}
-
-.revenue__chart-legend {
-  display: flex;
-  flex-direction: column;
-  margin-right: 40px;
-  gap: 2px;
-}
-
-.revenue__chart-legend-item {
-  display: flex;
-  flex-direction: row;
-}
-
-.revenue__chart-legend-color {
-  width: 10px;
-  height: 10px;
-  display: inline-block;
-  margin-right: 5px;
-  border-radius: 100%;
-}
-
-.revenue__chart-legend-name {
-  font-size: 9px;
 }
 </style>

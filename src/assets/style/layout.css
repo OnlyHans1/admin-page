@@ -15,8 +15,14 @@
   height: 100%;
 }
 
+.align-f-start{
+  align-items: flex-start;
+}
 .align-center{
   align-items: center;
+}
+.align-f-end{
+  align-items: flex-end;
 }
 .justify-center{
   justify-content: center;
@@ -205,8 +211,14 @@
 .gap-1{
   gap: 1rem;
 }
+.gap\[1\.5\]{
+  gap: 1.5rem;
+}
 .gap-2{
   gap: 2rem;
+}
+.gap\[2\.25\]{
+  gap: 2.25rem;
 }
 .gap-3{
   gap: 3rem;
