@@ -1,13 +1,16 @@
 <script setup>
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
-import TableReport from '@/components/TableReport.vue';
+import TableReport from '@/components/TableReport.vue'
 import chartReportData from '@/data/chartReportData'
-import ticketInfoData from '@/data/ticketInfoData';
+import ticketInfoData from '@/data/ticketInfoData'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
-  const { incomeRevenue } = ticketInfoData
+const { incomeRevenue } = ticketInfoData
+
+const discountValue = ref(0);
+const cashbackValue = ref(0);
 </script>
 
 <template>
@@ -27,7 +30,7 @@ const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, mont
         </div>
       </div>
     </div>
-    <div class="report-revenue_container">
+    <div class="report-revenue_container flex fd-col">
       <div
         class="report-revenue__chart_container flex fd-row align-items-center justify-content-center gap[1.5]"
       >
@@ -38,6 +41,10 @@ const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, mont
           :dataCategory="monthlyCategory"
         />
       </div>
+      <div class="report-revenue_icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1">
+        <i class="ri-printer-line"></i>
+        <i class="ri-file-excel-2-line"></i>
+      </div>
     </div>
     <div class="report-activity_container flex fd-col gap-1">
       <div class="report-activity_head flex fd-row gap[1.5] align-items-center">
@@ -47,7 +54,7 @@ const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, mont
         </div>
       </div>
       <div class="report-activity_table-container">
-        <TableReport/>
+        <TableReport />
       </div>
     </div>
   </div>
@@ -70,7 +77,10 @@ const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, mont
   font-weight: 600;
   line-height: 96px;
 }
-.report-activity_head-text{
+.report-revenue_icons {
+  font-size: 32px;
+}
+.report-activity_head-text {
   font-size: 20px;
   font-weight: 600;
   line-height: 28px;

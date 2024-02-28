@@ -41,4 +41,4 @@ const { cardInfo } = ticketInfoData
     position: relative;
     bottom: 20px;
 }
-</style>@/data/chartData
+</style>

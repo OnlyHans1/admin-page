@@ -60,11 +60,11 @@ const { activityReportData } = tableReportData
 .report-activity_table-items td {
   font-size: 18px;
   line-height: 28px;
+  border-bottom: 1px solid #000;
 }
 .report-activity_table-header th,
 .report-activity_table-items td {
   text-align: center;
-  border-bottom: 1px solid #000;
   padding: 0.5rem 1.5rem;
 }
 .report-activity_table-header th:nth-child(2),
