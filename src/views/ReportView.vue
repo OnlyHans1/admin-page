@@ -8,9 +8,6 @@ import ticketInfoData from '@/data/ticketInfoData'
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
 const { incomeRevenue } = ticketInfoData
-
-const discountValue = ref(0);
-const cashbackValue = ref(0);
 </script>
 
 <template>
