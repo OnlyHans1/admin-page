@@ -8,7 +8,8 @@ const data = ref([
     pembelian: 'Bertemu Pangeran',
     jadwal: '15/03/2024 14.30',
     telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com'
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: '216758921'
   },
   {
     nama: 'Teddy Lazuardi',
@@ -55,73 +56,77 @@ const formatDate = (dateTime) => {
   return [parts[0], parts[1]]
 }
 
+const detailPopup = ref(null)
+
 const showDetail = (item) => {
   selectedItem.value = item
+  detailPopup.value.showDetailPopup()
 }
 </script>
 
 <template>
-  <div class="container">
+  <div class="invoice-container">
     <!-- Search -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
-      rel="stylesheet"
-    />
-    <div class="search">
-      <div class="search-box">
-        <div class="search-icon">
+    <div class="invoice-search">
+      <div class="invoice-search__box">
+        <div class="invoice-search__icon">
           <i class="ri-search-line"></i>
         </div>
-        <div class="search-input">
-          <input type="text" class="input" v-model="searchQuery" placeholder="Search..." />
+        <div class="invoice-search__input">
+          <input
+            type="text"
+            class="invoice-search__input-field"
+            v-model="searchQuery"
+            placeholder="Search..."
+          />
         </div>
       </div>
     </div>
 
     <!-- Invoice -->
-    <div class="invoice">
+    <div class="invoice-table">
       <table>
         <thead>
-          <th class="invoice__table-no">NO</th>
-          <th>Nama</th>
-          <th>Pembelian</th>
-          <th>Tanggal</th>
-          <th>Jadwal</th>
-          <th>Email</th>
+          <tr>
+            <th class="invoice-table__header">NO</th>
+            <th class="invoice-table__header">Nama</th>
+            <th class="invoice-table__header">Pembelian</th>
+            <th class="invoice-table__header">Tanggal</th>
+            <th class="invoice-table__header">Jadwal</th>
+            <th class="invoice-table__header">Email</th>
+          </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data" :key="index">
-            <td class="invoice__table-no">{{ index + 1 }}</td>
-            <td>{{ item.nama }}</td>
-            <td>{{ item.pembelian }}</td>
-            <td>{{ formatDate(item.jadwal)[0] }}</td>
-            <td>{{ formatDate(item.jadwal)[1] }}</td>
-            <td>
+          <tr v-for="(item, index) in data" :key="index" class="invoice-table__row">
+            <td class="invoice-table__data">{{ index + 1 }}</td>
+            <td class="invoice-table__data">{{ item.nama }}</td>
+            <td class="invoice-table__data">{{ item.pembelian }}</td>
+            <td class="invoice-table__data">{{ formatDate(item.jadwal)[0] }}</td>
+            <td class="invoice-table__data">{{ formatDate(item.jadwal)[1] }}</td>
+            <td class="invoice-table__data">
               {{ item.email }} <br />
-              <button class="btn btn-primary" @click="showDetail(item)">detail</button>
+              <button class="btn btn-primary invoice-table__button" @click="showDetail(item)">
+                detail
+              </button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-  <InvoiceDetail :selectedItem="selectedItem" />
+  <InvoiceDetail :selectedItem="selectedItem" ref="detailPopup" />
 </template>
 
 <style scoped>
-.container {
+.invoice-container {
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
-/* -------------- */
-/*     Search     */
-/* -------------- */
-.search {
+/* Search */
+.invoice-search {
   width: 601px;
   top: 0;
   transform: translateX(-50%);
@@ -130,12 +135,12 @@ const showDetail = (item) => {
   border-radius: 10px;
   height: 41px;
 }
-.search-box {
+.invoice-search__box {
   display: flex;
   border-radius: 3px;
   overflow: hidden;
 }
-.search-icon {
+.invoice-search__icon {
   align-items: center;
   justify-content: center;
   width: 50px;
@@ -143,11 +148,11 @@ const showDetail = (item) => {
   margin-left: 10px;
   margin-top: 5px;
 }
-.search-input {
+.invoice-search__input {
   flex: 1;
   border-radius: 10px;
 }
-.input {
+.invoice-search__input-field {
   border: none;
   padding: 8px;
   width: 95%;
@@ -155,40 +160,30 @@ const showDetail = (item) => {
   background-color: #d9d9d9;
   font-family: 'Poppins';
 }
-.input:focus {
+.invoice-search__input-field:focus {
   outline: none;
 }
-/* -------------- */
-/*     Table      */
-/* -------------- */
-.invoice table {
-  width: 100%;
-  border-collapse: collapse;
+
+/* Invoice Table */
+.invoice-table {
   margin-top: 40px;
 }
-tr {
-  border-top: 1px solid black;
+.invoice-table table {
+  width: 100%;
+  border-collapse: collapse;
 }
-thead {
-  border: 0;
-}
-.invoice__table-no {
-  border-right: 1px solid black;
-}
-
-/* Style untuk seluruh sel kecuali header */
-.invoice table td,
-.invoice table th {
+.invoice-table__header {
   padding: 7px;
   text-align: center;
-}
-
-/* Style untuk header */
-.invoice table th {
   font-weight: 600;
   font-size: 26px;
 }
-.invoice td {
+.invoice-table__row {
+  border-top: 1px solid black;
+}
+.invoice-table__data {
+  padding: 7px;
+  text-align: center;
   font-weight: 400;
   font-size: 22px;
 }
@@ -206,8 +201,22 @@ thead {
 .btn-primary:hover {
   background-color: #ffd477;
 }
+.invoice-table__button {
+  background-color: #ffe29a;
+  font-family: 'Poppins';
+  font-size: 22px;
+  border-radius: 5px;
+  height: 31px;
+  width: 129px;
+  margin-top: 10px;
+  border: none;
+  cursor: pointer;
+}
+.invoice-table__button:hover {
+  background-color: #ffd477;
+}
 @media screen and (max-width: 768px) {
-  .search {
+  .invoice-search {
     width: 90%;
     max-width: 400px;
     margin-left: auto;

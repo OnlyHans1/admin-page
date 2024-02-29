@@ -1,33 +1,41 @@
 <script setup>
-import { ref } from 'vue';
-import Slider from '@/components/Slider.vue';
+import { ref } from 'vue'
+import Slider from '@/components/Slider.vue'
+import PaymentPopup from '@/components/PaymentPopup.vue'
 
-// Mendeklarasikan jumlahTiket sebagai reactive variable dengan nilai awal 1
-const jumlahTiket = ref(1);
+const jumlahTiket = ref(1)
 
-// Fungsi untuk menambah jumlah tiket
 const tambahTiket = () => {
-  jumlahTiket.value++;
-};
+  jumlahTiket.value++
+}
 
-// Fungsi untuk mengurangi jumlah tiket
 const kurangTiket = () => {
   if (jumlahTiket.value > 1) {
-    jumlahTiket.value--;
+    jumlahTiket.value--
   }
-};
-
+}
 
 const discountValue = ref(0)
 const cashbackValue = ref(0)
+
+const paymentPopup = ref(null)
+
+const showPayment = () => {
+  paymentPopup.value.showPaymentPopup()
+}
 </script>
 
 <template>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
+    rel="stylesheet"
+  />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
   <div class="container">
-
     <div class="form-container-checkout">
       <div class="submitEvent">
         <form @submit.prevent="SubmitEvent">
@@ -49,7 +57,7 @@ const cashbackValue = ref(0)
                 Detail Tiket
               </label>
               <div class="input-date">
-                <input type="date" class="date" id="tanggal" v-model="Date" required>
+                <input type="date" class="date" id="tanggal" v-model="Date" required />
                 <label for="tanggal">Tanggal Pemesanan</label>
                 <p>MM/DD/YYYY</p>
               </div>
@@ -99,10 +107,12 @@ const cashbackValue = ref(0)
           </div>
         </form>
         <div class="btn-checkout">
-          <button type="submit" class="CO">Checkout
+          <button type="submit" class="CO" @click="showPayment">
+            Checkout
             <i class="ri-arrow-right-circle-fill"></i>
           </button>
         </div>
+        <PaymentPopup ref="paymentPopup" />
       </div>
     </div>
   </div>
@@ -151,7 +161,6 @@ const cashbackValue = ref(0)
   margin-top: -15px;
 }
 
-
 h1 {
   margin-top: -10px;
   margin-bottom: 8%;
@@ -184,7 +193,7 @@ button {
   margin-top: 15px;
 }
 
-.input-date input[type="date"] {
+.input-date input[type='date'] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -287,7 +296,7 @@ button:hover {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
-.tiket .title{
+.tiket .title {
   margin-top: -5px;
   margin-bottom: -3px;
 }
@@ -316,14 +325,14 @@ p {
 }
 
 .diskon .bold-text,
-.cashback .bold-text{
+.cashback .bold-text {
   margin-top: 7px;
   margin-bottom: -5px;
   margin-left: 35px;
   font-weight: 510;
 }
 
-.cashback .bold-text{
+.cashback .bold-text {
   margin-top: -15px;
 }
 </style>

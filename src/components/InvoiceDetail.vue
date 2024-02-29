@@ -1,43 +1,59 @@
 <script setup>
+import { ref } from 'vue'
+function capitalizeFirstLetter(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
 const { selectedItem } = defineProps(['selectedItem'])
+
+const showPopup = ref(false)
+
+const showDetailPopup = () => {
+  showPopup.value = true
+}
+
+const closePopup = () => {
+  showPopup.value = false
+}
+
+defineExpose({
+  showDetailPopup
+})
 </script>
 
 <template>
-  <div class="popup-detail" v-if="selectedItem">
-    <div class="popup-content">
-      <div class="popup-img">
+  <div class="invoice-detail_container" v-if="showPopup">
+    <div class="invoice-detail_container-content">
+      <div class="invoice-detail_content-img">
         <img src="../assets/images/Logo KKC.svg" alt="Logo Keraton Kasepuhan Cirebon" />
       </div>
-      <div class="popup-detail_data align-self-f-start pd-sd-1">
-        <h3>Nama</h3>
-        <p>{{ selectedItem.nama }}</p>
-        <h3>Reservasi</h3>
-        <p>{{ selectedItem.pembelian }}</p>
-        <h3>Jadwal</h3>
-        <p>{{ selectedItem.jadwal }}</p>
-        <h3>No Telp</h3>
-        <p>{{ selectedItem.telp }}</p>
-        <h3>Pembayaran</h3>
-        <p>Transfer Bank: {{ selectedItem.pembayaran }}</p>
+      <div class="invoice-detail_container-data align-self-f-start pd-sd-1">
+        <div>
+          <div v-for="(value, key) in selectedItem" :key="key" class="invoice-detail_data">
+            <h3 v-if="key !== 'email'" class="invoice-detail_data-title">{{ capitalizeFirstLetter(key) }}</h3>
+            <p v-if="key === 'pembayaran'">Transfer Bank: {{ value }}</p>
+            <p v-else-if="key !== 'email'">{{ value }}</p>
+          </div>
+        </div>
       </div>
-      <button class="btn popup-button" @click="selectedItem = null">OK</button>
+      <button class="invoice-detail_button" @click="closePopup">OK</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.popup-detail {
+.invoice-detail_container {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.popup-content {
+.invoice-detail_container-content {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -48,30 +64,30 @@ const { selectedItem } = defineProps(['selectedItem'])
   flex-direction: column;
   align-items: center;
 }
-.popup-img {
+.invoice-detail_content-img {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
-.popup-img img {
+.invoice-detail_content-img img {
   width: 140px;
   height: 145px;
 }
-.popup-content h3 {
+.invoice-detail_data-title {
   font-size: 20px;
   font-weight: 600;
 }
-.popup-content p {
+.invoice-detail_container-data p {
   font-size: 16px;
   margin-bottom: 5px;
   margin-left: 10px;
 }
-.popup-content button {
+.invoice-detail_button {
   display: flex;
   justify-content: center;
   margin-top: 10px;
 }
-.popup-content button {
+.invoice-detail_button {
   background-color: #ffe29a;
   font-family: 'Poppins';
   font-size: 16px;
@@ -83,7 +99,7 @@ const { selectedItem } = defineProps(['selectedItem'])
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-.popup-content button:hover {
+.invoice-detail_button:hover {
   background-color: #ffd477;
 }
 </style>

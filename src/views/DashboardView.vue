@@ -434,7 +434,7 @@ const decreaseQuantity = (item) => {
   </div>
 </template>
 
-<style>
+<style scoped>
 .container-recently-added {
   position: relative;
 }

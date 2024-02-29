@@ -32,7 +32,7 @@ const router = createRouter({
       path: '/report',
       name: 'report',
       component: ReportView
-    }
+    },
   ]
 })
 
