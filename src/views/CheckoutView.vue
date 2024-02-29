@@ -1,126 +1,160 @@
 <script setup>
-import { ref } from 'vue'
-import Slider from '@/components/Slider.vue'
-import PaymentPopup from '@/components/PaymentPopup.vue'
+import Slider from '@/components/Slider.vue';
 
-const jumlahTiket = ref(1)
+import { ref, computed } from 'vue';
 
-const tambahTiket = () => {
-  jumlahTiket.value++
+const value = ref(1);
+const ticketPrice = 10000;
+const biayaLayanan = 2500;
+const biayaJasa = 1000;
+const selectedDate = ref(null); 
+
+
+function tambahTiket() {
+  console.log('button diklik')
+  value.value++;
 }
 
-const kurangTiket = () => {
-  if (jumlahTiket.value > 1) {
-    jumlahTiket.value--
+function kurangTiket() {
+  if (value.value > 1) {
+    value.value--;
   }
 }
 
-const discountValue = ref(0)
-const cashbackValue = ref(0)
+const totalHarga = computed(() => {
+  return value.value * ticketPrice;
+})
 
-const paymentPopup = ref(null)
+const totalTagihan = computed(() => {
+  return totalHarga.value + biayaLayanan + biayaJasa;
+});
 
-const showPayment = () => {
-  paymentPopup.value.showPaymentPopup()
-}
+const formattedTotalHarga = computed(() => {
+  // Format total harga menjadi format mata uang yang diinginkan
+  return totalHarga.value.toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+});
+
+const formattedTotalTagihan = computed(() => {
+  return totalTagihan.value.toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+});
 </script>
 
 <template>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap"
-    rel="stylesheet"
-  />
-  <link rel="stylesheet" href="style.css" />
-  <div class="container">
-    <div class="form-container-checkout">
-      <div class="submitEvent">
-        <form @submit.prevent="SubmitEvent">
-          <h1>Pemesanan Langsung</h1>
-          <div class="order__details-checkout">
-            <div class="detail">
-              <label class="title" for="">
-                <i class="ri-user-line"></i>
-                Detail Pemesanan
+  <main>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+    <div class="container">
+
+      <div class="form-container-checkout">
+        <div class="submitEvent">
+          <form>
+            <h1>Pemesanan Langsung</h1>
+            <div class="order__details-checkout">
+              <div class="detail">
+                <label class="title" for="">
+                  <i class="ri-user-line"></i>
+                  Detail Pemesanan
+                </label>
+                <label class="bold-text" for="name">Teddy Lazuardi</label>
+                <div class="input-country">
+                <label for="">Kebangsaan</label>
+                <select class="box-size" id="kebangsaan" v-model="kebangsaan">
+                  <option value="Afghan">Afghanistan</option>
+                </select>
+                </div>
+              </div>
+              <div class="tiket">
+                <label class="title" for="detail">
+                  <i class="ri-coupon-2-line"></i>
+                  Detail Tiket
+                </label>
+                <div class="input-date">
+                  <input type="date" class="date" id="tanggal" v-model="selectedDate">
+                  <label for="tanggal">Tanggal Pemesanan</label>
+                  <p>MM/DD/YYYY</p>
+                </div>
+                <label for="jumlah">Tiket masuk Keraton Kasepuhan Cirebon</label>
+                Rp 10.000,00
+                <div class="jumlah">
+                  <button @click="kurangTiket" type="button"><i class="ri-subtract-fill"></i></button>
+                  <p class="value">{{ value }}</p>
+                  <button @click="tambahTiket" type="button"><i class="ri-add-line"></i></button>
+                </div>
+              </div>
+              <div class="diskon">
+                <div class="diskon">
+                  <label class="bold-text" for="diskon">Diskon</label>
+                  <Slider v-model:discountValue="discountValue" />
+                </div>
+              </div>
+              <div class="cashback">
+                <label class="bold-text" for="cashback">Cashback</label>
+                <Slider v-model:cashbackValue="cashbackValue" />
+              </div>
+              <label class="title" for="payment">
+                <i class="ri-wallet-line"></i>
+                Pilih Pembayaran
               </label>
-              <label class="bold-text" for="name">Teddy Lazuardi</label>
-              <select class="box-size" id="kebangsaan" v-model="kebangsaan">
-                <option value="Afghan">Afghanistan</option>
+              <select class="payment" id="payment" v-model="payment">
+                <option value="gopay">Cash</option>
+                <option value="dana">VA BJB</option>
               </select>
             </div>
-            <div class="tiket">
-              <label class="title" for="detail">
-                <i class="ri-coupon-2-line"></i>
-                Detail Tiket
-              </label>
-              <div class="input-date">
-                <input type="date" class="date" id="tanggal" v-model="Date" required />
-                <label for="tanggal">Tanggal Pemesanan</label>
-                <p>MM/DD/YYYY</p>
-              </div>
-              <label for="jumlah">Tiket masuk Keraton Kasepuhan Cirebon</label>
-              Rp 10.000,00
-              <div class="jumlah">
-                <button @click="kurangTiket">-</button>
-                <span>{{ jumlahTiket }}</span>
-                <button @click="tambahTiket">+</button>
-              </div>
-            </div>
-            <div class="diskon">
-              <div class="diskon">
-                <label class="bold-text" for="diskon">Diskon</label>
-                <Slider v-model:discountValue="discountValue" />
-              </div>
-            </div>
-            <div class="cashback">
-              <label class="bold-text" for="cashback">Cashback</label>
-              <Slider v-model:cashbackValue="cashbackValue" />
-            </div>
-            <label class="title" for="payment">
-              <i class="ri-wallet-line"></i>
-              Pilih Pembayaran
-            </label>
-            <select class="payment" id="payment" v-model="payment" required>
-              <option value="gopay">gopay</option>
-              <option value="dana">dana</option>
-            </select>
-          </div>
-        </form>
-      </div>
-      <div class="ringkasanBooking">
-        <form class="formBooking" @submit.prevent="submitRingkasan">
-          <h3>Ringkasan Booking</h3>
-          <div class="total">
-            <label class="bold-text" for="total">Total Pemesanan</label>
-            <label for="jumlahTiket">Jumlah Tiket</label>
-          </div>
-          <div class="biaya">
-            <label class="bold-text" for="biayaTransaksi">Biaya Transaksi</label>
-            <label for="biayaLayanan">Biaya Layanan</label>
-            <label for="biayaJasa">Biaya Jasa Aplikasi</label>
-          </div>
-          <div class="total-tagihan">
-            <label class="bold-text" for="totalTagihan">Total Tagihan</label>
-          </div>
-        </form>
-        <div class="btn-checkout">
-          <button type="submit" class="CO" @click="showPayment">
-            Checkout
-            <i class="ri-arrow-right-circle-fill"></i>
-          </button>
+          </form>
         </div>
-        <PaymentPopup ref="paymentPopup" />
+        <div class="ringkasanBooking">
+          <form class="formBooking" @submit.prevent="submitRingkasan">
+            <h3>Ringkasan Booking</h3>
+            <div class="total">
+              <label class="bold-text" for="total">Total Pemesanan</label>
+              <div class="jmlhhrga">
+                <label for="jumlahTiket">Jumlah Tiket ({{ value }} Tiket)</label>
+                <label for="harga">{{ formattedTotalHarga }}</label>
+              </div>
+            </div>
+            <div class="biaya">
+              <label class="bold-text" for="biayaTransaksi">Biaya Transaksi</label>
+              <div class="biayaL">
+                <label for="biayaLayanan">Biaya Layanan</label>
+                <label for="hargaLayanan">Rp 2.500</label>
+              </div>
+              <div class="biayaJ">
+                <label for="biayaJasa">Biaya Jasa Aplikasi</label>
+                <label for="hargaJasa">Rp 1.000</label>
+              </div>
+            </div>
+            <div class="total-tagihan">
+              <label class="bold-text" for="totalTagihan">Total Tagihan</label>
+              <label class="bold-text">{{ formattedTotalTagihan }}</label>
+            </div>
+          </form>
+          <div class="btn-checkout">
+            <button type="submit" class="CO">Checkout
+              <i class="ri-arrow-right-circle-fill"></i>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
-* {
-  font-family: Raleway;
+main {
+  font-family: 'Raleway' !important;
 }
 
 .container {
@@ -161,6 +195,7 @@ const showPayment = () => {
   margin-top: -15px;
 }
 
+
 h1 {
   margin-top: -10px;
   margin-bottom: 8%;
@@ -183,6 +218,16 @@ button {
   box-sizing: border-box;
 }
 
+.input-country label {
+  position: absolute;
+  top: 203px;
+  left: 15%;
+  transform: translateY(-50%);
+  background-color: white;
+  pointer-events: none;
+  font-size: 12px;
+}
+
 .date {
   font-family: Roboto;
 }
@@ -191,9 +236,10 @@ button {
   position: relative;
   margin-bottom: 15px;
   margin-top: 15px;
+  width: 118%;
 }
 
-.input-date input[type='date'] {
+.input-date input[type="date"] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -228,7 +274,7 @@ button {
 }
 
 button {
-  background-color: #e6be58;
+  background-color: #ffdd8f;
   color: white;
   border: 5px;
   padding: 10px 20px;
@@ -236,7 +282,7 @@ button {
 }
 
 button:hover {
-  background-color: #ffdd8f;
+  background-color: #e6be58;
 }
 
 .jumlah button {
@@ -246,9 +292,8 @@ button:hover {
   background-color: transparent;
   border: 1px solid black;
   border-radius: 6px;
-  width: 20px;
-  height: 20px;
-  font-size: 14px;
+  width: 24px;
+  height: 24px;
   color: black;
 }
 
@@ -287,7 +332,7 @@ button:hover {
 }
 
 .box-size {
-  width: 50%;
+  width: 59%;
 }
 
 .payment {
@@ -328,11 +373,59 @@ p {
 .cashback .bold-text {
   margin-top: 7px;
   margin-bottom: -5px;
-  margin-left: 35px;
+  margin-left: 27px;
   font-weight: 510;
 }
 
 .cashback .bold-text {
   margin-top: -15px;
+}
+
+.value {
+  margin-top: 7px;
+  margin-left: 5px;
+  margin-right: 14px;
+  font-size: 16px;
+}
+
+.jumlah button {
+  background-color: white;
+  color: gray;
+  border: 1.4px solid gray;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+.jumlah button:hover {
+  background-color: black;
+  color: #ced4da;
+  border: 1.4px solid black;
+}
+
+.jumlah p {
+  margin-top: 9px;
+  font-weight: 500;
+  display: inline-block;
+  font-family: 'Manrope'
+}
+
+.jmlhhrga {
+  display: flex;
+  justify-content: space-between;
+}
+
+.biayaL {
+  display: flex;
+  justify-content: space-between;
+}
+
+.biayaJ {
+  display: flex;
+  justify-content: space-between;
+}
+
+.total-tagihan{
+  display: flex;
+  justify-content: space-between;
 }
 </style>
