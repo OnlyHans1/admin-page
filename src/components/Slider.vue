@@ -14,7 +14,6 @@ const tooltipLeft = ref('0px')
 const show = ref(false)
 
 const updateTooltip = (event) => {
-  const thumbWidth = 10
   const percent = ((event.target.value - props.min) / (props.max - props.min)) * 100
   fillWidth.value = `${percent}%`
   tooltipLeft.value = `${percent}%`
