@@ -31,28 +31,37 @@ const hideTooltip = () => {
 </script>
 
 <template>
-  <div class="slider-container" @mousedown="showTooltip" @focus="showTooltip" @blur="hideTooltip">
-    <input
-      type="range"
-      v-model="value"
-      :min="min"
-      :max="max"
-      @input="updateTooltip"
-      @mouseup="hideTooltip"
-      class="slider"
-      :style="{ width: sliderWidth }"
-    />
-    <div v-if="show" class="tooltip" :style="{ left: tooltipLeft }">{{ value }}</div>
+  <div class="slider_container flex fd-row align-items-center">
+    <span>{{ $props.min }}%</span>
+    <div
+      class="slider_input-container"
+      @mousedown="showTooltip"
+      @focus="showTooltip"
+      @blur="hideTooltip"
+    >
+      <input
+        type="range"
+        v-model="value"
+        :min="min"
+        :max="max"
+        @input="updateTooltip"
+        @mouseup="hideTooltip"
+        class="slider_input"
+        :style="{ width: sliderWidth }"
+      />
+      <div v-if="show" class="slider_tooltip" :style="{ left: tooltipLeft }">{{ value }}</div>
+    </div>
+    <span>{{ $props.max }}%</span>
   </div>
 </template>
 
 <style scoped>
-.slider-container {
+.slider_input-container {
   position: relative;
-  width: 100%;
-  margin: 20px;
+  top: -4px;
+  margin: 1rem;
 }
-.slider {
+.slider_input {
   -webkit-appearance: none;
   width: 100%;
   height: 4px;
@@ -62,8 +71,7 @@ const hideTooltip = () => {
   opacity: 0.7;
   transition: opacity 0.2s;
 }
-.slider::-webkit-slider-thumb,
-.slider::-moz-range-thumb {
+.slider_input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 10px;
@@ -72,7 +80,14 @@ const hideTooltip = () => {
   background: rgba(102, 102, 102, 1);
   cursor: pointer;
 }
-.tooltip {
+.slider_input::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(102, 102, 102, 1);
+  cursor: pointer;
+}
+.slider_tooltip {
   position: absolute;
   bottom: calc(100% - 0.25rem);
   background-color: rgba(0, 0, 0, 0.7);
