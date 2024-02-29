@@ -1,5 +1,8 @@
 <script setup>
 import { ref } from 'vue'
+import LoaderPayment from './LoaderPayment.vue'
+import PaymentDropdown from './PaymentDropdown.vue'
+import logoBJB from '@/assets/images/logoBJB.png'
 
 const isLoading = ref(false)
 const showPopup = ref(false)
@@ -22,118 +25,138 @@ defineExpose({
 </script>
 
 <template>
-  <div>
-    <div v-if="isLoading" class="waiting-payment__loader-overlay">
-      <div class="waiting-payment__loading-container gap-1">
-        <div class="waiting-payment__loader">
-          <div class="waiting-payment__ball waiting-payment__ball-1"></div>
-          <div class="waiting-payment__ball waiting-payment__ball-2"></div>
-          <div class="waiting-payment__ball waiting-payment__ball-3"></div>
-        </div>
-        <div class="waiting-payment__loading-content">
-          <p class="waiting-payment__loading-text">
-            Hampir selesai<span class="waiting-payment__loading-dots"></span>
-          </p>
-          <p class="waiting-payment__loading-message">Pembayaranmu sedang diproses</p>
+  <main>
+    <div class="waiting-payment_container">
+      <div v-if="isLoading" class="waiting-payment_loader-overlay">
+        <LoaderPayment />
+      </div>
+      <div v-if="showPopup" class="waiting-payment_content-overlay">
+        <div class="waiting-payment_container-content">
+          <div class="waiting-payment_content-header">
+            <p class="fs-h5 fw-700">Cara Pembayaran</p>
+            <span @click="closePopup" class="waiting-payment_close-button">
+              <i class="ri-close-line"></i>
+            </span>
+          </div>
+          <div class="waiting-payment_content-data">
+            <div class="waiting-payment_content-desc">
+              <p class="fs-h4">BJB Virtual Account</p>
+              <img :src="logoBJB" alt="logoBJB" />
+            </div>
+            <div class="waiting-payment_content-desc">
+              <div class="waiting-payment_content-sub fs-h5">
+                <p style="color: rgba(94, 94, 94, 1)">Nomor Virtual Account</p>
+                <p>8883xxxxxxxxxx</p>
+              </div>
+              <span class="waiting-payment_copy-desc">Salin <i class="ri-clipboard-line"></i></span>
+            </div>
+            <div class="waiting-payment_content-desc">
+              <div class="waiting-payment_content-sub fs-h5">
+                <p style="color: rgba(94, 94, 94, 1)">Total Pembayaran</p>
+                <p>Rp. <span>33.500</span></p>
+              </div>
+              <span class="waiting-payment_copy-desc">Salin <i class="ri-clipboard-line"></i></span>
+            </div>
+            <div>
+              <PaymentDropdown />
+            </div>
+          </div>
         </div>
       </div>
     </div>
-    <div v-if="showPopup" class="waiting-payment__payment-popup">
-      <button @click="closePopup" class="waiting-payment__close-button">X</button>
-      <div class="waiting-payment__payment-content">
-        <h2>Detail Pembayaran</h2>
-        <p>Total pembayaran: Rp 100.000</p>
-      </div>
-    </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
-.waiting-payment__loader-overlay {
+main {
+  font-family: 'Raleway';
+}
+.waiting-payment_loader-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(255, 255, 255, 0.8);
-  z-index: 9999;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 998;
 }
-.waiting-payment__loading-container {
+.waiting-payment_content-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+.waiting-payment_container-content {
+  position: relative;
+  background-color: white;
+  border-radius: 10px;
+  width: 671px;
+  height: 512px;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
-.waiting-payment__loading-content {
-  text-align: center;
-  margin-bottom: 20px;
-}
-.waiting-payment__loading-text {
-  font-size: 40px;
-  line-height: 48px;
-  font-family: 'Raleway', sans-serif;
-}
-.waiting-payment__loading-dots::after {
-  content: '.';
-  animation: loadingDots 1.5s infinite;
-}
-@keyframes loadingDots {
-  0% {
-    content: '.';
-  }
-  33% {
-    content: '..';
-  }
-  66% {
-    content: '...';
-  }
-}
-.waiting-payment__loader {
+.waiting-payment_content-header {
   display: flex;
+  flex-direction: row;
+  height: 73px;
+  padding: 1.5rem 3rem;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(208, 213, 221, 1);
 }
-.waiting-payment__ball {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  margin: 0 5px;
-  animation: bounce 0.5s infinite alternate;
+.waiting-payment_close-button {
+  font-size: 32px;
+  color: rgba(52, 51, 48, 1);
 }
-.waiting-payment__ball-1 {
-  background-color: rgba(18, 59, 50, 1);
-  animation-delay: 0s;
+.waiting-payment_close-button:hover {
+  opacity: 0.5;
 }
-.waiting-payment__ball-2 {
-  background-color: rgba(217, 165, 32, 1);
-  animation-delay: 0.2s;
+.waiting-payment_content-data {
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 3rem;
+  gap: 1rem;
+  overflow-y: auto;
 }
-.waiting-payment__ball-3 {
-  background-color: rgba(250, 224, 132, 1);
-  animation-delay: 0.4s;
+.waiting-payment_content-desc {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
-@keyframes bounce {
-  to {
-    transform: translateY(-20px);
-  }
+.waiting-payment_content-desc img {
+  width: 58px;
+  height: 28px;
 }
-.waiting-payment__payment-popup {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: white;
-  padding: 20px;
-  border: 1px solid #ccc;
-  z-index: 10000;
+.waiting-payment_copy-desc {
+  color: rgba(218, 165, 32, 1);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 24px;
 }
-.waiting-payment__close-button {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
+.waiting-payment_copy-desc i {
+  font-size: 32px;
 }
-.waiting-payment__payment-content {
-  text-align: center;
+.waiting-payment_copy-desc:hover {
+  filter: brightness(70%);
+}
+.waiting-payment_content-sub {
+  display: flex;
+  flex-direction: column;
 }
 </style>

@@ -1,33 +1,33 @@
 <script setup>
-import Slider from '@/components/Slider.vue';
+import Slider from '@/components/Slider.vue'
+import PaymentPopup from '@/components/PaymentPopup.vue'
 
-import { ref, computed } from 'vue';
+import { ref, computed } from 'vue'
 
-const value = ref(1);
-const ticketPrice = 10000;
-const biayaLayanan = 2500;
-const biayaJasa = 1000;
-const selectedDate = ref(null); 
-
+const value = ref(1)
+const ticketPrice = 10000
+const biayaLayanan = 2500
+const biayaJasa = 1000
+const selectedDate = ref(null)
 
 function tambahTiket() {
   console.log('button diklik')
-  value.value++;
+  value.value++
 }
 
 function kurangTiket() {
   if (value.value > 1) {
-    value.value--;
+    value.value--
   }
 }
 
 const totalHarga = computed(() => {
-  return value.value * ticketPrice;
+  return value.value * ticketPrice
 })
 
 const totalTagihan = computed(() => {
-  return totalHarga.value + biayaLayanan + biayaJasa;
-});
+  return totalHarga.value + biayaLayanan + biayaJasa
+})
 
 const formattedTotalHarga = computed(() => {
   // Format total harga menjadi format mata uang yang diinginkan
@@ -36,8 +36,8 @@ const formattedTotalHarga = computed(() => {
     currency: 'IDR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
-  });
-});
+  })
+})
 
 const formattedTotalTagihan = computed(() => {
   return totalTagihan.value.toLocaleString('id-ID', {
@@ -45,19 +45,33 @@ const formattedTotalTagihan = computed(() => {
     currency: 'IDR',
     minimumFractionDigits: 0,
     maximumFractionDigits: 0
-  });
-});
+  })
+})
+
+const paymentPopup = ref(null)
+
+const showPayment = () => {
+  paymentPopup.value.showPaymentPopup()
+}
 </script>
 
 <template>
   <main>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <div class="container">
-
       <div class="form-container-checkout">
         <div class="submitEvent">
           <form>
@@ -70,10 +84,10 @@ const formattedTotalTagihan = computed(() => {
                 </label>
                 <label class="bold-text" for="name">Teddy Lazuardi</label>
                 <div class="input-country">
-                <label for="">Kebangsaan</label>
-                <select class="box-size" id="kebangsaan" v-model="kebangsaan">
-                  <option value="Afghan">Afghanistan</option>
-                </select>
+                  <label for="">Kebangsaan</label>
+                  <select class="box-size" id="kebangsaan" v-model="kebangsaan">
+                    <option value="Afghan">Afghanistan</option>
+                  </select>
                 </div>
               </div>
               <div class="tiket">
@@ -82,14 +96,16 @@ const formattedTotalTagihan = computed(() => {
                   Detail Tiket
                 </label>
                 <div class="input-date">
-                  <input type="date" class="date" id="tanggal" v-model="selectedDate">
+                  <input type="date" class="date" id="tanggal" v-model="selectedDate" />
                   <label for="tanggal">Tanggal Pemesanan</label>
                   <p>MM/DD/YYYY</p>
                 </div>
                 <label for="jumlah">Tiket masuk Keraton Kasepuhan Cirebon</label>
                 Rp 10.000,00
                 <div class="jumlah">
-                  <button @click="kurangTiket" type="button"><i class="ri-subtract-fill"></i></button>
+                  <button @click="kurangTiket" type="button">
+                    <i class="ri-subtract-fill"></i>
+                  </button>
                   <p class="value">{{ value }}</p>
                   <button @click="tambahTiket" type="button"><i class="ri-add-line"></i></button>
                 </div>
@@ -142,10 +158,12 @@ const formattedTotalTagihan = computed(() => {
             </div>
           </form>
           <div class="btn-checkout">
-            <button type="submit" class="CO">Checkout
+            <button type="submit" class="CO" @click="showPayment">
+              Checkout
               <i class="ri-arrow-right-circle-fill"></i>
             </button>
           </div>
+          <PaymentPopup ref="paymentPopup" />
         </div>
       </div>
     </div>
@@ -195,7 +213,6 @@ main {
   margin-top: -15px;
 }
 
-
 h1 {
   margin-top: -10px;
   margin-bottom: 8%;
@@ -239,7 +256,7 @@ button {
   width: 118%;
 }
 
-.input-date input[type="date"] {
+.input-date input[type='date'] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -406,7 +423,7 @@ p {
   margin-top: 9px;
   font-weight: 500;
   display: inline-block;
-  font-family: 'Manrope'
+  font-family: 'Manrope';
 }
 
 .jmlhhrga {
@@ -424,7 +441,7 @@ p {
   justify-content: space-between;
 }
 
-.total-tagihan{
+.total-tagihan {
   display: flex;
   justify-content: space-between;
 }
