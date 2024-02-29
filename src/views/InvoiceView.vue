@@ -158,7 +158,6 @@ const showDetail = (item) => {
 .input:focus {
   outline: none;
 }
-
 /* -------------- */
 /*     Table      */
 /* -------------- */
