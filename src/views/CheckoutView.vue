@@ -108,11 +108,9 @@ const cashbackValue = ref(0)
   </div>
 </template>
 
-<style>
-body {
+<style scoped>
+* {
   font-family: Raleway;
-  margin: 0;
-  padding: 0;
 }
 
 .container {
