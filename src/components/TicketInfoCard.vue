@@ -12,7 +12,7 @@ const { cardInfo } = ticketInfoData
 </div>
 </template>
 
-<style>
+<style scoped>
 .ticket-info-card_container {
     width: 162px;
     height: 186px;

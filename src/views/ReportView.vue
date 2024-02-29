@@ -57,7 +57,7 @@ const { incomeRevenue } = ticketInfoData
   </div>
 </template>
 
-<style>
+<style scoped>
 .report-information_container {
   width: 1085px;
   height: 277px;

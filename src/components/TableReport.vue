@@ -35,7 +35,7 @@ const { activityReportData } = tableReportData
   </div>
 </template>
 
-<style>
+<style scoped>
 .report-activity_table {
   max-height: calc(374px - 2rem);
   overflow-y: auto;

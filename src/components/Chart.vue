@@ -101,7 +101,7 @@ const chartOptions = ref({
   </div>
 </template>
 
-<style>
+<style scoped>
 .revenue-details {
   width: 531px;
   height: 311px;
