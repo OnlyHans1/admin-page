@@ -130,13 +130,11 @@ const showDetail = (item) => {
   border-radius: 10px;
   height: 41px;
 }
-
 .search-box {
   display: flex;
   border-radius: 3px;
   overflow: hidden;
 }
-
 .search-icon {
   align-items: center;
   justify-content: center;
@@ -145,12 +143,10 @@ const showDetail = (item) => {
   margin-left: 10px;
   margin-top: 5px;
 }
-
 .search-input {
   flex: 1;
   border-radius: 10px;
 }
-
 .input {
   border: none;
   padding: 8px;
@@ -171,11 +167,9 @@ const showDetail = (item) => {
   border-collapse: collapse;
   margin-top: 40px;
 }
-
 tr {
   border-top: 1px solid black;
 }
-
 thead {
   border: 0;
 }
@@ -195,12 +189,10 @@ thead {
   font-weight: 600;
   font-size: 26px;
 }
-
 .invoice td {
   font-weight: 400;
   font-size: 22px;
 }
-
 .btn-primary {
   background-color: #ffe29a;
   font-family: 'Poppins';
@@ -212,11 +204,9 @@ thead {
   border: none;
   cursor: pointer;
 }
-
 .btn-primary:hover {
   background-color: #ffd477;
 }
-
 @media screen and (max-width: 768px) {
   .search {
     width: 90%;
