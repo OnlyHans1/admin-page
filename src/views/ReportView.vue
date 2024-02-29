@@ -2,6 +2,7 @@
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
+import Category from '@/components/Category.vue'
 import chartReportData from '@/data/chartReportData'
 import ticketInfoData from '@/data/ticketInfoData'
 
@@ -47,7 +48,7 @@ const { incomeRevenue } = ticketInfoData;
       <div class="report-activity_head flex fd-row gap[1.5] align-items-center">
         <p class="report-activity_head-text">Aktivitas Terbaru</p>
         <div class="report-activity_head-dropdown-container">
-          <!-- Dropdown Component -->
+          <Category :categoryWidth="'136px'" ref="category"/>
         </div>
       </div>
       <div class="report-activity_table-container">
