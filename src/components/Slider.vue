@@ -83,7 +83,7 @@ const hideTooltip = () => {
 
 .slider_fill {
   position: absolute;
-  top: 12.5px;
+  top: 14.5px;
   left: 0;
   height: 4px;
   background-color: rgba(102, 102, 102, 0.6);
