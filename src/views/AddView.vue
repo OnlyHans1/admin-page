@@ -66,7 +66,6 @@ const handleFileSelected = (file) => {
   </main>
 </template>
 
-<style src="@vueform/slider/themes/default.css"></style>
 <style scoped>
 
 
