@@ -27,7 +27,7 @@ const showTooltip = () => {
 
 const hideTooltip = () => {
   show.value = false
-}
+};
 </script>
 
 <template>

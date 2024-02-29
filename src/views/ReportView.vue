@@ -7,7 +7,7 @@ import ticketInfoData from '@/data/ticketInfoData'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
-const { incomeRevenue } = ticketInfoData
+const { incomeRevenue } = ticketInfoData;
 </script>
 
 <template>
