@@ -31,14 +31,14 @@ determineActiveLink();
         <img src="../assets/images/Logo KKC.svg" alt="">
     </div>
     <div class="navbar-links">
-        <div class="navbar-links_container flex fd-col">
             <!-- Menggunakan router-link dengan params -->
+        <div class="navbar-links-container flex fd-col">
             <RouterLink to="/" :class="{active: activeLink === 0}"><i class="ri-home-2-line"></i></RouterLink>
             <RouterLink to="/add" :class="{active: activeLink === 1}"><i class="ri-mail-line"></i></RouterLink>
             <RouterLink to="/report"  :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>
             
         </div>
-        <div class="navbar-links_container-settings flex fd-col">
+        <div class="navbar-links__settings_container flex fd-col">
             <a href="#"><i class="ri-settings-3-line"></i></a>
             <a href="#"><i class="ri-logout-box-line"></i></a>
         </div>
@@ -89,8 +89,8 @@ nav {
     align-items: center;
 }
 
-.navbar-links_container,
-.navbar-links_container-settings {
+.navbar-links-container,
+.navbar-links__settings_container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;

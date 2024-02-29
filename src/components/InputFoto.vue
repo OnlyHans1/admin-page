@@ -1,0 +1,128 @@
+<script setup>
+import { ref } from 'vue';
+
+const fileInput = ref(null);
+const isDragOver = ref(false);
+const dragText = ref("Tambahkan Foto");
+
+const browseFile = () => {
+  fileInput.value.click(); // Trigger file input click
+};
+
+const handleFileChange = () => {
+  const file = fileInput.value.files[0];
+  if (file) {
+    // Emit the selected file to the parent component
+    $emit('file-selected', file);
+  }
+};
+
+const dragEnter = () => {
+  isDragOver.value = true;
+  dragText.value = "Release to Upload File";
+};
+
+const dragLeave = () => {
+  isDragOver.value = false;
+  dragText.value = "Drag & Drop to Upload File";
+};
+
+const uploadFile = (file) => {
+  // Implement file upload logic here
+  // For example, axios or fetch to upload the file
+  // also show the uploaded file in the preview area
+  console.log("File uploaded:", file);
+
+  // Simulate uploading process
+  setTimeout(() => {
+    alert("File uploaded successfully!");
+  }, 1000);
+};
+</script>
+<template>
+    <div class="drag-area" 
+    @click="browseFile" 
+    href="#"
+    @drop.prevent="uploadFile($event)" 
+    @dragover.prevent
+    @dragenter="dragEnter"
+    @dragleave="dragLeave"
+    :class="{ 'active': isDragOver }"
+    >
+    <a class="browse_placeholder">
+      <div class="icon"><i class="ri ri-camera-fill"></i></div>
+      <header>{{ dragText }}</header>
+        <input ref="fileInput" type="file" name="file" id="file" @change="handleFileChange" hidden>
+    </a>
+    </div>
+
+  </template>
+
+<style scoped>
+.drag-area {
+  border: 2px dashed #000000;
+  height: 193px;
+  width: 277px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.drag-area.active {
+  border: 2px dashed #000000;
+  background-color: #eaeaea;
+}
+
+.drag-area .icon {
+  font-size: 50px;
+  color: #000000;
+}
+
+.drag-area header {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+}
+
+.drag-area span {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+  margin: 10px 0 15px 0;
+}
+
+.drag-area button {
+  padding: 10px 25px;
+  font-size: 20px;
+  font-weight: 500;
+  border: none;
+  outline: none;
+  background: #ffffff;
+  border: 1px dotted #000000;
+  color: #000000;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.5s;
+}
+
+.drag-area button:hover {
+  background: rgb(228, 220, 220);
+}
+
+.drag-area img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+a.browse_placeholder{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+</style>
