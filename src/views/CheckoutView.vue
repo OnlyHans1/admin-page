@@ -1,6 +1,7 @@
 <script setup>
 import Slider from '@/components/Slider.vue'
 import PaymentPopup from '@/components/PaymentPopup.vue'
+import NationalityDropdown from '@/components/NationalityDropdown.vue'
 
 import { ref, computed } from 'vue'
 
@@ -9,6 +10,8 @@ const ticketPrice = 10000
 const biayaLayanan = 2500
 const biayaJasa = 1000
 const selectedDate = ref(null)
+const discountValue = ref(null)
+const cashbackValue = ref(null)
 
 function tambahTiket() {
   console.log('button diklik')
@@ -22,7 +25,7 @@ function kurangTiket() {
 }
 
 const totalHarga = computed(() => {
-  return value.value * ticketPrice
+  return value.value * ticketPrice * (1 - (discountValue.value || 0) / 100)
 })
 
 const totalTagihan = computed(() => {
@@ -57,20 +60,6 @@ const showPayment = () => {
 
 <template>
   <main>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@400;700display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
-
-    <link rel="stylesheet" href="style.css" />
     <div class="container">
       <div class="form-container-checkout">
         <div class="submitEvent">
@@ -84,10 +73,7 @@ const showPayment = () => {
                 </label>
                 <label class="bold-text" for="name">Teddy Lazuardi</label>
                 <div class="input-country">
-                  <label for="">Kebangsaan</label>
-                  <select class="box-size" id="kebangsaan" v-model="kebangsaan">
-                    <option value="Afghan">Afghanistan</option>
-                  </select>
+                  <NationalityDropdown />
                 </div>
               </div>
               <div class="tiket">
@@ -172,7 +158,7 @@ const showPayment = () => {
 
 <style scoped>
 main {
-  font-family: 'Raleway' !important;
+  font-family: 'Raleway';
 }
 
 .container {

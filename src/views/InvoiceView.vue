@@ -68,14 +68,14 @@ const showDetail = (item) => {
   <div class="invoice-container">
     <!-- Search -->
     <div class="invoice-search">
-      <div class="invoice-search_box">
-        <div class="invoice-search_icon">
+      <div class="invoice-search__box">
+        <div class="invoice-search__icon">
           <i class="ri-search-line"></i>
         </div>
-        <div class="invoice-search_input">
+        <div class="invoice-search__input">
           <input
             type="text"
-            class="invoice-search_input-field"
+            class="invoice-search__input-field"
             v-model="searchQuery"
             placeholder="Search..."
           />
@@ -87,25 +87,25 @@ const showDetail = (item) => {
     <div class="invoice-table">
       <table>
         <thead>
-          <tr class="invoice-table_row-header">
-            <th class="invoice-table_header">NO</th>
-            <th class="invoice-table_header">Nama</th>
-            <th class="invoice-table_header">Pembelian</th>
-            <th class="invoice-table_header">Tanggal</th>
-            <th class="invoice-table_header">Jadwal</th>
-            <th class="invoice-table_header">Email</th>
+          <tr class="invoice-table__row-header">
+            <th class="invoice-table__header">NO</th>
+            <th class="invoice-table__header">Nama</th>
+            <th class="invoice-table__header">Pembelian</th>
+            <th class="invoice-table__header">Tanggal</th>
+            <th class="invoice-table__header">Jadwal</th>
+            <th class="invoice-table__header">Email</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in data" :key="index" class="invoice-table_row-data">
-            <td class="invoice-table_data">{{ index + 1 }}</td>
-            <td class="invoice-table_data">{{ item.nama }}</td>
-            <td class="invoice-table_data">{{ item.pembelian }}</td>
-            <td class="invoice-table_data">{{ formatDate(item.jadwal)[0] }}</td>
-            <td class="invoice-table_data">{{ formatDate(item.jadwal)[1] }}</td>
-            <td class="invoice-table_data">
+          <tr v-for="(item, index) in data" :key="index" class="invoice-table__row-data">
+            <td class="invoice-table__data">{{ index + 1 }}</td>
+            <td class="invoice-table__data">{{ item.nama }}</td>
+            <td class="invoice-table__data">{{ item.pembelian }}</td>
+            <td class="invoice-table__data">{{ formatDate(item.jadwal)[0] }}</td>
+            <td class="invoice-table__data">{{ formatDate(item.jadwal)[1] }}</td>
+            <td class="invoice-table__data">
               {{ item.email }} <br />
-              <button class="btn-primary invoice-table_button" @click="showDetail(item)">
+              <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                 detail
               </button>
             </td>
@@ -135,12 +135,12 @@ const showDetail = (item) => {
   border-radius: 10px;
   height: 41px;
 }
-.invoice-search_box {
+.invoice-search__box {
   display: flex;
   border-radius: 3px;
   overflow: hidden;
 }
-.invoice-search_icon {
+.invoice-search__icon {
   align-items: center;
   justify-content: center;
   width: 50px;
@@ -148,11 +148,11 @@ const showDetail = (item) => {
   margin-left: 10px;
   margin-top: 5px;
 }
-.invoice-search_input {
+.invoice-search__input {
   flex: 1;
   border-radius: 10px;
 }
-.invoice-search_input-field {
+.invoice-search__input-field {
   border: none;
   padding: 8px;
   width: 95%;
@@ -160,7 +160,7 @@ const showDetail = (item) => {
   background-color: #d9d9d9;
   font-family: 'Poppins';
 }
-.invoice-search_input-field:focus {
+.invoice-search__input-field:focus {
   outline: none;
 }
 
@@ -173,21 +173,21 @@ const showDetail = (item) => {
   width: 100%;
   border-collapse: collapse;
 }
-.invoice-table_header {
+.invoice-table__header {
   padding: 7px;
   text-align: center;
   font-weight: 600;
   font-size: 26px;
 }
-.invoice-table_data:first-child,
-.invoice-table_header:first-child {
+.invoice-table__data:first-child,
+.invoice-table__header:first-child {
   border-right: 1px solid black;
 }
-.invoice-table_row-header,
-.invoice-table_row-data:not(:last-child) {
+.invoice-table__row-header,
+.invoice-table__row-data:not(:last-child) {
   border-bottom: 1px solid black;
 }
-.invoice-table_data {
+.invoice-table__data {
   padding: 7px;
   text-align: center;
   font-weight: 400;
@@ -208,7 +208,7 @@ const showDetail = (item) => {
 .btn-primary:hover {
   background-color: #ffd477;
 }
-.invoice-table_button {
+.invoice-table__button {
   background-color: #ffe29a;
   font-family: 'Poppins';
   font-size: 22px;
@@ -219,7 +219,7 @@ const showDetail = (item) => {
   border: none;
   cursor: pointer;
 }
-.invoice-table_button:hover {
+.invoice-table__button:hover {
   background-color: #ffd477;
 }
 @media screen and (max-width: 768px) {

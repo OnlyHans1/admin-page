@@ -26,36 +26,36 @@ defineExpose({
 
 <template>
   <main>
-    <div class="waiting-payment_container">
-      <div v-if="isLoading" class="waiting-payment_loader-overlay">
+    <div class="waiting-payment__container">
+      <div v-if="isLoading" class="waiting-payment__loader-overlay">
         <LoaderPayment />
       </div>
-      <div v-if="showPopup" class="waiting-payment_content-overlay">
-        <div class="waiting-payment_container-content">
-          <div class="waiting-payment_content-header">
+      <div v-if="showPopup" class="waiting-payment__content-overlay">
+        <div class="waiting-payment__container-content">
+          <div class="waiting-payment__content-header">
             <p class="fs-h5 fw-700">Cara Pembayaran</p>
-            <span @click="closePopup" class="waiting-payment_close-button">
+            <span @click="closePopup" class="waiting-payment__close-button">
               <i class="ri-close-line"></i>
             </span>
           </div>
-          <div class="waiting-payment_content-data">
-            <div class="waiting-payment_content-desc">
+          <div class="waiting-payment__content-data">
+            <div class="waiting-payment__content-desc">
               <p class="fs-h4">BJB Virtual Account</p>
               <img :src="logoBJB" alt="logoBJB" />
             </div>
-            <div class="waiting-payment_content-desc">
-              <div class="waiting-payment_content-sub fs-h5">
+            <div class="waiting-payment__content-desc">
+              <div class="waiting-payment__content-sub fs-h5">
                 <p style="color: rgba(94, 94, 94, 1)">Nomor Virtual Account</p>
                 <p>8883xxxxxxxxxx</p>
               </div>
-              <span class="waiting-payment_copy-desc">Salin <i class="ri-clipboard-line"></i></span>
+              <span class="waiting-payment__copy-desc">Salin <i class="ri-clipboard-line"></i></span>
             </div>
-            <div class="waiting-payment_content-desc">
-              <div class="waiting-payment_content-sub fs-h5">
+            <div class="waiting-payment__content-desc">
+              <div class="waiting-payment__content-sub fs-h5">
                 <p style="color: rgba(94, 94, 94, 1)">Total Pembayaran</p>
                 <p>Rp. <span>33.500</span></p>
               </div>
-              <span class="waiting-payment_copy-desc">Salin <i class="ri-clipboard-line"></i></span>
+              <span class="waiting-payment__copy-desc">Salin <i class="ri-clipboard-line"></i></span>
             </div>
             <div>
               <PaymentDropdown />
@@ -71,7 +71,7 @@ defineExpose({
 main {
   font-family: 'Raleway';
 }
-.waiting-payment_loader-overlay {
+.waiting-payment__loader-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -84,7 +84,7 @@ main {
   align-items: center;
   z-index: 998;
 }
-.waiting-payment_content-overlay {
+.waiting-payment__content-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -97,7 +97,7 @@ main {
   justify-content: center;
   z-index: 999;
 }
-.waiting-payment_container-content {
+.waiting-payment__container-content {
   position: relative;
   background-color: white;
   border-radius: 10px;
@@ -106,7 +106,7 @@ main {
   display: flex;
   flex-direction: column;
 }
-.waiting-payment_content-header {
+.waiting-payment__content-header {
   display: flex;
   flex-direction: row;
   height: 73px;
@@ -115,31 +115,31 @@ main {
   align-items: center;
   border-bottom: 1px solid rgba(208, 213, 221, 1);
 }
-.waiting-payment_close-button {
+.waiting-payment__close-button {
   font-size: 32px;
   color: rgba(52, 51, 48, 1);
 }
-.waiting-payment_close-button:hover {
+.waiting-payment__close-button:hover {
   opacity: 0.5;
 }
-.waiting-payment_content-data {
+.waiting-payment__content-data {
   display: flex;
   flex-direction: column;
   padding: 2rem 3rem;
   gap: 1rem;
   overflow-y: auto;
 }
-.waiting-payment_content-desc {
+.waiting-payment__content-desc {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
 }
-.waiting-payment_content-desc img {
+.waiting-payment__content-desc img {
   width: 58px;
   height: 28px;
 }
-.waiting-payment_copy-desc {
+.waiting-payment__copy-desc {
   color: rgba(218, 165, 32, 1);
   display: flex;
   flex-direction: row;
@@ -149,13 +149,13 @@ main {
   font-weight: 700;
   line-height: 24px;
 }
-.waiting-payment_copy-desc i {
+.waiting-payment__copy-desc i {
   font-size: 32px;
 }
-.waiting-payment_copy-desc:hover {
+.waiting-payment__copy-desc:hover {
   filter: brightness(70%);
 }
-.waiting-payment_content-sub {
+.waiting-payment__content-sub {
   display: flex;
   flex-direction: column;
 }

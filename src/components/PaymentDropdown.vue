@@ -11,12 +11,12 @@ const toggleExpand = (index) => {
 </script>
 
 <template>
-  <div class="payment-method_dropdown" v-for="(template, index) in paymentTemplate" :key="index">
-    <div class="payment-method_dropdown-header" @click="toggleExpand(index)">
+  <div class="payment-method__dropdown" v-for="(template, index) in paymentTemplate" :key="index">
+    <div class="payment-method__dropdown-header" @click="toggleExpand(index)">
       <p class="fs-h5">{{ template.title }}</p>
       <i :class="['ri-arrow-down-s-line icon-20', expanded[index] ? 'expanded' : '']"></i>
     </div>
-    <div class="payment-method_dropdown-content" :class="{ expanded: expanded[index] }">
+    <div class="payment-method__dropdown-content" :class="{ expanded: expanded[index] }">
       <template v-if="template.description.trim()">
         <ol>
           <li v-for="(desc, index) in template.description.split('\n')" :key="index">
@@ -29,14 +29,14 @@ const toggleExpand = (index) => {
 </template>
 
 <style>
-.payment-method_dropdown {
+.payment-method__dropdown {
   border-radius: 0.5rem;
   background-color: #fff;
   overflow: hidden;
   border-bottom: 1px solid rgba(208, 213, 221, 1);
 }
 
-.payment-method_dropdown-header {
+.payment-method__dropdown-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,14 +45,14 @@ const toggleExpand = (index) => {
   cursor: pointer;
 }
 
-.payment-method_dropdown-content {
+.payment-method__dropdown-content {
   padding: 0 0.5rem;
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease;
 }
 
-.payment-method_dropdown-content.expanded {
+.payment-method__dropdown-content.expanded {
   border-top: 1px solid var(--color-grey);
   padding: 0.5rem 0;
   max-height: 1000px;

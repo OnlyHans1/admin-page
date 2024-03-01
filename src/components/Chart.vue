@@ -78,18 +78,18 @@ const chartOptions = ref({
 <template>
   <div class="revenue-details flex fd-col align-items-center justify-content-sb">
     <div class="revenue-details__desc flex fd-row align-items-f-start justify-content-sb w-full">
-      <div class="revenue-details__desc_text flex fd-col">
-        <p class="revenue-details__desc_title">Tingkat Keramaian</p>
-        <p class="revenue-details__desc_subtitle">{{ targetDate }}</p>
+      <div class="revenue-details__desc-text flex fd-col">
+        <p class="revenue-details__desc-title">Tingkat Keramaian</p>
+        <p class="revenue-details__desc-subtitle">{{ targetDate }}</p>
       </div>
       <div class="revenue-details__legend">
-        <div class="revenue-details__legend_item" v-for="(item, index) in dataSeries" :key="index">
-          <span class="revenue-details__legend_color" :style="{ backgroundColor: item.color }"></span>
-          <p class="revenue-details__legend_name">{{ item.name }}</p>
+        <div class="revenue-details__legend-item" v-for="(item, index) in dataSeries" :key="index">
+          <span class="revenue-details__legend-color" :style="{ backgroundColor: item.color }"></span>
+          <p class="revenue-details__legend-name">{{ item.name }}</p>
         </div>
       </div>
     </div>
-    <div id="chart" class="revenue-details__chart_container">
+    <div id="chart" class="revenue-details__chart-container">
       <apexchart
         type="line"
         height="200"
@@ -110,13 +110,13 @@ const chartOptions = ref({
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
 }
 
-.revenue-details__desc_title {
+.revenue-details__desc-title {
   font-size: 14px;
   line-height: 28px;
   font-weight: 600;
 }
 
-.revenue-details__desc_subtitle {
+.revenue-details__desc-subtitle {
   font-size: 12px;
   line-height: 14px;
 }
@@ -128,12 +128,12 @@ const chartOptions = ref({
   gap: 2px;
 }
 
-.revenue-details__legend_item {
+.revenue-details__legend-item {
   display: flex;
   flex-direction: row;
 }
 
-.revenue-details__legend_color {
+.revenue-details__legend-color {
   width: 10px;
   height: 10px;
   display: inline-block;
@@ -141,7 +141,7 @@ const chartOptions = ref({
   border-radius: 100%;
 }
 
-.revenue-details__legend_name {
+.revenue-details__legend-name {
   font-size: 9px;
 }
 

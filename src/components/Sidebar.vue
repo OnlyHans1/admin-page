@@ -38,7 +38,7 @@ determineActiveLink();
             <RouterLink to="/report"  :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>
             
         </div>
-        <div class="navbar-links__settings_container flex fd-col">
+        <div class="navbar-links__settings-container flex fd-col">
             <a href="#"><i class="ri-settings-3-line"></i></a>
             <a href="#"><i class="ri-logout-box-line"></i></a>
         </div>
@@ -90,7 +90,7 @@ nav {
 }
 
 .navbar-links-container,
-.navbar-links__settings_container {
+.navbar-links__settings-container {
     display: flex;
     flex-direction: column;
     gap: 1.5rem;

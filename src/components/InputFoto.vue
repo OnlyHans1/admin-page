@@ -49,7 +49,7 @@ const uploadFile = (file) => {
     @dragleave="dragLeave"
     :class="{ 'active': isDragOver }"
     >
-    <a class="browse_placeholder">
+    <a class="browse__placeholder">
       <div class="icon"><i class="ri ri-camera-fill"></i></div>
       <header>{{ dragText }}</header>
         <input ref="fileInput" type="file" name="file" id="file" @change="handleFileChange" hidden>
@@ -118,7 +118,7 @@ const uploadFile = (file) => {
   border-radius: 5px;
 }
 
-a.browse_placeholder{
+a.browse__placeholder{
     width: 100%;
     display: flex;
     flex-direction: column;

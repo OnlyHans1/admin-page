@@ -31,10 +31,10 @@ const hideTooltip = () => {
 </script>
 
 <template>
-  <div class="slider_container flex fd-row align-items-center">
+  <div class="slider__container flex fd-row align-items-center">
     <span>{{ props.min }}%</span>
     <div
-      class="slider_input-container"
+      class="slider__input-container"
       @mousedown="showTooltip"
       @focus="showTooltip"
       @blur="hideTooltip"
@@ -46,30 +46,30 @@ const hideTooltip = () => {
         :max="props.max"
         @input="updateTooltip"
         @mouseup="hideTooltip"
-        class="slider_input"
+        class="slider__input"
         :style="{
           width: props.sliderWidth,
         }"
       />
-      <div class="slider_fill" :style="{ width: fillWidth }"></div>
-      <div v-if="show" class="slider_tooltip" :style="{ left: tooltipLeft }">{{ value }}</div>
+      <div class="slider__fill" :style="{ width: fillWidth }"></div>
+      <div v-if="show" class="slider__tooltip" :style="{ left: tooltipLeft }">{{ value }}</div>
     </div>
     <span>{{ props.max }}%</span>
   </div>
 </template>
 
 <style scoped>
-.slider_container {
+.slider__container {
   position: relative;
 }
 
-.slider_input-container {
+.slider__input-container {
   position: relative;
   top: -4px;
   margin: 1rem 0.4rem;
 }
 
-.slider_input {
+.slider__input {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
@@ -81,7 +81,7 @@ const hideTooltip = () => {
   position: relative;
 }
 
-.slider_fill {
+.slider__fill {
   position: absolute;
   top: 14.5px;
   left: 0;
@@ -90,7 +90,7 @@ const hideTooltip = () => {
   border-radius: 2px;
 }
 
-.slider_input::-webkit-slider-thumb {
+.slider__input::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 10px;
@@ -102,7 +102,7 @@ const hideTooltip = () => {
   z-index: 2;
 }
 
-.slider_input::-moz-range-thumb {
+.slider__input::-moz-range-thumb {
   width: 10px;
   height: 10px;
   border-radius: 50%;
@@ -112,7 +112,7 @@ const hideTooltip = () => {
   z-index: 2;
 }
 
-.slider_tooltip {
+.slider__tooltip {
   position: absolute;
   bottom: calc(100% - 0.25rem);
   background-color: rgba(0, 0, 0, 0.7);

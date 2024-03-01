@@ -22,27 +22,27 @@ defineExpose({
 </script>
 
 <template>
-  <div class="invoice-detail_container" v-if="showPopup">
-    <div class="invoice-detail_container-content">
-      <div class="invoice-detail_content-img">
+  <div class="invoice-detail__container" v-if="showPopup">
+    <div class="invoice-detail__container-content">
+      <div class="invoice-detail__content-img">
         <img src="../assets/images/Logo KKC.svg" alt="Logo Keraton Kasepuhan Cirebon" />
       </div>
-      <div class="invoice-detail_container-data align-self-f-start pd-sd-1">
+      <div class="invoice-detail__container-data align-self-f-start pd-sd-1">
         <div>
-          <div v-for="(value, key) in selectedItem" :key="key" class="invoice-detail_data">
-            <h3 v-if="key !== 'email'" class="invoice-detail_data-title">{{ capitalizeFirstLetter(key) }}</h3>
+          <div v-for="(value, key) in selectedItem" :key="key" class="invoice-detail__data">
+            <h3 v-if="key !== 'email'" class="invoice-detail__data-title">{{ capitalizeFirstLetter(key) }}</h3>
             <p v-if="key === 'pembayaran'">Transfer Bank: {{ value }}</p>
             <p v-else-if="key !== 'email'">{{ value }}</p>
           </div>
         </div>
       </div>
-      <button class="invoice-detail_button" @click="closePopup">OK</button>
+      <button class="invoice-detail__button" @click="closePopup">OK</button>
     </div>
   </div>
 </template>
 
 <style scoped>
-.invoice-detail_container {
+.invoice-detail__container {
   position: fixed;
   top: 0;
   left: 0;
@@ -54,7 +54,7 @@ defineExpose({
   justify-content: center;
   z-index: 999;
 }
-.invoice-detail_container-content {
+.invoice-detail__container-content {
   background-color: white;
   padding: 20px;
   border-radius: 10px;
@@ -65,30 +65,30 @@ defineExpose({
   flex-direction: column;
   align-items: center;
 }
-.invoice-detail_content-img {
+.invoice-detail__content-img {
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
-.invoice-detail_content-img img {
+.invoice-detail__content-img img {
   width: 140px;
   height: 145px;
 }
-.invoice-detail_data-title {
+.invoice-detail__data-title {
   font-size: 20px;
   font-weight: 600;
 }
-.invoice-detail_container-data p {
+.invoice-detail__container-data p {
   font-size: 16px;
   margin-bottom: 5px;
   margin-left: 10px;
 }
-.invoice-detail_button {
+.invoice-detail__button {
   display: flex;
   justify-content: center;
   margin-top: 10px;
 }
-.invoice-detail_button {
+.invoice-detail__button {
   background-color: #ffe29a;
   font-family: 'Poppins';
   font-size: 16px;
@@ -100,7 +100,7 @@ defineExpose({
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
-.invoice-detail_button:hover {
+.invoice-detail__button:hover {
   background-color: #ffd477;
 }
 </style>

@@ -5,10 +5,10 @@ const { activityReportData } = tableReportData
 </script>
 
 <template>
-  <div class="report-activity_table">
-    <table class="report-activity_table-data">
+  <div class="report-activity__table">
+    <table class="report-activity__table-data">
       <thead>
-        <tr class="report-activity_table-header">
+        <tr class="report-activity__table-header">
           <th>No</th>
           <th>Pembelian</th>
           <th>Kategori</th>
@@ -19,7 +19,7 @@ const { activityReportData } = tableReportData
       </thead>
       <tbody>
         <tr
-          class="report-activity_table-items"
+          class="report-activity__table-items"
           v-for="(item, index) in activityReportData"
           :key="index"
         >
@@ -36,19 +36,19 @@ const { activityReportData } = tableReportData
 </template>
 
 <style scoped>
-.report-activity_table {
+.report-activity__table {
   max-height: calc(374px - 2rem);
   overflow-y: auto;
 }
-.report-activity_table::-webkit-scrollbar {
+.report-activity__table::-webkit-scrollbar {
   width: 0;
 }
-.report-activity_table-data {
+.report-activity__table-data {
   border-collapse: collapse;
   outline: 0;
   width: 100%;
 }
-.report-activity_table-header th {
+.report-activity__table-header th {
   font-size: 24px;
   font-weight: 600;
   line-height: 28px;
@@ -57,18 +57,18 @@ const { activityReportData } = tableReportData
   position: sticky;
   top: 0;
 }
-.report-activity_table-items td {
+.report-activity__table-items td {
   font-size: 18px;
   line-height: 28px;
   border-bottom: 1px solid #000;
 }
-.report-activity_table-header th,
-.report-activity_table-items td {
+.report-activity__table-header th,
+.report-activity__table-items td {
   text-align: center;
   padding: 0.5rem 1.5rem;
 }
-.report-activity_table-header th:nth-child(2),
-.report-activity_table-items td:nth-child(2) {
+.report-activity__table-header th:nth-child(2),
+.report-activity__table-items td:nth-child(2) {
   text-align: start;
   padding-left: 2rem;
 }

@@ -5,22 +5,22 @@ const { cardInfo } = ticketInfoData
 </script>
 
 <template>
-<div class="ticket-info-card_container flex fd-col pd-1" v-for="(item, index) in cardInfo" :key="index">
-    <p class="ticket-info-card_title">{{ item.name }}</p>
-    <span class="ticket-info-card_details align-self-center">{{ item.sold }}</span>
-    <p class="ticket-info-card_desc align-self-f-end">/ tiket</p>
+<div class="ticket-info-card__container flex fd-col pd-1" v-for="(item, index) in cardInfo" :key="index">
+    <p class="ticket-info-card__title">{{ item.name }}</p>
+    <span class="ticket-info-card__details align-self-center">{{ item.sold }}</span>
+    <p class="ticket-info-card__desc align-self-f-end">/ tiket</p>
 </div>
 </template>
 
 <style scoped>
-.ticket-info-card_container {
+.ticket-info-card__container {
     width: 162px;
     height: 186px;
     background: linear-gradient(to bottom, rgba(255, 226, 154, 0.9), rgba(254, 209, 96, 0.9));
     box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.25);
     border-radius: 15px;
 }
-.ticket-info-card_title {
+.ticket-info-card__title {
     font-size: 12px;
     line-height: 18px;
     width: fit-content;
@@ -29,12 +29,12 @@ const { cardInfo } = ticketInfoData
     background-color: rgba(254, 209, 96, 1);
     mix-blend-mode: luminosity;
 }
-.ticket-info-card_details {
+.ticket-info-card__details {
     font-size: 96px;
     font-weight: 500;
     line-height: 128px;
 }
-.ticket-info-card_desc {
+.ticket-info-card__desc {
     font-size: 12px;
     font-weight: 500;
     line-height: 18px;
