@@ -95,10 +95,12 @@ const showPayment = () => {
                   </div>
                   <p>MM/DD/YYYY</p>
                 </div>
-                <div>
-                  <p for="jumlah">Tiket masuk Keraton Kasepuhan Cirebon</p>
-                  <span>Rp 10.000,00</span>
-                  <div class="jumlah">
+                <div class="order-details__ticket">
+                  <div class="order-details__ticket-items">
+                    <p>Tiket masuk Keraton Kasepuhan Cirebon</p>
+                    <span>Rp 10.000,00</span>
+                  </div>
+                  <div class="order-details__ticket-value">
                     <button @click="kurangTiket" type="button">
                       <i class="ri-subtract-fill"></i>
                     </button>
@@ -121,7 +123,7 @@ const showPayment = () => {
                 <i class="ri-wallet-line"></i>
                 <p>Pilih Pembayaran</p>
               </div>
-              <select class="payment" id="payment" v-model="payment">
+              <select class="" id="payment" v-model="payment">
                 <option value="gopay">Cash</option>
                 <option value="dana">VA BJB</option>
               </select>
@@ -132,28 +134,28 @@ const showPayment = () => {
       <div class="checkout__details-container">
         <div class="checkout__details-content">
           <form class="checkout__details-form" @submit.prevent="submitRingkasan">
-            <h3>Ringkasan Booking</h3>
-            <div class="total">
-              <label class="fw-700 fs-h6" for="total">Total Pemesanan</label>
-              <div class="jmlhhrga">
-                <label for="jumlahTiket">Jumlah Tiket ({{ value }} Tiket)</label>
-                <label for="harga">{{ formattedTotalHarga }}</label>
+            <p class="fs-h5">Ringkasan Booking</p>
+            <div class="checkout__details-pricing-container">
+              <p class="fw-700 fs-h6">Total Pemesanan</p>
+              <div class="checkout__details-pricing">
+                <p>Jumlah Tiket ({{ value }} Tiket)</p>
+                <p>{{ formattedTotalHarga }}</p>
               </div>
             </div>
-            <div class="biaya">
-              <label class="fw-700 fs-h6" for="biayaTransaksi">Biaya Transaksi</label>
-              <div class="biayaL">
-                <label for="biayaLayanan">Biaya Layanan</label>
-                <label for="hargaLayanan">Rp 2.500</label>
+            <div class="checkout__details-pricing-container">
+              <p class="fw-700 fs-h6">Biaya Transaksi</p>
+              <div class="checkout__details-pricing">
+                <p>Biaya Layanan</p>
+                <p>Rp 2.500</p>
               </div>
-              <div class="biayaJ">
-                <label for="biayaJasa">Biaya Jasa Aplikasi</label>
-                <label for="hargaJasa">Rp 1.000</label>
+              <div class="checkout__details-pricing">
+                <p>Biaya Jasa Aplikasi</p>
+                <p>Rp 1.000</p>
               </div>
             </div>
-            <div class="total-tagihan">
-              <label class="fw-700 fs-h5" for="totalTagihan">Total Tagihan</label>
-              <label class="fw-700 fs-h6">{{ formattedTotalTagihan }}</label>
+            <div class="checkout__details-total">
+              <p class="fw-700 fs-h5">Total Tagihan</p>
+              <p class="fw-700 fs-h6">{{ formattedTotalTagihan }}</p>
             </div>
           </form>
         </div>
@@ -176,10 +178,23 @@ main {
 .checkout__container {
   display: flex;
   flex-direction: row;
- gap: 3rem;
+  gap: 3rem;
 }
 .checkout__form-container {
   width: 100%;
+}
+.order-details__container {
+  width: 400px;
+  margin-left: 5%;
+}
+.order-details__container :not(.order-details__ticket-value button) > i {
+  color: #e6be58;
+  font-size: 24px;
+}
+.order-details__checkout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 .order-details__customer {
   display: flex;
@@ -202,7 +217,6 @@ main {
 .ticket__input-date {
   font-family: Roboto;
 }
-
 .order-details__ticket-date input {
   padding: 10px;
   border: 3px solid rgba(0, 0, 0, 1) s;
@@ -215,7 +229,6 @@ main {
   font-size: 12px;
   line-height: 16px;
 }
-
 .order-details__ticket-date label {
   position: absolute;
   top: 1%;
@@ -235,207 +248,41 @@ main {
 .ticket__input-placeholder {
   position: relative;
 }
-.pricings-slider__container {
-  font-family: 'Poppins';
+.order-details__ticket-items {
+  font-size: 20px;
+  line-height: 28px;
 }
-.order-details__container {
-  width: 400px;
-  margin-left: 5%;
-}
-
-.main {
-  flex: 1;
-  padding: 20px;
-}
-.order-details__checkout {
+.order-details__ticket-value {
   display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  font-weight: 500;
+  font-family: 'Manrope';
 }
-.cashback label {
-  margin-top: -15px;
-}
-
-h1 {
-  margin-top: -10px;
-  margin-bottom: 8%;
-}
-
-label {
-  display: block;
-  margin-bottom: -px;
-}
-
-select,
-button {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 8px;
-  box-sizing: border-box;
-}
-
-.input-country label {
-  position: absolute;
-  top: 203px;
-  left: 15%;
-  transform: translateY(-50%);
-  background-color: white;
-  pointer-events: none;
-  font-size: 12px;
-}
-.jumlah {
+.order-details__ticket-value button {
   display: flex;
-}
-
-.total,
-.biaya {
-  margin-top: 20px;
-  font-size: 14px;
-}
-
-.total-tagihan {
-  margin-top: 25px;
-  border-top: solid 0.5px #ccc;
-  padding-top: 10px;
-}
-
-button {
-  background-color: #ffdd8f;
-  color: white;
-  border: 5px;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #e6be58;
-}
-
-.jumlah button {
-  padding: 0;
-  margin-right: 10px;
-  margin-top: 10px;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem;
   background-color: transparent;
   border: 1px solid black;
   border-radius: 6px;
   width: 24px;
   height: 24px;
-  color: black;
-}
-
-.jumlah span {
-  margin-top: 10px;
-  margin-right: 9px;
-}
-.biaya {
-  margin-top: 20px;
-}
-
-.bold-text {
-  font-weight: 900;
-  font-size: 16px;
-  margin-bottom: 5px;
-}
-
-.checkout__details-form {
-  height: 348px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.box-size {
-  width: 59%;
-}
-
-.payment {
-  width: 522px;
-  border-radius: 10px;
-  border: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.title {
-  color: grey;
-  font-size: 12px;
-}
-.email {
-  font-size: 15px;
-  margin-left: 130px;
-  margin-top: -30px;
-}
-
-.ri-user-line,
-.ri-coupon-2-line,
-.ri-wallet-line {
-  color: #e6be58;
-  font-size: 21px;
-}
-
-.ri-arrow-right-circle-fill {
-  margin-left: 74%;
-}
-
-.cashback .bold-text {
-  margin-top: 7px;
-  margin-bottom: -5px;
-  margin-left: 27px;
-  font-weight: 510;
-}
-
-.cashback .bold-text {
-  margin-top: -15px;
-}
-
-.value {
-  margin-top: 7px;
-  margin-left: 5px;
-  margin-right: 14px;
-  font-size: 16px;
-}
-
-.jumlah button {
   background-color: white;
   color: gray;
   border: 1.4px solid gray;
   cursor: pointer;
   font-size: 15px;
 }
-
-.jumlah button:hover {
+.order-details__ticket-value button:hover {
   background-color: black;
   color: #ced4da;
   border: 1.4px solid black;
 }
-
-.jumlah p {
-  margin-top: 9px;
-  font-weight: 500;
-  display: inline-block;
-  font-family: 'Manrope';
-}
-
-.jmlhhrga {
-  display: flex;
-  justify-content: space-between;
-}
-
-.biayaL {
-  display: flex;
-  justify-content: space-between;
-}
-
-.biayaJ {
-  display: flex;
-  justify-content: space-between;
-}
-
-.total-tagihan {
-  display: flex;
-  justify-content: space-between;
+.pricings-slider__container {
+  font-family: 'Poppins';
 }
 .checkout__details-container {
   display: flex;
@@ -449,10 +296,40 @@ button:hover {
 .checkout__details-content {
   width: 522px;
 }
+.checkout__details-form {
+  height: fit-content;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.checkout__details-pricing-container {
+  padding: 0.25rem 0;
+}
+.checkout__details-pricing {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+.checkout__details-total {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-top: solid 0.5px #ccc;
+  padding: 0.5rem 0;
+}
 .checkout-btn {
   width: 522px;
 }
 .checkout__btn-order {
+  width: 100%;
+  background-color: #ffdd8f;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
   color: black;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -461,6 +338,9 @@ button:hover {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+}
+.checkout__btn-order:hover {
+  background-color: #e6be58;
 }
 .checkout__btn-order i {
   font-size: 20px;

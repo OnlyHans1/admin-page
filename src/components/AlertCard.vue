@@ -11,9 +11,6 @@
 </template>
 
 <script setup>
-import { ref, defineProps, defineEmits } from 'vue'
-
-
 const props = defineProps({
     showAlert: Boolean,
     alertTitle: String,

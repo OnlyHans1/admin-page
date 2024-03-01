@@ -123,17 +123,16 @@ const showDetail = (item) => {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
 }
 
 /* Search */
 .invoice-search {
   width: 601px;
-  top: 0;
-  transform: translateX(-50%);
   background-color: #d9d9d9;
-  margin-left: 22%;
   border-radius: 10px;
   height: 41px;
+  margin: 0 2.5rem;
 }
 .invoice-search__box {
   display: flex;

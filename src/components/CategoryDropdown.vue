@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, defineEmits } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 const emit = defineEmits(['option-selected']);
 const isDropdownOpen = ref(false)
 const selected = ref('');
