@@ -27,12 +27,12 @@ const showTooltip = () => {
 
 const hideTooltip = () => {
   show.value = false
-};
+}
 </script>
 
 <template>
   <div class="slider__container flex fd-row align-items-center">
-    <span>{{ props.min }}%</span>
+    <span class="fw-500">{{ props.min }}%</span>
     <div
       class="slider__input-container"
       @mousedown="showTooltip"
@@ -48,13 +48,13 @@ const hideTooltip = () => {
         @mouseup="hideTooltip"
         class="slider__input"
         :style="{
-          width: props.sliderWidth,
+          width: props.sliderWidth
         }"
       />
       <div class="slider__fill" :style="{ width: fillWidth }"></div>
       <div v-if="show" class="slider__tooltip" :style="{ left: tooltipLeft }">{{ value }}</div>
     </div>
-    <span>{{ props.max }}%</span>
+    <span class="fw-500">{{ props.max }}%</span>
   </div>
 </template>
 

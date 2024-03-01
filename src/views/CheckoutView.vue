@@ -12,9 +12,9 @@ const biayaJasa = 1000
 const selectedDate = ref(null)
 const discountValue = ref(null)
 const cashbackValue = ref(null)
+const isMancanegara = true
 
 function tambahTiket() {
-  console.log('button diklik')
   value.value++
 }
 
@@ -33,7 +33,6 @@ const totalTagihan = computed(() => {
 })
 
 const formattedTotalHarga = computed(() => {
-  // Format total harga menjadi format mata uang yang diinginkan
   return totalHarga.value.toLocaleString('id-ID', {
     style: 'currency',
     currency: 'IDR',
@@ -60,56 +59,68 @@ const showPayment = () => {
 
 <template>
   <main>
-    <div class="container">
-      <div class="form-container-checkout">
-        <div class="submitEvent">
+    <div class="checkout__container">
+      <div class="checkout__form-container">
+        <div class="order-details__container">
           <form>
             <h1>Pemesanan Langsung</h1>
-            <div class="order__details-checkout">
-              <div class="detail">
-                <label class="title" for="">
+            <div class="order-details__checkout">
+              <div class="order-details__customer">
+                <div class="order-details__content">
                   <i class="ri-user-line"></i>
-                  Detail Pemesanan
-                </label>
-                <label class="bold-text" for="name">Teddy Lazuardi</label>
-                <div class="input-country">
+                  <p>Detail Pemesan</p>
+                </div>
+                <div class="order-details__content">
+                  <p class="fs-h5 fw-700">Teddy Lazuardi</p>
+                  <p>- (TeddyLazuardi@gmail.com)</p>
+                </div>
+                <div class="order-details__dropdown" v-if="isMancanegara">
                   <NationalityDropdown />
                 </div>
               </div>
-              <div class="tiket">
-                <label class="title" for="detail">
+              <div class="order-details__ticket">
+                <div class="order-details__content">
                   <i class="ri-coupon-2-line"></i>
-                  Detail Tiket
-                </label>
-                <div class="input-date">
-                  <input type="date" class="date" id="tanggal" v-model="selectedDate" />
-                  <label for="tanggal">Tanggal Pemesanan</label>
+                  <p>Detail Tiket</p>
+                </div>
+                <div class="order-details__ticket-date">
+                  <div class="ticket__input-placeholder">
+                    <input
+                      type="date"
+                      class="ticket__input-date"
+                      id="tanggal"
+                      v-model="selectedDate"
+                    />
+                    <label>Tanggal Pemesanan</label>
+                  </div>
                   <p>MM/DD/YYYY</p>
                 </div>
-                <label for="jumlah">Tiket masuk Keraton Kasepuhan Cirebon</label>
-                Rp 10.000,00
-                <div class="jumlah">
-                  <button @click="kurangTiket" type="button">
-                    <i class="ri-subtract-fill"></i>
-                  </button>
-                  <p class="value">{{ value }}</p>
-                  <button @click="tambahTiket" type="button"><i class="ri-add-line"></i></button>
+                <div>
+                  <p for="jumlah">Tiket masuk Keraton Kasepuhan Cirebon</p>
+                  <span>Rp 10.000,00</span>
+                  <div class="jumlah">
+                    <button @click="kurangTiket" type="button">
+                      <i class="ri-subtract-fill"></i>
+                    </button>
+                    <p class="value">{{ value }}</p>
+                    <button @click="tambahTiket" type="button"><i class="ri-add-line"></i></button>
+                  </div>
                 </div>
               </div>
-              <div class="diskon">
-                <div class="diskon">
-                  <label class="bold-text" for="diskon">Diskon</label>
+              <div class="pricings-slider__container">
+                <div class="discount__slider">
+                  <p class="fw-500">Diskon</p>
                   <Slider v-model:discountValue="discountValue" />
                 </div>
+                <div class="cashback-slider">
+                  <p class="fw-500">Cashback</p>
+                  <Slider v-model:cashbackValue="cashbackValue" />
+                </div>
               </div>
-              <div class="cashback">
-                <label class="bold-text" for="cashback">Cashback</label>
-                <Slider v-model:cashbackValue="cashbackValue" />
-              </div>
-              <label class="title" for="payment">
+              <div class="order-details__content">
                 <i class="ri-wallet-line"></i>
-                Pilih Pembayaran
-              </label>
+                <p>Pilih Pembayaran</p>
+              </div>
               <select class="payment" id="payment" v-model="payment">
                 <option value="gopay">Cash</option>
                 <option value="dana">VA BJB</option>
@@ -117,18 +128,20 @@ const showPayment = () => {
             </div>
           </form>
         </div>
-        <div class="ringkasanBooking">
-          <form class="formBooking" @submit.prevent="submitRingkasan">
+      </div>
+      <div class="checkout__details-container">
+        <div class="checkout__details-content">
+          <form class="checkout__details-form" @submit.prevent="submitRingkasan">
             <h3>Ringkasan Booking</h3>
             <div class="total">
-              <label class="bold-text" for="total">Total Pemesanan</label>
+              <label class="fw-700 fs-h6" for="total">Total Pemesanan</label>
               <div class="jmlhhrga">
                 <label for="jumlahTiket">Jumlah Tiket ({{ value }} Tiket)</label>
                 <label for="harga">{{ formattedTotalHarga }}</label>
               </div>
             </div>
             <div class="biaya">
-              <label class="bold-text" for="biayaTransaksi">Biaya Transaksi</label>
+              <label class="fw-700 fs-h6" for="biayaTransaksi">Biaya Transaksi</label>
               <div class="biayaL">
                 <label for="biayaLayanan">Biaya Layanan</label>
                 <label for="hargaLayanan">Rp 2.500</label>
@@ -139,18 +152,18 @@ const showPayment = () => {
               </div>
             </div>
             <div class="total-tagihan">
-              <label class="bold-text" for="totalTagihan">Total Tagihan</label>
-              <label class="bold-text">{{ formattedTotalTagihan }}</label>
+              <label class="fw-700 fs-h5" for="totalTagihan">Total Tagihan</label>
+              <label class="fw-700 fs-h6">{{ formattedTotalTagihan }}</label>
             </div>
           </form>
-          <div class="btn-checkout">
-            <button type="submit" class="CO" @click="showPayment">
-              Checkout
-              <i class="ri-arrow-right-circle-fill"></i>
-            </button>
-          </div>
-          <PaymentPopup ref="paymentPopup" />
         </div>
+        <div class="checkout-btn">
+          <button type="submit" class="checkout__btn-order" @click="showPayment">
+            Checkout
+            <i class="ri-arrow-right-circle-fill"></i>
+          </button>
+        </div>
+        <PaymentPopup ref="paymentPopup" />
       </div>
     </div>
   </main>
@@ -160,32 +173,72 @@ const showPayment = () => {
 main {
   font-family: 'Raleway';
 }
-
-.container {
-  display: flex;
-}
-
-.main {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-}
-
-.form-container-checkout {
+.checkout__container {
   display: flex;
   flex-direction: row;
-  gap: 5rem;
-  font-size: 16px;
+ gap: 3rem;
+}
+.checkout__form-container {
+  width: 100%;
+}
+.order-details__customer {
+  display: flex;
+  flex-direction: column;
+}
+.order-details__content {
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  align-items: center;
+}
+.order-details__dropdown {
+  margin-top: 0.25rem;
+}
+.order-details__ticket {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.ticket__input-date {
+  font-family: Roboto;
 }
 
-.ringkasanBooking {
-  margin-top: 7%;
-  width: 400px;
-  height: 348px;
-  margin-left: 200px;
+.order-details__ticket-date input {
+  padding: 10px;
+  border: 3px solid rgba(0, 0, 0, 1) s;
+  outline: none;
+  border-radius: 4px;
+  width: 50%;
+}
+.order-details__ticket-date p {
+  padding: 0.25rem 1rem;
+  font-size: 12px;
+  line-height: 16px;
 }
 
-.submitEvent {
+.order-details__ticket-date label {
+  position: absolute;
+  top: 1%;
+  left: 8px;
+  transform: translateY(-50%);
+  background-color: white;
+  padding: 0 1px;
+  pointer-events: none;
+  font-size: 12px;
+}
+.order-details__ticket-date input:focus {
+  border: 3px solid rgba(218, 165, 32, 1);
+}
+.order-details__ticket-date input:focus + label {
+  color: rgba(218, 165, 32, 1);
+}
+.ticket__input-placeholder {
+  position: relative;
+}
+.pricings-slider__container {
+  font-family: 'Poppins';
+}
+.order-details__container {
   width: 400px;
   margin-left: 5%;
 }
@@ -194,7 +247,11 @@ main {
   flex: 1;
   padding: 20px;
 }
-
+.order-details__checkout {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
 .cashback label {
   margin-top: -15px;
 }
@@ -202,10 +259,6 @@ main {
 h1 {
   margin-top: -10px;
   margin-bottom: 8%;
-}
-
-form {
-  margin-top: 20px;
 }
 
 label {
@@ -230,36 +283,6 @@ button {
   pointer-events: none;
   font-size: 12px;
 }
-
-.date {
-  font-family: Roboto;
-}
-
-.input-date {
-  position: relative;
-  margin-bottom: 15px;
-  margin-top: 15px;
-  width: 118%;
-}
-
-.input-date input[type='date'] {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  width: 50%;
-}
-
-.input-date label {
-  position: absolute;
-  top: 1%;
-  left: 8px;
-  transform: translateY(-50%);
-  background-color: white;
-  padding: 0 1px;
-  pointer-events: none;
-  font-size: 12px;
-}
-
 .jumlah {
   display: flex;
 }
@@ -304,19 +327,6 @@ button:hover {
   margin-top: 10px;
   margin-right: 9px;
 }
-
-.CO {
-  color: black;
-  border-radius: 6px;
-  text-align: left;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  font-weight: 700;
-}
-
-.btn-checkout {
-  margin-top: 20px;
-}
-
 .biaya {
   margin-top: 20px;
 }
@@ -327,11 +337,14 @@ button:hover {
   margin-bottom: 5px;
 }
 
-.formBooking {
+.checkout__details-form {
+  height: 348px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   padding: 20px;
   border-radius: 15px;
-  margin-top: 17%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .box-size {
@@ -339,40 +352,33 @@ button:hover {
 }
 
 .payment {
+  width: 522px;
   border-radius: 10px;
   border: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-}
-
-.tiket .title {
-  margin-top: -5px;
-  margin-bottom: -3px;
 }
 
 .title {
   color: grey;
   font-size: 12px;
 }
+.email {
+  font-size: 15px;
+  margin-left: 130px;
+  margin-top: -30px;
+}
 
 .ri-user-line,
 .ri-coupon-2-line,
 .ri-wallet-line {
   color: #e6be58;
-  font-size: 18px;
+  font-size: 21px;
 }
 
 .ri-arrow-right-circle-fill {
   margin-left: 74%;
 }
 
-p {
-  font-size: 9px;
-  margin-top: 2px;
-  margin-left: 11px;
-  margin-bottom: -10px;
-}
-
-.diskon .bold-text,
 .cashback .bold-text {
   margin-top: 7px;
   margin-bottom: -5px;
@@ -430,5 +436,33 @@ p {
 .total-tagihan {
   display: flex;
   justify-content: space-between;
+}
+.checkout__details-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  width: 100%;
+  gap: 1rem;
+}
+.checkout__details-content {
+  width: 522px;
+}
+.checkout-btn {
+  width: 522px;
+}
+.checkout__btn-order {
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.checkout__btn-order i {
+  font-size: 20px;
 }
 </style>

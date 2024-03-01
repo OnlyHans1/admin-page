@@ -135,8 +135,8 @@ input {
   width: 100%;
   height: 100%;
   border-radius: 3px;
-  padding: 0.75rem 0.5rem;
-  border: 1px solid black;
+  padding: 0.75rem 0.75rem;
+  border: 2px solid black;
 }
 input::placeholder {
   font-family: 'Inter';
@@ -146,7 +146,7 @@ input::placeholder {
 }
 input.focus {
   outline: none;
-  border: 1px solid rgba(255, 226, 154, 1);
+  border: 2px solid rgba(218, 165, 32, 1);
 }
 .nationality-dropdown__container .select-icon {
   position: absolute;
