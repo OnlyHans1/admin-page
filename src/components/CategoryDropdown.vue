@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
-
+import { ref, onMounted, onUnmounted, defineEmits } from 'vue';
+const emit = defineEmits(['option-selected']);
 const isDropdownOpen = ref(false)
 const selected = ref('');
 
@@ -16,6 +16,8 @@ const closeDropdownOnClickOutside = (event) => {
 
 const selectOption = (value) =>{
     selected.value = value;
+    isDropdownOpen.value = false;
+    emit('option-selected', selected.value);
 }
 
 onMounted(() => {
