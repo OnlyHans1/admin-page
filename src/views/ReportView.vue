@@ -2,10 +2,9 @@
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
-import Category from '@/components/CategoryDropdown.vue'
+import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import chartReportData from '@/data/chartReportData'
 import ticketInfoData from '@/data/ticketInfoData'
-import NationalityDropdown from '@/components/NationalityDropdown.vue'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
@@ -14,7 +13,6 @@ const { incomeRevenue } = ticketInfoData;
 
 <template>
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
-    <NationalityDropdown/>
     <div class="report-information__container flex fd-row justify-content-sb pd-top[1.5] pd-sd-2">
       <div class="report-information__income-container flex fd-col gap-1">
         <p class="fs-h5">Pendapatan hari ini</p>
@@ -50,7 +48,7 @@ const { incomeRevenue } = ticketInfoData;
       <div class="report-activity__head flex fd-row gap[1.5] align-items-center">
         <p class="report-activity__head-text">Aktivitas Terbaru</p>
         <div class="report-activity__head-dropdown-container">
-          <Category :categoryWidth="'136px'" ref="category"/>
+          <CategoryDropdown :categoryWidth="'136px'" ref="category"/>
         </div>
       </div>
       <div class="report-activity__table-container">
