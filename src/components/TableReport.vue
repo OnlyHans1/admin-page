@@ -38,10 +38,18 @@ const { activityReportData } = tableReportData
 <style scoped>
 .report-activity__table {
   max-height: calc(374px - 2rem);
-  overflow-y: auto;
+  overflow-y: overlay;
 }
 .report-activity__table::-webkit-scrollbar {
-  width: 0;
+  width: 4px;
+}
+.report-activity__table::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 2px;
+}
+.report-activity__table::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 .report-activity__table-data {
   border-collapse: collapse;
@@ -55,6 +63,7 @@ const { activityReportData } = tableReportData
   background-color: white;
   box-shadow: inset 0 -1px 0 #000000;
   position: sticky;
+  z-index: 3;
   top: 0;
 }
 .report-activity__table-items td {
