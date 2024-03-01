@@ -208,7 +208,7 @@ const decreaseQuantity = (item) => {
   if (item.quantity > 0) {
     item.quantity--
   }
-}
+};
 </script>
 <template>
   <header>

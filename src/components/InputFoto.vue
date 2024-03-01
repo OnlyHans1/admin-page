@@ -5,6 +5,8 @@ const fileInput = ref(null);
 const isDragOver = ref(false);
 const dragText = ref("Tambahkan Foto");
 
+const emit = defineEmits(['file-selected']);
+
 const browseFile = () => {
   fileInput.value.click(); // Trigger file input click
 };
@@ -13,7 +15,7 @@ const handleFileChange = () => {
   const file = fileInput.value.files[0];
   if (file) {
     // Emit the selected file to the parent component
-    $emit('file-selected', file);
+    emit('file-selected', file);
   }
 };
 
@@ -27,11 +29,16 @@ const dragLeave = () => {
   dragText.value = "Drag & Drop to Upload File";
 };
 
-const uploadFile = (file) => {
+const uploadFile = (event) => {
   // Implement file upload logic here
   // For example, axios or fetch to upload the file
   // also show the uploaded file in the preview area
-  console.log("File uploaded:", file);
+  event.preventDefault();
+  const files = event.dataTransfer.files;
+  
+  fileInput.value.files = files;
+  handleFileChange();
+  console.log("File dropped" + files);
 
   // Simulate uploading process
   setTimeout(() => {
@@ -43,7 +50,7 @@ const uploadFile = (file) => {
     <div class="drag-area" 
     @click="browseFile" 
     href="#"
-    @drop.prevent="uploadFile($event)" 
+    @drop.prevent="uploadFile" 
     @dragover.prevent
     @dragenter="dragEnter"
     @dragleave="dragLeave"

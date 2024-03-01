@@ -9,7 +9,7 @@ const determineActiveLink = () => {
     const path = route.path;
     if (path === '/') {
         activeLink.value = 0; // Home link active
-    } else if (path.includes('/add')) {
+    } else if (path.includes('/invoice')) {
         activeLink.value = 1; // Add link active
     } else if (path.includes('/report')) {
         activeLink.value = 2; // Report link active
@@ -34,7 +34,7 @@ determineActiveLink();
             <!-- Menggunakan router-link dengan params -->
         <div class="navbar-links-container flex fd-col">
             <RouterLink to="/" :class="{active: activeLink === 0}"><i class="ri-home-2-line"></i></RouterLink>
-            <RouterLink to="/add" :class="{active: activeLink === 1}"><i class="ri-mail-line"></i></RouterLink>
+            <RouterLink to="/invoice" :class="{active: activeLink === 1}"><i class="ri-mail-line"></i></RouterLink>
             <RouterLink to="/report"  :class="{active: activeLink === 2}"><i class="ri-money-dollar-circle-line"></i></RouterLink>
             
         </div>
