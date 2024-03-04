@@ -48,12 +48,6 @@ const formattedTotalTagihan = computed(() => {
     maximumFractionDigits: 0
   })
 })
-
-const paymentPopup = ref(null)
-
-const showPayment = () => {
-  paymentPopup.value.showPaymentPopup()
-}
 </script>
 
 <template>
@@ -155,7 +149,6 @@ const showPayment = () => {
             <i class="ri-arrow-right-circle-fill"></i>
           </button>
         </div>
-        <PaymentPopup ref="paymentPopup" />
       </div>
     </div>
   </main>

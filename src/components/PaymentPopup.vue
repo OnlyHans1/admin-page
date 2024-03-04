@@ -1,18 +1,12 @@
 <script setup>
 import { ref } from 'vue'
-import LoaderPayment from './LoaderPayment.vue'
 import PaymentDropdown from './PaymentDropdown.vue'
 import logoBJB from '@/assets/images/logoBJB.png'
 
-const isLoading = ref(false)
 const showPopup = ref(false)
 
 const showPaymentPopup = () => {
-  isLoading.value = true
-  setTimeout(() => {
-    isLoading.value = false
-    showPopup.value = true
-  }, 2000)
+  showPopup.value = true
 }
 
 const closePopup = () => {
@@ -27,9 +21,6 @@ defineExpose({
 <template>
   <main>
     <div class="waiting-payment__container">
-      <div v-if="isLoading" class="waiting-payment__loader-overlay">
-        <LoaderPayment />
-      </div>
       <div v-if="showPopup" class="waiting-payment__content-overlay">
         <div class="waiting-payment__container-content">
           <div class="waiting-payment__content-header">
@@ -48,14 +39,18 @@ defineExpose({
                 <p style="color: rgba(94, 94, 94, 1)">Nomor Virtual Account</p>
                 <p>8883xxxxxxxxxx</p>
               </div>
-              <span class="waiting-payment__copy-desc">Salin <i class="ri-clipboard-line"></i></span>
+              <span class="waiting-payment__copy-desc"
+                >Salin <i class="ri-clipboard-line"></i
+              ></span>
             </div>
             <div class="waiting-payment__content-desc">
               <div class="waiting-payment__content-sub fs-h5">
                 <p style="color: rgba(94, 94, 94, 1)">Total Pembayaran</p>
                 <p>Rp. <span>33.500</span></p>
               </div>
-              <span class="waiting-payment__copy-desc">Salin <i class="ri-clipboard-line"></i></span>
+              <span class="waiting-payment__copy-desc"
+                >Salin <i class="ri-clipboard-line"></i
+              ></span>
             </div>
             <div>
               <PaymentDropdown />
@@ -71,19 +66,7 @@ defineExpose({
 main {
   font-family: 'Raleway';
 }
-.waiting-payment__loader-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(6px);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 998;
-}
+
 .waiting-payment__content-overlay {
   position: fixed;
   top: 0;

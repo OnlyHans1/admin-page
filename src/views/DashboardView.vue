@@ -275,7 +275,6 @@ const decreaseQuantity = (item) => {
 .card-container-mancanegara {
   display: flex;
   flex-direction: column;
-  align-items: center;
   width: 250px;
   margin: 10px;
 }

@@ -1,9 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import logoBJB from '@/assets/images/logoBJB.png'
+import LoaderPayment from '@/components/LoaderPayment.vue'
+import PaymentPopup from '@/components/PaymentPopup.vue'
 
 const checkoutTime = ref('')
 const countdown = ref('')
+const isLoading = ref(false)
 
 const handleCheckout = () => {
   const currentTime = new Date()
@@ -44,10 +47,37 @@ const handleCheckout = () => {
     }
   })
 }
+
+const tickets = [
+  { name: 'Tiket Masuk Keraton Kasepuhan Cirebon', quantity: 1, price: 10000, category: 'Umum' },
+  { name: 'Tiket Peringatan Isra Mi\'raj di Langgar Alit', quantity: 2, price: 10000, category: 'Umum' },
+]
+
+const formatTotal = (index) => {
+  const total = tickets[index].quantity * tickets[index].price
+  return total.toLocaleString('id-ID')
+}
+const paymentPopup = ref(null)
+
+const showPayment = () => {
+  paymentPopup.value.showPaymentPopup()
+}
+
+onMounted(() => {
+  isLoading.value = true
+  setTimeout(() => {
+    isLoading.value = false
+    handleCheckout()
+  }, 2000)
+})
 </script>
 
 <template>
   <main>
+    <div v-if="isLoading" class="waiting-payment__loader-overlay">
+      <LoaderPayment />
+    </div>
+    <PaymentPopup ref="paymentPopup" />
     <div class="after-checkout__container">
       <div class="after-checkout-content__container">
         <div class="after-checkout-content__payment-countdown">
@@ -66,7 +96,7 @@ const handleCheckout = () => {
             <img :src="logoBJB" alt="logoBJB" />
           </div>
           <div class="after-checkout-content__payment-desc">
-            <div class="after-checkout-content__payment-sub fs-h5">
+            <div class="after-checkout-content__payment fs-h5">
               <p style="color: rgba(94, 94, 94, 1)">Nomor Virtual Account</p>
               <p>8883xxxxxxxxxx</p>
             </div>
@@ -78,12 +108,54 @@ const handleCheckout = () => {
         </div>
         <div class="after-checkout-content__payment-button">
           <button>Beli tiket lagi</button>
-          <button>Cara Pembayaran</button>
+          <button @click="showPayment">Cara Pembayaran</button>
         </div>
       </div>
       <div class="after-checkout-detail__container">
-        Detail Pembayaran
-        <button @click="handleCheckout">Checkout</button>
+        <p class="fs-h4">Detail Pembayaran</p>
+        <div class="after-checkout-detail__payment-data">
+          <div class="after-checkout-detail__payment-data-text">
+            <p>Total Harga</p>
+            <p>Biaya Layanan</p>
+            <p>Biaya Jasa Aplikasi</p>
+          </div>
+          <div class="after-checkout-detail__payment-data-price">
+            <span>Rp. 30.000</span>
+            <span>Rp. 2.500</span>
+            <span>Rp. 1.000</span>
+          </div>
+        </div>
+        <div class="after-checkout-detail__payment-total">
+          <div class="after-checkout-detail__payment-total-text">
+            <p>Total Bayar</p>
+            <p style="color: rgba(94, 94, 94, 1)">BJB Virtual Account</p>
+          </div>
+          <div class="after-checkout-detail__payment-total-price">
+            <span class="fw-700">Rp. 33.500</span>
+          </div>
+        </div>
+        <div class="after-checkout-detail__payment-ticket">
+          <p class="fs-h4">Tiket yang dibeli</p>
+          <div class="after-checkout-detail__payment-ticket-data-container">
+            <div
+              v-for="(ticket, index) in tickets"
+              :key="index"
+              class="after-checkout-detail__payment-ticket-data"
+            >
+              <div class="after-checkout-detail__payment-ticket-text">
+                <p :style="'color: rgba(33, 33, 33, 1)'">
+                  {{ ticket.name }} ({{ ticket.category }})
+                </p>
+                <p :style="'color: rgba(94, 94, 94, 1)'">
+                  {{ ticket.quantity }} X Rp. {{ ticket.price }}
+                </p>
+              </div>
+              <div class="after-checkout-detail__payment-ticket-price">
+                <span>Rp. {{ formatTotal(index) }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </main>
@@ -92,6 +164,19 @@ const handleCheckout = () => {
 <style scoped>
 main {
   font-family: 'Raleway';
+}
+.waiting-payment__loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 998;
 }
 .after-checkout__container {
   display: flex;
@@ -182,5 +267,65 @@ main {
 .after-checkout-content__payment-button button:last-child:hover {
   background: rgba(218, 165, 32, 1);
   color: white;
+}
+.after-checkout-detail__payment-data,
+.after-checkout-detail__payment-total,
+.after-checkout-detail__payment-ticket {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px dashed rgba(94, 94, 94, 1);
+  padding: 1rem 0;
+  font-size: 24px;
+  line-height: 32px;
+}
+.after-checkout-detail__payment-data-text,
+.after-checkout-detail__payment-data-price {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+}
+.after-checkout-detail__payment-data-text {
+  color: rgba(94, 94, 94, 1);
+}
+.after-checkout-detail__payment-data-price {
+  align-items: flex-end;
+}
+.after-checkout-detail__payment-total {
+  align-items: flex-start;
+}
+.after-checkout-detail__payment-ticket {
+  flex-direction: column;
+  align-items: flex-start;
+  border: none;
+  padding: 2rem 0;
+  gap: 0.5rem;
+}
+.after-checkout-detail__payment-ticket p {
+  margin-bottom: 0.5rem;
+}
+.after-checkout-detail__payment-ticket-data-container {
+  max-height: 25vh;
+  padding-right: 1rem;
+  overflow-y: scroll;
+}
+.after-checkout-detail__payment-ticket-data-container::-webkit-scrollbar {
+  width: 4px;
+}
+.after-checkout-detail__payment-ticket-data-container::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 2px;
+}
+.after-checkout-detail__payment-ticket-data-container::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+.after-checkout-detail__payment-ticket-data {
+  display: flex;
+  justify-content: space-between;
+}
+.after-checkout-detail__payment-ticket-text {
+  max-width: 70%;
 }
 </style>
