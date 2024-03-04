@@ -18,7 +18,7 @@ const selectOption = (value) =>{
     selected.value = value;
     isDropdownOpen.value = false;
     emit('option-selected', selected.value);
-}
+} 
 
 onMounted(() => {
   window.addEventListener('click', closeDropdownOnClickOutside);
@@ -110,13 +110,13 @@ input{
     gap: 0.3rem;
     border-radius: 0.5rem;
     max-height: 0;
-    overflow: hidden; /* Hide overflow content */
-    transition: max-height 0.3s ease, box-shadow 0.2s ease; /* Add transition effect for max-height and box-shadow */
+    overflow: hidden; 
+    transition: max-height 0.3s ease, box-shadow 0.2s ease; 
     box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0);
 }
 
 .category__input-dropdown_menu.active {
-    max-height: 200px; /* Set the maximum height when active */
+    max-height: 200px; 
     box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
 
 }
