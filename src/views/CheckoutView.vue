@@ -1,37 +1,33 @@
 <script setup>
 import Slider from '@/components/Slider.vue'
-import PaymentPopup from '@/components/PaymentPopup.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
+import PaymentPopup from '@/components/PaymentPopup.vue'
 
 import { ref, computed } from 'vue'
 
-const value = ref(1)
-const ticketPrice = 10000
-const biayaLayanan = 2500
-const biayaJasa = 1000
-const selectedDate = ref(null)
-const discountValue = ref(null)
-const cashbackValue = ref(null)
+const ticketValue = ref(1)
 const isMancanegara = true
+const ticketPrice = ref(10000)
 
-function tambahTiket() {
-  value.value++
+function addTicket() {
+  ticketValue.value++
 }
 
-function kurangTiket() {
-  if (value.value > 1) {
-    value.value--
+function reduceTicket() {
+  if (ticketValue.value > 1) {
+    ticketValue.value--
   }
 }
 
+const selectedDate = ref(null)
+const discountValue = ref(null)
+
+const biayaLayanan = ref(2500)
+const biayaJasa = ref(1000)
+
 const totalHarga = computed(() => {
-  return value.value * ticketPrice * (1 - (discountValue.value || 0) / 100)
+  return ticketValue.value * ticketPrice.value * (1 - (discountValue.value || 0) / 100)
 })
-
-const totalTagihan = computed(() => {
-  return totalHarga.value + biayaLayanan + biayaJasa
-})
-
 const formattedTotalHarga = computed(() => {
   return totalHarga.value.toLocaleString('id-ID', {
     style: 'currency',
@@ -41,6 +37,9 @@ const formattedTotalHarga = computed(() => {
   })
 })
 
+const totalTagihan = computed(() => {
+  return totalHarga.value + biayaLayanan.value + biayaJasa.value
+})
 const formattedTotalTagihan = computed(() => {
   return totalTagihan.value.toLocaleString('id-ID', {
     style: 'currency',
@@ -85,12 +84,7 @@ const showPayment = () => {
                 </div>
                 <div class="order-details__ticket-date">
                   <div class="ticket__input-placeholder">
-                    <input
-                      type="date"
-                      class="ticket__input-date"
-                      id="tanggal"
-                      v-model="selectedDate"
-                    />
+                    <input type="date" class="ticket__input-date" v-model="selectedDate" />
                     <label>Tanggal Pemesanan</label>
                   </div>
                   <p>MM/DD/YYYY</p>
@@ -98,14 +92,14 @@ const showPayment = () => {
                 <div class="order-details__ticket">
                   <div class="order-details__ticket-items">
                     <p>Tiket masuk Keraton Kasepuhan Cirebon</p>
-                    <span>Rp 10.000,00</span>
+                    <span>Rp {{ ticketPrice }},00</span>
                   </div>
                   <div class="order-details__ticket-value">
-                    <button @click="kurangTiket" type="button">
+                    <button @click="reduceTicket" type="button">
                       <i class="ri-subtract-fill"></i>
                     </button>
-                    <p class="value">{{ value }}</p>
-                    <button @click="tambahTiket" type="button"><i class="ri-add-line"></i></button>
+                    <p>{{ ticketValue }}</p>
+                    <button @click="addTicket" type="button"><i class="ri-add-line"></i></button>
                   </div>
                 </div>
               </div>
@@ -114,16 +108,12 @@ const showPayment = () => {
                   <p class="fw-500">Diskon</p>
                   <Slider v-model:discountValue="discountValue" />
                 </div>
-                <div class="cashback-slider">
-                  <p class="fw-500">Cashback</p>
-                  <Slider v-model:cashbackValue="cashbackValue" />
-                </div>
               </div>
               <div class="order-details__content">
                 <i class="ri-wallet-line"></i>
                 <p>Pilih Pembayaran</p>
               </div>
-              <select class="" id="payment" v-model="payment">
+              <select class="">
                 <option value="gopay">Cash</option>
                 <option value="dana">VA BJB</option>
               </select>
@@ -138,7 +128,7 @@ const showPayment = () => {
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
               <div class="checkout__details-pricing">
-                <p>Jumlah Tiket ({{ value }} Tiket)</p>
+                <p>Jumlah Tiket ({{ ticketValue }} Tiket)</p>
                 <p>{{ formattedTotalHarga }}</p>
               </div>
             </div>
@@ -146,11 +136,11 @@ const showPayment = () => {
               <p class="fw-700 fs-h6">Biaya Transaksi</p>
               <div class="checkout__details-pricing">
                 <p>Biaya Layanan</p>
-                <p>Rp 2.500</p>
+                <p>Rp {{ biayaLayanan }}</p>
               </div>
               <div class="checkout__details-pricing">
                 <p>Biaya Jasa Aplikasi</p>
-                <p>Rp 1.000</p>
+                <p>Rp {{ biayaJasa }}</p>
               </div>
             </div>
             <div class="checkout__details-total">

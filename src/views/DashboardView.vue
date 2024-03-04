@@ -159,7 +159,6 @@ const decreaseQuantity = (item) => {
 .container-recently-added {
   position: relative;
 }
-
 .bundling-container {
   display: flex;
   flex-direction: row;
@@ -167,13 +166,11 @@ const decreaseQuantity = (item) => {
   white-space: nowrap;
   margin-top: 20px;
 }
-
 .card-container {
   display: inline-block;
   margin-right: 10px;
   width: 250px;
 }
-
 .card {
   width: 100%;
   background-color: #838383;
@@ -181,29 +178,24 @@ const decreaseQuantity = (item) => {
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
-
 .card img {
   width: 100%;
   height: auto;
 }
-
 .card_content {
   padding: 10px;
   text-align: justify;
 }
-
 .card-content h4 {
   color: rgb(0, 0, 0);
   margin: 0;
 }
-
 .card-content p {
   color: #000000;
   font-size: 15px;
   line-height: 1.3;
   margin: 0;
 }
-
 .add-container {
   display: flex;
   justify-content: center;
@@ -211,7 +203,6 @@ const decreaseQuantity = (item) => {
   margin-bottom: 10vh;
   margin-left: 19px;
 }
-
 .add_button {
   background-color: #eeeded;
   flex-direction: column;
@@ -230,23 +221,19 @@ const decreaseQuantity = (item) => {
   align-items: center;
   margin-right: 40px;
 }
-
 .add_button:hover {
   background-color: #4f4f4f;
   border: 2px dashed #000000;
 }
-
 .add_icon {
   text-align: center;
   font-size: 2em;
   border-radius: 50%;
   padding: 5px;
 }
-
 .add_text {
   vertical-align: middle;
 }
-
 .newly-added {
   position: absolute;
   font-size: 17px;
@@ -262,7 +249,6 @@ const decreaseQuantity = (item) => {
   -ms-transform: translateX(-50%);
   -o-transform: translateX(-50%);
 }
-
 .general-container,
 .student-container,
 .mancanegara-container {
@@ -272,21 +258,18 @@ const decreaseQuantity = (item) => {
   position: relative;
   margin-left: 20px;
 }
-
 .general,
 .student,
 .mancanegara {
   font-size: 2em;
   margin-bottom: 10px;
 }
-
 .card-wrapper {
   display: flex;
   overflow-x: auto;
   padding-bottom: 20px;
   white-space: nowrap;
 }
-
 .card-container-general,
 .card-container-student,
 .card-container-mancanegara {
@@ -296,7 +279,6 @@ const decreaseQuantity = (item) => {
   width: 250px;
   margin: 10px;
 }
-
 .card-container-general .card,
 .card-container-student .card,
 .card-container-mancanegara .card {
@@ -306,21 +288,18 @@ const decreaseQuantity = (item) => {
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
-
 .card-container-general .card img,
 .card-container-student .card img,
 .card-container-mancanegara .card img {
   width: 100%;
   height: auto;
 }
-
 .card-container-general .card_content h4,
 .card-container-student .card_content h4,
 .card-container-mancanegara .card_content h4 {
   color: rgb(0, 0, 0);
   margin: 0;
 }
-
 .card-container-general .card_content p,
 .card-container-student .card_content p,
 .card-container-mancanegara .card_content p {
@@ -329,7 +308,6 @@ const decreaseQuantity = (item) => {
   line-height: 1.3;
   margin: 0;
 }
-
 header {
   top: 0;
   right: 0;
@@ -338,19 +316,16 @@ header {
   justify-content: flex-end;
   padding: 20px;
 }
-
 .icon {
   display: flex;
   align-items: center;
   color: black;
   text-decoration: none;
 }
-
 .icon svg {
   width: 45px;
   height: 43px;
 }
-
 .popup_overlay {
   position: fixed;
   top: 0;
@@ -365,12 +340,10 @@ header {
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
 }
-
 .popup_overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
-
 .popup_content {
   background: #d9d9d9;
   padding: 20px;
@@ -383,55 +356,45 @@ header {
   transform: translateY(100%);
   transition: transform 0.3s ease;
 }
-
 .popup_overlay.active .popup_content {
   transform: translateY(0);
 }
-
 .popup_content h2 {
   margin-top: 0;
   font-size: 15px;
 }
-
 .popup_content ul {
   padding: 0;
   list-style-type: none;
 }
-
 .popup_content li {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-
 .popup_content .category {
   font-size: 20px;
   font-weight: 700px;
 }
-
 .popup_content .quantity {
   font-size: 20px;
 }
-
 .item-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-right: 10px;
 }
-
 .quantity_controls {
   display: flex;
   align-items: center;
 }
-
 .quantity_controls button {
   background: none;
   border: none;
   cursor: pointer;
   margin: 0 5px;
 }
-
 .quantity_controls button svg {
   width: 20px;
   height: 20px;

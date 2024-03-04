@@ -1,4 +1,5 @@
 <script setup>
+import { ref } from 'vue'
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
@@ -8,7 +9,11 @@ import ticketInfoData from '@/data/ticketInfoData'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
-const { incomeRevenue } = ticketInfoData;
+const { incomeRevenue } = ticketInfoData
+const category = ref(null)
+const updateCategory = (selectedCategory) => {
+  category.value = selectedCategory
+}
 </script>
 
 <template>
@@ -48,11 +53,15 @@ const { incomeRevenue } = ticketInfoData;
       <div class="report-activity__head flex fd-row gap[1.5] align-items-center">
         <p class="report-activity__head-text">Aktivitas Terbaru</p>
         <div class="report-activity__head-dropdown-container">
-          <CategoryDropdown :categoryWidth="'136px'" ref="category"/>
+          <CategoryDropdown
+            :categoryWidth="'136px'"
+            ref="category"
+            @option-selected="updateCategory"
+          />
         </div>
       </div>
       <div class="report-activity__table-container">
-        <TableReport />
+        <TableReport :filteredCategory="category"/>
       </div>
     </div>
   </div>

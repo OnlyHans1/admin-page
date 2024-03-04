@@ -1,7 +1,27 @@
 <script setup>
+import { ref, computed, watch } from 'vue'
 import tableReportData from '@/data/tableReportData'
 
 const { activityReportData } = tableReportData
+const props = defineProps({
+  filteredCategory: { default: '', type: String }
+})
+const filteredCategory = ref(props.filteredCategory)
+// Memantau perubahan props.filteredCategory
+watch(
+  () => props.filteredCategory,
+  (newValue) => {
+    if (typeof newValue === 'string') {
+      filteredCategory.value = newValue
+      console.log(filteredCategory.value)
+    }
+  }
+)
+
+const filteredData = computed(() => {
+  if (!filteredCategory.value) return activityReportData.value
+  return activityReportData.value.filter((item) => item.category === filteredCategory.value)
+})
 </script>
 
 <template>
@@ -18,11 +38,7 @@ const { activityReportData } = tableReportData
         </tr>
       </thead>
       <tbody>
-        <tr
-          class="report-activity__table-items"
-          v-for="(item, index) in activityReportData"
-          :key="index"
-        >
+        <tr class="report-activity__table-items" v-for="(item, index) in filteredData" :key="index">
           <td>{{ index + 1 }}</td>
           <td>{{ item.name }}</td>
           <td>{{ item.category }}</td>

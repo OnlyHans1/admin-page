@@ -4,6 +4,7 @@ import AddView from '../views/AddView.vue'
 import CheckoutView from '../views/CheckoutView.vue'
 import InvoiceView from '../views/InvoiceView.vue'
 import ReportView from '../views/ReportView.vue'
+import AfterCheckoutView from '../views/AfterCheckoutView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/report',
       name: 'report',
       component: ReportView
+    },
+    {
+      path: '/after-checkout',
+      name: 'after-checkout',
+      component: AfterCheckoutView
     },
   ]
 })

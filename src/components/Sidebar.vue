@@ -37,18 +37,18 @@ determineActiveLink()
       <!-- Menggunakan router-link dengan params -->
       <div class="navbar-links-container flex fd-col">
         <RouterLink to="/" :class="{ active: activeLink === 0 }"
-          ><i class="ri-home-2-line" title="Home"></i
+          ><i class="ri-home-2-line" name="Home"></i
         ></RouterLink>
         <RouterLink to="/invoice" :class="{ active: activeLink === 1 }"
-          ><i class="ri-mail-line" title="Invoice"></i
+          ><i class="ri-mail-line" name="Invoice"></i
         ></RouterLink>
         <RouterLink to="/report" :class="{ active: activeLink === 2 }"
-          ><i class="ri-money-dollar-circle-line" title="Report"></i
+          ><i class="ri-money-dollar-circle-line" name="Report"></i
         ></RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
-        <a href="#" title="Settings"><i class="ri-settings-3-line"></i></a>
-        <a href="#" title="Logout"><i class="ri-logout-box-line"></i></a>
+        <a href="#" name="Settings"><i class="ri-settings-3-line"></i></a>
+        <a href="#" name="Logout"><i class="ri-logout-box-line"></i></a>
       </div>
     </div>
   </nav>
@@ -118,7 +118,7 @@ nav {
   transition: background-color 0.1s ease; /* Smooth transition for background color */
 }
 i:hover::after {
-    content: attr(title);
+    content: attr(name);
     position: absolute;
     top: 0.5rem;
     left: 2.5rem;
@@ -133,5 +133,7 @@ i:hover::after {
     white-space: nowrap;
     z-index: 9999;
 }
-
+.active i:hover::after {
+  transform: translateX(20%);
+}
 </style>
