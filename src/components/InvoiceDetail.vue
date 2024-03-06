@@ -31,7 +31,7 @@ defineExpose({
         <div>
           <div v-for="(value, key) in selectedItem" :key="key" class="invoice-detail__data">
             <h3 v-if="key !== 'email'" class="invoice-detail__data-title">{{ capitalizeFirstLetter(key) }}</h3>
-            <p v-if="key === 'pembayaran'">Transfer Bank: {{ value }}</p>
+            <p v-if="key === 'pembayaran'">{{ value }}</p>
             <p v-else-if="key !== 'email'">{{ value }}</p>
           </div>
         </div>

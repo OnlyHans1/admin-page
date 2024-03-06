@@ -1,9 +1,65 @@
 <script setup>
 import { ref } from 'vue'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
-import invoiceData from '@/data/invoiceData';
 
-const { dataInvoice, searchQuery, selectedItem, formatDate } = invoiceData
+const data = ref([
+  {
+    nama: 'Teddy Lazuardi',
+    pembelian: 'Bertemu Pangeran',
+    jadwal: '15/03/2024 14.30',
+    telp: '0894732894',
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: 'Transfer Bank: BJB'
+  },
+  {
+    nama: 'Teddy Lazuardi',
+    pembelian: 'Bundling tiket masuk keraton',
+    jadwal: '15/03/2024 14.30',
+    telp: '0894732894',
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: 'Tunai'
+  },
+  {
+    nama: 'Teddy Lazuardi',
+    pembelian: 'Event Bulanan',
+    jadwal: '15/03/2024 14.29',
+    telp: '0894732894',
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: 'Transfer Bank: BJB'
+  },
+  {
+    nama: 'Teddy Lazuardi',
+    pembelian: 'Event banzai cuy wkwkwkwkwkwk',
+    jadwal: '15/03/2024 14.29',
+    telp: '0894732894',
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: 'Tunai'
+  },
+  {
+    nama: 'Teddy Lazuardi',
+    pembelian: 'Bertemu Pangeran',
+    jadwal: '15/03/2024 14.29',
+    telp: '0894732894',
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: 'Transfer Bank: BJB'
+  },
+  {
+    nama: 'Teddy Lazuardi',
+    pembelian: 'Bertemu Pangeran',
+    jadwal: '15/03/2024 14.29',
+    telp: '0894732894',
+    email: 'TeddyLazuardy@gmail.com',
+    pembayaran: 'Tunai'
+  }
+])
+
+const searchQuery = ref('')
+const selectedItem = ref(null)
+
+const formatDate = (dateTime) => {
+  const parts = dateTime.split(' ')
+  return [parts[0], parts[1]]
+}
 
 const detailPopup = ref(null)
 
@@ -79,6 +135,7 @@ const showDetail = (item) => {
 .invoice-search {
   width: 601px;
   background-color: #d9d9d9;
+  margin-left: 24%;
   border-radius: 10px;
   height: 41px;
   margin: 0 2.5rem;
@@ -115,7 +172,7 @@ const showDetail = (item) => {
 /* Invoice Table */
 .invoice-table {
   margin-top: 1.5rem;
-  padding: 2rem;
+  padding: 1.1rem;
 }
 .invoice-table table {
   width: 100%;
@@ -141,6 +198,10 @@ const showDetail = (item) => {
   font-weight: 400;
   font-size: 22px;
   vertical-align: top;
+  max-width: 200px; /* Sesuaikan lebar maksimum sesuai kebutuhan Anda */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .btn-primary {
   background-color: #ffe29a;
@@ -170,12 +231,10 @@ const showDetail = (item) => {
 .invoice-table__button:hover {
   background-color: #ffd477;
 }
-@media screen and (max-width: 768px) {
+
+@media screen and (max-width: 1280px) {
   .invoice-search {
-    width: 90%;
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+    margin-left: 28%;
   }
 }
 </style>
