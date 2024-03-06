@@ -4,7 +4,7 @@ import tableReportData from '@/data/tableReportData'
 
 const { activityReportData } = tableReportData
 const props = defineProps({
-  filteredCategory: { default: '', type: String }
+  filteredCategory: { default: '' }
 })
 const filteredCategory = ref(props.filteredCategory)
 // Memantau perubahan props.filteredCategory
@@ -13,7 +13,6 @@ watch(
   (newValue) => {
     if (typeof newValue === 'string') {
       filteredCategory.value = newValue
-      console.log(filteredCategory.value)
     }
   }
 )

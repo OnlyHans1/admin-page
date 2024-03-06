@@ -1,3 +1,4 @@
+btw yang sidebar ini codenya 
 <script setup>
 import { useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
@@ -13,6 +14,8 @@ const determineActiveLink = () => {
     activeLink.value = 1 // Add link active
   } else if (path.includes('/report')) {
     activeLink.value = 2 // Report link active
+  } else if (path.includes('/checkout')) {
+    activeLink.value = 3
   } else {
     // Handle other routes accordingly
     activeLink.value = -1 // No specific link active
@@ -45,6 +48,9 @@ determineActiveLink()
         <RouterLink to="/report" :class="{ active: activeLink === 2 }"
           ><i class="ri-money-dollar-circle-line" name="Report"></i
         ></RouterLink>
+        <RouterLink to="/checkout" :class="{ active: activeLink === 3 }"
+          ><i class="ri-shopping-cart-line" name="Checkout"></i>
+        </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
         <a href="#" name="Settings"><i class="ri-settings-3-line"></i></a>

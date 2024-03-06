@@ -31,7 +31,7 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="category__input-dropdown">
-    <input readonly @click="toggleDropdown()" :value="selected" placeholder="Pilih Kategori">
+    <input readonly @click="toggleDropdown()" :value="selected" placeholder="Pilih Kategori" id="category">
     <div class="select-icon" >
         <div class="arrow-icon" :class="{ active: isDropdownOpen }">
             <i class="ri-arrow-down-s-line" ></i>

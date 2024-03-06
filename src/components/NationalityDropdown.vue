@@ -3,7 +3,6 @@ import { ref, onMounted, watchEffect } from 'vue'
 const props = defineProps({
   nationalityWidth: { type: String, default: '17.75rem' }
 })
-
 const tempNationalityData = ref([
   { id: 1, nationality_name: 'Afghanistan', country_code: 'af' },
   { id: 2, nationality_name: 'Albania', country_code: 'al' },
@@ -237,11 +236,13 @@ const tempNationalityData = ref([
   { id: 233, nationality_name: 'Yemen', country_code: 'ye' },
   { id: 234, nationality_name: 'Zambia', country_code: 'zm' },
   { id: 235, nationality_name: 'Zimbabwe', country_code: 'zw' }
-]);
+])
 
 const nationalityQuery = ref('')
 const nationalityResult = ref([])
 const isNationalityDropdownOpen = ref(false)
+const showFlag = ref(false)
+const selectedFlagImageUrl = ref('')
 
 const loadNationalityData = () => {
   if (nationalityQuery.value.trim() !== '') {
@@ -259,7 +260,6 @@ const loadNationalityData = () => {
     isNationalityDropdownOpen.value = false
   }
 }
-
 const openNationalityDropdown = () => {
   if (nationalityQuery.value.trim() === '') {
     isNationalityDropdownOpen.value = true
@@ -269,58 +269,60 @@ const openNationalityDropdown = () => {
     loadNationalityData()
   }
 }
-
 const closeNationalityDropdown = () => {
   isNationalityDropdownOpen.value = false
   nationalityResult.value = []
 }
+const getFlagImageUrl = (countryCode) => {
+  const flagCode = countryCode
 
-const getNationality = (nationalityName) => {
+  return `https://flagcdn.com/48x36/${flagCode}.png`
+}
+const getNationality = (nationalityName, countryCode) => {
   nationalityQuery.value = nationalityName
   nationalityResult.value = []
   isNationalityDropdownOpen.value = false
+  showFlag.value = true
+
+  // Dapatkan URL gambar bendera menggunakan kode negara
+  const flagImageUrl = getFlagImageUrl(countryCode)
+
+  // Setel URL gambar bendera ke dalam selectedFlagImageUrl
+  selectedFlagImageUrl.value = flagImageUrl
 }
-
-onMounted(() => {
-  loadNationalityData()
-  document.addEventListener('click', closeDropdownOutside)
-})
-
 const closeDropdownOutside = (event) => {
   const dropdownContainer = document.querySelector('.nationality-dropdown__container')
   if (dropdownContainer && !dropdownContainer.contains(event.target)) {
     closeNationalityDropdown()
   }
 }
-
 watchEffect((onInvalidate) => {
   onInvalidate(() => {
     document.removeEventListener('click', closeDropdownOutside)
   })
+  if (nationalityQuery.value.trim() === '') {
+    showFlag.value = false;
+    selectedFlagImageUrl.value = ''
+  }
 })
-
-const getFlagImageUrl = (countryCode) => {
-  
-
-
-  const flagCode = countryCode
-
-  return `https://flagcdn.com/48x36/${flagCode}.png`;
-};
-
+onMounted(() => {
+  loadNationalityData()
+  document.addEventListener('click', closeDropdownOutside)
+})
 </script>
 
 <template>
   <div class="nationality-dropdown__container" :style="{ width: nationalityWidth }">
-    <input
-      type="text"
-      v-model="nationalityQuery"
-      placeholder="Kebangsaan"
-      @input="loadNationalityData"
-      @focus="openNationalityDropdown"
-      class="nationality-dropdown__input"
-      :class="{ focus: isNationalityDropdownOpen }"
-    />
+<input
+  type="text"
+  v-model="nationalityQuery"
+  placeholder="Kebangsaan"
+  @input="loadNationalityData"
+  @focus="openNationalityDropdown"
+  class="nationality-dropdown__input"
+  :class="{ focus: isNationalityDropdownOpen, flag: showFlag }"
+  :style="{backgroundImage: `url(${selectedFlagImageUrl})`}"
+/>
     <div class="select-icon">
       <div class="arrow-icon" :class="{ active: isNationalityDropdownOpen }">
         <i class="ri-arrow-down-s-line"></i>
@@ -328,10 +330,14 @@ const getFlagImageUrl = (countryCode) => {
     </div>
     <div
       :class="{ 'location__search-dropdown': true, active: isNationalityDropdownOpen }"
-      class="w-full">
+      class="w-full"
+    >
       <div class="dropdown-nationality__result" :class="{ active: isNationalityDropdownOpen }">
         <div v-for="result in nationalityResult" :key="result.id">
-          <div class="nationality-item" @click="getNationality(result.nationality_name)">
+          <div
+            class="nationality-item"
+            @click="getNationality(result.nationality_name, result.country_code)"
+          >
             <img :src="getFlagImageUrl(result.country_code)" class="flag-icon" />
             <p class="dropdown-nationality__name">{{ result.nationality_name }}</p>
           </div>
@@ -388,6 +394,12 @@ input.focus {
 .nationality-dropdown__container .select-icon i {
   font-size: 18px;
 }
+.nationality-dropdown__input.flag {
+  background-repeat: no-repeat; 
+  background-position: 1.5rem center; 
+  padding-left: 4rem;
+  background-size: 25px;
+}
 .dropdown-nationality__result {
   position: absolute;
   top: 2.6rem;
@@ -435,10 +447,10 @@ input.focus {
   line-height: 19px;
 }
 .nationality-item {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
-.flag-icon{
+.flag-icon {
   width: 25px;
   margin-right: 10px;
 }

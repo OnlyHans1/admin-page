@@ -1,7 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import PaymentDropdown from './PaymentDropdown.vue'
 import logoBJB from '@/assets/images/logoBJB.png'
+
+const { totalPayment } = defineProps(['totalPayment'])
+const virtualAccount = ref(8883123456789012)
 
 const showPopup = ref(false)
 
@@ -13,6 +16,33 @@ const closePopup = () => {
   showPopup.value = false
 }
 
+const copyContent = (content) => {
+  if (content === 'copyVirtualAccount') {
+    navigator.clipboard
+      .writeText(virtualAccount.value)
+      .then(() => {
+        console.log('Konten berhasil disalin!')
+      })
+      .catch((err) => {
+        console.error('Gagal menyalin konten:', err)
+      })
+  } else {
+    navigator.clipboard
+      .writeText(totalPayment.innerText.trim())
+      .then(() => {
+        console.log('Konten berhasil disalin!')
+      })
+      .catch((err) => {
+        console.error('Gagal menyalin konten:', err)
+      })
+  }
+}
+
+const displayedVirtualAccount = computed(() => {
+  const virtualAccountString = virtualAccount.value.toString()
+  const firstDigits = virtualAccountString.substring(0, 4)
+  return firstDigits + 'xxxxxxxx'
+})
 defineExpose({
   showPaymentPopup
 })
@@ -37,20 +67,23 @@ defineExpose({
             <div class="waiting-payment__content-desc">
               <div class="waiting-payment__content-sub fs-h5">
                 <p style="color: rgba(94, 94, 94, 1)">Nomor Virtual Account</p>
-                <p>8883xxxxxxxxxx</p>
+                <p ref="copyVirtualAccount">{{ displayedVirtualAccount }}</p>
               </div>
-              <span class="waiting-payment__copy-desc"
-                >Salin <i class="ri-clipboard-line"></i
-              ></span>
+              <span class="waiting-payment__copy-desc" @click="copyContent('copyVirtualAccount')">
+                Salin <i class="ri-clipboard-line"></i>
+              </span>
             </div>
+
             <div class="waiting-payment__content-desc">
               <div class="waiting-payment__content-sub fs-h5">
                 <p style="color: rgba(94, 94, 94, 1)">Total Pembayaran</p>
-                <p>Rp. <span>33.500</span></p>
+                <p ref="copyTotalPayment">
+                  Rp. <span>{{ totalPayment }}</span>
+                </p>
               </div>
-              <span class="waiting-payment__copy-desc"
-                >Salin <i class="ri-clipboard-line"></i
-              ></span>
+              <span class="waiting-payment__copy-desc" @click="copyContent('copyTotalPayment')">
+                Salin <i class="ri-clipboard-line"></i>
+              </span>
             </div>
             <div>
               <PaymentDropdown />

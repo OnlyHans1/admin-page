@@ -1,67 +1,28 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import logoBJB from '@/assets/images/logoBJB.png'
 import LoaderPayment from '@/components/LoaderPayment.vue'
 import PaymentPopup from '@/components/PaymentPopup.vue'
+import afterCheckoutFunc from '@/function/afterCheckoutFunc'
 
-const checkoutTime = ref('')
-const countdown = ref('')
-const isLoading = ref(false)
+const {
+  checkoutTime,
+  countdown,
+  isLoading,
+  serviceFee,
+  applicationFee,
+  handleCheckout,
+  formatCurrency,
+  ticketsPrice,
+  ticketsTotal,
+  totalPrice,
+  totalPayment,
+  paymentPopup,
+  showPayment,
+  getTickets
+} = afterCheckoutFunc
 
-const handleCheckout = () => {
-  const currentTime = new Date()
-  const targetTime = new Date(currentTime.getTime() + 24 * 60 * 60 * 1000) // Tambah 24 jam
-
-  const options = {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Asia/Jakarta'
-  }
-  checkoutTime.value =
-    targetTime.toLocaleDateString('id-ID', options) +
-    ', ' +
-    String(targetTime.getHours()).padStart(2, '0') +
-    ':' +
-    String(targetTime.getMinutes()).padStart(2, '0') +
-    ' WIB'
-
-  const interval = setInterval(() => {
-    const now = new Date().getTime()
-    const distance = targetTime - now
-
-    if (distance <= 0) {
-      clearInterval(interval)
-      countdown.value = '00:00:00'
-    } else {
-      const hours = String(
-        Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      ).padStart(2, '0')
-      const minutes = String(Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))).padStart(
-        2,
-        '0'
-      )
-      const seconds = String(Math.floor((distance % (1000 * 60)) / 1000)).padStart(2, '0')
-
-      countdown.value = `${hours}:${minutes}:${seconds}`
-    }
-  })
-}
-
-const tickets = [
-  { name: 'Tiket Masuk Keraton Kasepuhan Cirebon', quantity: 1, price: 10000, category: 'Umum' },
-  { name: 'Tiket Peringatan Isra Mi\'raj di Langgar Alit', quantity: 2, price: 10000, category: 'Umum' },
-]
-
-const formatTotal = (index) => {
-  const total = tickets[index].quantity * tickets[index].price
-  return total.toLocaleString('id-ID')
-}
-const paymentPopup = ref(null)
-
-const showPayment = () => {
-  paymentPopup.value.showPaymentPopup()
-}
+const tickets = getTickets()
 
 onMounted(() => {
   isLoading.value = true
@@ -77,7 +38,7 @@ onMounted(() => {
     <div v-if="isLoading" class="waiting-payment__loader-overlay">
       <LoaderPayment />
     </div>
-    <PaymentPopup ref="paymentPopup" />
+    <PaymentPopup ref="paymentPopup" :totalPayment="totalPayment" />
     <div class="after-checkout__container">
       <div class="after-checkout-content__container">
         <div class="after-checkout-content__payment-countdown">
@@ -102,7 +63,7 @@ onMounted(() => {
             </div>
             <div class="after-checkout-content__payment fs-h5">
               <p style="color: rgba(94, 94, 94, 1)">Total Pembayaran</p>
-              <p>Rp. <span>33.500</span></p>
+          <p>Rp. <span>{{totalPayment}}</span></p>
             </div>
           </div>
         </div>
@@ -120,9 +81,9 @@ onMounted(() => {
             <p>Biaya Jasa Aplikasi</p>
           </div>
           <div class="after-checkout-detail__payment-data-price">
-            <span>Rp. 30.000</span>
-            <span>Rp. 2.500</span>
-            <span>Rp. 1.000</span>
+            <span>Rp. {{ totalPrice.totalPriceStr }}</span>
+            <span>Rp. {{ formatCurrency(serviceFee) }}</span>
+            <span>Rp. {{ formatCurrency(applicationFee) }}</span>
           </div>
         </div>
         <div class="after-checkout-detail__payment-total">
@@ -131,7 +92,7 @@ onMounted(() => {
             <p style="color: rgba(94, 94, 94, 1)">BJB Virtual Account</p>
           </div>
           <div class="after-checkout-detail__payment-total-price">
-            <span class="fw-700">Rp. 33.500</span>
+            <span class="fw-700">Rp. {{ totalPayment }}</span>
           </div>
         </div>
         <div class="after-checkout-detail__payment-ticket">
@@ -147,11 +108,11 @@ onMounted(() => {
                   {{ ticket.name }} ({{ ticket.category }})
                 </p>
                 <p :style="'color: rgba(94, 94, 94, 1)'">
-                  {{ ticket.quantity }} X Rp. {{ ticket.price }}
+                  {{ ticket.quantity }} X Rp. {{ ticketsPrice(index) }}
                 </p>
               </div>
               <div class="after-checkout-detail__payment-ticket-price">
-                <span>Rp. {{ formatTotal(index) }}</span>
+                <span>Rp. {{ ticketsTotal(index) }}</span>
               </div>
             </div>
           </div>

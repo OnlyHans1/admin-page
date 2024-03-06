@@ -1,21 +1,24 @@
 <script setup>
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
-import PaymentPopup from '@/components/PaymentPopup.vue'
 
 import { ref, computed } from 'vue'
 
-const ticketValue = ref(1)
-const isMancanegara = true
-const ticketPrice = ref(10000)
+const tickets = ref([
+  { name: 'Tiket masuk Keraton Kasepuhan Cirebon', price: 10000, ticketValue: 1 },
+  { name: "Tiket Peringatan Isra Mi'raj di Langgar Alit", price: 10000, ticketValue: 2 }
+])
 
-function addTicket() {
-  ticketValue.value++
+const isMancanegara = true
+const paymentSelection = ref('')
+
+function addTicket(index) {
+  tickets.value[index].ticketValue++
 }
 
-function reduceTicket() {
-  if (ticketValue.value > 1) {
-    ticketValue.value--
+function reduceTicket(index) {
+  if (tickets.value[index].ticketValue > 1) {
+    tickets.value[index].ticketValue--
   }
 }
 
@@ -24,9 +27,20 @@ const discountValue = ref(null)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
+const formatCurrency = (amount) => {
+  return amount.toLocaleString('id-ID')
+}
 
+const ticketsPrice = (index) => {
+  const total = tickets.value[index].price
+  return total.toLocaleString('id-ID')
+}
 const totalHarga = computed(() => {
-  return ticketValue.value * ticketPrice.value * (1 - (discountValue.value || 0) / 100)
+  let total = 0
+  for (const ticket of tickets.value) {
+    total += ticket.price * ticket.ticketValue
+  }
+  return total * (1 - (discountValue.value || 0) / 100)
 })
 const formattedTotalHarga = computed(() => {
   return totalHarga.value.toLocaleString('id-ID', {
@@ -48,6 +62,14 @@ const formattedTotalTagihan = computed(() => {
     maximumFractionDigits: 0
   })
 })
+
+const totalTicketCount = computed(() => {
+  let totalCount = 0
+  for (const ticket of tickets.value) {
+    totalCount += ticket.ticketValue
+  }
+  return totalCount
+})
 </script>
 
 <template>
@@ -60,7 +82,7 @@ const formattedTotalTagihan = computed(() => {
             <div class="order-details__checkout">
               <div class="order-details__customer">
                 <div class="order-details__content">
-                  <i class="ri-user-line"></i>
+                  <i class="ri-user-line header-icons"></i>
                   <p>Detail Pemesan</p>
                 </div>
                 <div class="order-details__content">
@@ -73,7 +95,7 @@ const formattedTotalTagihan = computed(() => {
               </div>
               <div class="order-details__ticket">
                 <div class="order-details__content">
-                  <i class="ri-coupon-2-line"></i>
+                  <i class="ri-coupon-2-line header-icons"></i>
                   <p>Detail Tiket</p>
                 </div>
                 <div class="order-details__ticket-date">
@@ -83,17 +105,19 @@ const formattedTotalTagihan = computed(() => {
                   </div>
                   <p>MM/DD/YYYY</p>
                 </div>
-                <div class="order-details__ticket">
+                <div class="order-details__ticket" v-for="(ticket, index) in tickets" :key="index">
                   <div class="order-details__ticket-items">
-                    <p>Tiket masuk Keraton Kasepuhan Cirebon</p>
-                    <span>Rp {{ ticketPrice }},00</span>
+                    <p>{{ ticket.name }}</p>
+                    <span>Rp {{ ticketsPrice(index) }},00</span>
                   </div>
                   <div class="order-details__ticket-value">
-                    <button @click="reduceTicket" type="button">
+                    <button @click="reduceTicket(index)" type="button">
                       <i class="ri-subtract-fill"></i>
                     </button>
-                    <p>{{ ticketValue }}</p>
-                    <button @click="addTicket" type="button"><i class="ri-add-line"></i></button>
+                    <p>{{ ticket.ticketValue }}</p>
+                    <button @click="addTicket(index)" type="button">
+                      <i class="ri-add-line"></i>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -104,13 +128,19 @@ const formattedTotalTagihan = computed(() => {
                 </div>
               </div>
               <div class="order-details__content">
-                <i class="ri-wallet-line"></i>
+                <i class="ri-wallet-line header-icons"></i>
                 <p>Pilih Pembayaran</p>
               </div>
-              <select class="">
-                <option value="gopay">Cash</option>
-                <option value="dana">VA BJB</option>
-              </select>
+              <div class="order-details__payment-select">
+                <div v-if="paymentSelection" class="order-details__payment-select-content if">
+                  ini if
+                </div>
+                <div v-else class="order-details__payment-select-content else">
+                  <i class="ri-spam-2-line"></i>
+                  <p>Anda belum memilih metode pembayaran</p>
+                </div>
+                <i class="ri-arrow-right-wide-line"></i>
+              </div>
             </div>
           </form>
         </div>
@@ -121,8 +151,16 @@ const formattedTotalTagihan = computed(() => {
             <p class="fs-h5">Ringkasan Booking</p>
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
+              <div
+                class="checkout__details-pricing"
+                v-for="(ticket, index) in tickets"
+                :key="index"
+              >
+                <p>{{ ticket.name }} x{{ ticket.ticketValue }}</p>
+                <p>Rp {{ (ticket.price * ticket.ticketValue).toLocaleString('id-ID') }},00</p>
+              </div>
               <div class="checkout__details-pricing">
-                <p>Jumlah Tiket ({{ ticketValue }} Tiket)</p>
+                <p>Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
                 <p>{{ formattedTotalHarga }}</p>
               </div>
             </div>
@@ -130,11 +168,11 @@ const formattedTotalTagihan = computed(() => {
               <p class="fw-700 fs-h6">Biaya Transaksi</p>
               <div class="checkout__details-pricing">
                 <p>Biaya Layanan</p>
-                <p>Rp {{ biayaLayanan }}</p>
+                <p>Rp {{ formatCurrency(biayaLayanan) }}</p>
               </div>
               <div class="checkout__details-pricing">
                 <p>Biaya Jasa Aplikasi</p>
-                <p>Rp {{ biayaJasa }}</p>
+                <p>Rp {{ formatCurrency(biayaJasa) }}</p>
               </div>
             </div>
             <div class="checkout__details-total">
@@ -144,7 +182,7 @@ const formattedTotalTagihan = computed(() => {
           </form>
         </div>
         <div class="checkout-btn">
-          <button type="submit" class="checkout__btn-order" @click="showPayment">
+          <button type="submit" class="checkout__btn-order">
             Checkout
             <i class="ri-arrow-right-circle-fill"></i>
           </button>
@@ -161,6 +199,7 @@ main {
 .checkout__container {
   display: flex;
   flex-direction: row;
+  align-items: flex-start;
   gap: 3rem;
 }
 .checkout__form-container {
@@ -170,7 +209,7 @@ main {
   width: 400px;
   margin-left: 5%;
 }
-.order-details__container :not(.order-details__ticket-value button) > i {
+.header-icons {
   color: #e6be58;
   font-size: 24px;
 }
@@ -267,7 +306,32 @@ main {
 .pricings-slider__container {
   font-family: 'Poppins';
 }
+.order-details__payment-select {
+  width: 522px;
+  height: 50px;
+  border-radius: 0.6rem;
+  padding: 0.8rem 1.25rem;
+  background: white;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.order-details__payment-select-content {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 14px;
+  line-height: 22px;
+}
+.order-details__payment-select-content.else i {
+  font-size: 16px;
+  color: rgba(227, 38, 38, 1);
+}
 .checkout__details-container {
+  position: sticky;
+  top: 5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -295,7 +359,10 @@ main {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  padding: 0.3rem 0;
+  padding: 0.25rem 0;
+}
+.checkout__details-pricing:last-child {
+  padding-top: 0.5rem;
 }
 .checkout__details-total {
   display: flex;

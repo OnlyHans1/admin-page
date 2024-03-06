@@ -6,11 +6,13 @@ import TableReport from '@/components/TableReport.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import chartReportData from '@/data/chartReportData'
 import ticketInfoData from '@/data/ticketInfoData'
+import reportFunc from '@/function/reportFunc'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
 const { incomeRevenue } = ticketInfoData
-const category = ref(null)
+const { generateExcel, printData } = reportFunc
+const category = ref('')
 const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
 }
@@ -45,8 +47,8 @@ const updateCategory = (selectedCategory) => {
         />
       </div>
       <div class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1">
-        <i class="ri-printer-line"></i>
-        <i class="ri-file-excel-2-line"></i>
+        <i class="ri-printer-line" name="Print Data" @click="printData"></i>
+        <i class="ri-file-excel-2-line" name="Export to Excel" @click="generateExcel"></i>
       </div>
     </div>
     <div class="report-activity__container flex fd-col gap-1">
@@ -61,7 +63,7 @@ const updateCategory = (selectedCategory) => {
         </div>
       </div>
       <div class="report-activity__table-container">
-        <TableReport :filteredCategory="category"/>
+        <TableReport :filteredCategory="category" />
       </div>
     </div>
   </div>
@@ -84,8 +86,30 @@ const updateCategory = (selectedCategory) => {
   font-weight: 600;
   line-height: 96px;
 }
-.report-revenue__icons {
+.report-revenue__icons i {
   font-size: 32px;
+  position: relative;
+}
+.report-revenue__icons i:hover {
+  color: gray;
+}
+.report-revenue__icons i:hover::after {
+  content: attr(name);
+  position: absolute;
+  bottom: -2rem;
+  bottom: -2rem;
+  left: 50%; /* Pusatkan tooltip secara horizontal */
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-family: 'Poppins';
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  z-index: 9999;
 }
 .report-activity__head-text {
   font-size: 20px;

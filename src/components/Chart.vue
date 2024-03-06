@@ -1,31 +1,58 @@
 <script setup>
 import { ref } from 'vue'
 
-const { targetDate, dataSeries, dataCategory } = defineProps(['targetDate', 'dataSeries', 'dataCategory'])
+const { targetDate, dataSeries, dataCategory } = defineProps([
+  'targetDate',
+  'dataSeries',
+  'dataCategory'
+])
 
 const chartOptions = ref({
   chart: {
     toolbar: {
-      show: false
+      show: true,
+      tools: {
+        download: false,
+        selection: false,
+        zoom: false,
+        zoomin: false,
+        zoomout: false,
+        pan: true,
+        reset: '<i class="ri-loop-left-line"></i>',
+      }
     },
     type: 'line',
-    zoom: {
-      enabled: false
+    pan: {
+      enabled: true,
+      type: 'x'
     },
-    width: 400
+    width: 460,
+    events: {
+      beforeResetZoom: (chartContext, opts) => {
+        return {
+          xaxis: {
+            min: dataCategory.length - 7,
+            max: dataCategory.length
+          }
+        };
+      },
+      beforeZoom: (chartContext, opts) => {
+        return {
+          xaxis: {
+            min: opts.xaxis.min < 0 ? 0 : opts.xaxis.min,
+            max: opts.xaxis.max > dataCategory.length ? dataCategory.length : opts.xaxis.max
+          }
+        };
+      }
+    }
   },
   dataLabels: {
     enabled: false
   },
-  stroke: {
-    width: 1.5,
-    curve: 'straight'
-  },
   xaxis: {
     type: 'category',
     categories: dataCategory,
-    position: 'start',
-    forceNiceScale: true,
+    position: 'start',  
     axisTicks: {
       show: false
     },
@@ -41,11 +68,13 @@ const chartOptions = ref({
       color: '#000000',
       height: 1,
       maxWidth: 10,
-      offsetX: 0,
+      offsetX: 0
     },
     tooltip: {
       enabled: false
-    }
+    },
+    min: 1,
+    max: 7
   },
   yaxis: {
     axisBorder: {
@@ -84,7 +113,10 @@ const chartOptions = ref({
       </div>
       <div class="revenue-details__legend">
         <div class="revenue-details__legend-item" v-for="(item, index) in dataSeries" :key="index">
-          <span class="revenue-details__legend-color" :style="{ backgroundColor: item.color }"></span>
+          <span
+            class="revenue-details__legend-color"
+            :style="{ backgroundColor: item.color }"
+          ></span>
           <p class="revenue-details__legend-name">{{ item.name }}</p>
         </div>
       </div>
@@ -108,6 +140,7 @@ const chartOptions = ref({
   padding: 1rem;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+  overflow-x: auto; /* Tambahkan overflow agar dapat digulir */
 }
 
 .revenue-details__desc-title {
