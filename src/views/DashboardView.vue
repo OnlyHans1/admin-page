@@ -47,7 +47,8 @@ const decreaseQuantity = (item) => {
 
   <div class="container-recently-added">
     <p class="newly-added">Baru Ditambahkan</p>
-    <div class="bundling-container">
+    
+    <div class="bundling-container"> 
       <div class="add-container">
         <button class="add_button" @click="navigateToAdd">
           <span class="add_icon">
@@ -70,42 +71,10 @@ const decreaseQuantity = (item) => {
     </div>
   </div>
 
-  <div class="general-container">
-    <p class="general">Umum</p>
+  <div v-for="category in ['Umum', 'Pelajar', 'Mancanegara']" :key="category" :class="`${category.toLowerCase()}-container`">
+    <p class="category">{{ category }}</p>
     <div class="card-wrapper">
-      <div v-for="(item, index) in dashboardData.umumItems" :key="index" class="card-container-general" @click="selectItem(item)">
-        <div class="card" :class="{ selected: item.selected }">
-          <img :src="item.image" :alt="item.alt" />
-        </div>
-        <div class="card_content">
-          <h4>{{ item.title }}</h4>
-          <p>{{ item.subtitle }}</p>
-          <h4>{{ item.price }}</h4>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="student-container">
-    <p class="student">Pelajar</p>
-    <div class="card-wrapper">
-      <div v-for="(item, index) in dashboardData.pelajarItems" :key="index" class="card-container-student" @click="selectItem(item)">
-        <div class="card" :class="{ selected: item.selected }">
-          <img :src="item.image" :alt="item.alt" />
-        </div>
-        <div class="card_content">
-          <h4>{{ item.title }}</h4>
-          <p>{{ item.subtitle }}</p>
-          <h4>{{ item.price }}</h4>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="mancanegara-container">
-    <p class="mancanegara">Mancanegara</p>
-    <div class="card-wrapper">
-      <div v-for="(item, index) in dashboardData.mancanegaraItems" :key="index" class="card-container-mancanegara" @click="selectItem(item)">
+      <div v-for="(item, index) in dashboardData[`${category.toLowerCase()}Items`]" :key="index" class="card-container-general" @click="selectItem(item)">
         <div class="card" :class="{ selected: item.selected }">
           <img :src="item.image" :alt="item.alt" />
         </div>
@@ -128,18 +97,11 @@ const decreaseQuantity = (item) => {
           </div>
           <div class="quantity_controls">
             <button @click.stop="decreaseQuantity(item)">
-              <svg width="22" height="22" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M8.45068 13.8086H20.3621" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path  d="M14.4062 26.3086C21.8071 26.3086 27.8065 20.7122 27.8065 13.8086C27.8065 6.90504 21.8071 1.30859 14.4062 1.30859C7.0054 1.30859 1.00586 6.90504 1.00586 13.8086C1.00586 20.7122 7.0054 26.3086 14.4062 26.3086Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              <ph-minus-circle :size="32" />
             </button>
             <span class="quantity">{{ item.quantity }}</span>
             <button @click.stop="increaseQuantity(item)">
-              <svg width="22" height="22" viewBox="0 0 29 28" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M14.6643 6.86414V20.753" stroke="black" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M7.21973 13.8086H22.109" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M14.6643 26.3086C22.0651 26.3086 28.0646 20.7122 28.0646 13.8086C28.0646 6.90504 22.0651 1.30859 14.6643 1.30859C7.26345 1.30859 1.26392 6.90504 1.26392 13.8086C1.26392 20.7122 7.26345 26.3086 14.6643 26.3086Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
+              <ph-plus-circle :size="32" />
             </button>
           </div>
         </li>
@@ -152,18 +114,28 @@ const decreaseQuantity = (item) => {
 .container-recently-added {
   position: relative;
 }
+
 .bundling-container {
   display: flex;
   flex-direction: row;
-  overflow-x: auto;
   white-space: nowrap;
   margin-top: 20px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  overflow-x: scroll;
+  width: 100%;
 }
+
+.bundling-container::-webkit-scrollbar {
+  display: none;
+}
+
 .card-container {
   display: inline-block;
   margin-right: 10px;
   width: 250px;
 }
+
 .card {
   width: 100%;
   background-color: #838383;
@@ -171,24 +143,29 @@ const decreaseQuantity = (item) => {
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
+
 .card img {
   width: 100%;
   height: auto;
 }
+
 .card_content {
   padding: 10px;
   text-align: justify;
 }
+
 .card-content h4 {
   color: rgb(0, 0, 0);
   margin: 0;
 }
+
 .card-content p {
   color: #000000;
   font-size: 15px;
   line-height: 1.3;
   margin: 0;
 }
+
 .add-container {
   display: flex;
   justify-content: center;
@@ -196,6 +173,7 @@ const decreaseQuantity = (item) => {
   margin-bottom: 10vh;
   margin-left: 19px;
 }
+
 .add_button {
   background-color: #eeeded;
   flex-direction: column;
@@ -214,19 +192,23 @@ const decreaseQuantity = (item) => {
   align-items: center;
   margin-right: 40px;
 }
+
 .add_button:hover {
   background-color: #4f4f4f;
   border: 2px dashed #000000;
 }
+
 .add_icon {
   text-align: center;
   font-size: 2em;
   border-radius: 50%;
   padding: 5px;
 }
+
 .add_text {
   vertical-align: middle;
 }
+
 .newly-added {
   position: absolute;
   font-size: 17px;
@@ -242,64 +224,71 @@ const decreaseQuantity = (item) => {
   -ms-transform: translateX(-50%);
   -o-transform: translateX(-50%);
 }
-.general-container,
-.student-container,
-.mancanegara-container {
+
+.category-container {
   display: flex;
   flex-direction: column;
   margin-top: 1px;
   position: relative;
   margin-left: 20px;
+  width: 100%;
+  overflow-x: auto; /* Menggunakan overflow-x: auto untuk memunculkan scrollbar saat diperlukan */
 }
-.general,
-.student,
-.mancanegara {
+
+.category-container::-webkit-scrollbar {
+  display: none; /* Menyembunyikan scrollbar untuk browser berbasis WebKit (seperti Chrome, Safari) */
+}
+
+.category {
   font-size: 2em;
   margin-bottom: 10px;
 }
+
 .card-wrapper {
   display: flex;
   overflow-x: auto;
   padding-bottom: 20px;
   white-space: nowrap;
+  scrollbar-width: none; /* Menghilangkan scrollbar pada browser lainnya */
 }
-.card-container-general,
-.card-container-student,
-.card-container-mancanegara {
+
+.card-wrapper::-webkit-scrollbar {
+  display: none; /* Menyembunyikan scrollbar untuk browser berbasis WebKit (seperti Chrome, Safari) */
+}
+
+.card-container-general {
   display: flex;
   flex-direction: column;
-  width: 250px;
+  align-items: center;
+  width: 16%;
   margin: 10px;
+  min-width: 200px;
 }
-.card-container-general .card,
-.card-container-student .card,
-.card-container-mancanegara .card {
-  width: 100%;
+
+.card-container-general .card {
   background-color: #838383;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
-.card-container-general .card img,
-.card-container-student .card img,
-.card-container-mancanegara .card img {
+
+.card-container-general .card img {
   width: 100%;
   height: auto;
 }
-.card-container-general .card_content h4,
-.card-container-student .card_content h4,
-.card-container-mancanegara .card_content h4 {
+
+.card-container-general .card_content h4 {
   color: rgb(0, 0, 0);
   margin: 0;
 }
-.card-container-general .card_content p,
-.card-container-student .card_content p,
-.card-container-mancanegara .card_content p {
+
+.card-container-general .card_content p {
   color: #000000;
   font-size: 15px;
   line-height: 1.3;
   margin: 0;
 }
+
 header {
   top: 0;
   right: 0;
@@ -308,16 +297,19 @@ header {
   justify-content: flex-end;
   padding: 20px;
 }
+
 .icon {
   display: flex;
   align-items: center;
   color: black;
   text-decoration: none;
 }
+
 .icon svg {
   width: 45px;
   height: 43px;
 }
+
 .popup_overlay {
   position: fixed;
   top: 0;
@@ -332,61 +324,73 @@ header {
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
 }
+
 .popup_overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
+
 .popup_content {
   background: #d9d9d9;
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 25%;
+  width: 345px;
   height: 110px;
   overflow: hidden;
   margin-top: auto;
   transform: translateY(100%);
   transition: transform 0.3s ease;
 }
+
 .popup_overlay.active .popup_content {
   transform: translateY(0);
 }
+
 .popup_content h2 {
   margin-top: 0;
   font-size: 15px;
 }
+
 .popup_content ul {
   padding: 0;
   list-style-type: none;
 }
+
 .popup_content li {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .popup_content .category {
   font-size: 20px;
   font-weight: 700px;
 }
+
 .popup_content .quantity {
   font-size: 20px;
 }
+
 .item-details {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding-right: 10px;
 }
+
 .quantity_controls {
   display: flex;
   align-items: center;
 }
+
 .quantity_controls button {
   background: none;
   border: none;
   cursor: pointer;
   margin: 0 5px;
 }
+
 .quantity_controls button svg {
   width: 20px;
   height: 20px;
