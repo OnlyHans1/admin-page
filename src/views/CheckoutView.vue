@@ -9,8 +9,17 @@ const tickets = ref([
   { name: "Tiket Peringatan Isra Mi'raj di Langgar Alit", price: 10000, ticketValue: 2 }
 ])
 
-const isMancanegara = true
 const paymentSelection = ref('')
+const paymentSelect = ref(false);
+const showPaymentSelect = () => {
+  paymentSelect.value = !paymentSelect.value
+}
+const selectPayment = (paymentMethod) => {
+  paymentSelection.value = paymentMethod;
+  paymentSelect.value = false
+}
+
+const isMancanegara = true
 
 function addTicket(index) {
   tickets.value[index].ticketValue++
@@ -69,7 +78,7 @@ const totalTicketCount = computed(() => {
     totalCount += ticket.ticketValue
   }
   return totalCount
-})
+});
 </script>
 
 <template>
@@ -131,9 +140,13 @@ const totalTicketCount = computed(() => {
                 <i class="ri-wallet-line header-icons"></i>
                 <p>Pilih Pembayaran</p>
               </div>
-              <div class="order-details__payment-select">
+              <div class="order-details__payment-select" @click="showPaymentSelect">
                 <div v-if="paymentSelection" class="order-details__payment-select-content if">
-                  ini if
+                  <div class="flex align-items-center gap[0.5]">
+                    <span v-if="paymentSelection === 'Cash'"><i class="ri-cash-line fs-20"></i></span>
+                    <span v-else><i class="ri-bank-card-fill fs-20"></i></span>
+                    {{ paymentSelection }}
+                  </div>
                 </div>
                 <div v-else class="order-details__payment-select-content else">
                   <i class="ri-spam-2-line"></i>
@@ -141,6 +154,20 @@ const totalTicketCount = computed(() => {
                 </div>
                 <i class="ri-arrow-right-wide-line"></i>
               </div>
+
+              <section class="order-details__payment-select-content_modal-overlay" v-if="paymentSelect">
+                <div class="order-details__payment-select-content_modal">
+                  <div class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center">
+                    <h3 class="fw-600">Pilih Metode Pembayaran</h3>
+                    <i class="ri-close-line fs-25" @click="showPaymentSelect"></i>
+                  </div>
+                  <div class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1">
+                    <button @click="selectPayment('Cash')"><span><i class="ri-cash-line fs-20"></i>Cash</span><i class="ri-arrow-right-s-line fs-20"></i></button>
+                    <button @click="selectPayment('Kartu Kredit/Debit')"><span><i class="ri-bank-card-fill fs-20"></i>Kartu Kredit/Debit</span><i class="ri-arrow-right-s-line fs-20"></i></button>
+                  </div>
+                </div>
+              </section>
+
             </div>
           </form>
         </div>
@@ -312,7 +339,7 @@ main {
   border-radius: 0.6rem;
   padding: 0.8rem 1.25rem;
   background: white;
-  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  box-shadow: 0 2px 6px 0px rgba(0, 0, 0, 0.25);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -324,6 +351,52 @@ main {
   gap: 0.5rem;
   font-size: 14px;
   line-height: 22px;
+}
+.order-details__payment-select-content_modal-overlay{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgb(0, 0, 0, 0.2);
+  z-index: 999;
+}
+.order-details__payment-select-content_modal{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50% , -50%);
+  width: 30%;
+  z-index: 100;
+  background-color: rgb(245, 245, 245);
+  border-radius: 0.5rem;
+  box-shadow: 0px 2px 2px 0 rgb(0, 0, 0, 0.2); ;
+}
+.order-details__payment-select-content_modal-header i{
+ cursor: pointer;
+}
+.order-details__payment-select-content_modal-content{
+  border-top: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.order-details__payment-select-content_modal-content button{
+  display: flex;
+  gap: 0.5rem;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  background-color: inherit;
+  border-bottom: 1px solid grey ;
+}
+
+.order-details__payment-select-content_modal-content button span{
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
 }
 .order-details__payment-select-content.else i {
   font-size: 16px;

@@ -111,6 +111,9 @@
 }
 
 /* padding top */
+.pd-top\[0\.5\] {
+  padding-top: 0.5rem;
+}
 .pd-top-1 {
   padding-top: 1rem;
 }
