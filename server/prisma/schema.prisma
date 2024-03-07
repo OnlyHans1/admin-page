@@ -23,7 +23,9 @@ model User {
 
 model Order {
   id          String        @id @default(uuid())
+  image       Bytes
   name        String
+  desc        String
   price       Decimal       @db.Decimal(18, 2)
   category    Category?
   interval    Interval?
@@ -37,6 +39,7 @@ model Transaction {
   date        DateTime
   user        User          @relation(fields: [userID], references: [id])
   userID      String
+  status      Status
   detailTrans DetailTrans[]
 }
 
@@ -59,4 +62,11 @@ enum Interval {
   PERMINGGU
   PERBULAN
   PERTAHUN
+}
+
+enum Status {
+  SUDAH_DIGUNAKAN
+  DAPAT_DIGUNAKAN
+  EXPIRED
+  MENUNGGU_PEMBAYARAN
 }

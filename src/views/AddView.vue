@@ -11,7 +11,9 @@ const desc = ref('')
 const category = ref('') //Dont remove until further notice - azarel
 const price = ref('')
 const selectedImageURL = ref('') // State to hold the selected image URL
-const defaultImageURL = ref('https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png')
+const defaultImageURL = ref(
+  'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+)
 const submitAlert = ref(false)
 const confirmAlert = ref(false)
 
@@ -20,13 +22,38 @@ const alertType = ref('')
 const alertTitle = ref('')
 const message = ref('')
 
+const insertDatabase = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/add', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: title.value,
+        desc: desc.value,
+        price: parseInt(price.value),
+        category: category.value.toUpperCase()
+      })
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to register. Please try again.')
+    } else {
+      setTimeout(() => {
+        route.push('/')
+      }, 3000)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 const submit = () => {
   submitAlert.value = !submitAlert.value
   confirmAlert.value = false
 
-  setTimeout(() => {
-    route.push('/')
-  }, 5000)
+  insertDatabase()
 }
 // Method to handle the selected file from InputFoto component
 const handleFileSelected = (file) => {
@@ -73,7 +100,7 @@ const confirm = () => {
   }
 
   confirmAlert.value = true
-};
+}
 </script>
 
 <template>

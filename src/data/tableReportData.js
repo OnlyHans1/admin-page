@@ -1,71 +1,26 @@
-import { ref } from 'vue'
+import { ref} from 'vue';
 
-const activityReportData = ref([
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Umum',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Umum',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Pelajar',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Mancanegara',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Pelajar',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Umum',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Pelajar',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Mancanegara',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-  {
-    name: 'Tiket masuk keraton bundling',
-    category: 'Pelajar',
-    date: '12/03/2024',
-    amount: '4',
-    total: '100.000',
-  },
-])
+const activityReportData = ref([]);
+
+const fetchDataReport = async (filteredCategory) => {
+  try {
+    let url = 'http://localhost:3000/report';
+    if (filteredCategory) {
+      url += `?category=${filteredCategory}`;
+    }
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error('Failed to fetch data Report');
+    }
+    const data = await response.json();
+    // Mengatur nilai activityReportData dengan hasil dari API
+    activityReportData.value = data;
+  } catch (error) {
+    console.error('Error fetching data Report:', error);
+  }
+};
 
 export default {
-    activityReportData
-}
+  activityReportData,
+  fetchDataReport
+};
