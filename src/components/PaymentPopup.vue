@@ -56,7 +56,7 @@ defineExpose({
           <div class="waiting-payment__content-header">
             <p class="fs-h5 fw-700">Cara Pembayaran</p>
             <span @click="closePopup" class="waiting-payment__close-button">
-              <i class="ri-close-line"></i>
+              <ph-x :size="24" weight="bold" class="icon"/>
             </span>
           </div>
           <div class="waiting-payment__content-data">
@@ -70,7 +70,7 @@ defineExpose({
                 <p ref="copyVirtualAccount">{{ displayedVirtualAccount }}</p>
               </div>
               <span class="waiting-payment__copy-desc" @click="copyContent('copyVirtualAccount')">
-                Salin <i class="ri-clipboard-line"></i>
+                Salin <ph-clipboard-text :size="32" weight="bold" class="icon" />
               </span>
             </div>
 
@@ -82,7 +82,7 @@ defineExpose({
                 </p>
               </div>
               <span class="waiting-payment__copy-desc" @click="copyContent('copyTotalPayment')">
-                Salin <i class="ri-clipboard-line"></i>
+                Salin <ph-clipboard-text :size="32" weight="bold" class="icon" />
               </span>
             </div>
             <div>

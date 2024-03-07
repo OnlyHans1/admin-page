@@ -91,7 +91,7 @@ const totalTicketCount = computed(() => {
             <div class="order-details__checkout">
               <div class="order-details__customer">
                 <div class="order-details__content">
-                  <i class="ri-user-line header-icons"></i>
+                  <ph-user :size="24" weight="bold" class="header-icons" />
                   <p>Detail Pemesan</p>
                 </div>
                 <div class="order-details__content">
@@ -104,7 +104,7 @@ const totalTicketCount = computed(() => {
               </div>
               <div class="order-details__ticket">
                 <div class="order-details__content">
-                  <i class="ri-coupon-2-line header-icons"></i>
+                  <ph-ticket :size="24" weight="bold" class="header-icons"/>
                   <p>Detail Tiket</p>
                 </div>
                 <div class="order-details__ticket-date">
@@ -121,11 +121,11 @@ const totalTicketCount = computed(() => {
                   </div>
                   <div class="order-details__ticket-value">
                     <button @click="reduceTicket(index)" type="button">
-                      <i class="ri-subtract-fill"></i>
+                      <ph-minus :size="14" weight="bold" />
                     </button>
                     <p>{{ ticket.ticketValue }}</p>
                     <button @click="addTicket(index)" type="button">
-                      <i class="ri-add-line"></i>
+                      <ph-plus :size="14" weight="bold" />  
                     </button>
                   </div>
                 </div>
@@ -137,33 +137,39 @@ const totalTicketCount = computed(() => {
                 </div>
               </div>
               <div class="order-details__content">
-                <i class="ri-wallet-line header-icons"></i>
+                <ph-wallet :size="24" weight="bold" class="header-icons"/>
                 <p>Pilih Pembayaran</p>
               </div>
               <div class="order-details__payment-select" @click="showPaymentSelect">
                 <div v-if="paymentSelection" class="order-details__payment-select-content if">
                   <div class="flex align-items-center gap[0.5]">
-                    <span v-if="paymentSelection === 'Cash'"><i class="ri-cash-line fs-20"></i></span>
-                    <span v-else><i class="ri-bank-card-fill fs-20"></i></span>
+                    <ph-money :size="16" weight="bold" v-if="paymentSelection === 'Cash'"/>
+                    <ph-credit-card :size="16" weight="bold"  v-else />
                     {{ paymentSelection }}
                   </div>
                 </div>
                 <div v-else class="order-details__payment-select-content else">
-                  <i class="ri-spam-2-line"></i>
+                  <ph-warning-octagon :size="16" weight="fill" color="red"/>
                   <p>Anda belum memilih metode pembayaran</p>
                 </div>
-                <i class="ri-arrow-right-wide-line"></i>
+                <ph-caret-right :size="16" weight="bold" />
               </div>
 
               <section class="order-details__payment-select-content_modal-overlay" v-if="paymentSelect">
                 <div class="order-details__payment-select-content_modal">
                   <div class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center">
                     <h3 class="fw-600">Pilih Metode Pembayaran</h3>
-                    <i class="ri-close-line fs-25" @click="showPaymentSelect"></i>
+                    <ph-x :size="20" weight="bold"  @click="showPaymentSelect"/>
                   </div>
                   <div class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1">
-                    <button @click="selectPayment('Cash')"><span><i class="ri-cash-line fs-20"></i>Cash</span><i class="ri-arrow-right-s-line fs-20"></i></button>
-                    <button @click="selectPayment('Kartu Kredit/Debit')"><span><i class="ri-bank-card-fill fs-20"></i>Kartu Kredit/Debit</span><i class="ri-arrow-right-s-line fs-20"></i></button>
+                    <button @click="selectPayment('Cash')">
+                      <span><ph-money :size="16" weight="bold" />Cash</span>
+                      <ph-caret-right :size="16" weight="bold" />
+                    </button>
+                    <button @click="selectPayment('Kartu Kredit/Debit')">
+                      <span><ph-credit-card :size="16" weight="bold" />Kartu Kredit/Debit</span>
+                      <ph-caret-right :size="16" weight="bold" />
+                    </button>
                   </div>
                 </div>
               </section>
@@ -211,7 +217,7 @@ const totalTicketCount = computed(() => {
         <div class="checkout-btn">
           <button type="submit" class="checkout__btn-order">
             Checkout
-            <i class="ri-arrow-right-circle-fill"></i>
+            <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
         </div>
       </div>

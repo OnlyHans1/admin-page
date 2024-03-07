@@ -1,6 +1,9 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 const emit = defineEmits(['option-selected']);
+const props = defineProps({
+  categoryWidth: { type: String, default: '15rem' }
+})
 const isDropdownOpen = ref(false)
 const selected = ref('');
 
@@ -30,11 +33,11 @@ onUnmounted(() => {
 
 </script>
 <template>
-  <div class="category__input-dropdown">
+  <div class="category__input-dropdown" :style="{ width: categoryWidth }">
     <input readonly @click="toggleDropdown()" :value="selected" placeholder="Pilih Kategori" id="category">
     <div class="select-icon" >
         <div class="arrow-icon" :class="{ active: isDropdownOpen }">
-            <i class="ri-arrow-down-s-line" ></i>
+          <ph-caret-down :size="14" weight="bold" class="icon" />
         </div>
     </div>
     <div name="" id="" class="category__input-dropdown_menu" :class="{ active: isDropdownOpen }">

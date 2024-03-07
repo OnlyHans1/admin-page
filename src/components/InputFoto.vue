@@ -57,7 +57,7 @@ const uploadFile = (event) => {
     :class="{ 'active': isDragOver }"
     >
     <a class="browse__placeholder">
-      <div class="icon"><i class="ri ri-camera-fill"></i></div>
+      <div ><ph-camera :size="48" weight="regular" class="icon" /></div>
       <header>{{ dragText }}</header>
         <input ref="fileInput" type="file" name="file" id="file" @change="handleFileChange" hidden>
     </a>
@@ -82,10 +82,7 @@ const uploadFile = (event) => {
   background-color: #eaeaea;
 }
 
-.drag-area .icon {
-  font-size: 50px;
-  color: #000000;
-}
+
 
 .drag-area header {
   font-size: 15px;

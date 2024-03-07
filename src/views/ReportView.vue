@@ -46,9 +46,9 @@ const updateCategory = (selectedCategory) => {
           :dataCategory="monthlyCategory"
         />
       </div>
-      <div class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1">
-        <i class="ri-printer-line" name="Print Data" @click="printData"></i>
-        <i class="ri-file-excel-2-line" name="Export to Excel" @click="generateExcel"></i>
+      <div class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center">
+        <ph-printer :size="32" weight="bold" @click="printData"/> 
+        <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" @click="generateExcel"/>
       </div>
     </div>
     <div class="report-activity__container flex fd-col gap-1">

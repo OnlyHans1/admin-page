@@ -325,7 +325,7 @@ onMounted(() => {
 />
     <div class="select-icon">
       <div class="arrow-icon" :class="{ active: isNationalityDropdownOpen }">
-        <i class="ri-arrow-down-s-line"></i>
+        <ph-caret-down :size="16" weight="bold" class="icon"/>
       </div>
     </div>
     <div

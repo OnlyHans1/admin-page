@@ -73,7 +73,7 @@ const confirm = () => {
   }
 
   confirmAlert.value = true
-}
+};
 </script>
 
 <template>
@@ -113,7 +113,7 @@ const confirm = () => {
         </div>
       </div>
       <div class="add__input-category">
-        <h3>Katergori</h3>
+        <h3>Kategori</h3>
         <CategoryDropdown @option-selected="updateCategory" />
       </div>
       <div class="add__input-price">

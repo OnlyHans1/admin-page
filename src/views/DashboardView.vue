@@ -41,11 +41,7 @@ const decreaseQuantity = (item) => {
 <template>
   <header>
     <a href="https://music.youtube.com/watch?v=3usBDfpAju4&list=RDAMVMgPraxRACS9c" class="icon">
-      <svg width="45" height="43" viewBox="0 0 45 43" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M22.3985 1.48193C10.5573 1.48193 0.958008 10.4362 0.958008 21.4819C0.958008 32.5277 10.5573 41.4819 22.3985 41.4819C34.2399 41.4819 43.8391 32.5277 43.8391 21.4819C43.8391 10.4362 34.2399 1.48193 22.3985 1.48193Z" stroke="black" stroke-width="1.5" />
-        <path d="M22.3986 21.482C26.3458 21.482 29.5454 18.4973 29.5454 14.8153C29.5454 11.1335 26.3458 8.14868 22.3986 8.14868C18.4514 8.14868 15.2517 11.1335 15.2517 14.8153C15.2517 18.4973 18.4514 21.482 22.3986 21.482Z" stroke="black" stroke-width="1.5" />
-        <path d="M8.10474 36.3893C8.10474 32.79 10.8961 28.1487 15.2516 28.1487H29.5453C33.9008 28.1487 36.6921 32.79 36.6921 36.3893" stroke="black" stroke-width="1.5" />
-      </svg>
+      <ph-user-circle :size="32" weight="thin" />
     </a>
   </header>
 
@@ -55,10 +51,7 @@ const decreaseQuantity = (item) => {
       <div class="add-container">
         <button class="add_button" @click="navigateToAdd">
           <span class="add_icon">
-            <svg width="29" height="27" viewBox="0 0 29 27" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M14.4456 1V26" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              <path d="M1.04517 13.5H27.8458" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
+            <ph-plus :size="36" weight="regular" />
           </span>
           <span class="add_text">Tambah</span>
         </button>

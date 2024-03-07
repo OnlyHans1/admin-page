@@ -44,8 +44,8 @@ onMounted(() => {
         <div class="after-checkout-content__payment-countdown">
           <div class="after-checkout-content__payment-countdown-title">
             <p style="color: rgba(94, 94, 94, 1)">Batas Akhir Pembayaran</p>
-            <span v-if="checkoutTime"><i class="ri-time-line"></i>{{ countdown }}</span>
-            <span v-else><i class="ri-time-line"></i>00:00:00</span>
+            <span v-if="checkoutTime"><ph-clock :size="16" weight="bold" />{{ countdown }}</span>
+            <span v-else><ph-clock :size="16" weight="bold" />00:00:00</span>
           </div>
           <div class="after-checkout-content__payment-countdown-sub">
             <span>{{ checkoutTime }}</span>

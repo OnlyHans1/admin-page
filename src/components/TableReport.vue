@@ -20,7 +20,7 @@ watch(
 const filteredData = computed(() => {
   if (!filteredCategory.value) return activityReportData.value
   return activityReportData.value.filter((item) => item.category === filteredCategory.value)
-})
+});
 </script>
 
 <template>

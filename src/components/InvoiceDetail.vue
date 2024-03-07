@@ -18,7 +18,7 @@ const closePopup = () => {
 
 defineExpose({
   showDetailPopup
-})
+});
 </script>
 
 <template>

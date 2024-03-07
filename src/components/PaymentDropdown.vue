@@ -7,14 +7,15 @@ const expanded = ref(Array(paymentTemplate.length).fill(false))
 
 const toggleExpand = (index) => {
   expanded.value[index] = !expanded.value[index]
-}
+};
+
 </script>
 
 <template>
   <div class="payment-method__dropdown" v-for="(template, index) in paymentTemplate" :key="index">
     <div class="payment-method__dropdown-header" @click="toggleExpand(index)">
       <p class="fs-h5">{{ template.title }}</p>
-      <i :class="['ri-arrow-down-s-line icon-20', expanded[index] ? 'expanded' : '']"></i>
+      <ph-caret-down :size="16" weight="bold" class="icon transition-all-300" :class="{ expanded: expanded[index] }" />
     </div>
     <div class="payment-method__dropdown-content" :class="{ expanded: expanded[index] }">
       <template v-if="template.description.trim()">
@@ -59,10 +60,8 @@ const toggleExpand = (index) => {
   margin-bottom: 0.5rem;
   transition: max-height 0.3s ease;
 }
-.ri-arrow-down-s-line {
-  transition: all 300ms ease;
-}
-.ri-arrow-down-s-line.expanded {
+
+.icon.expanded {
   transform: rotate(180deg);
 }
 </style>

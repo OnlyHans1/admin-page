@@ -5,7 +5,7 @@
         <h3 class="fw-600">{{ alertTitle }}</h3>
         <p>{{ message }}</p>
       </div>
-      <button @click="hideAlertHandler"><i class="ri-close-line icon-30"></i></button>
+      <button @click="hideAlertHandler"><ph-x :size="20" weight="bold"/></button>
     </div>
   </transition>
 </template>

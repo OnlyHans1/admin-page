@@ -29,7 +29,8 @@ watch(
   }
 )
 
-determineActiveLink()
+determineActiveLink();
+
 </script>
 <template>
   <nav>
@@ -39,22 +40,22 @@ determineActiveLink()
     <div class="navbar-links">
       <!-- Menggunakan router-link dengan params -->
       <div class="navbar-links-container flex fd-col">
-        <RouterLink to="/" :class="{ active: activeLink === 0 }"
-          ><i class="ri-home-2-line" name="Home"></i
-        ></RouterLink>
-        <RouterLink to="/invoice" :class="{ active: activeLink === 1 }"
-          ><i class="ri-mail-line" name="Invoice"></i
-        ></RouterLink>
-        <RouterLink to="/report" :class="{ active: activeLink === 2 }"
-          ><i class="ri-money-dollar-circle-line" name="Report"></i
-        ></RouterLink>
-        <RouterLink to="/checkout" :class="{ active: activeLink === 3 }"
-          ><i class="ri-shopping-cart-line" name="Checkout"></i>
+        <RouterLink to="/" :class="{ active: activeLink === 0 }">
+          <ph-house :size="24" weight="bold" />
+        </RouterLink>
+        <RouterLink to="/invoice" :class="{ active: activeLink === 1 }">
+          <ph-envelope-simple :size="24" weight="bold" />
+        </RouterLink>
+        <RouterLink to="/report" :class="{ active: activeLink === 2 }">
+          <ph-currency-circle-dollar :size="24" weight="bold" />
+        </RouterLink>
+        <RouterLink to="/checkout" :class="{ active: activeLink === 3 }">
+          <ph-shopping-cart-simple :size="24" weight="bold" />
         </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
-        <a href="#" name="Settings"><i class="ri-settings-3-line"></i></a>
-        <a href="#" name="Logout"><i class="ri-logout-box-line"></i></a>
+        <a href="#" name="Settings"><ph-gear :size="24" weight="bold" /></a>
+        <a href="#" name="Logout"><ph-sign-out :size="24" weight="bold" mirrored="mirrored"/></a>
       </div>
     </div>
   </nav>
@@ -69,11 +70,9 @@ a {
   align-items: center; /* Center vertically */
   text-decoration: none;
   transition: background-color 0.1s ease; /* Smooth transition for background color */
-}
-i {
-  font-size: 25px;
   color: #000;
 }
+
 nav {
   position: fixed;
   background-color: #ffd978;
