@@ -232,11 +232,11 @@ const decreaseQuantity = (item) => {
   position: relative;
   margin-left: 20px;
   width: 100%;
-  overflow-x: auto; /* Menggunakan overflow-x: auto untuk memunculkan scrollbar saat diperlukan */
+  overflow-x: auto; 
 }
 
 .category-container::-webkit-scrollbar {
-  display: none; /* Menyembunyikan scrollbar untuk browser berbasis WebKit (seperti Chrome, Safari) */
+  display: none; 
 }
 
 .category {
@@ -249,11 +249,11 @@ const decreaseQuantity = (item) => {
   overflow-x: auto;
   padding-bottom: 20px;
   white-space: nowrap;
-  scrollbar-width: none; /* Menghilangkan scrollbar pada browser lainnya */
+  scrollbar-width: none; 
 }
 
 .card-wrapper::-webkit-scrollbar {
-  display: none; /* Menyembunyikan scrollbar untuk browser berbasis WebKit (seperti Chrome, Safari) */
+  display: none; 
 }
 
 .card-container-general {
