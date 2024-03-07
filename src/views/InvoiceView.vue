@@ -1,65 +1,9 @@
 <script setup>
 import { ref } from 'vue'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
+import invoiceData from '@/data/invoiceData';
 
-const data = ref([
-  {
-    nama: 'Teddy Lazuardi',
-    pembelian: 'Bertemu Pangeran',
-    jadwal: '15/03/2024 14.30',
-    telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com',
-    pembayaran: 'Transfer Bank: BJB'
-  },
-  {
-    nama: 'Teddy Lazuardi',
-    pembelian: 'Bundling tiket masuk keraton',
-    jadwal: '15/03/2024 14.30',
-    telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com',
-    pembayaran: 'Tunai'
-  },
-  {
-    nama: 'Teddy Lazuardi',
-    pembelian: 'Event Bulanan',
-    jadwal: '15/03/2024 14.29',
-    telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com',
-    pembayaran: 'Transfer Bank: BJB'
-  },
-  {
-    nama: 'Teddy Lazuardi',
-    pembelian: 'Event banzai cuy wkwkwkwkwkwk',
-    jadwal: '15/03/2024 14.29',
-    telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com',
-    pembayaran: 'Tunai'
-  },
-  {
-    nama: 'Teddy Lazuardi',
-    pembelian: 'Bertemu Pangeran',
-    jadwal: '15/03/2024 14.29',
-    telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com',
-    pembayaran: 'Transfer Bank: BJB'
-  },
-  {
-    nama: 'Teddy Lazuardi',
-    pembelian: 'Bertemu Pangeran',
-    jadwal: '15/03/2024 14.29',
-    telp: '0894732894',
-    email: 'TeddyLazuardy@gmail.com',
-    pembayaran: 'Tunai'
-  }
-])
-
-const searchQuery = ref('')
-const selectedItem = ref(null)
-
-const formatDate = (dateTime) => {
-  const parts = dateTime.split(' ')
-  return [parts[0], parts[1]]
-}
+const { dataInvoice, searchQuery, selectedItem, formatDate } = invoiceData
 
 const detailPopup = ref(null)
 
@@ -119,7 +63,7 @@ const showDetail = (item) => {
       </table>
     </div>
   </div>
-  <InvoiceDetail :selectedItem="selectedItem" ref="detailPopup" />
+  <InvoiceDetail :selectedItem="selectedItem" ref="detailPopup"/>
 </template>
 
 <style scoped>
@@ -173,6 +117,8 @@ const showDetail = (item) => {
 .invoice-table {
   margin-top: 1.5rem;
   padding: 1.1rem;
+  width: 100%;
+  text-align: left;
 }
 .invoice-table table {
   width: 100%;
@@ -188,6 +134,13 @@ const showDetail = (item) => {
 .invoice-table__header:first-child {
   border-right: 1px solid black;
 }
+.invoice-table__data:nth-child(2),
+.invoice-table__header:nth-child(2),
+.invoice-table__data:nth-child(3),
+.invoice-table__header:nth-child(3) {
+  text-align: left;
+  padding-left: 1rem;
+}
 .invoice-table__row-header,
 .invoice-table__row-data:not(:last-child) {
   border-bottom: 1px solid black;
@@ -199,7 +152,7 @@ const showDetail = (item) => {
   font-size: 22px;
   vertical-align: top;
   max-width: 200px; /* Sesuaikan lebar maksimum sesuai kebutuhan Anda */
-  white-space: nowrap;
+  white-space: wrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -234,7 +187,7 @@ const showDetail = (item) => {
 
 @media screen and (max-width: 1280px) {
   .invoice-search {
-    margin-left: 28%;
+    margin-left: 2%;
   }
 }
 </style>
