@@ -5,7 +5,7 @@ import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import { ref, computed } from 'vue'
 
 const tickets = ref([
-  { name: 'Tiket masuk Keraton Kasepuhan Cirebon', price: 10000, ticketValue: 1 }
+  { name: 'Tiket masuk Keraton Kasepuhan Cirebon', price: 10000, ticketValue: 1 },
 ])
 
 const paymentSelection = ref('')

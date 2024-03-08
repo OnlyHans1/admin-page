@@ -1,11 +1,24 @@
 import { ref } from 'vue'
 import * as XLSX from 'xlsx'
 import chartReportData from '@/data/chartReportData'
-import TicketInfoCard from '@/components/TicketInfoCard.vue'
 
 /* ReportView Helper */
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
+
+const incomeRevenue = ref([])
+const fetchIncomeRevenue = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/report/income-revenue')
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    incomeRevenue.value = data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
 
 const generateExcel = () => {
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
@@ -233,22 +246,24 @@ const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
 }
 
-/* TicketInfoCard Helper */ 
+/* TicketInfoCard Helper */
 const ticketInfoCardData = ref([])
 const fetchTicketInfoCardData = async () => {
   try {
-    const response = await fetch('http://localhost:3000/report/order-info'); 
+    const response = await fetch('http://localhost:3000/report/order-info')
     if (!response.ok) {
-      throw new Error('Failed to fetch data');
+      throw new Error('Failed to fetch data')
     }
-    const data = await response.json();
-    ticketInfoCardData.value = data;
+    const data = await response.json()
+    ticketInfoCardData.value = data
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error('Error fetching data:', error)
   }
-};
+}
 
 export default {
+  incomeRevenue,
+  fetchIncomeRevenue,
   generateExcel,
   printData,
   activityReportData,
@@ -258,5 +273,5 @@ export default {
   formatDate,
   formatCurrency,
   ticketInfoCardData,
-  fetchTicketInfoCardData,
+  fetchTicketInfoCardData
 }

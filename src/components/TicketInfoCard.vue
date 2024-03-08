@@ -4,6 +4,7 @@ import ReportHelper from '@/utilities/ReportHelper'
 
 const { ticketInfoCardData, fetchTicketInfoCardData, capitalizeFirstLetter } = ReportHelper
 
+
 onMounted(() => {
     fetchTicketInfoCardData()
 })

@@ -13,8 +13,9 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `Order` (
     `id` VARCHAR(191) NOT NULL,
+    `image` VARCHAR(191) NULL,
     `name` VARCHAR(191) NOT NULL,
-    `desc` VARCHAR(191) NOT NULL,
+    `desc` VARCHAR(191) NULL,
     `price` DECIMAL(18, 2) NOT NULL,
     `category` ENUM('UMUM', 'PELAJAR', 'MANCANEGARA') NULL,
     `interval` ENUM('PERMINGGU', 'PERBULAN', 'PERTAHUN') NULL,

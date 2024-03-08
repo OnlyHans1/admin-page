@@ -1,21 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import chartReportData from '@/data/chartReportData'
-import ticketInfoData from '@/data/ticketInfoData'
 import ReportHelper from '@/utilities/ReportHelper'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
-const { incomeRevenue } = ticketInfoData
-const { generateExcel, printData } = ReportHelper
+const { incomeRevenue, fetchIncomeRevenue, formatCurrency, generateExcel, printData } = ReportHelper
 const category = ref('')
 const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
 }
+
+onMounted(() => {
+  fetchIncomeRevenue()
+})
 </script>
 
 <template>
@@ -25,7 +27,7 @@ const updateCategory = (selectedCategory) => {
         <p class="fs-h5">Pendapatan hari ini</p>
         <div class="report-information__income-text flex fd-row">
           <span class="report-information__income-desc">Rp </span>
-          <span class="report-information__income-details">{{ incomeRevenue }}</span>
+          <span class="report-information__income-details">{{ formatCurrency(incomeRevenue.total) }}</span>
         </div>
       </div>
       <div class="report-information__ticketing-container flex fd-col gap[0.5]">

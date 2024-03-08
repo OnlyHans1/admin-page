@@ -8,13 +8,13 @@ const selectedItems = ref([])
 const showConfirmationPopup = ref(false)
 
 const navigateToAdd = () => {
-  showConfirmationPopup.value = true;
-};
+  showConfirmationPopup.value = true
+}
 
 const selectItem = (item) => {
-  item.selected = !item.selected
+  item.selected = true
   if (item.selected) {
-    item.quantity = 1
+    item.quantity = 0
     selectedItems.value.push(item)
   } else {
     const index = selectedItems.value.findIndex((i) => i.title === item.title)
@@ -22,20 +22,20 @@ const selectItem = (item) => {
       selectedItems.value.splice(index, 1)
     }
   }
-};
+}
 
 const closePopup = () => {
-  showConfirmationPopup.value = false;
+  showConfirmationPopup.value = false
   selectedItems.value = []
 }
 const increaseQuantity = (item) => {
   item.quantity++
-};
+}
 const decreaseQuantity = (item) => {
   if (item.quantity > 0) {
     item.quantity--
   }
-};
+}
 </script>
 
 <template>
@@ -47,8 +47,8 @@ const decreaseQuantity = (item) => {
 
   <div class="container-recently-added">
     <p class="newly-added">Baru Ditambahkan</p>
-    
-    <div class="bundling-container"> 
+
+    <div class="bundling-container">
       <div class="add-container">
         <button class="add_button" @click="navigateToAdd">
           <span class="add_icon">
@@ -58,7 +58,12 @@ const decreaseQuantity = (item) => {
         </button>
       </div>
 
-      <div v-for="(item, index) in dashboardData.recentlyAddedItems" :key="index" class="card-container" @click="selectItem(item)">
+      <div
+        v-for="(item, index) in dashboardData.recentlyAddedItems"
+        :key="index"
+        class="card-container"
+        @click="selectItem(item)"
+      >
         <div class="card" :class="{ selected: item.selected }">
           <img :src="item.image" :alt="item.alt" />
         </div>
@@ -71,10 +76,19 @@ const decreaseQuantity = (item) => {
     </div>
   </div>
 
-  <div v-for="category in ['Umum', 'Pelajar', 'Mancanegara']" :key="category" :class="`${category.toLowerCase()}-container`">
+  <div
+    v-for="category in ['Umum', 'Pelajar', 'Mancanegara']"
+    :key="category"
+    :class="`${category.toLowerCase()}-container`"
+  >
     <p class="category">{{ category }}</p>
     <div class="card-wrapper">
-      <div v-for="(item, index) in dashboardData[`${category.toLowerCase()}Items`]" :key="index" class="card-container-general" @click="selectItem(item)">
+      <div
+        v-for="(item, index) in dashboardData[`${category.toLowerCase()}Items`]"
+        :key="index"
+        class="card-container-general"
+        @click="selectItem(item)"
+      >
         <div class="card" :class="{ selected: item.selected }">
           <img :src="item.image" :alt="item.alt" />
         </div>
@@ -242,11 +256,11 @@ const decreaseQuantity = (item) => {
   position: relative;
   margin-left: 20px;
   width: 100%;
-  overflow-x: auto; 
+  overflow-x: auto;
 }
 
 .category-container::-webkit-scrollbar {
-  display: none; 
+  display: none;
 }
 
 .category {
@@ -259,11 +273,11 @@ const decreaseQuantity = (item) => {
   overflow-x: auto;
   padding-bottom: 20px;
   white-space: nowrap;
-  scrollbar-width: none; 
+  scrollbar-width: none;
 }
 
 .card-wrapper::-webkit-scrollbar {
-  display: none; 
+  display: none;
 }
 
 .card-container-general {
@@ -274,12 +288,25 @@ const decreaseQuantity = (item) => {
   margin: 10px;
   min-width: 200px;
 }
+.card-container-general {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 16%;
+  margin: 10px;
+  min-width: 200px;
+}
 
 .card-container-general .card {
+  cursor: pointer;
   background-color: #838383;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.card-container-general:hover .card {
+  border: 4px solid rgba(255, 217, 120, 1);
 }
 
 .card-container-general .card img {

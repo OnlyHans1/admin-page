@@ -28,7 +28,7 @@ const copyContent = (content) => {
       })
   } else {
     navigator.clipboard
-      .writeText(totalPayment.innerText.trim())
+      .writeText(totalPayment.trim())
       .then(() => {
         console.log('Konten berhasil disalin!')
       })
