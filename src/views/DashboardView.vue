@@ -5,11 +5,10 @@ import dashboardData from '@/data/dashboardData'
 
 const router = useRouter()
 const selectedItems = ref([])
+const showConfirmationPopup = ref(false)
 
 const navigateToAdd = () => {
-  if (confirm('Pindah ke halaman tambah?')) {
-    router.push({ name: 'add' })
-  }
+  showConfirmationPopup.value = true;
 };
 
 const selectItem = (item) => {
@@ -26,6 +25,7 @@ const selectItem = (item) => {
 };
 
 const closePopup = () => {
+  showConfirmationPopup.value = false;
   selectedItems.value = []
 }
 const increaseQuantity = (item) => {
@@ -106,6 +106,16 @@ const decreaseQuantity = (item) => {
           </div>
         </li>
       </ul>
+    </div>
+  </div>
+
+  <div class="popup_confirmation" :class="{ active: showConfirmationPopup }" @click="closePopup()">
+    <div class="popup_confirmation-content" @click.stop>
+      <h2>Pindah ke Halaman Tambah?</h2>
+      <div class="button-confirmation">
+        <button @click="router.push({ name: 'add' })">Ya</button>
+        <button @click="closePopup()">Batal</button>
+      </div>
     </div>
   </div>
 </template>
@@ -394,5 +404,75 @@ header {
 .quantity_controls button svg {
   width: 20px;
   height: 20px;
+}
+
+.popup_confirmation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+  z-index: 999; /* Mengatur z-index agar di atas konten lain */
+}
+
+.popup_confirmation.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.popup_confirmation-content {
+  background: #d9d9d9;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 345px;
+  overflow: hidden;
+  margin-top: auto;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+  max-height: 80vh; /* Mengatur tinggi maksimum popup agar tidak terlalu tinggi */
+  overflow-y: auto; /* Menambahkan scroll jika konten lebih panjang dari tinggi maksimum */
+}
+
+.popup_confirmation.active .popup_confirmation-content {
+  transform: translateY(0);
+}
+
+.button-confirmation {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+}
+
+.button-confirmation button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button-confirmation button:first-child {
+  background-color: #28a745; /* Green color for "Ya" button */
+  color: white;
+}
+
+.button-confirmation button:last-child {
+  background-color: #dc3545; /* Red color for "Batal" button */
+  color: white;
+}
+
+.button-confirmation button:first-child:hover {
+  background-color: #17b53caa; /* Green color for "Ya" button */
+  color: white;
+}
+
+.button-confirmation button:last-child:hover {
+  background-color: #cd23349b; /* Red color for "Batal" button */
+  color: white;
 }
 </style>
