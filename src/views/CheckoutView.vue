@@ -5,8 +5,7 @@ import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import { ref, computed } from 'vue'
 
 const tickets = ref([
-  { name: 'Tiket masuk Keraton Kasepuhan Cirebon', price: 10000, ticketValue: 1 },
-  { name: "Tiket Peringatan Isra Mi'raj di Langgar Alit", price: 10000, ticketValue: 2 }
+  { name: 'Tiket masuk Keraton Kasepuhan Cirebon', price: 10000, ticketValue: 1 }
 ])
 
 const paymentSelection = ref('')
@@ -186,6 +185,7 @@ const totalTicketCount = computed(() => {
               <p class="fw-700 fs-h6">Total Pemesanan</p>
               <div
                 class="checkout__details-pricing"
+                v-if="tickets.length > 1"
                 v-for="(ticket, index) in tickets"
                 :key="index"
               >
