@@ -1,6 +1,9 @@
+import { ref } from 'vue'
 import * as XLSX from 'xlsx'
 import chartReportData from '@/data/chartReportData'
+import TicketInfoCard from '@/components/TicketInfoCard.vue'
 
+/* ReportView Helper */
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
 
@@ -189,7 +192,71 @@ const printData = () => {
   }
 }
 
+/* TableReport Helper */
+const activityReportData = ref([])
+const filteredCategory = ref()
+
+const getFilteredCategory = (filter) => {
+  filteredCategory.value = filter
+}
+
+const fetchTableDataReport = async () => {
+  try {
+    let url = 'http://localhost:3000/report/table-data'
+    if (filteredCategory.value) {
+      url += `?category=${encodeURIComponent(filteredCategory.value)}`
+    }
+    const response = await fetch(url)
+    if (!response.ok) {
+      throw new Error('Failed to fetch data Report')
+    }
+    const data = await response.json()
+    // Mengatur nilai activityReportData dengan hasil dari API
+    activityReportData.value = data
+  } catch (error) {
+    console.error('Error fetching data Report:', error)
+  }
+}
+const capitalizeFirstLetter = (str) => {
+  const lowercaseStr = str.toLowerCase()
+  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
+}
+// Fungsi untuk mengubah format tanggal menjadi dd/mm/yyyy
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
+}
+const formatCurrency = (amount) => {
+  return Number(amount).toLocaleString('id-ID')
+}
+
+/* TicketInfoCard Helper */ 
+const ticketInfoCardData = ref([])
+const fetchTicketInfoCardData = async () => {
+  try {
+    const response = await fetch('http://localhost:3000/report/order-info'); 
+    if (!response.ok) {
+      throw new Error('Failed to fetch data');
+    }
+    const data = await response.json();
+    ticketInfoCardData.value = data;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
+
 export default {
   generateExcel,
-  printData
+  printData,
+  activityReportData,
+  fetchTableDataReport,
+  getFilteredCategory,
+  capitalizeFirstLetter,
+  formatDate,
+  formatCurrency,
+  ticketInfoCardData,
+  fetchTicketInfoCardData,
 }

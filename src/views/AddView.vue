@@ -24,12 +24,13 @@ const message = ref('')
 
 const insertDatabase = async () => {
   try {
-    const response = await fetch('http://localhost:3000/add', {
+    const response = await fetch('http://localhost:3000/add/order-details', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        image: selectedImageURL.value,
         name: title.value,
         desc: desc.value,
         price: parseInt(price.value),
@@ -40,6 +41,7 @@ const insertDatabase = async () => {
     if (!response.ok) {
       throw new Error('Failed to register. Please try again.')
     } else {
+      submitAlert.value = !submitAlert.value
       setTimeout(() => {
         route.push('/')
       }, 3000)
@@ -50,9 +52,7 @@ const insertDatabase = async () => {
 }
 
 const submit = () => {
-  submitAlert.value = !submitAlert.value
   confirmAlert.value = false
-
   insertDatabase()
 }
 // Method to handle the selected file from InputFoto component

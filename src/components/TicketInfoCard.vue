@@ -1,13 +1,18 @@
 <script setup>
-import ticketInfoData from '@/data/ticketInfoData'
+import  { onMounted } from 'vue';
+import ReportHelper from '@/utilities/ReportHelper'
 
-const { cardInfo } = ticketInfoData
+const { ticketInfoCardData, fetchTicketInfoCardData, capitalizeFirstLetter } = ReportHelper
+
+onMounted(() => {
+    fetchTicketInfoCardData()
+})
 </script>
 
 <template>
-<div class="ticket-info-card__container flex fd-col pd-1" v-for="(item, index) in cardInfo" :key="index">
-    <p class="ticket-info-card__title">{{ item.name }}</p>
-    <span class="ticket-info-card__details align-self-center">{{ item.sold }}</span>
+<div class="ticket-info-card__container flex fd-col pd-1" v-for="(item, index) in ticketInfoCardData" :key="index">
+    <p class="ticket-info-card__title">{{ capitalizeFirstLetter(item.category) }}</p>
+    <span class="ticket-info-card__details align-self-center">{{ item.sum }}</span>
     <p class="ticket-info-card__desc align-self-f-end">/ tiket</p>
 </div>
 </template>

@@ -4,6 +4,7 @@ CREATE TABLE `User` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `password` VARCHAR(50) NOT NULL,
+    `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
 
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -12,7 +13,6 @@ CREATE TABLE `User` (
 -- CreateTable
 CREATE TABLE `Order` (
     `id` VARCHAR(191) NOT NULL,
-    `image` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `desc` VARCHAR(191) NOT NULL,
     `price` DECIMAL(18, 2) NOT NULL,

@@ -6,12 +6,12 @@ import TableReport from '@/components/TableReport.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import chartReportData from '@/data/chartReportData'
 import ticketInfoData from '@/data/ticketInfoData'
-import reportFunc from '@/function/reportFunc'
+import ReportHelper from '@/utilities/ReportHelper'
 
 const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
   chartReportData
 const { incomeRevenue } = ticketInfoData
-const { generateExcel, printData } = reportFunc
+const { generateExcel, printData } = ReportHelper
 const category = ref('')
 const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
@@ -46,9 +46,15 @@ const updateCategory = (selectedCategory) => {
           :dataCategory="monthlyCategory"
         />
       </div>
-      <div class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center">
-        <ph-printer :size="32" weight="bold" @click="printData"/> 
-        <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" @click="generateExcel"/>
+      <div
+        class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center"
+      >
+        <span class="icons" name="Print Data" @click="printData"
+          ><ph-printer :size="32" weight="bold"
+        /></span>
+        <span class="icons" name="Report to Excel" @click="generateExcel">
+          <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
+        </span>
       </div>
     </div>
     <div class="report-activity__container flex fd-col gap-1">
@@ -86,19 +92,19 @@ const updateCategory = (selectedCategory) => {
   font-weight: 600;
   line-height: 96px;
 }
-.report-revenue__icons i {
+.report-revenue__icons .icons {
   font-size: 32px;
   position: relative;
 }
-.report-revenue__icons i:hover {
-  color: gray;
+.report-revenue__icons .icons:hover {
+  opacity: 70%;
+  cursor: pointer;
 }
-.report-revenue__icons i:hover::after {
+.report-revenue__icons .icons:hover::after {
   content: attr(name);
   position: absolute;
   bottom: -2rem;
-  bottom: -2rem;
-  left: 50%; /* Pusatkan tooltip secara horizontal */
+  left: 50%;
   transform: translateX(-50%);
   background-color: rgba(0, 0, 0, 0.8);
   color: #fff;
