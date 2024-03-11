@@ -1,12 +1,34 @@
 import { ref } from 'vue'
 import * as XLSX from 'xlsx'
-import chartReportData from '@/data/chartReportData'
+
+const today = new Date()
+today.setHours(7, 0, 0, 0)
+const year = today.getFullYear();
+const month = today.getMonth() + 1;
+
+
+/* Report Global Helper */
+const filteredCategory = ref()
+
+const capitalizeFirstLetter = (str) => {
+  const lowercaseStr = str.toLowerCase()
+  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
+}
+// Fungsi untuk mengubah format tanggal menjadi dd/mm/yyyy
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr)
+  const day = date.getDate().toString().padStart(2, '0')
+  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+  const year = date.getFullYear()
+  return `${day}/${month}/${year}`
+}
+const formatCurrency = (amount) => {
+  return Number(amount).toLocaleString('id-ID')
+}
 
 /* ReportView Helper */
-const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
-  chartReportData
-
 const incomeRevenue = ref([])
+
 const fetchIncomeRevenue = async () => {
   try {
     const response = await fetch('http://localhost:3000/report/income-revenue')
@@ -19,7 +41,6 @@ const fetchIncomeRevenue = async () => {
     console.error('Error fetching data:', error)
   }
 }
-
 const generateExcel = () => {
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
   const monthlyTempData = JSON.parse(JSON.stringify(monthlyData.value))
@@ -205,14 +226,51 @@ const printData = () => {
   }
 }
 
+/* ChartReport Helper*/
+const targetYear = ref([])
+const yearlyCategory = ref([])
+const yearlyData = ref([])
+
+const targetMonth = ref([])
+const monthlyCategory = ref([])
+const monthlyData = ref([])
+
+const fetchYearlyChartData = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/report/yearly-chart-data/${encodeURIComponent(year)}`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    targetYear.value = data.targetYear
+    yearlyCategory.value = data.yearlyCategory
+    yearlyData.value = data.yearlyData
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+
+const fetchMonthlyChartData = async () => {
+  try {
+    const response = await fetch(`http://localhost:3000/report/monthly-chart-data/${encodeURIComponent(year)}/${encodeURIComponent(month)}`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    targetMonth.value = data.targetMonth
+    monthlyCategory.value = data.monthlyCategory
+    monthlyData.value = data.monthlyData
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+
 /* TableReport Helper */
 const activityReportData = ref([])
-const filteredCategory = ref()
 
 const getFilteredCategory = (filter) => {
   filteredCategory.value = filter
 }
-
 const fetchTableDataReport = async () => {
   try {
     let url = 'http://localhost:3000/report/table-data'
@@ -230,32 +288,18 @@ const fetchTableDataReport = async () => {
     console.error('Error fetching data Report:', error)
   }
 }
-const capitalizeFirstLetter = (str) => {
-  const lowercaseStr = str.toLowerCase()
-  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
-}
-// Fungsi untuk mengubah format tanggal menjadi dd/mm/yyyy
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr)
-  const day = date.getDate().toString().padStart(2, '0')
-  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-  const year = date.getFullYear()
-  return `${day}/${month}/${year}`
-}
-const formatCurrency = (amount) => {
-  return Number(amount).toLocaleString('id-ID')
-}
 
 /* TicketInfoCard Helper */
-const ticketInfoCardData = ref([])
-const fetchTicketInfoCardData = async () => {
+const orderInfoCardData = ref([])
+
+const fetchOrderInfoCardData = async () => {
   try {
     const response = await fetch('http://localhost:3000/report/order-info')
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    ticketInfoCardData.value = data
+    orderInfoCardData.value = data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -266,12 +310,20 @@ export default {
   fetchIncomeRevenue,
   generateExcel,
   printData,
+  targetYear,
+  yearlyCategory,
+  yearlyData,
+  fetchYearlyChartData,
+  targetMonth,
+  monthlyCategory,
+  monthlyData,
+  fetchMonthlyChartData,
   activityReportData,
   fetchTableDataReport,
   getFilteredCategory,
   capitalizeFirstLetter,
   formatDate,
   formatCurrency,
-  ticketInfoCardData,
-  fetchTicketInfoCardData
+  orderInfoCardData,
+  fetchOrderInfoCardData
 }

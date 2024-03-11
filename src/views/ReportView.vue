@@ -4,12 +4,24 @@ import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
-import chartReportData from '@/data/chartReportData'
 import ReportHelper from '@/utilities/ReportHelper'
 
-const { target_year, yearlyData, yearlyCategory, target_month, monthlyData, monthlyCategory } =
-  chartReportData
-const { incomeRevenue, fetchIncomeRevenue, formatCurrency, generateExcel, printData } = ReportHelper
+const {
+  incomeRevenue,
+  fetchIncomeRevenue,
+  formatCurrency,
+  targetYear,
+  yearlyCategory,
+  yearlyData,
+  fetchYearlyChartData,
+  targetMonth,
+  monthlyCategory,
+  monthlyData,
+  fetchMonthlyChartData,
+  generateExcel,
+  printData
+} = ReportHelper
+
 const category = ref('')
 const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
@@ -17,6 +29,8 @@ const updateCategory = (selectedCategory) => {
 
 onMounted(() => {
   fetchIncomeRevenue()
+  fetchYearlyChartData()
+  fetchMonthlyChartData()
 })
 </script>
 
@@ -27,7 +41,9 @@ onMounted(() => {
         <p class="fs-h5">Pendapatan hari ini</p>
         <div class="report-information__income-text flex fd-row">
           <span class="report-information__income-desc">Rp </span>
-          <span class="report-information__income-details">{{ formatCurrency(incomeRevenue.total) }}</span>
+          <span class="report-information__income-details">{{
+            formatCurrency(incomeRevenue.total)
+          }}</span>
         </div>
       </div>
       <div class="report-information__ticketing-container flex fd-col gap[0.5]">
@@ -41,9 +57,9 @@ onMounted(() => {
       <div
         class="report-revenue__chart-container flex fd-row align-items-center justify-content-center gap[1.5]"
       >
-        <Chart :targetDate="target_year" :dataSeries="yearlyData" :dataCategory="yearlyCategory" />
+        <Chart :targetDate="targetYear" :dataSeries="yearlyData" :dataCategory="yearlyCategory" />
         <Chart
-          :targetDate="target_month"
+          :targetDate="targetMonth"
           :dataSeries="monthlyData"
           :dataCategory="monthlyCategory"
         />

@@ -2,16 +2,16 @@
 import  { onMounted } from 'vue';
 import ReportHelper from '@/utilities/ReportHelper'
 
-const { ticketInfoCardData, fetchTicketInfoCardData, capitalizeFirstLetter } = ReportHelper
+const { orderInfoCardData, fetchOrderInfoCardData, capitalizeFirstLetter } = ReportHelper
 
 
 onMounted(() => {
-    fetchTicketInfoCardData()
+    fetchOrderInfoCardData()
 })
 </script>
 
 <template>
-<div class="ticket-info-card__container flex fd-col pd-1" v-for="(item, index) in ticketInfoCardData" :key="index">
+<div class="ticket-info-card__container flex fd-col pd-1" v-for="(item, index) in orderInfoCardData" :key="index">
     <p class="ticket-info-card__title">{{ capitalizeFirstLetter(item.category) }}</p>
     <span class="ticket-info-card__details align-self-center">{{ item.sum }}</span>
     <p class="ticket-info-card__desc align-self-f-end">/ tiket</p>

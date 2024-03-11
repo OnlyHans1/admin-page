@@ -83,7 +83,7 @@ const chartOptions = ref({
       color: '#000000',
       height: 1,
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
     },
     labels: {
       show: true,
