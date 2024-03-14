@@ -1,6 +1,3 @@
-// Import Ref from Vue
-import { ref } from "vue";
-
 // Export the data
 export default {
   recentlyAddedItems: [
