@@ -34,8 +34,20 @@ npm run build
 npm run test:unit
 ```
 
-### Lint with [ESLint](https://eslint.org/)
+### Prisma migrate dev with [Prisma] in server directory (https://www.prisma.io/)
 
 ```sh
-npm run lint
+npx prisma migrate dev
+```
+
+### Prisma migrate reset with [Prisma] in server directory (https://www.prisma.io/)
+
+```sh
+npx prisma migrate reset
+```
+
+### Prisma seeding (manual) with [Prisma] in server directory (https://www.prisma.io/)
+
+```sh
+npx prisma db seed
 ```

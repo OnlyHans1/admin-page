@@ -158,7 +158,7 @@ router.get('/order-info', async function (req, res, next) {
     }))
 
     // Mendefinisikan order by
-    const orderCategory = ['UMUM', 'PELAJAR', 'MANCANEGARA']
+    const orderCategory = [Category.UMUM, Category.PELAJAR, Category.MANCANEGARA]
 
     // Mengurutkan orderInfo sesuai dengan order by
     orderInfo.sort((a, b) => orderCategory.indexOf(a.category) - orderCategory.indexOf(b.category))
