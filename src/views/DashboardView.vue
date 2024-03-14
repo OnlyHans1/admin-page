@@ -59,18 +59,6 @@ const decreaseQuantity = (item) => {
   }
 }
 
-const getItemsFromLocalStorage = () => {
-  const savedItems = localStorage.getItem('selectedItems');
-  if (savedItems) {
-    return JSON.parse(savedItems);
-  }
-  return [];
-};
-
-// Contoh penggunaan
-const itemsFromLocalStorage = getItemsFromLocalStorage();
-console.log(itemsFromLocalStorage);
-
 const saveToLocalStorage = () => {
   console.log(JSON.stringify(selectedItems.value))
   localStorage.setItem('selectedItems', JSON.stringify(selectedItems.value));
