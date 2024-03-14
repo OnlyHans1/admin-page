@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// This is your Prisma schema file
 
 generator client {
   provider = "prisma-client-js"
@@ -14,12 +10,14 @@ datasource db {
 }
 
 model User {
-  id          String        @id @default(uuid())
-  name        String
-  email       String        @unique
-  password    String        @db.VarChar(50)
-  role        Role          @default(USER)
-  transaction Transaction[]
+  id            String        @id @default(uuid())
+  name          String
+  email         String        @unique
+  password      String        @db.VarChar(50)
+  role          Role          @default(USER)
+  transaction   Transaction[]
+  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
+  nationalityId String?
 }
 
 model Order {
@@ -34,14 +32,16 @@ model Order {
 }
 
 model Transaction {
-  id          String        @id @default(uuid())
-  total       Decimal       @db.Decimal(18, 2)
-  method      String
-  date        DateTime
-  user        User          @relation(fields: [userID], references: [id])
-  userID      String
-  status      Status
-  detailTrans DetailTrans[]
+  id            String        @id @default(uuid())
+  total         Decimal       @db.Decimal(18, 2)
+  method        String
+  date          DateTime
+  user          User          @relation(fields: [userID], references: [id])
+  userID        String
+  status        Status
+  detailTrans   DetailTrans[]
+  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
+  nationalityId String?
 }
 
 model DetailTrans {
@@ -51,6 +51,14 @@ model DetailTrans {
   transactionId String
   order         Order       @relation(fields: [orderId], references: [id])
   orderId       String
+}
+
+model Nationality {
+  id           String        @id @default(uuid())
+  name         String
+  code         String
+  users        User[]
+  transactions Transaction[]
 }
 
 enum Role {
