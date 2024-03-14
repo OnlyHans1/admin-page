@@ -139,6 +139,10 @@ const decreaseQuantity = (item) => {
   position: relative;
 }
 
+.card-container:hover .card {
+  border: 4px solid rgba(255, 217, 120, 1);
+}
+
 .bundling-container {
   display: flex;
   flex-direction: row;
@@ -148,10 +152,6 @@ const decreaseQuantity = (item) => {
   scrollbar-width: none;
   overflow-x: scroll;
   width: 100%;
-}
-
-.bundling-container::-webkit-scrollbar {
-  display: none;
 }
 
 .card-container {
@@ -166,7 +166,7 @@ const decreaseQuantity = (item) => {
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-}
+} 
 
 .card img {
   width: 100%;
@@ -188,6 +188,11 @@ const decreaseQuantity = (item) => {
   font-size: 15px;
   line-height: 1.3;
   margin: 0;
+}
+
+
+.bundling-container::-webkit-scrollbar {
+  display: none;
 }
 
 .add-container {
@@ -308,6 +313,7 @@ const decreaseQuantity = (item) => {
 .card-container-general:hover .card {
   border: 4px solid rgba(255, 217, 120, 1);
 }
+
 
 .card-container-general .card img {
   width: 100%;
