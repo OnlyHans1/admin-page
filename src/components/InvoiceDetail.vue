@@ -5,6 +5,7 @@ function capitalizeFirstLetter(str) {
 }
 
 const { selectedItem } = defineProps(['selectedItem'])
+console.log(selectedItem)
 
 const showPopup = ref(false)
 

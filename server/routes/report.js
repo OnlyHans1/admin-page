@@ -191,7 +191,7 @@ router.get('/income-revenue', async function (req, res, next) {
 
     res.status(200).json({ total: formatIncome })
   } catch (error) {
-    console.error('Error mengambil data order info:', error)
+    console.error('Error mengambil data income revenue:', error)
     // Kirim respons jika terjadi kesalahan
     res.status(500).json({ error: 'Internal Server Error' })
   }
@@ -263,7 +263,7 @@ router.get('/yearly-chart-data/:targetYear', async (req, res, next) => {
       yearlyData: yearlyChartData
     })
   } catch (error) {
-    console.error('Error mengambil data order info:', error)
+    console.error('Error mengambil yearly chart data:', error)
     // Kirim respons jika terjadi kesalahan
     res.status(500).json({ error: 'Internal Server Error' })
   }
@@ -337,6 +337,7 @@ router.get('/monthly-chart-data/:targetYear/:targetMonth', async (req, res, next
       monthlyData: Object.values(monthlyChartData)
     })
   } catch (error) {
+    console.error('Error mengambil monthly chart data:', error)
     res.status(500).json({ error: 'Internal server error' })
   }
 })
