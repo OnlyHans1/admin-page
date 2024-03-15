@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import dashboardData from '@/data/dashboardData'
 
@@ -7,75 +7,54 @@ const router = useRouter()
 const selectedItems = ref([])
 const showConfirmationPopup = ref(false)
 
-const dataDashboard= ref([])
-
-const fetchOrderList = async () => {
+const fetchDatabase = async () => {
   try {
-    const response = await fetch('http://localhost:3000/order-list')
-    if (!response.ok) {
-      throw new Error('Failed to fetch data')
-    }
-    const data = await response.json()
-    dataDashboard.value = data
+    const response = await fetch('http://localhost:3000/add/order-details', {
+      
+    })
   } catch (error) {
-    console.error('Error fetching data:', error)
+    
   }
 }
-
-const capitalizeFirstLetter = (str) => {
-  const lowercaseStr = str.toLowerCase()
-  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
-}
-
-const formatCurrency = (amount) => {
-  return Number(amount).toLocaleString('id-ID')
-}
-
 const navigateToAdd = () => {
   showConfirmationPopup.value = true
 }
 
 const selectItem = (item) => {
-    item.selected = true;
-    item.quantity = 0;
-    selectedItems.value.push(item);
-};
+  item.selected = true
+  if (item.selected) {
+    item.quantity = 0
+    selectedItems.value.push(item)
+  } else {
+    const index = selectedItems.value.findIndex((i) => i.title === item.title)
+    if (index !== -1) {
+      selectedItems.value.splice(index, 1)
+    }
+  }
+}
 
 const closePopup = () => {
   showConfirmationPopup.value = false
   selectedItems.value = []
 }
-
 const increaseQuantity = (item) => {
-  item.quantity++;
-  console.log(selectedItems.value)
-  saveToLocalStorage();
+  item.quantity++
 }
-
 const decreaseQuantity = (item) => {
   if (item.quantity > 0) {
-    item.quantity--;
-    saveToLocalStorage();
+    item.quantity--
   }
 }
-
-const saveToLocalStorage = () => {
-  console.log(JSON.stringify(selectedItems.value))
-  localStorage.setItem('selectedItems', JSON.stringify(selectedItems.value));
-};
-
-// Watch for changes in selectedItems and save to local storage
-watch(selectedItems.value, () => {
-  saveToLocalStorage();
-}, { deep: true });
-
-onMounted(()=>{
-  fetchOrderList()
-})
 </script>
 
 <template>
-<div class="container-recently-added">
+  <header>
+    <a href="https://music.youtube.com/watch?v=3usBDfpAju4&list=RDAMVMgPraxRACS9c" class="icon">
+      <ph-user-circle :size="32" weight="thin" />
+    </a>
+  </header>
+
+  <div class="container-recently-added">
     <p class="newly-added">Baru Ditambahkan</p>
 
     <div class="bundling-container">
@@ -89,18 +68,18 @@ onMounted(()=>{
       </div>
 
       <div
-        v-for="(item, index) in dataDashboard"
+        v-for="(item, index) in dashboardData.recentlyAddedItems"
         :key="index"
         class="card-container"
         @click="selectItem(item)"
       >
         <div class="card" :class="{ selected: item.selected }">
-          <img :src="item.image"/>
+          <img :src="item.image" :alt="item.alt" />
         </div>
         <div class="card_content">
-          <h4>{{ item.name }}</h4>
-          <p>{{ capitalizeFirstLetter(item.category) }}</p>
-          <h4>Rp. {{ formatCurrency(item.price) }}</h4>
+          <h4>{{ item.title }}</h4>
+          <p>{{ item.subtitle }}</p>
+          <h4>{{ item.price }}</h4>
         </div>
       </div>
     </div>
@@ -169,10 +148,6 @@ onMounted(()=>{
   position: relative;
 }
 
-.card-container:hover .card {
-  border: 4px solid rgba(255, 217, 120, 1);
-}
-
 .bundling-container {
   display: flex;
   flex-direction: row;
@@ -182,6 +157,10 @@ onMounted(()=>{
   scrollbar-width: none;
   overflow-x: scroll;
   width: 100%;
+}
+
+.bundling-container::-webkit-scrollbar {
+  display: none;
 }
 
 .card-container {
@@ -196,7 +175,7 @@ onMounted(()=>{
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-} 
+}
 
 .card img {
   width: 100%;
@@ -218,11 +197,6 @@ onMounted(()=>{
   font-size: 15px;
   line-height: 1.3;
   margin: 0;
-}
-
-
-.bundling-container::-webkit-scrollbar {
-  display: none;
 }
 
 .add-container {
@@ -343,7 +317,6 @@ onMounted(()=>{
 .card-container-general:hover .card {
   border: 4px solid rgba(255, 217, 120, 1);
 }
-
 
 .card-container-general .card img {
   width: 100%;
