@@ -1,7 +1,6 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import dashboardData from '@/data/dashboardData'
 
 const router = useRouter()
 const selectedItems = ref([])
@@ -67,7 +66,6 @@ const getItemsFromLocalStorage = () => {
   return [];
 };
 
-// Contoh penggunaan
 const itemsFromLocalStorage = getItemsFromLocalStorage();
 console.log(itemsFromLocalStorage);
 
@@ -76,17 +74,36 @@ const saveToLocalStorage = () => {
   localStorage.setItem('selectedItems', JSON.stringify(selectedItems.value));
 };
 
-// Watch for changes in selectedItems and save to local storage
 watch(selectedItems.value, () => {
   saveToLocalStorage();
 }, { deep: true });
 
+const groupedItems = computed(() => {
+  const grouped = {};
+  dataDashboard.value.forEach(item => {
+    const category = item.category;
+    if (!grouped[category]) {
+      grouped[category] = [];
+    }
+    grouped[category].push(item);
+  });
+  return grouped;
+});
+
 onMounted(()=>{
   fetchOrderList()
 })
+
 </script>
 
 <template>
+
+  <header>
+    <a href="https://music.youtube.com/watch?v=3usBDfpAju4&list=RDAMVMgPraxRACS9c" class="icon">
+      <ph-user-circle :size="32" weight="thin" />
+    </a>
+  </header>
+
 <div class="container-recently-added">
     <p class="newly-added">Baru Ditambahkan</p>
 
@@ -118,15 +135,11 @@ onMounted(()=>{
     </div>
   </div>
 
-  <div
-    v-for="category in ['Umum', 'Pelajar', 'Mancanegara']"
-    :key="category"
-    :class="`${category.toLowerCase()}-container`"
-  >
-    <p class="category">{{ category }}</p>
+  <div v-for="(items, category) in groupedItems" :key="category" :class="`${category.toLowerCase()}-container`">
+    <p class="category">{{ capitalizeFirstLetter(category) }}</p>
     <div class="card-wrapper">
       <div
-        v-for="(item, index) in dashboardData[`${category.toLowerCase()}Items`]"
+        v-for="(item, index) in items"
         :key="index"
         class="card-container-general"
         @click="selectItem(item)"
@@ -134,10 +147,10 @@ onMounted(()=>{
         <div class="card" :class="{ selected: item.selected }">
           <img :src="item.image" :alt="item.alt" />
         </div>
-        <div class="card_content">
-          <h4>{{ item.title }}</h4>
-          <p>{{ item.subtitle }}</p>
-          <h4>{{ item.price }}</h4>
+        <div class="card_content category-card-content">
+          <h4>{{ item.name }}</h4>
+          <p>{{ capitalizeFirstLetter(item.category) }}</p>
+          <h4>Rp. {{ formatCurrency(item.price) }}</h4>
         </div>
       </div>
     </div>
@@ -199,7 +212,9 @@ onMounted(()=>{
 .card-container {
   display: inline-block;
   margin-right: 10px;
-  width: 250px;
+  width: 370px;
+  max-width: 500px;
+  flex: 1; 
 }
 
 .card {
@@ -218,6 +233,21 @@ onMounted(()=>{
 .card_content {
   padding: 10px;
   text-align: justify;
+  word-wrap: break-word; /* Tambahkan ini */
+  overflow: hidden;
+  max-height: 150px;
+}
+
+.category-card-content {
+  padding: 10px;
+  text-align: justify;
+  word-wrap: break-word;
+  overflow: hidden;
+  max-height: 150px;
+  white-space: normal;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .card-content h4 {
@@ -231,7 +261,6 @@ onMounted(()=>{
   line-height: 1.3;
   margin: 0;
 }
-
 
 .bundling-container::-webkit-scrollbar {
   display: none;
@@ -331,19 +360,10 @@ onMounted(()=>{
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 16%;
+  width: 20%;
   margin: 10px;
   min-width: 200px;
 }
-.card-container-general {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 16%;
-  margin: 10px;
-  min-width: 200px;
-}
-
 .card-container-general .card {
   cursor: pointer;
   background-color: #838383;
