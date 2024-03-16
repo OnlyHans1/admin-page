@@ -186,10 +186,10 @@ router.get('/income-revenue', async function (req, res, next) {
       }
     })
 
-    const total = transactions.reduce((acc, curr) => acc + curr.total, 0)
-    const formatIncome = parseInt(total)
+    
+    const total = parseInt(transactions.reduce((acc, curr) => acc + parseInt(curr.total), 0))
 
-    res.status(200).json({ total: formatIncome })
+    res.status(200).json({ total: total })
   } catch (error) {
     console.error('Error mengambil data income revenue:', error)
     // Kirim respons jika terjadi kesalahan

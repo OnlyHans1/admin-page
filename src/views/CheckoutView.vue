@@ -1,12 +1,13 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
-import CheckoutHelper from '@/utilities/CheckoutHelper';
+import CheckoutHelper from '@/utilities/CheckoutHelper'
+const route = useRouter()
 
 const {
-  getItemsFromLocalStorage,
-  itemsFromLocalStorage,
+  getItemsFromSessionStorage,
   items,
   paymentSelection,
   paymentSelect,
@@ -21,16 +22,23 @@ const {
   biayaJasa,
   formatCurrency,
   ticketsPrice,
-  totalHarga,
   formattedTotalHarga,
-  totalTagihan,
   formattedTotalTagihan,
   totalTicketCount,
+  createTransaction
 } = CheckoutHelper
 
+const checkoutTransaction = () => {
+  createTransaction()
+  sessionStorage.clear()
+  setTimeout(() => {
+    route.push('/')
+  }, 3000)
+}
+
 onMounted(() => {
-  getItemsFromLocalStorage()
-}) 
+  getItemsFromSessionStorage()
+})
 </script>
 
 <template>
@@ -61,7 +69,11 @@ onMounted(() => {
                 </div>
                 <div class="order-details__ticket-date">
                   <div class="ticket__input-placeholder">
-                    <input type="date" class="ticket__input-date" v-model="selectedDate" />
+                    <input
+                      type="datetime-local"
+                      class="ticket__input-date"
+                      v-model="selectedDate"
+                    />
                     <label>Tanggal Pemesanan</label>
                   </div>
                   <p>MM/DD/YYYY</p>
@@ -107,14 +119,20 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <section class="order-details__payment-select-content_modal-overlay" v-if="paymentSelect">
+              <section
+                class="order-details__payment-select-content_modal-overlay"
+                v-if="paymentSelect"
+              >
                 <div class="order-details__payment-select-content_modal">
                   <div
-                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center">
+                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
+                  >
                     <h3 class="fw-600">Pilih Metode Pembayaran</h3>
                     <ph-x :size="20" weight="bold" @click="showPaymentSelect" />
                   </div>
-                  <div class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1">
+                  <div
+                    class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1"
+                  >
                     <button @click="selectPayment('Cash')">
                       <span><ph-money :size="16" weight="bold" />Cash</span>
                       <ph-caret-right :size="16" weight="bold" />
@@ -126,7 +144,6 @@ onMounted(() => {
                   </div>
                 </div>
               </section>
-
             </div>
           </form>
         </div>
@@ -137,13 +154,22 @@ onMounted(() => {
             <p class="fs-h5">Ringkasan Booking</p>
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
-              <div class="checkout__details-pricing" v-if="items.length > 1" v-for="(ticket, index) in items"
-                :key="index">
-                <p>{{ items.name }} x{{ items.quantity }}</p>
-                <p>Rp {{ (items.price * items.quantity).toLocaleString('id-ID') }},00</p>
+              <div
+                class="checkout__details-pricing"
+                v-if="items.length > 1"
+                v-for="(item, index) in items"
+                :key="index"
+              >
+                <p>{{ item.name }} x{{ item.quantity }}</p>
+                <p>Rp {{ (item.price * item.quantity).toLocaleString('id-ID') }},00</p>
+              </div>
+              <div class="checkout__details-pricing" v-if="discountValue">
+                <p>Diskon</p>
+                <p>{{ discountValue }}%</p>
               </div>
               <div class="checkout__details-pricing">
-                <p>Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
+                <p v-if="items.length > 1">Total Tiket ({{ totalTicketCount }} Tiket)</p>
+                <p v-else="items.length > 1">Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
                 <p>{{ formattedTotalHarga }}</p>
               </div>
             </div>
@@ -165,7 +191,7 @@ onMounted(() => {
           </form>
         </div>
         <div class="checkout-btn">
-          <button type="submit" class="checkout__btn-order">
+          <button type="submit" class="checkout__btn-order" @click="checkoutTransaction()">
             Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
@@ -262,7 +288,7 @@ main {
   border: 3px solid rgba(218, 165, 32, 1);
 }
 
-.order-details__ticket-date input:focus+label {
+.order-details__ticket-date input:focus + label {
   color: rgba(218, 165, 32, 1);
 }
 
@@ -352,7 +378,6 @@ main {
   background-color: rgb(245, 245, 245);
   border-radius: 0.5rem;
   box-shadow: 0px 2px 2px 0 rgb(0, 0, 0, 0.2);
-  ;
 }
 
 .order-details__payment-select-content_modal-header i {
@@ -381,7 +406,6 @@ main {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-
 }
 
 .order-details__payment-select-content.else i {

@@ -58,7 +58,7 @@ const generateExcel = () => {
   // Buat sheet untuk data tahunan
   const yearlySheetData = [
     // Baris untuk header primary
-    [`Tabel Tingkat Keramaian ${target_year.value}`],
+    [`Tabel Tingkat Keramaian ${targetYear.value}`],
     // Baris untuk header kategori dan nama kategori
     ['Bulan', 'Umum', 'Pelajar', 'Mancanegara'],
     // Baris untuk bulan
@@ -80,7 +80,7 @@ const generateExcel = () => {
   // Buat sheet untuk data bulanan
   const monthlySheetData = [
     // Baris untuk header primary
-    [`Tabel Tingkat Keramaian Bulan ${target_month.value}`],
+    [`Tabel Tingkat Keramaian Bulan ${targetMonth.value}`],
     // Baris untuk header kategori dan nama kategori
     ['Tanggal', 'Umum', 'Pelajar', 'Mancanegara'],
     // Baris untuk hari
@@ -120,7 +120,7 @@ const printData = () => {
   // Tambahkan header untuk data tahunan
   data.push([
     {
-      content: `Tabel Tingkat Keramaian ${target_year.value}`,
+      content: `Tabel Tingkat Keramaian ${targetYear.value}`,
       colspan: 4,
       style: 'font-weight: bold; text-align: center;'
     }
@@ -143,7 +143,7 @@ const printData = () => {
   // Tambahkan header untuk data bulanan
   data.push([
     {
-      content: `Tabel Tingkat Keramaian Bulan ${target_month.value}`,
+      content: `Tabel Tingkat Keramaian Bulan ${targetMonth.value}`,
       colspan: 4,
       style: 'font-weight: bold; text-align: center;'
     }

@@ -1,87 +1,31 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
+import { onMounted, watchEffect } from 'vue'
+import CheckoutHelper from '@/utilities/CheckoutHelper'
+
+const {
+  fetchNationalityData,
+  nationalityQuery,
+  nationalityResult,
+  isNationalityDropdownOpen,
+  showFlag,
+  selectedFlagImageUrl,
+  loadNationalityData,
+  openNationalityDropdown,
+  getFlagImageUrl,
+  getNationality,
+  closeDropdownOutside
+} = CheckoutHelper
+
 const props = defineProps({
   nationalityWidth: { type: String, default: '17.75rem' }
 })
-const nationalityData = ref([])
 
-const fetchNationalityData = async () => {
-  try {
-    const response = await fetch('http://localhost:3000/checkout/nationality-list')
-    if (!response.ok) {
-      throw new Error('Failed to fetch data')
-    }
-    const data = await response.json()
-    nationalityData.value = data
-  } catch (error) {
-    console.error('Error fetching data:', error)
-  }
-}
-
-const nationalityQuery = ref('')
-const nationalityResult = ref([])
-const isNationalityDropdownOpen = ref(false)
-const showFlag = ref(false)
-const selectedFlagImageUrl = ref('')
-
-const loadNationalityData = () => {
-  if (nationalityQuery.value.trim() !== '') {
-    isNationalityDropdownOpen.value = true
-
-    const filteredData = nationalityData.value.filter((nationality) => {
-      return nationality.name
-        .toLowerCase()
-        .includes(nationalityQuery.value.trim().toLowerCase())
-    })
-    nationalityResult.value = filteredData
-    isNationalityDropdownOpen.value = nationalityResult.value.length > 0
-  } else {
-    nationalityResult.value = []
-    isNationalityDropdownOpen.value = false
-  }
-}
-const openNationalityDropdown = () => {
-  if (nationalityQuery.value.trim() === '') {
-    isNationalityDropdownOpen.value = true
-    nationalityResult.value = nationalityData.value
-  } else {
-    isNationalityDropdownOpen.value = true
-    loadNationalityData()
-  }
-}
-const closeNationalityDropdown = () => {
-  isNationalityDropdownOpen.value = false
-  nationalityResult.value = []
-}
-const getFlagImageUrl = (countryCode) => {
-  const flagCode = countryCode
-
-  return `https://flagcdn.com/48x36/${flagCode}.png`
-}
-const getNationality = (nationalityName, countryCode) => {
-  nationalityQuery.value = nationalityName
-  nationalityResult.value = []
-  isNationalityDropdownOpen.value = false
-  showFlag.value = true
-
-  // Dapatkan URL gambar bendera menggunakan kode negara
-  const flagImageUrl = getFlagImageUrl(countryCode)
-
-  // Setel URL gambar bendera ke dalam selectedFlagImageUrl
-  selectedFlagImageUrl.value = flagImageUrl
-}
-const closeDropdownOutside = (event) => {
-  const dropdownContainer = document.querySelector('.nationality-dropdown__container')
-  if (dropdownContainer && !dropdownContainer.contains(event.target)) {
-    closeNationalityDropdown()
-  }
-}
 watchEffect((onInvalidate) => {
   onInvalidate(() => {
     document.removeEventListener('click', closeDropdownOutside)
   })
   if (nationalityQuery.value.trim() === '') {
-    showFlag.value = false;
+    showFlag.value = false
     selectedFlagImageUrl.value = ''
   }
 })
@@ -94,19 +38,19 @@ onMounted(() => {
 
 <template>
   <div class="nationality-dropdown__container" :style="{ width: nationalityWidth }">
-<input
-  type="text"
-  v-model="nationalityQuery"
-  placeholder="Kebangsaan"
-  @input="loadNationalityData"
-  @focus="openNationalityDropdown"
-  class="nationality-dropdown__input"
-  :class="{ focus: isNationalityDropdownOpen, flag: showFlag }"
-  :style="{backgroundImage: `url(${selectedFlagImageUrl})`}"
-/>
+    <input
+      type="text"
+      v-model="nationalityQuery"
+      placeholder="Kebangsaan"
+      @input="loadNationalityData"
+      @focus="openNationalityDropdown"
+      class="nationality-dropdown__input"
+      :class="{ focus: isNationalityDropdownOpen, flag: showFlag }"
+      :style="{ backgroundImage: `url(${selectedFlagImageUrl})` }"
+    />
     <div class="select-icon">
       <div class="arrow-icon" :class="{ active: isNationalityDropdownOpen }">
-        <ph-caret-down :size="16" weight="bold" class="icon"/>
+        <ph-caret-down :size="16" weight="bold" class="icon" />
       </div>
     </div>
     <div
@@ -115,10 +59,7 @@ onMounted(() => {
     >
       <div class="dropdown-nationality__result" :class="{ active: isNationalityDropdownOpen }">
         <div v-for="result in nationalityResult" :key="result.id">
-          <div
-            class="nationality-item"
-            @click="getNationality(result.name, result.code)"
-          >
+          <div class="nationality-item" @click="getNationality(result.id,result.name, result.code)">
             <img :src="getFlagImageUrl(result.code)" class="flag-icon" />
             <p class="dropdown-nationality__name">{{ result.name }}</p>
           </div>
@@ -176,8 +117,8 @@ input.focus {
   font-size: 18px;
 }
 .nationality-dropdown__input.flag {
-  background-repeat: no-repeat; 
-  background-position: 1.5rem center; 
+  background-repeat: no-repeat;
+  background-position: 1.5rem center;
   padding-left: 4rem;
   background-size: 25px;
 }

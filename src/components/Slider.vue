@@ -6,7 +6,7 @@ const props = defineProps({
   max: { type: Number, default: 100 },
   sliderWidth: { type: String, default: '392px' }
 })
-const emits = defineEmits(['update:discountValue', 'update:cashbackValue'])
+const emits = defineEmits(['update:discountValue'])
 
 const value = ref(props.min)
 const fillWidth = ref('0%')
@@ -18,7 +18,6 @@ const updateTooltip = (event) => {
   fillWidth.value = `${percent}%`
   tooltipLeft.value = `${percent}%`
   emits('update:discountValue', value.value)
-  emits('update:cashbackValue', value.value)
 }
 
 const showTooltip = () => {

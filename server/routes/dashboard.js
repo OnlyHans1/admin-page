@@ -7,6 +7,7 @@ router.get('/order-list', async (req, res) => {
   try {
     const orders = await prisma.order.findMany({
       select: {
+        id: true,
         image: true,
         name: true,
         category: true,

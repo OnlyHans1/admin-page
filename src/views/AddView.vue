@@ -39,7 +39,7 @@ const insertDatabase = async () => {
     })
 
     if (!response.ok) {
-      throw new Error('Failed to register. Please try again.')
+      throw new Error('Failed to create order. Please try again.')
     } else {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {

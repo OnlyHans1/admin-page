@@ -6,7 +6,7 @@ const router = useRouter()
 const selectedItems = ref([])
 const showConfirmationPopup = ref(false)
 
-const dataDashboard= ref([])
+const dataDashboard = ref([])
 
 const fetchOrderList = async () => {
   try {
@@ -35,10 +35,10 @@ const navigateToAdd = () => {
 }
 
 const selectItem = (item) => {
-    item.selected = true;
-    item.quantity = 0;
-    selectedItems.value.push(item);
-};
+  item.selected = true
+  item.quantity = 0
+  selectedItems.value.push(item)
+}
 
 const closePopup = () => {
   showConfirmationPopup.value = false
@@ -46,80 +46,110 @@ const closePopup = () => {
 }
 
 const increaseQuantity = (item) => {
-  item.quantity++;
-  console.log(selectedItems.value)
-  saveToLocalStorage();
+  item.quantity++
+  saveToSessionStorage()
 }
 
 const decreaseQuantity = (item) => {
   if (item.quantity > 0) {
-    item.quantity--;
-    saveToLocalStorage();
+    item.quantity--
+    saveToSessionStorage()
   }
 }
 
-const getItemsFromLocalStorage = () => {
-  const savedItems = localStorage.getItem('selectedItems');
-  if (savedItems) {
-    return JSON.parse(savedItems);
-  }
-  return [];
-};
+const saveToSessionStorage = () => {
+  // Ambil data yang telah disimpan sebelumnya dari sessionStorage
+  let storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
 
-const itemsFromLocalStorage = getItemsFromLocalStorage();
-console.log(itemsFromLocalStorage);
+  // Iterasi melalui selectedItems untuk memeriksa apakah item sudah ada di storedItems
+  selectedItems.value.forEach((item) => {
+    const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
 
-const saveToLocalStorage = () => {
-  console.log(JSON.stringify(selectedItems.value))
-  localStorage.setItem('selectedItems', JSON.stringify(selectedItems.value));
-};
+    if (item.quantity === 0) {
+      // Jika quantity dari item adalah 0, hapus item tersebut dari storedItems
+      if (existingItemIndex !== -1) {
+        storedItems.splice(existingItemIndex, 1)
+      }
+    } else {
+      if (existingItemIndex !== -1) {
+        // Jika item sudah ada di storedItems, tambahkan jumlahnya
+        storedItems[existingItemIndex].quantity = item.quantity
+      } else {
+        // Jika item belum ada, tambahkan item baru
+        storedItems.push(item)
+      }
+    }
+  })
 
-watch(selectedItems.value, () => {
-  saveToLocalStorage();
-}, { deep: true });
+  // Simpan data yang telah digabung kembali ke sessionStorage
+  sessionStorage.setItem('selectedItems', JSON.stringify(storedItems))
+}
+
+watch(
+  selectedItems.value,
+  () => {
+    saveToSessionStorage()
+  },
+  { deep: true }
+)
 
 const groupedItems = computed(() => {
-  const grouped = {};
-  dataDashboard.value.forEach(item => {
-    const category = item.category;
+  const grouped = {}
+  dataDashboard.value.forEach((item) => {
+    const category = item.category
     if (!grouped[category]) {
-      grouped[category] = [];
+      grouped[category] = []
     }
-    grouped[category].push(item);
-  });
-  return grouped;
-});
-
-onMounted(()=>{
-  fetchOrderList()
+    grouped[category].push(item)
+  })
+  return grouped
 })
 
+onMounted(() => {
+  fetchOrderList()
+})
 </script>
 
 <template>
+  <div class="recently-added-container">
+    <div class="add-container">
+      <button class="add_button" @click="navigateToAdd">
+        <span class="add_icon">
+          <ph-plus :size="36" weight="regular" />
+        </span>
+        <span class="add_text">Tambah</span>
+      </button>
+    </div>
 
-<div class="container-recently-added">
-    <p class="newly-added">Baru Ditambahkan</p>
-
-    <div class="bundling-container">
-      <div class="add-container">
-        <button class="add_button" @click="navigateToAdd">
-          <span class="add_icon">
-            <ph-plus :size="36" weight="regular" />
-          </span>
-          <span class="add_text">Tambah</span>
-        </button>
-      </div>
-
-      <div
-        v-for="(item, index) in dataDashboard"
-        :key="index"
-        class="card-container"
-        @click="selectItem(item)"
-      >
-        <div class="card" :class="{ selected: item.selected }">
-          <img :src="item.image"/>
+    <div class="bundling-container flex fd-col">
+      <p class="newly-added">Baru Ditambahkan</p>
+      <div class="card-container">
+        <div
+          v-for="(item, index) in dataDashboard"
+          :key="index"
+          class="card"
+          @click="selectItem(item)"
+        >
+          <img :src="item.image ? item.image : 'https://via.placeholder.com/230X130'" />
+          <div class="card_content">
+            <h4>{{ item.name }}</h4>
+            <p>{{ capitalizeFirstLetter(item.category) }}</p>
+            <h4>Rp. {{ formatCurrency(item.price) }}</h4>
+          </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-for="(items, category) in groupedItems"
+    :key="category"
+    :class="`${category.toLowerCase()}-container`"
+  >
+    <p class="category">{{ capitalizeFirstLetter(category) }}</p>
+    <div class="card-container secondary-card-container">
+      <div v-for="(item, index) in items" :key="index" class="card" @click="selectItem(item)">
+        <img :src="item.image ? item.image : 'https://via.placeholder.com/230X130'" />
         <div class="card_content">
           <h4>{{ item.name }}</h4>
           <p>{{ capitalizeFirstLetter(item.category) }}</p>
@@ -129,46 +159,21 @@ onMounted(()=>{
     </div>
   </div>
 
-  <div v-for="(items, category) in groupedItems" :key="category" :class="`${category.toLowerCase()}-container`">
-    <p class="category">{{ capitalizeFirstLetter(category) }}</p>
-    <div class="card-wrapper">
-      <div
-        v-for="(item, index) in items"
-        :key="index"
-        class="card-container-general"
-        @click="selectItem(item)"
-      >
-        <div class="card" :class="{ selected: item.selected }">
-          <img :src="item.image" :alt="item.alt" />
-        </div>
-        <div class="card_content category-card-content">
-          <h4>{{ item.name }}</h4>
-          <p>{{ capitalizeFirstLetter(item.category) }}</p>
-          <h4>Rp. {{ formatCurrency(item.price) }}</h4>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <div class="popup_overlay" :class="{ active: selectedItems.length > 0 }" @click="closePopup">
-    <div class="popup_content" @click.stop>
-      <h2>Tiket Masuk Keraton</h2>
-      <ul>
-        <li v-for="(item, index) in selectedItems" :key="index">
-          <div class="item-details">
-            <span class="category">{{ item.category }}</span>
-          </div>
-          <div class="quantity_controls">
-            <button @click.stop="decreaseQuantity(item)">
-              <ph-minus-circle :size="32" />
-            </button>
-            <span class="quantity">{{ item.quantity }}</span>
-            <button @click.stop="increaseQuantity(item)">
-              <ph-plus-circle :size="32" />
-            </button>
-          </div>
-        </li>
-      </ul>
+    <div class="popup_content" @click.stop v-for="(item, index) in selectedItems" :key="index">
+      <div class="item-details">
+        <h2>{{ item.name }}</h2>
+        <span class="category">{{ capitalizeFirstLetter(item.category) }}</span>
+      </div>
+      <div class="quantity_controls">
+        <button @click.stop="decreaseQuantity(item)">
+          <ph-minus-circle :size="32" />
+        </button>
+        <span class="quantity">{{ item.quantity }}</span>
+        <button @click.stop="increaseQuantity(item)">
+          <ph-plus-circle :size="32" />
+        </button>
+      </div>
     </div>
   </div>
 
@@ -184,19 +189,16 @@ onMounted(()=>{
 </template>
 
 <style scoped>
-.container-recently-added {
-  position: relative;
+.card:hover img {
+  outline: 4px solid rgba(255, 217, 120, 1);
 }
 
-.card-container:hover .card {
-  border: 4px solid rgba(255, 217, 120, 1);
-}
-
-.bundling-container {
+.recently-added-container {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  gap: 2.5rem;
   white-space: nowrap;
-  margin-top: 20px;
   -ms-overflow-style: none;
   scrollbar-width: none;
   overflow-x: scroll;
@@ -204,40 +206,39 @@ onMounted(()=>{
 }
 
 .card-container {
-  display: inline-block;
-  margin-right: 10px;
-  width: 370px;
-  max-width: 500px;
-  flex: 1; 
+  display: flex;
+  flex-direction: row;
+  white-space: nowrap;
+  padding: 0.5rem 0;
+  gap: 1rem;
+  flex: 1;
+}
+
+.secondary-card-container {
+  padding-inline: 2.5rem;
 }
 
 .card {
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+}
+
+.card img {
   width: 100%;
+  height: 140px;
   background-color: #838383;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-} 
-
-.card img {
-  width: 100%;
-  height: auto;
 }
 
-.card_content {
-  padding: 10px;
-  text-align: justify;
-  word-wrap: break-word; /* Tambahkan ini */
-  overflow: hidden;
-  max-height: 150px;
-}
-
+.card_content,
 .category-card-content {
+  width: 100%;
   padding: 10px;
-  text-align: justify;
-  word-wrap: break-word;
+  text-overflow: ellipsis;
   overflow: hidden;
-  max-height: 150px;
   white-space: normal;
   display: flex;
   flex-direction: column;
@@ -262,10 +263,9 @@ onMounted(()=>{
 
 .add-container {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 10vh;
-  margin-left: 19px;
+  justify-content: flex-start;
+  align-items: flex-start;
+  transform: translateY(-50%);
 }
 
 .add_button {
@@ -284,7 +284,6 @@ onMounted(()=>{
   outline: none;
   display: flex;
   align-items: center;
-  margin-right: 40px;
 }
 
 .add_button:hover {
@@ -304,19 +303,8 @@ onMounted(()=>{
 }
 
 .newly-added {
-  position: absolute;
   font-size: 17px;
   font-weight: 500px;
-  top: -7vh;
-  left: 16%;
-  transform: translateX(-50%);
-  padding: 8px 16px;
-  border-radius: 4px;
-  z-index: 1;
-  -webkit-transform: translateX(-50%);
-  -moz-transform: translateX(-50%);
-  -ms-transform: translateX(-50%);
-  -o-transform: translateX(-50%);
 }
 
 .category-container {
@@ -369,7 +357,6 @@ onMounted(()=>{
 .card-container-general:hover .card {
   border: 4px solid rgba(255, 217, 120, 1);
 }
-
 
 .card-container-general .card img {
   width: 100%;
@@ -431,35 +418,20 @@ header {
 
 .popup_content {
   background: #d9d9d9;
-  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1.5rem;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 345px;
-  height: 110px;
   overflow: hidden;
-  margin-top: auto;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-
-.popup_overlay.active .popup_content {
-  transform: translateY(0);
 }
 
 .popup_content h2 {
   margin-top: 0;
   font-size: 15px;
-}
-
-.popup_content ul {
-  padding: 0;
-  list-style-type: none;
-}
-
-.popup_content li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .popup_content .category {
@@ -473,9 +445,10 @@ header {
 
 .item-details {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding-right: 10px;
+  text-align: center;
 }
 
 .quantity_controls {
