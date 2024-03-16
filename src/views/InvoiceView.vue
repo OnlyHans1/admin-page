@@ -1,16 +1,21 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted } from 'vue'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
-import invoiceData from '@/data/invoiceData';
+import InvoiceHelper from '@/utilities/InvoiceHelper'
 
-const { dataInvoice, searchQuery, selectedItem, formatDate } = invoiceData
+const {
+  dataInvoice,
+  fetchTransactionList,
+  searchQuery,
+  selectedItem,
+  splitDate,
+  detailPopup,
+  showDetail
+} = InvoiceHelper
 
-const detailPopup = ref(null)
-
-const showDetail = (item) => {
-  selectedItem.value = item
-  detailPopup.value.showDetailPopup()
-}
+onMounted(() => {
+  fetchTransactionList()
+})
 </script>
 
 <template>
@@ -48,12 +53,12 @@ const showDetail = (item) => {
         <tbody>
           <tr v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
             <td class="invoice-table__data">{{ index + 1 }}</td>
-            <td class="invoice-table__data">{{ item.nama }}</td>
-            <td class="invoice-table__data">{{ item.pembelian }}</td>
-            <td class="invoice-table__data">{{ formatDate(item.jadwal)[0] }}</td>
-            <td class="invoice-table__data">{{ formatDate(item.jadwal)[1] }}</td>
+            <td class="invoice-table__data">{{ item.transaction.user.name }}</td>
+            <td class="invoice-table__data">{{ item.order.name }}</td>
+            <td class="invoice-table__data">{{ splitDate(item.transaction.date)[0] }}</td>
+            <td class="invoice-table__data">{{ splitDate(item.transaction.date)[1] }}</td>
             <td class="invoice-table__data">
-              {{ item.email }} <br />
+              {{ item.transaction.user.email }} <br />
               <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                 detail
               </button>
@@ -63,7 +68,7 @@ const showDetail = (item) => {
       </table>
     </div>
   </div>
-  <InvoiceDetail :selectedItem="selectedItem" ref="detailPopup"/>
+  <InvoiceDetail :selectedItem="selectedItem" ref="detailPopup" />
 </template>
 
 <style scoped>

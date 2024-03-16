@@ -98,12 +98,6 @@ onMounted(()=>{
 
 <template>
 
-  <header>
-    <a href="https://music.youtube.com/watch?v=3usBDfpAju4&list=RDAMVMgPraxRACS9c" class="icon">
-      <ph-user-circle :size="32" weight="thin" />
-    </a>
-  </header>
-
 <div class="container-recently-added">
     <p class="newly-added">Baru Ditambahkan</p>
 

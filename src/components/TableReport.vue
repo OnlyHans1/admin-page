@@ -107,6 +107,8 @@ onMounted(() => {
 }
 .report-activity__table-header th:nth-child(2),
 .report-activity__table-items td:nth-child(2) {
+  white-space: nowrap;
+  text-overflow: ellipsis;
   text-align: start;
   padding-left: 2rem;
 }

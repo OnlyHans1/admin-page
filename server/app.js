@@ -9,6 +9,7 @@ var dashboardRouter = require('./routes/dashboard')
 var addRouter = require('./routes/add')
 var invoiceRouter = require('./routes/invoice')
 var reportRouter = require('./routes/report')
+var checkoutRouter = require('./routes/checkout')
 
 var app = express()
 
@@ -23,6 +24,7 @@ app.use('/', dashboardRouter)
 app.use('/add', addRouter)
 app.use('/invoice', invoiceRouter)
 app.use('/report', reportRouter)
+app.use('/checkout', checkoutRouter)
 
 var port = normalizePort(process.env.PORT || '3000')
 app.listen(port, () =>

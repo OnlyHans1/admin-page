@@ -1,24 +1,8 @@
 <script setup>
-import { ref } from 'vue'
-function capitalizeFirstLetter(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
+import InvoiceHelper from '@/utilities/InvoiceHelper'
 
+const { showPopup, closeDetailPopup, capitalizeFirstLetter } = InvoiceHelper
 const { selectedItem } = defineProps(['selectedItem'])
-
-const showPopup = ref(false)
-
-const showDetailPopup = () => {
-  showPopup.value = true
-}
-
-const closePopup = () => {
-  showPopup.value = false
-}
-
-defineExpose({
-  showDetailPopup
-});
 </script>
 
 <template>
@@ -30,13 +14,12 @@ defineExpose({
       <div class="invoice-detail__container-data align-self-f-start pd-sd-1">
         <div>
           <div v-for="(value, key) in selectedItem" :key="key" class="invoice-detail__data">
-            <h3 v-if="key !== 'email'" class="invoice-detail__data-title">{{ capitalizeFirstLetter(key) }}</h3>
-            <p v-if="key === 'pembayaran'">{{ value }}</p>
-            <p v-else-if="key !== 'email'">{{ value }}</p>
+            <h3 class="invoice-detail__data-title">{{ capitalizeFirstLetter(key) }}</h3>
+            <p>{{ value }}</p>
           </div>
         </div>
       </div>
-      <button class="invoice-detail__button" @click="closePopup">OK</button>
+      <button class="invoice-detail__button" @click="closeDetailPopup()">OK</button>
     </div>
   </div>
 </template>
