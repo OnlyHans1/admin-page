@@ -189,7 +189,7 @@
 .pd-bottom-6 {
   padding-bottom: 6rem;
 }
-.pd-tbottomop-8 {
+.pd-bottom-8 {
   padding-bottom: 8rem;
 }
 
@@ -505,4 +505,11 @@
 
 .top-5 {
   top: 5rem;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
 }

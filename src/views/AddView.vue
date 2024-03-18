@@ -128,23 +128,23 @@ const confirm = () => {
     <section class="add__input">
       <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
       <div class="add__input-card_title">
-        <h3>Judul</h3>
+        <h6>Judul</h6>
         <div class="input_wrapper">
           <input class="title-input" type="text" rows="1" @input="title = $event.target.value" />
         </div>
       </div>
       <div class="add__input-card_title">
-        <h3>Desc</h3>
+        <h6>Deskripsi</h6>
         <div class="input_wrapper">
           <textarea class="desc-input" rows="1" @input="desc = $event.target.value"></textarea>
         </div>
       </div>
       <div class="add__input-category">
-        <h3>Kategori</h3>
+        <h6>Kategori</h6>
         <CategoryDropdown @option-selected="updateCategory" />
       </div>
       <div class="add__input-price">
-        <h3>Harga</h3>
+        <h6>Harga</h6>
         <div class="input-price">
           <p>Rp.</p>
           <input type="number" name="" id="" v-model="price" />
@@ -153,19 +153,19 @@ const confirm = () => {
     </section>
 
     <section class="add__preview w-full">
-      <h1>Preview</h1>
+      <h5>Preview</h5>
       <div class="add__preview-card_container">
-        <p class="add__preview-category">{{ category ? category : 'Category' }}</p>
+        <h6 class="add__preview-category">{{ category ? category : 'Category' }}</h6>
         <div class="add__preview-image_container">
           <img :src="selectedImageURL ? selectedImageURL : defaultImageURL" alt="" />
         </div>
         <div class="add__preview-card_details sm-top-1">
-          <h2 class="fw-600">{{ title ? title : 'Card Title' }}</h2>
+          <h5 class="fw-600">{{ title ? title : 'Card Title' }}</h5>
           <p>{{ desc ? desc : 'Card Description' }}</p>
           <div class="add__preview-card-details-price">
-            <h4 class="fw-600 sm-top-1">
+            <h5 class="fw-600 sm-top-1">
               <span class="fw-600">{{ formattedPrice }}</span>
-            </h4>
+            </h5>
           </div>
         </div>
       </div>

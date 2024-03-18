@@ -92,7 +92,7 @@ onMounted(() => {
     </div>
 
     <div
-      class="popup-order__overlay w-full h-full flex justify-content-center align-items-f-end"
+      class="overlay popup-order__overlay w-full h-full flex justify-content-center align-items-f-end"
       :class="{ active: selectedItems.length > 0 }"
       @click="closePopup"
     >
@@ -121,7 +121,7 @@ onMounted(() => {
     </div>
 
     <div
-      class="popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
       :class="{ active: showConfirmationPopup }"
       @click="closePopup()"
     >
@@ -199,14 +199,10 @@ onMounted(() => {
 }
 
 .popup-order__overlay {
-  position: fixed;
-  bottom: 0;
-  left: 0;
   background: rgba(0, 0, 0, 0.5);
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
-  z-index: 999;
 }
 
 .popup-order__overlay.active {
@@ -221,23 +217,12 @@ onMounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 514px;
   overflow: hidden;
-  transform: translateY(50%);
-  transition: transform 0.3s ease;
-}
-
-.popup-order__overlay.active .popup-order__container {
-  transform: translateY(0);
 }
 
 .popup-confirmation__overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
-  z-index: 999;
 }
 
 .popup-confirmation__overlay.active {
