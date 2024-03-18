@@ -36,7 +36,7 @@ onMounted(() => {
 
 <template>
   <div
-    class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2 overflow-hidden"
+    class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2"
   >
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
@@ -50,7 +50,7 @@ onMounted(() => {
 
       <div class="dashboard-recent__container flex fd-col">
         <h6>Baru Ditambahkan</h6>
-        <div class="dashboard__card-container flex fd-row pd[0.5]">
+        <div class="dashboard__card-container flex fd-row pd[0.5] vw-80">
           <div
             v-for="(item, index) in dataDashboard"
             :key="index"
