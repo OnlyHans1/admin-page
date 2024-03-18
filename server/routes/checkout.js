@@ -20,7 +20,7 @@ router.get('/nationality-list', async (req, res) => {
 })
 
 router.post('/create-transaction', async function (req, res, next) {
-  const { nationality, date, total, method, order } = req.body
+  const { nationality, date, total, method, discount, order } = req.body
 
   try {
     // Menemukan pengguna dengan nama "Teddy Lazuardi"
@@ -46,6 +46,7 @@ router.post('/create-transaction', async function (req, res, next) {
         total: total,
         method: method,
         status: 'DAPAT_DIGUNAKAN',
+        discount: discount,
         user: {
           connect: {
             id: user.id

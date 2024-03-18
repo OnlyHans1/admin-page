@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
+import DashboardHelper from '@/utilities/DashboardHelper'
 const route = useRouter()
 
 const {
@@ -13,7 +14,6 @@ const {
   paymentSelect,
   showPaymentSelect,
   selectPayment,
-  isMancanegara,
   addTicket,
   reduceTicket,
   selectedDate,
@@ -21,12 +21,13 @@ const {
   biayaLayanan,
   biayaJasa,
   formatCurrency,
-  ticketsPrice,
   formattedTotalHarga,
   formattedTotalTagihan,
   totalTicketCount,
   createTransaction
 } = CheckoutHelper
+
+const { checkSessionStorage, isMancanegara } = DashboardHelper
 
 const checkoutTransaction = () => {
   createTransaction()
@@ -38,23 +39,24 @@ const checkoutTransaction = () => {
 
 onMounted(() => {
   getItemsFromSessionStorage()
+  checkSessionStorage()
 })
 </script>
 
 <template>
   <main>
-    <div class="checkout__container">
+    <div class="checkout__container sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
           <form>
-            <h1>Pemesanan Langsung</h1>
             <div class="order-details__checkout">
+              <h4>Pemesanan Langsung</h4>
               <div class="order-details__customer">
                 <div class="order-details__content">
                   <ph-user :size="24" weight="bold" class="header-icons" />
                   <p>Detail Pemesan</p>
                 </div>
-                <div class="order-details__content">
+                <div class="order-details__content w-full">
                   <p class="fs-h5 fw-700">Teddy Lazuardi</p>
                   <p>- (TeddyLazuardi@gmail.com)</p>
                 </div>
@@ -78,16 +80,16 @@ onMounted(() => {
                   </div>
                   <p>MM/DD/YYYY</p>
                 </div>
-                <div class="order-details__ticket" v-for="(ticket, index) in items" :key="index">
+                <div class="order-details__ticket" v-for="(item, index) in items" :key="index">
                   <div class="order-details__ticket-items">
-                    <p>{{ ticket.name }}</p>
-                    <span>Rp {{ ticketsPrice(index) }},00</span>
+                    <p>{{ item.name }} ({{ item.category }})</p>
+                    <span>Rp {{ formatCurrency(item.price) }},00</span>
                   </div>
                   <div class="order-details__ticket-value">
                     <button @click="reduceTicket(index)" type="button">
                       <ph-minus :size="14" weight="bold" />
                     </button>
-                    <p>{{ ticket.quantity }}</p>
+                    <p>{{ item.amount }}</p>
                     <button @click="addTicket(index)" type="button">
                       <ph-plus :size="14" weight="bold" />
                     </button>
@@ -160,16 +162,16 @@ onMounted(() => {
                 v-for="(item, index) in items"
                 :key="index"
               >
-                <p>{{ item.name }} x{{ item.quantity }}</p>
-                <p>Rp {{ (item.price * item.quantity).toLocaleString('id-ID') }},00</p>
+                <p>{{ item.name }} x{{ item.amount }}</p>
+                <p>Rp {{ (item.price * item.amount).toLocaleString('id-ID') }},00</p>
               </div>
-              <div class="checkout__details-pricing" v-if="discountValue">
+              <div class="checkout__details-pricing" v-if="discountValue > 0">
                 <p>Diskon</p>
                 <p>{{ discountValue }}%</p>
               </div>
               <div class="checkout__details-pricing">
                 <p v-if="items.length > 1">Total Tiket ({{ totalTicketCount }} Tiket)</p>
-                <p v-else="items.length > 1">Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
+                <p v-else>Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
                 <p>{{ formattedTotalHarga }}</p>
               </div>
             </div>
@@ -215,11 +217,6 @@ main {
 
 .checkout__form-container {
   width: 100%;
-}
-
-.order-details__container {
-  width: 400px;
-  margin-left: 5%;
 }
 
 .header-icons {

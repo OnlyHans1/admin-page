@@ -1,5 +1,7 @@
 import { ref, computed } from 'vue'
-import tempCheckoutData from '@/data/tempCheckoutData'
+import DashboardHelper from '@/utilities/DashboardHelper'
+
+const { checkSessionStorage, isMancanegara } = DashboardHelper
 
 /* NationalityDropdown Helper */
 const nationalityData = ref([])
@@ -79,24 +81,60 @@ const closeDropdownOutside = (event) => {
 
 /* CheckoutView Helper */
 
-const { getItemsFromSessionStorage } = tempCheckoutData
+const getItemsFromSessionStorage = () => {
+  const savedItems = sessionStorage.getItem('selectedItems')
+  if (savedItems) {
+    items.value = JSON.parse(savedItems)
+  }
+  return []
+}
 
-const items = ref(getItemsFromSessionStorage())
-
-const isMancanegara = true
+const items = ref([])
 
 function addTicket(index) {
-  items.value[index].quantity++
+  items.value[index].amount++
+  saveToSessionStorage()
 }
 
 function reduceTicket(index) {
-  if (items.value[index].quantity > 1) {
-    items.value[index].quantity--
+  if (items.value[index].amount > 1) {
+    items.value[index].amount--
+    saveToSessionStorage()
   }
 }
 
+const saveToSessionStorage = () => {
+  // Ambil data yang telah disimpan sebelumnya dari sessionStorage
+  let storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
+
+  // Iterasi melalui selectedItems untuk memeriksa apakah item sudah ada di storedItems
+  items.value.forEach((item) => {
+    const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
+
+    if (item.amount === 0) {
+      // Jika amount dari item adalah 0, hapus item tersebut dari storedItems
+      if (existingItemIndex !== -1) {
+        storedItems.splice(existingItemIndex, 1)
+      }
+    } else {
+      if (existingItemIndex !== -1) {
+        // Jika item sudah ada di storedItems, tambahkan jumlahnya
+        storedItems[existingItemIndex].amount = item.amount
+      } else {
+        // Jika item belum ada, tambahkan item baru
+        storedItems.push(item)
+      }
+    }
+  })
+
+  // Simpan data yang telah digabung kembali ke sessionStorage
+  sessionStorage.setItem('selectedItems', JSON.stringify(storedItems))
+  isMancanegara.value = false
+  checkSessionStorage()
+}
+
 const selectedDate = ref(null)
-const discountValue = ref(null)
+const discountValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
@@ -108,17 +146,13 @@ const dateTime = () => {
 }
 
 const formatCurrency = (amount) => {
-  return amount.toLocaleString('id-ID')
+  return parseInt(amount).toLocaleString('id-ID')
 }
 
-const ticketsPrice = (index) => {
-  const total = items.value[index].price
-  return total.toLocaleString('id-ID')
-}
 const totalHarga = computed(() => {
   let total = 0
   for (const ticket of items.value) {
-    total += ticket.price * ticket.quantity
+    total += ticket.price * ticket.amount
   }
   return total * (1 - (discountValue.value || 0) / 100)
 })
@@ -146,7 +180,7 @@ const formattedTotalTagihan = computed(() => {
 const totalTicketCount = computed(() => {
   let totalCount = 0
   for (const ticket of items.value) {
-    totalCount += ticket.quantity
+    totalCount += ticket.amount
   }
   return totalCount
 })
@@ -164,7 +198,7 @@ const selectPayment = (paymentMethod) => {
 const createTransaction = async () => {
   const order = items.value.map((item) => ({
     id: item.id,
-    amount: item.quantity
+    amount: item.amount
   }))
   dateTime()
   try {
@@ -178,6 +212,7 @@ const createTransaction = async () => {
         date: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
+        discount: discountValue > 0 ? `${discountValue.value}%` : null,
         order: order
       })
     })
@@ -209,7 +244,6 @@ export default {
   paymentSelect,
   showPaymentSelect,
   selectPayment,
-  isMancanegara,
   addTicket,
   reduceTicket,
   dateTime,
@@ -218,7 +252,6 @@ export default {
   biayaLayanan,
   biayaJasa,
   formatCurrency,
-  ticketsPrice,
   totalHarga,
   formattedTotalHarga,
   totalTagihan,
