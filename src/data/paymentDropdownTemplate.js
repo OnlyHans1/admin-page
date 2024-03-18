@@ -14,7 +14,7 @@ const paymentTemplate = ref([
   },
   {
     title: 'Mobile Banking BJB',
-    description: `Login Aplikasi DIGI by bank bjb/Digi Mobile 
+    description: `Login Aplikasi DIGI by bank bjb/Digi Mobile
     Masukan Kode Akses Digi Mobile
     Pilih Menu Transfer
     Pilih Menu Virtual Account

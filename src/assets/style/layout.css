@@ -11,8 +11,33 @@
 .w-full {
   width: 100%;
 }
+.w-half {
+  width: 50%;
+}
 .h-full {
   height: 100%;
+}
+.h-half {
+  height: 50%;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+.overflow-hidden {
+  overflow: hidden;
+}
+.overflow-scroll {
+  overflow: scroll;
+}
+.overflow-visible {
+  overflow: visible;
+}
+.to-ellipsis {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .align-items-f-start {
@@ -69,9 +94,21 @@
 .justify-content-sa {
   justify-content: space-around;
 }
+.text-align-center {
+  text-align: center;
+}
+.text-align-end {
+  text-align: end;
+}
+.text-align-justify {
+  text-align: justify;
+}
+.text-align-start {
+  text-align: start;
+}
 
 /* Padding */
-.pd\-\[0\.5\] {
+.pd\[0\.5\] {
   padding: 0.5rem;
 }
 .pd-1 {

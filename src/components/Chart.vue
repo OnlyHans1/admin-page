@@ -112,7 +112,7 @@ const chartOptions = ref({
         <p class="revenue-details__desc-subtitle">{{ targetDate }}</p>
       </div>
       <div class="revenue-details__legend">
-        <div class="revenue-details__legend-item" v-for="(item, index) in dataSeries" :key="index">
+        <div class="revenue-details__legend-item flex align-items-center" v-for="(item, index) in dataSeries" :key="index">
           <span
             class="revenue-details__legend-color"
             :style="{ backgroundColor: item.color }"
@@ -176,6 +176,7 @@ const chartOptions = ref({
 
 .revenue-details__legend-name {
   font-size: 9px;
+  line-height: 14px;
 }
 
 .apexcharts-xaxis-label tspan {

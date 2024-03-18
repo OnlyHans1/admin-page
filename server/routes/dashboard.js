@@ -12,6 +12,7 @@ router.get('/order-list', async (req, res) => {
         name: true,
         category: true,
         price: true,
+        createdAt: true
       },
     });
     res.status(200).json(orders);

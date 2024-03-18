@@ -51,7 +51,7 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
+          <tr v-if="dataInvoice" v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
             <td class="invoice-table__data">{{ index + 1 }}</td>
             <td class="invoice-table__data">{{ item.transaction.user.name }}</td>
             <td class="invoice-table__data">{{ item.order.name }}</td>

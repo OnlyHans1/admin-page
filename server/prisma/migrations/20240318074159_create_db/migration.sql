@@ -3,8 +3,10 @@ CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
+    `number` VARCHAR(191) NULL,
     `password` VARCHAR(50) NOT NULL,
     `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
+    `nationalityId` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -19,6 +21,7 @@ CREATE TABLE `Order` (
     `price` DECIMAL(18, 2) NOT NULL,
     `category` ENUM('UMUM', 'PELAJAR', 'MANCANEGARA') NULL,
     `interval` ENUM('PERMINGGU', 'PERBULAN', 'PERTAHUN') NULL,
+    `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -28,9 +31,11 @@ CREATE TABLE `Transaction` (
     `id` VARCHAR(191) NOT NULL,
     `total` DECIMAL(18, 2) NOT NULL,
     `method` VARCHAR(191) NOT NULL,
-    `date` DATETIME(3) NOT NULL,
-    `userID` VARCHAR(191) NOT NULL,
     `status` ENUM('SUDAH_DIGUNAKAN', 'DAPAT_DIGUNAKAN', 'EXPIRED', 'MENUNGGU_PEMBAYARAN') NOT NULL,
+    `date` DATETIME(3) NOT NULL,
+    `discount` VARCHAR(191) NOT NULL,
+    `userID` VARCHAR(191) NOT NULL,
+    `nationalityId` VARCHAR(191) NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -45,8 +50,23 @@ CREATE TABLE `DetailTrans` (
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
+-- CreateTable
+CREATE TABLE `Nationality` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `code` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `User` ADD CONSTRAINT `User_nationalityId_fkey` FOREIGN KEY (`nationalityId`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
 -- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_nationalityId_fkey` FOREIGN KEY (`nationalityId`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_transactionId_fkey` FOREIGN KEY (`transactionId`) REFERENCES `Transaction`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

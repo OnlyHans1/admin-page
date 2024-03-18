@@ -20,7 +20,7 @@ router.post('/order-details', async function (req, res, next) {
 
     if (existingOrder) {
       // Jika data sudah ada, kirim respon ke klien
-      return res.status(400).json({ error: 'Tiket dengan nama dan kategori yang sama sudah ada' })
+      return res.status(400).json({ error: 'Order dengan nama dan kategori yang sama sudah ada' })
     } else {
       // Jika data belum ada, buat entri baru
       await prisma.order.create({
@@ -34,10 +34,10 @@ router.post('/order-details', async function (req, res, next) {
       })
 
       // Kirim respon ke klien
-      return res.status(200).json({ message: 'Tiket sudah berhasil dibuat' })
+      return res.status(200).json({ message: 'Order sudah berhasil dibuat' })
     }
   } catch (error) {
-    console.error('Error memasukkan tiket:', error)
+    console.error('Error membuat order:', error)
     return res.status(500).json({ error: 'Terjadi kesalahan saat memproses permintaan' })
   }
 })
