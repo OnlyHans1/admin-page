@@ -42,7 +42,7 @@ const { selectedItem } = defineProps(['selectedItem'])
   padding: 20px;
   border-radius: 10px;
   width: 365px;
-  height: 574px;
+  height: 620px;
   font-family: 'Poppins';
   display: flex;
   flex-direction: column;
@@ -54,8 +54,8 @@ const { selectedItem } = defineProps(['selectedItem'])
   margin-bottom: 20px;
 }
 .invoice-detail__content-img img {
-  width: 140px;
-  height: 145px;
+  width: 130px;
+  height: 135px;
 }
 .invoice-detail__data-title {
   font-size: 20px;
@@ -65,6 +65,7 @@ const { selectedItem } = defineProps(['selectedItem'])
   font-size: 16px;
   margin-bottom: 5px;
   margin-left: 10px;
+
 }
 .invoice-detail__button {
   display: flex;

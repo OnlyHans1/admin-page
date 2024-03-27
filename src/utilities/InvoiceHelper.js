@@ -3,9 +3,17 @@ import { ref } from 'vue'
 /* InvoiceView Helper */
 const dataInvoice = ref([])
 
+const getSearchQuery = (query) => {
+  getSearchQuery.value = query
+}
+
 const fetchTransactionList = async () => {
   try {
-    const response = await fetch('http://localhost:3000/invoice/transaction-list')
+    let url = 'http://localhost:3000/invoice/transaction-list'
+    if (searchQuery.value) {
+      url += `?search=${encodeURIComponent(searchQuery.value)}`
+    }
+    const response = await fetch(url)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -16,7 +24,7 @@ const fetchTransactionList = async () => {
   }
 }
 
-const searchQuery = ref('')
+const searchQuery = ref(null)
 const selectedItem = ref(null)
 
 const splitDate = (dateTime) => {
@@ -100,6 +108,7 @@ function capitalizeFirstLetter(str) {
 
 export default {
   dataInvoice,
+  getSearchQuery,
   fetchTransactionList,
   searchQuery,
   selectedItem,

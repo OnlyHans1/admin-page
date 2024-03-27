@@ -6,6 +6,15 @@ const prisma = new PrismaClient()
 router.get('/transaction-list', async (req, res) => {
   try {
     const detailTrans = await prisma.detailTrans.findMany({
+      where: req.query.search ? { 
+        transaction: { 
+          user : {
+          name: { 
+            contains: req.query.search, 
+            } 
+          } 
+        }
+      } : {},
       select: {
         order: {
           select: {
@@ -26,12 +35,15 @@ router.get('/transaction-list', async (req, res) => {
           }
         }
       }
-    })
-    res.status(200).json(detailTrans)
+    });
+    
+    res.status(200).json(detailTrans);
   } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: 'Internal server error' })
+    console.error(error);
+    res.status(500).json({ error: 'Internal server error' });
   }
-})
+});
+
+
 
 module.exports = router

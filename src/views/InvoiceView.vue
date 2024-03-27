@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
 import InvoiceHelper from '@/utilities/InvoiceHelper'
 
 const {
   dataInvoice,
+  getSearchQuery,
   fetchTransactionList,
   searchQuery,
   selectedItem,
@@ -12,6 +13,17 @@ const {
   detailPopup,
   showDetail
 } = InvoiceHelper
+
+watch(
+  () => searchQuery.value,
+  (newValue) => {
+    if (typeof newValue === 'string') {
+      searchQuery.value = newValue.toLowerCase()
+      getSearchQuery(searchQuery.value)
+      fetchTransactionList()
+    }
+  }
+)
 
 onMounted(() => {
   fetchTransactionList()
