@@ -39,6 +39,10 @@ const navigateToAdd = () => {
   showConfirmationPopup.value = true
 }
 
+const getImageURL = (imageName) => {
+  return `http://localhost:3000/uploads/${imageName}`
+}
+
 const selectItem = (item) => {
   const storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
   const existingItem = storedItems.find((i) => i.id === item.id)
@@ -176,6 +180,7 @@ export default {
   dataDashboard,
   isMancanegara,
   fetchOrderList,
+  getImageURL,
   capitalizeFirstLetter,
   formatCurrency,
   navigateToAdd,

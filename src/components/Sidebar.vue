@@ -39,16 +39,16 @@ determineActiveLink();
     <div class="navbar-links">
       <!-- Menggunakan router-link dengan params -->
       <div class="navbar-links-container flex fd-col">
-        <RouterLink to="/" :class="{ active: activeLink === 0 }">
+        <RouterLink to="/" :class="{ active: activeLink === 0 }" name="Dashboard">
           <ph-house :size="24" weight="bold" />
         </RouterLink>
-        <RouterLink to="/invoice" :class="{ active: activeLink === 1 }">
+        <RouterLink to="/invoice" :class="{ active: activeLink === 1 }" name="Invoice">
           <ph-envelope-simple :size="24" weight="bold" />
         </RouterLink>
-        <RouterLink to="/report" :class="{ active: activeLink === 2 }">
+        <RouterLink to="/report" :class="{ active: activeLink === 2 }" name="Report">
           <ph-currency-circle-dollar :size="24" weight="bold" />
         </RouterLink>
-        <RouterLink to="/checkout" :class="{ active: activeLink === 3 }">
+        <RouterLink to="/checkout" :class="{ active: activeLink === 3 }" name="Checkout">
           <ph-shopping-cart-simple :size="24" weight="bold" />
         </RouterLink>
       </div>
@@ -121,7 +121,7 @@ nav {
   z-index: 1; /* Ensures it's above other elements */
   transition: background-color 0.1s ease; /* Smooth transition for background color */
 }
-i:hover::after {
+a:hover::after {
     content: attr(name);
     position: absolute;
     top: 0.5rem;
@@ -137,7 +137,7 @@ i:hover::after {
     white-space: nowrap;
     z-index: 9999;
 }
-.active i:hover::after {
+.active a:hover::after {
   transform: translateX(20%);
 }
 </style>

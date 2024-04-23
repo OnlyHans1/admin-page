@@ -8,6 +8,7 @@ const {
   showConfirmationPopup,
   dataDashboard,
   fetchOrderList,
+  getImageURL,
   capitalizeFirstLetter,
   formatCurrency,
   navigateToAdd,
@@ -35,9 +36,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2"
-  >
+  <div class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2">
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
         <button class="dashboard-add__button" @click="navigateToAdd">
@@ -57,7 +56,7 @@ onMounted(() => {
             class="dashboard__card"
             @click="handleItemClick(item)"
           >
-            <img :src="item.image ? item.image : 'https://via.placeholder.com/230X130'" />
+            <img :src="item.image ? getImageURL(item.image) : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'" />
             <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
               <p class="to-ellipsis">{{ item.name }}</p>
               <p>{{ capitalizeFirstLetter(item.category) }}</p>
@@ -81,7 +80,14 @@ onMounted(() => {
           class="dashboard__card"
           @click="handleItemClick(item)"
         >
-          <img :src="item.image ? item.image : 'https://via.placeholder.com/230X130'" />
+          <img
+            :src="
+              item.image
+                ? getImageURL(item.image)
+                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+            "
+            loading="lazy"
+          />
           <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
             <p class="to-ellipsis">{{ item.name }}</p>
             <p>{{ capitalizeFirstLetter(item.category) }}</p>
@@ -98,22 +104,21 @@ onMounted(() => {
     >
       <div
         class="popup-order__container flex align-items-center justify-content-sb gap-1"
+        v-if="selectedItems.length > 0"
         @click.stop
-        v-for="(item, index) in selectedItems"
-        :key="index"
       >
         <div
           class="popup-order__item-details flex fd-col justify-content-sb align-items-center w-half"
         >
-          <h6 class="text-align-center to-ellipsis">{{ item.name }}</h6>
-          <h4>{{ capitalizeFirstLetter(item.category) }}</h4>
+          <h6 class="text-align-center to-ellipsis">{{ selectedItems[0].name }}</h6>
+          <h4>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h4>
         </div>
         <div class="popup-order__amount-controls flex align-items-center pd[0.5]">
-          <button @click.stop="decreaseAmount(item)">
+          <button @click.stop="decreaseAmount(selectedItems[0])">
             <ph-minus-circle :size="24" />
           </button>
-          <h4>{{ item.amount }}</h4>
-          <button @click.stop="increaseAmount(item)">
+          <h4>{{ selectedItems[0].amount }}</h4>
+          <button @click.stop="increaseAmount(selectedItems[0])">
             <ph-plus-circle :size="24" />
           </button>
         </div>
@@ -186,9 +191,11 @@ onMounted(() => {
   cursor: pointer;
 }
 
-.dashboard__card img {
+.dashboard__card > img {
+  object-fit: cover;
+  object-position: center;
   height: 140px;
-  background-color: #838383;
+  width: 230px;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);

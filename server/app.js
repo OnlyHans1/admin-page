@@ -3,6 +3,7 @@ var express = require('express')
 var cors = require('cors')
 var path = require('path')
 var cookieParser = require('cookie-parser')
+var bodyParser = require('body-parser')
 var logger = require('morgan')
 
 var dashboardRouter = require('./routes/dashboard')
@@ -19,12 +20,16 @@ app.use(cors())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json())
 
 app.use('/', dashboardRouter)
 app.use('/add', addRouter)
 app.use('/invoice', invoiceRouter)
 app.use('/report', reportRouter)
 app.use('/checkout', checkoutRouter)
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 var port = normalizePort(process.env.PORT || '3000')
 app.listen(port, () =>

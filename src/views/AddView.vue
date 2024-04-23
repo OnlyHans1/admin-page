@@ -11,6 +11,7 @@ const desc = ref('')
 const category = ref('') //Dont remove until further notice - azarel
 const price = ref('')
 const selectedImageURL = ref('') // State to hold the selected image URL
+const selectedImage = ref(null) // State to hold the selected image File
 const defaultImageURL = ref(
   'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
 )
@@ -22,20 +23,21 @@ const alertType = ref('')
 const alertTitle = ref('')
 const message = ref('')
 
+
 const insertDatabase = async () => {
   try {
+    const formData = new FormData()
+    formData.append('image', selectedImage.value)
+    formData.append('title', title.value)
+    formData.append('desc', desc.value)
+    formData.append('category', category.value.toUpperCase())
+    formData.append('price', parseFloat(price.value))
+
+    console.log([...formData])
+
     const response = await fetch('http://localhost:3000/add/order-details', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        image: selectedImageURL.value,
-        name: title.value,
-        desc: desc.value,
-        price: parseInt(price.value),
-        category: category.value.toUpperCase()
-      })
+      body: formData
     })
 
     if (!response.ok) {
@@ -60,6 +62,7 @@ const handleFileSelected = (file) => {
   // Convert the selected file to URL
   const imageURL = URL.createObjectURL(file)
   // Update the state with the selected image URL
+  selectedImage.value = file
   selectedImageURL.value = imageURL
 }
 
