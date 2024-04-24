@@ -116,17 +116,18 @@ nav {
   height: 3rem; /* Maintain fixed size */
   display: flex;
   justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */
+  align-items: center; /* Center vertically */  
   cursor: pointer;
-  z-index: 1; /* Ensures it's above other elements */
-  transition: background-color 0.1s ease; /* Smooth transition for background color */
+  z-index: 999; /* Ensures it's above other elements */
+  transition: background-color 0.4s ease; /* Smooth transition for background color */
 }
+
 a:hover::after {
     content: attr(name);
     position: absolute;
     top: 0.5rem;
-    left: 2.5rem;
-    background-color: rgba(0, 0, 0, 0.8);
+    left: 2rem;
+    background-color: rgb(0, 0, 0, 0.8);
     color: #fff;
     padding: 0.5rem;
     border-radius: 0.5rem;
@@ -137,7 +138,7 @@ a:hover::after {
     white-space: nowrap;
     z-index: 9999;
 }
-.active a:hover::after {
-  transform: translateX(20%);
+.active:hover::after {
+  transform: translateX(15%);
 }
 </style>

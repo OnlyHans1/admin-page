@@ -1,10 +1,16 @@
 import { ref, computed } from 'vue'
+import AlertCard from '@/components/AlertCard.vue'
 
 const selectedItems = ref([])
 const showConfirmationPopup = ref(false)
 
 const dataDashboard = ref([])
 const isMancanegara = ref(false)
+
+const showAlert = ref(false)
+const alertType = ref('')
+const alertTitle = ref('')
+const alertMessage = ref('')
 
 const fetchOrderList = async () => {
   try {
@@ -107,6 +113,7 @@ const saveToSessionStorage = () => {
 
 const checkSessionStorage = () => {
   const sessionStorageData = JSON.parse(sessionStorage.getItem('selectedItems'))
+  console.log(sessionStorageData)
 
   // Memeriksa apakah sessionStorageData memiliki nilai
   if (sessionStorageData && sessionStorageData.length > 0) {
@@ -120,24 +127,20 @@ const checkSessionStorage = () => {
       }
     }
     return ''
-  } else {
-    // Return sesuai kebutuhan jika sessionStorageData kosong
-    return
   }
 }
 
 // Fungsi untuk menangani pemilihan kategori
-const handleCategorySelection = () => {
-  const disabledCategory = ref(checkSessionStorage())
+const handleCategorySelection = (filterCategory) => {
   // Jika kategori Mancanegara dipilih dan tidak ada item dengan kategori MANCANEGARA di sessionStorage, nonaktifkan kategori lainnya
-  if (disabledCategory.value === 'MANCANEGARA') {
+  if (filterCategory === 'MANCANEGARA') {
     // Nonaktifkan item dengan kategori UMUM dan PELAJAR
     dataDashboard.value.forEach((item) => {
       if (item.category !== 'MANCANEGARA') {
         item.disabled = true
       }
     })
-  } else if (disabledCategory.value === 'NOT_MANCANEGARA') {
+  } else if (filterCategory === 'NOT_MANCANEGARA') {
     // Nonaktifkan item dengan kategori MANCANEGARA
     dataDashboard.value.forEach((item) => {
       if (item.category === 'MANCANEGARA') {
@@ -154,9 +157,20 @@ const handleCategorySelection = () => {
 
 // Fungsi untuk menampilkan alert saat item nonaktif dipilih
 const handleItemClick = (item) => {
-  handleCategorySelection()
+  const filterCategory = ref(checkSessionStorage())
+  handleCategorySelection(filterCategory.value)
   if (item.disabled) {
-    alert('Coba pilih item lain dengan kategori yang sesuai!')
+    showAlert.value = true
+    alertTitle.value = 'Error'
+    alertType.value = 'danger' 
+
+    if (filterCategory.value === 'MANCANEGARA') {
+    // Set your alert type
+    alertMessage.value = `Kamu tidak bisa memilih paket selain kategori mancanegara!` // Set your alert message
+    } else {
+    alertMessage.value = `Kamu tidak bisa memilih paket selain kategori umum atau pelajar! ` // Set your alert message
+    }
+    
   } else {
     selectItem(item)
   }
@@ -190,5 +204,9 @@ export default {
   saveToSessionStorage,
   handleItemClick,
   checkSessionStorage,
-  groupedItems
+  groupedItems, 
+  showAlert,
+  alertTitle,
+  alertType,
+  alertMessage
 }

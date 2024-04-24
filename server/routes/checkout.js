@@ -39,7 +39,7 @@ router.post('/create-transaction', async function (req, res, next) {
       data: {
         nationality: {
           connect: {
-            id: nationality
+            id: nationality ? nationality : ''
           }
         },
         date: date,

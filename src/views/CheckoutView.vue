@@ -81,18 +81,20 @@ onMounted(() => {
                   <p>MM/DD/YYYY</p>
                 </div>
                 <div class="order-details__ticket" v-for="(item, index) in items" :key="index">
-                  <div class="order-details__ticket-items">
-                    <p>{{ item.name }} ({{ item.category }})</p>
-                    <span>Rp {{ formatCurrency(item.price) }},00</span>
-                  </div>
-                  <div class="order-details__ticket-value">
-                    <button @click="reduceTicket(index)" type="button">
-                      <ph-minus :size="14" weight="bold" />
-                    </button>
-                    <p>{{ item.amount }}</p>
-                    <button @click="addTicket(index)" type="button">
-                      <ph-plus :size="14" weight="bold" />
-                    </button>
+                  <div v-if="item.amount > 0">
+                    <div class="order-details__ticket-items">
+                      <p>{{ item.name }} ({{ item.category }})</p>
+                      <span>Rp {{ formatCurrency(item.price) }},00</span>
+                    </div>
+                    <div class="order-details__ticket-value">
+                      <button @click="reduceTicket(index)" type="button">
+                        <ph-minus :size="14" weight="bold" />
+                      </button>
+                      <p>{{ item.amount }}</p>
+                      <button @click="addTicket(index)" type="button">
+                        <ph-plus :size="14" weight="bold" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -162,8 +164,10 @@ onMounted(() => {
                 v-for="(item, index) in items"
                 :key="index"
               >
-                <p>{{ item.name }} x{{ item.amount }}</p>
-                <p>Rp {{ (item.price * item.amount).toLocaleString('id-ID') }},00</p>
+                <div v-if="item.amount > 0">
+                  <p>{{ item.name }} x{{ item.amount }}</p>
+                  <p>Rp {{ (item.price * item.amount).toLocaleString('id-ID') }},00</p>
+                </div>
               </div>
               <div class="checkout__details-pricing" v-if="discountValue > 0">
                 <p>Diskon</p>

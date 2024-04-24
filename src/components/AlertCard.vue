@@ -2,8 +2,8 @@
   <transition name="fade">
     <div v-if="showAlert" class="custom-alert" :class="[ 'alert-' + alertType]">
       <div class="alert__content">
-        <h3 class="fw-600">{{ alertTitle }}</h3>
-        <p>{{ message }}</p>
+        <h5 class="fw-600">{{ alertTitle }}</h5>
+        <p>{{ alertMessage }}</p>
       </div>
       <button @click="hideAlertHandler"><ph-x :size="20" weight="bold"/></button>
     </div>
@@ -15,7 +15,7 @@ const props = defineProps({
     showAlert: Boolean,
     alertTitle: String,
     alertType: String,
-    message: String
+    alertMessage: String
 });
 
 const hideAlertHandler = () => {

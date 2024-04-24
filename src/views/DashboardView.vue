@@ -2,6 +2,7 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import AlertCard from '@/components/AlertCard.vue';
 
 const {
   selectedItems,
@@ -17,7 +18,11 @@ const {
   decreaseAmount,
   saveToSessionStorage,
   handleItemClick,
-  groupedItems
+  groupedItems,
+  showAlert,
+  alertTitle,
+  alertType,
+  alertMessage
 } = DashboardHelper
 
 const router = useRouter()
@@ -32,10 +37,17 @@ watch(
 
 onMounted(() => {
   fetchOrderList()
-})
+});
 </script>
 
 <template>
+  <AlertCard
+    :showAlert="showAlert"
+    :alertTitle="alertTitle"
+    :alertType="alertType"
+    :alertMessage="alertMessage"
+    @hideAlert="showAlert = false"
+  />
   <div class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2">
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
@@ -133,7 +145,7 @@ onMounted(() => {
       <div class="popup-confirmation__container" @click.stop>
         <h5 class="text-align-center">Pindah ke Halaman Tambah?</h5>
         <div class="popup-confimation__button-confirmation flex justify-content-sa">
-          <button @click="router.push({ name: 'add' })">Ya</button>
+          <button @click="router.push({ name: 'add' }), closePopup()">Ya</button>
           <button @click="closePopup()">Batal</button>
         </div>
       </div>
@@ -173,6 +185,10 @@ onMounted(() => {
 .dashboard-add__button:hover {
   background-color: #4f4f4f;
   border: 2px dashed #000000;
+}
+
+.dashboard-add__button:hover + ph-plus{
+  background-color: #d9d9d9;
 }
 
 .dashboard__card-container {

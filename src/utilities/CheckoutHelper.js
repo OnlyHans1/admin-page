@@ -97,7 +97,7 @@ function addTicket(index) {
 }
 
 function reduceTicket(index) {
-  if (items.value[index].amount > 1) {
+  if (items.value[index].amount > 0) {
     items.value[index].amount--
     saveToSessionStorage()
   }
@@ -138,12 +138,6 @@ const discountValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
-
-const dateTime = () => {
-  const inputDate = new Date(selectedDate.value)
-  inputDate.setHours(inputDate.getHours() + 7)
-  selectedDate.value = inputDate
-}
 
 const formatCurrency = (amount) => {
   return parseInt(amount).toLocaleString('id-ID')
@@ -196,11 +190,17 @@ const selectPayment = (paymentMethod) => {
 }
 
 const createTransaction = async () => {
-  const order = items.value.map((item) => ({
-    id: item.id,
-    amount: item.amount
-  }))
-  dateTime()
+  const order = items.value
+    .filter((item) => item.amount > 0)
+    .map((item) => ({
+      id: item.id,
+      amount: item.amount
+    }))
+  const inputDate = new Date(selectedDate.value)
+  inputDate.setHours(inputDate.getHours() + 7)
+  selectedDate.value = inputDate
+
+  console.log(`${discountValue.value}`)
   try {
     const response = await fetch('http://localhost:3000/checkout/create-transaction', {
       method: 'POST',
@@ -212,7 +212,7 @@ const createTransaction = async () => {
         date: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
-        discount: discountValue > 0 ? `${discountValue.value}%` : null,
+        discount: discountValue.value > 0 ? `${discountValue.value}%` : '0',
         order: order
       })
     })
@@ -246,7 +246,6 @@ export default {
   selectPayment,
   addTicket,
   reduceTicket,
-  dateTime,
   selectedDate,
   discountValue,
   biayaLayanan,

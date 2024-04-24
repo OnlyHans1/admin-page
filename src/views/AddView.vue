@@ -21,7 +21,7 @@ const confirmAlert = ref(false)
 const showAlert = ref(false)
 const alertType = ref('')
 const alertTitle = ref('')
-const message = ref('')
+const alertMessage = ref('')
 
 
 const insertDatabase = async () => {
@@ -111,7 +111,7 @@ const confirm = () => {
     :showAlert="showAlert"
     :alertTitle="alertTitle"
     :alertType="alertType"
-    :message="message"
+    :alertMessage="alertMessage"
     @hideAlert="showAlert = false"
   />
   <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
