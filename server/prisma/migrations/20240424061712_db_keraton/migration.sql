@@ -1,12 +1,31 @@
 -- CreateTable
+CREATE TABLE `Cashier` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+    `email` VARCHAR(191) NOT NULL,
+    `number` VARCHAR(191) NULL,
+    `password` VARCHAR(50) NOT NULL,
+
+    UNIQUE INDEX `Cashier_email_key`(`email`),
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Guide` (
+    `id` VARCHAR(191) NOT NULL,
+    `name` VARCHAR(191) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `number` VARCHAR(191) NULL,
     `password` VARCHAR(50) NOT NULL,
-    `role` ENUM('USER', 'ADMIN') NOT NULL DEFAULT 'USER',
-    `nationalityId` VARCHAR(191) NULL,
+    `nationalityID` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -34,8 +53,11 @@ CREATE TABLE `Transaction` (
     `status` ENUM('SUDAH_DIGUNAKAN', 'DAPAT_DIGUNAKAN', 'EXPIRED', 'MENUNGGU_PEMBAYARAN') NOT NULL,
     `date` DATETIME(3) NOT NULL,
     `discount` VARCHAR(191) NOT NULL,
+    `cashback` VARCHAR(191) NOT NULL,
     `userID` VARCHAR(191) NOT NULL,
-    `nationalityId` VARCHAR(191) NULL,
+    `cashierID` VARCHAR(191) NOT NULL,
+    `nationalityID` VARCHAR(191) NULL,
+    `guideID` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -44,8 +66,8 @@ CREATE TABLE `Transaction` (
 CREATE TABLE `DetailTrans` (
     `id` VARCHAR(191) NOT NULL,
     `amount` INTEGER NOT NULL,
-    `transactionId` VARCHAR(191) NOT NULL,
-    `orderId` VARCHAR(191) NOT NULL,
+    `transactionID` VARCHAR(191) NOT NULL,
+    `orderID` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -60,16 +82,22 @@ CREATE TABLE `Nationality` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- AddForeignKey
-ALTER TABLE `User` ADD CONSTRAINT `User_nationalityId_fkey` FOREIGN KEY (`nationalityId`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `User` ADD CONSTRAINT `User_nationalityID_fkey` FOREIGN KEY (`nationalityID`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_nationalityId_fkey` FOREIGN KEY (`nationalityId`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_cashierID_fkey` FOREIGN KEY (`cashierID`) REFERENCES `Cashier`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_transactionId_fkey` FOREIGN KEY (`transactionId`) REFERENCES `Transaction`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_nationalityID_fkey` FOREIGN KEY (`nationalityID`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_orderId_fkey` FOREIGN KEY (`orderId`) REFERENCES `Order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_guideID_fkey` FOREIGN KEY (`guideID`) REFERENCES `Guide`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_transactionID_fkey` FOREIGN KEY (`transactionID`) REFERENCES `Transaction`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_orderID_fkey` FOREIGN KEY (`orderID`) REFERENCES `Order`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;

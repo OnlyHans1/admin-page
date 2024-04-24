@@ -151,25 +151,13 @@ const totalHarga = computed(() => {
   }
   return total
 })
-const formattedTotalHarga = computed(() => {
-  return totalHarga.value.toLocaleString('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+
+const totalBiaya = computed(() => {
+  return totalHarga.value + biayaLayanan.value + biayaJasa.value
 })
 
 const totalTagihan = computed(() => {
-  return totalHarga.value + biayaLayanan.value + biayaJasa.value
-})
-const formattedTotalTagihan = computed(() => {
-  return totalTagihan.value.toLocaleString('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+  return totalHarga.value - (totalHarga.value * discountValue.value / 100) - (totalHarga.value * cashbackValue.value / 100) + biayaLayanan.value + biayaJasa.value
 })
 
 const totalTicketCount = computed(() => {
@@ -258,9 +246,8 @@ export default {
   biayaJasa,
   formatCurrency,
   totalHarga,
-  formattedTotalHarga,
+  totalBiaya,
   totalTagihan,
-  formattedTotalTagihan,
   totalTicketCount,
   createTransaction
 }
