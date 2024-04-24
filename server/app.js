@@ -11,6 +11,7 @@ var addRouter = require('./routes/add')
 var invoiceRouter = require('./routes/invoice')
 var reportRouter = require('./routes/report')
 var checkoutRouter = require('./routes/checkout')
+const keratonWebsiteRouter = require('./routes/Website Keraton/controller/index')
 
 var app = express()
 
@@ -28,13 +29,14 @@ app.use('/add', addRouter)
 app.use('/invoice', invoiceRouter)
 app.use('/report', reportRouter)
 app.use('/checkout', checkoutRouter)
+app.use('/keraton', keratonWebsiteRouter)
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 var port = normalizePort(process.env.PORT || '3000')
 app.listen(port, () =>
   console.log(`
-🚀 Server ready at: http://localhost: ${port}`)
+🚀 Server ready at: http://localhost:${port}`)
 )
 
 function normalizePort(val) {

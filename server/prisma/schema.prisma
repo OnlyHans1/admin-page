@@ -9,6 +9,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Category {
+  UMUM
+  PELAJAR
+  MANCANEGARA
+}
+
+enum Interval {
+  PERMINGGU
+  PERBULAN
+  PERTAHUN
+}
+
+enum Status {
+  SUDAH_DIGUNAKAN
+  DAPAT_DIGUNAKAN
+  EXPIRED
+  MENUNGGU_PEMBAYARAN
+}
+
 model User {
   id            String        @id @default(uuid())
   name          String
@@ -19,6 +43,20 @@ model User {
   transaction   Transaction[]
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
+}
+
+model Customers {
+  id       Int      @id @default(autoincrement())
+  name     String   @db.Text
+  email    String
+  password String
+  Tokens   Tokens[]
+}
+
+model Tokens {
+  id         String    @id
+  customer   Customers @relation(fields: [customerId], references: [id])
+  customerId Int
 }
 
 model Order {
@@ -64,26 +102,32 @@ model Nationality {
   transactions Transaction[]
 }
 
-enum Role {
-  USER
-  ADMIN
+model Contents {
+  id        Int      @id @default(autoincrement())
+  subPage   SubPages @relation(fields: [subPageId], references: [id])
+  subPageId Int
+  section   Int
+  context   Json
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  Pages     Pages?   @relation(fields: [pagesId], references: [id])
+  pagesId   Int?
 }
 
-enum Category {
-  UMUM
-  PELAJAR
-  MANCANEGARA
+model Pages {
+  id        Int        @id @default(autoincrement())
+  name      String
+  updatedAt DateTime   @updatedAt
+  createdAt DateTime   @default(now())
+  Contents  Contents[]
+  SubPages  SubPages[]
 }
 
-enum Interval {
-  PERMINGGU
-  PERBULAN
-  PERTAHUN
-}
-
-enum Status {
-  SUDAH_DIGUNAKAN
-  DAPAT_DIGUNAKAN
-  EXPIRED
-  MENUNGGU_PEMBAYARAN
+model SubPages {
+  id       Int        @id @default(autoincrement())
+  name     String
+  order    Int
+  page     Pages      @relation(fields: [pageId], references: [id])
+  pageId   Int
+  Contents Contents[]
 }
