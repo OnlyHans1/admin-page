@@ -37,11 +37,6 @@ router.post('/create-transaction', async function (req, res, next) {
     // Membuat transaksi dan menghubungkannya dengan pengguna
     const transaction = await prisma.transaction.create({
       data: {
-        nationality: {
-          connect: {
-            id: nationality ? nationality : ''
-          }
-        },
         date: date,
         total: total,
         method: method,
@@ -51,7 +46,12 @@ router.post('/create-transaction', async function (req, res, next) {
           connect: {
             id: user.id
           }
-        }
+        },
+        nationality: nationality
+          ? {
+              connect: { id: nationality }
+            }
+          : {}
       }
     })
 
@@ -66,7 +66,7 @@ router.post('/create-transaction', async function (req, res, next) {
           },
           order: {
             connect: {
-              id: o.id,
+              id: o.id
             }
           }
         }

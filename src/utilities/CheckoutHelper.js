@@ -189,6 +189,12 @@ const selectPayment = (paymentMethod) => {
   paymentSelect.value = false
 }
 
+const dateTime = () => {
+  const inputDate = new Date(selectedDate.value)
+  inputDate.setHours(inputDate.getHours() + 7)
+  selectedDate.value = inputDate
+}
+
 const createTransaction = async () => {
   const order = items.value
     .filter((item) => item.amount > 0)
@@ -196,11 +202,9 @@ const createTransaction = async () => {
       id: item.id,
       amount: item.amount
     }))
-  const inputDate = new Date(selectedDate.value)
-  inputDate.setHours(inputDate.getHours() + 7)
-  selectedDate.value = inputDate
 
-  console.log(`${discountValue.value}`)
+  dateTime()
+  
   try {
     const response = await fetch('http://localhost:3000/checkout/create-transaction', {
       method: 'POST',

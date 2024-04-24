@@ -80,8 +80,8 @@ onMounted(() => {
                   </div>
                   <p>MM/DD/YYYY</p>
                 </div>
-                <div class="order-details__ticket" v-for="(item, index) in items" :key="index">
-                  <div v-if="item.amount > 0">
+                <div v-for="(item, index) in items" :key="index">
+                  <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
                       <p>{{ item.name }} ({{ item.category }})</p>
                       <span>Rp {{ formatCurrency(item.price) }},00</span>
@@ -159,13 +159,12 @@ onMounted(() => {
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
               <div
-                class="checkout__details-pricing"
                 v-if="items.length > 1"
                 v-for="(item, index) in items"
                 :key="index"
               >
-                <div v-if="item.amount > 0">
-                  <p>{{ item.name }} x{{ item.amount }}</p>
+                <div class="checkout__details-pricing" v-if="item.amount > 0">
+                  <p>{{ item.name }} ({{ item.category }}) x {{ item.amount }}</p>
                   <p>Rp {{ (item.price * item.amount).toLocaleString('id-ID') }},00</p>
                 </div>
               </div>

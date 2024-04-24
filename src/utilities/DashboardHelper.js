@@ -113,7 +113,6 @@ const saveToSessionStorage = () => {
 
 const checkSessionStorage = () => {
   const sessionStorageData = JSON.parse(sessionStorage.getItem('selectedItems'))
-  console.log(sessionStorageData)
 
   // Memeriksa apakah sessionStorageData memiliki nilai
   if (sessionStorageData && sessionStorageData.length > 0) {
