@@ -168,7 +168,7 @@ onMounted(() => {
   font-weight: 400;
   font-size: 22px;
   vertical-align: top;
-  max-width: 200px; /* Sesuaikan lebar maksimum sesuai kebutuhan Anda */
+  max-width: 200px; 
   white-space: wrap;
   overflow: hidden;
   text-overflow: ellipsis;

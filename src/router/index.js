@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import LoginPage from '@/views/LoginPage.vue'
 import DashboardView from '../views/DashboardView.vue'
 import AddView from '../views/AddView.vue'
 import CheckoutView from '../views/CheckoutView.vue'
@@ -9,6 +10,11 @@ import AfterCheckoutView from '../views/AfterCheckoutView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginPage
+    },
     {
       path: '/',
       name: 'dashboard',
