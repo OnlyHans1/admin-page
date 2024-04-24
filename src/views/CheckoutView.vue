@@ -18,6 +18,7 @@ const {
   reduceTicket,
   selectedDate,
   discountValue,
+  cashbackValue,
   biayaLayanan,
   biayaJasa,
   formatCurrency,
@@ -101,7 +102,11 @@ onMounted(() => {
               <div class="pricings-slider__container">
                 <div class="discount__slider">
                   <p class="fw-500">Diskon</p>
-                  <Slider v-model:discountValue="discountValue" />
+                  <Slider v-model:targetValue="discountValue" />
+                </div>
+                <div class="discount__slider">
+                  <p class="fw-500">Cashback</p>
+                  <Slider v-model:targetValue="cashbackValue" />
                 </div>
               </div>
               <div class="order-details__content">
@@ -158,19 +163,11 @@ onMounted(() => {
             <p class="fs-h5">Ringkasan Booking</p>
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
-              <div
-                v-if="items.length > 1"
-                v-for="(item, index) in items"
-                :key="index"
-              >
+              <div v-if="items.length > 1" v-for="(item, index) in items" :key="index">
                 <div class="checkout__details-pricing" v-if="item.amount > 0">
                   <p>{{ item.name }} ({{ item.category }}) x {{ item.amount }}</p>
                   <p>Rp {{ (item.price * item.amount).toLocaleString('id-ID') }},00</p>
                 </div>
-              </div>
-              <div class="checkout__details-pricing" v-if="discountValue > 0">
-                <p>Diskon</p>
-                <p>{{ discountValue }}%</p>
               </div>
               <div class="checkout__details-pricing">
                 <p v-if="items.length > 1">Total Tiket ({{ totalTicketCount }} Tiket)</p>
@@ -187,6 +184,17 @@ onMounted(() => {
               <div class="checkout__details-pricing">
                 <p>Biaya Jasa Aplikasi</p>
                 <p>Rp {{ formatCurrency(biayaJasa) }}</p>
+              </div>
+            </div>
+            <div class="checkout__details-pricing-container" v-if="discountValue > 0 || cashbackValue > 0">
+              <p class="fw-700 fs-h6">Potongan Harga</p>
+              <div class="checkout__details-pricing" v-if="discountValue > 0">
+                <p>Diskon</p>
+                <p>{{ discountValue }}%</p>
+              </div>
+              <div class="checkout__details-pricing" v-if="cashbackValue > 0">
+                <p>Cashback</p>
+                <p>{{ cashbackValue }}%</p>
               </div>
             </div>
             <div class="checkout__details-total">

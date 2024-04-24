@@ -8,7 +8,6 @@ const userData = [
     email: 'TeddyLazuardi@gmail.com',
     number: '085678901234',
     password: 'Teddy1234',
-    role: 'ADMIN'
   }
 ]
 

@@ -39,6 +39,11 @@ const router = createRouter({
       name: 'after-checkout',
       component: AfterCheckoutView
     },
+    {
+      path: '/:pathMatch(.*)*',
+      name: '404',
+      redirect: { name: 'dashboard' }
+    },
   ]
 })
 

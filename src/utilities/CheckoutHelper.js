@@ -135,6 +135,7 @@ const saveToSessionStorage = () => {
 
 const selectedDate = ref(null)
 const discountValue = ref(0)
+const cashbackValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
@@ -148,7 +149,7 @@ const totalHarga = computed(() => {
   for (const ticket of items.value) {
     total += ticket.price * ticket.amount
   }
-  return total * (1 - (discountValue.value || 0) / 100)
+  return total
 })
 const formattedTotalHarga = computed(() => {
   return totalHarga.value.toLocaleString('id-ID', {
@@ -216,7 +217,7 @@ const createTransaction = async () => {
         date: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
-        discount: discountValue.value > 0 ? `${discountValue.value}%` : '0',
+        discount: discountValue.value > 0 ? `${discountValue.value}%` : '0%',
         order: order
       })
     })
@@ -252,6 +253,7 @@ export default {
   reduceTicket,
   selectedDate,
   discountValue,
+  cashbackValue,
   biayaLayanan,
   biayaJasa,
   formatCurrency,
