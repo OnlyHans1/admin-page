@@ -47,3 +47,7 @@
 .transition-all-1000 {
   transition: all 1000ms ease;
 }
+
+.cursor-pointer{
+  cursor: pointer;
+}

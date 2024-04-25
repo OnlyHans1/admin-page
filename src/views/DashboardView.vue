@@ -130,29 +130,54 @@ onMounted(() => {
     </div>
 
     <div
-      class="overlay popup-order__overlay w-full h-full flex justify-content-center align-items-f-end"
+      class="overlay popup-order__overlay w-full h-full pd-sd-10 pd-top-5 pd-bottom-5"
       :class="{ active: selectedItems.length > 0 }"
       @click="closePopup"
     >
       <div
-        class="popup-order__container flex align-items-center justify-content-sb gap-1"
+        class="popup-order__container h-full"
         v-if="selectedItems.length > 0"
         @click.stop
       >
         <div
-          class="popup-order__item-details flex fd-col justify-content-sb align-items-center w-half"
+          class="popup-order__item-details flex fd-col gap[0.5] pd-2 h-full"
         >
-          <h6 class="text-align-center to-ellipsis">{{ selectedItems[0].name }}</h6>
-          <h4>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h4>
+        <div class="flex justify-content-end w-full">
+          <ph-x :size="32" weight="bold" @click="closePopup" class="cursor-pointer"/>
         </div>
-        <div class="popup-order__amount-controls flex align-items-center pd[0.5]">
-          <button @click.stop="decreaseAmount(selectedItems[0])">
-            <ph-minus-circle :size="24" />
-          </button>
-          <h4>{{ selectedItems[0].amount }}</h4>
-          <button @click.stop="increaseAmount(selectedItems[0])">
-            <ph-plus-circle :size="24" />
-          </button>
+          <div class="flex">
+            <img
+                :src="
+                  selectedItems[0].image
+                    ? getImageURL(selectedItems[0].image)
+                    : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                "
+                class="popup-order__image"
+              />
+              <div class="flex fd-col sm-sd-2">
+                <div>
+                <h4 class="fw-600">{{ selectedItems[0].name }}</h4>
+                <h6>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h6>
+                <h5 class="sm-top-1">Rp. {{ selectedItems[0].price }} / tiket</h5>
+                </div>
+                <div class="popup-order__amount-controls flex align-items-center pd[0.5] gap-1 sm-top-1">
+                  <button @click.stop="decreaseAmount(selectedItems[0])">
+                    <ph-minus-circle :size="24" />
+                  </button>
+                  <h4>{{ selectedItems[0].amount }}</h4>
+                  <button @click.stop="increaseAmount(selectedItems[0])">
+                    <ph-plus-circle :size="24" />
+                  </button>
+                </div>
+              </div>
+          </div>
+          <div class="flex fd-col justify-content-sb h-full">
+            <p>{{ selectedItems[0].desc }}</p>
+            <button class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]">
+              <ph-trash :size="16" weight="bold" />
+              <span class="fw-600">Delete</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -254,8 +279,7 @@ onMounted(() => {
 }
 
 .popup-order__container {
-  background: #d9d9d9;
-  padding: 0.5rem 1.5rem;
+  background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 514px;
@@ -293,6 +317,22 @@ onMounted(() => {
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
   color: white;
+}
+
+.popup-order__image{
+  height: auto;
+  width: 40%;
+  object-fit: cover;
+  border-radius: 0.5rem
+}
+
+.popup-order__remove-button{
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  width: 7rem;
+  background-color: var(--color-red-600);
+  color: #fff;
+  font-weight: bold;
 }
 
 .popup-confimation__button-confirmation button:first-child {

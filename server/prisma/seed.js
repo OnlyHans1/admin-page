@@ -14,7 +14,13 @@ const cashierData = [
     email: 'TeddyLazuardi@gmail.com',
     number: '085678901234',
     password: hashPassword('Teddy1234'),
-  }
+  },
+  {
+    name: 'admin',
+    email: 'admin@dewa.com',
+    number: '999999999999',
+    password: hashPassword('admin'),
+  },
 ];
 
 const orderData = [
