@@ -23,18 +23,18 @@ router.post('/create-transaction', async function (req, res, next) {
   const { nationality, date, total, method, discount, order } = req.body
 
   try {
-    // Menemukan pengguna dengan nama "Teddy Lazuardi"
-    const user = await prisma.user.findFirst({
+    // Menemukan kasir dengan nama "Teddy Lazuardi"
+    const cashier = await prisma.cashier.findFirst({
       where: {
         name: 'Teddy Lazuardi'
       }
     })
 
-    if (!user) {
-      throw new Error('Pengguna tidak ditemukan')
+    if (!cashier) {
+      throw new Error('Kasir tidak ditemukan')
     }
 
-    // Membuat transaksi dan menghubungkannya dengan pengguna
+    // Membuat transaksi dan menghubungkannya dengan kasir
     const transaction = await prisma.transaction.create({
       data: {
         date: date,
@@ -42,9 +42,9 @@ router.post('/create-transaction', async function (req, res, next) {
         method: method,
         status: 'DAPAT_DIGUNAKAN',
         discount: discount,
-        user: {
+        cashier: {
           connect: {
-            id: user.id
+            id: cashier.id
           }
         },
         nationality: nationality

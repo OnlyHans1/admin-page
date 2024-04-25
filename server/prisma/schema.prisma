@@ -9,13 +9,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+  CUSTOMER
+}
+
+enum Category {
+  UMUM
+  PELAJAR
+  MANCANEGARA
+}
+
+enum Interval {
+  PERMINGGU
+  PERBULAN
+  PERTAHUN
+}
+
+enum Status {
+  SUDAH_DIGUNAKAN
+  DAPAT_DIGUNAKAN
+  EXPIRED
+  MENUNGGU_PEMBAYARAN
+}
+
+model Cashier {
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  number      String?
+  password    String
+  transaction Transaction[]
+}
+model Guide {
+  id          String        @id @default(uuid())
+  name        String
+  transaction Transaction[]
+}
+
 model User {
   id            String        @id @default(uuid())
   name          String
   email         String        @unique
   number        String?
-  password      String        @db.VarChar(50)
-  role          Role          @default(USER)
+  password      String
   transaction   Transaction[]
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
@@ -40,20 +78,25 @@ model Transaction {
   status        Status
   date          DateTime
   discount      String
-  user          User          @relation(fields: [userID], references: [id])
-  userID        String
+  cashback      String
+  user          User?         @relation(fields: [userID], references: [id])
+  userID        String?
+  cashier       Cashier?      @relation(fields: [cashierID], references: [id])
+  cashierID     String?
   detailTrans   DetailTrans[]
-  nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
-  nationalityId String?
+  nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
+  nationalityID String?
+  guide         Guide         @relation(fields: [guideID], references: [id])
+  guideID       String
 }
 
 model DetailTrans {
   id            String      @id @default(uuid())
   amount        Int
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId String
-  order         Order       @relation(fields: [orderId], references: [id])
-  orderId       String
+  transaction   Transaction @relation(fields: [transactionID], references: [id])
+  transactionID String
+  order         Order       @relation(fields: [orderID], references: [id])
+  orderID       String
 }
 
 model Nationality {

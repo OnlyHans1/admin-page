@@ -1,16 +1,21 @@
 const { PrismaClient } = require('@prisma/client')
 
 const prisma = new PrismaClient()
+const CryptoJS = require('crypto-js');
 
-const userData = [
+const hashPassword = (password) => {
+  const hashedPassword = CryptoJS.SHA256(password).toString();
+  return hashedPassword;
+};
+
+const cashierData = [
   {
     name: 'Teddy Lazuardi',
     email: 'TeddyLazuardi@gmail.com',
     number: '085678901234',
-    password: 'Teddy1234',
-    role: 'ADMIN'
+    password: hashPassword('Teddy1234'),
   }
-]
+];
 
 const orderData = [
   {
@@ -327,11 +332,11 @@ const nationalityData = [
 
 async function main() {
   console.log(`Start seeding ...`)
-  for (const u of userData) {
-    const user = await prisma.user.create({
-      data: u
+  for (const c of cashierData) {
+    const cashier = await prisma.cashier.create({
+      data: c
     })
-    console.log(`Created user with id: ${user.id}`)
+    console.log(`Created cashier with id: ${cashier.id}`)
   }
   for (const o of orderData) {
     const order = await prisma.order.create({

@@ -42,7 +42,7 @@ onMounted(() => {
         <div class="report-information__income-text flex fd-row">
           <span class="report-information__income-desc">Rp </span>
           <span class="report-information__income-details">{{
-            incomeRevenue.total
+            formatCurrency(incomeRevenue.total)
           }}</span>
         </div>
       </div>

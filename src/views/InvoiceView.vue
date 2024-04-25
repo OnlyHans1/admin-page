@@ -65,7 +65,7 @@ onMounted(() => {
         <tbody>
           <tr v-if="dataInvoice" v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
             <td class="invoice-table__data">{{ index + 1 }}</td>
-            <td class="invoice-table__data">{{ item.transaction.user.name }}</td>
+            <td class="invoice-table__data">{{ item.transaction.cashier.name }}</td>
             <td class="invoice-table__data">{{ item.order.name }}</td>
             <td class="invoice-table__data">{{ splitDate(item.transaction.date)[0] }}</td>
             <td class="invoice-table__data">{{ splitDate(item.transaction.date)[1] }}</td>
@@ -168,7 +168,7 @@ onMounted(() => {
   font-weight: 400;
   font-size: 22px;
   vertical-align: top;
-  max-width: 200px; /* Sesuaikan lebar maksimum sesuai kebutuhan Anda */
+  max-width: 200px; 
   white-space: wrap;
   overflow: hidden;
   text-overflow: ellipsis;
