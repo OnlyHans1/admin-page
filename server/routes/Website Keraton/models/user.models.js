@@ -3,8 +3,16 @@ const { prisma } = require("../../utils/prisma")
 const bcrypt = require('bcrypt')
 
 async function isExist(obj) {
-    const data = await prisma.customers.findFirst({ where: { ...obj } })
+    const data = await prisma.user.findFirst({ where: { ...obj } })
     return data
+}
+
+const getAll = async () => {
+    try{
+        return await prisma.user.findMany()
+    }catch(err){
+        throwError(err)
+    }
 }
 
 const generateToken = async () => {
@@ -15,7 +23,7 @@ const generateToken = async () => {
             tokenExist = await prisma.tokens.findUnique({ where: { id: generatedToken } }); //Check if token is existed in database
         } while (tokenExist != null)
         return generatedToken;
-    } catch (err) {
+} catch (err) {
         throwError(err)
     }
 }
@@ -23,12 +31,12 @@ const generateToken = async () => {
 const logIn = async (body) => {
     let { email, password } = body
     try {
-        const customerExist = await isExist({ email })
-        if (!customerExist) throw Error('Email didnt registered')
-        await bcrypt.compare(password, customerExist.password).then(match => { if (!match) throw Error('Password didnt Match') })
+        const userExist = await isExist({ email })
+        if (!userExist) throw Error('Email didnt registered')
+        await bcrypt.compare(password, userExist.password).then(match => { if (!match) throw Error('Password didnt Match') })
         const generatedToken = await generateToken()
-        await prisma.tokens.ceate({ data: { id: generatedToken, customerId: customerExist.id } })
-        return { generatedToken, customerExist }
+        await prisma.tokens.create({ data: { id: generatedToken, userId: userExist.id } })
+        return { generatedToken, userExist }
     } catch (err) {
         throwError(err)
     }
@@ -36,13 +44,14 @@ const logIn = async (body) => {
 
 const logOut = async (id) => {
     try{
-        return await prisma.tokens.deleteMany({ where: { customerId: id } })
+        return await prisma.tokens.deleteMany({ where: { userId: id } })
     }catch(err){
         throwError(err)
     }
 }
 
 module.exports = {
+    getAll,
     logIn,
     logOut
 }

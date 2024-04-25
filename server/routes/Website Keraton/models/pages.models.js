@@ -2,7 +2,7 @@ const { throwError } = require("../../utils/helper")
 const { prisma } = require("../../utils/prisma")
 
 async function isExist(id) {
-    const data = await prisma.pages.findFirst({ id })
+    const data = await prisma.pages.findFirst({ where: { id } })
     return data != null
 }
 
@@ -24,19 +24,38 @@ const getOne = async (id) => {
     }
 }
 
-const getAllSubPages = async (id) => {
+const getAllContent = async (id) => {
     try {
         await isExist(id).then(exist => { if (!exist) throw Error('Content ID didnt Exist') })
-        const subPages = await prisma.pages.findMany({ where: { id }, select: { name: true, SubPages: true } })
+        const subPages = await prisma.pages.findMany({ where: { id }, include: { Contents: true } })
         return subPages
     } catch (err) {
 
-    throwError(err)
+        throwError(err)
+    }
+}
+
+const create = async (data) => {
+    try {
+        return await prisma.pages.create({ data })
+    } catch (err) {
+        throwError(err)
+    }
+}
+
+const update = async (id, data) => {
+    try {
+        await isExist(id).then(exist => { if (!exist) throw Error('Content ID didnt Exist') })
+        return await prisma.pages.update({ id, data })
+    } catch (err) {
+        throwError(err)
     }
 }
 
 module.exports = {
     getAll,
     getOne,
-    getAllSubPages
+    update,
+    create,
+    getAllContent
 }

@@ -1,11 +1,22 @@
-const router = require("../..");
 const { throwError } = require("../../utils/helper");
 const { success, error } = require("../../utils/response");
+const { expressRouter } = require("../../utils/router");
 const pagesModels = require('../models/pages.models')
 
-router.get('/:id', async (req, res) => {
+expressRouter.get('/content/:id', async (req, res) => {
+    let { id } = req.params
+    try{
+        const contents = await pagesModels.getAllContent(+id)
+        return success(res, 'Success', contents)
+    }catch(err){
+        throwError(err)
+    }
+})
+
+expressRouter.get('/:id?', async (req, res) => {
     let { id } = req.params
     try {
+        console.log('sdbhjsdjbhasdbjk')
         const data = id ? await pagesModels.getOne(id) : await pagesModels.getAll()
         return success(res, 'Success', data)
     } catch (err) {
@@ -23,4 +34,4 @@ router.get('/:id', async (req, res) => {
 // })
 
 
-module.exports = router
+module.exports = expressRouter

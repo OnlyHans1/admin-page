@@ -1,9 +1,39 @@
-const router = require("../..");
+const { expressRouter } = require('../../utils/router')
 const { throwError } = require("../../utils/helper");
 const { success, error } = require("../../utils/response");
 const contentModel = require('../models/contents.models')
+const multer = require("multer");
+const crypto = require('crypto');
+const path = require('path');
 
-router.get('/:id?', async (req, res) => {
+//Start Multer
+const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
+const storage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+        cb(null, 'public/content')
+    },
+    filename: (_req, file, cb) => {
+        crypto.pseudoRandomBytes(16, (_err, raw) => {
+            cb(null, raw.toString('hex') + path.extname(file.originalname))
+        })
+    }
+})
+
+const upload = multer({
+    storage,
+    fileFilter(req, file, cb) {
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+            req.fileValidationError = 'Only image file are allowed'
+            cb(null, false)
+            return
+        }
+        cb(null, true)
+    }
+})
+//End Multer
+
+
+expressRouter.get('/:id?', async (req, res) => {
     const { id } = req.params
     try {
         const data = id ? await contentModel.getOne(+id) : await contentModel.getAll()
@@ -13,13 +43,18 @@ router.get('/:id?', async (req, res) => {
     }
 })
 
-router.post('/:id', async (req, res) => {
+expressRouter.post('/:id/:ident?', upload.array('imageList'), async (req, res) => {
+    let sendedData
     try {
-        const updatedData = await contentModel.update(id, req.body)
-        return updatedData
+        if (req.files) req.body.imageList = req.files
+        console.log(req.body)
+        if (req.params.ident != "create") {
+            sendedData = await contentModel.createUpdate('create', null, req.body)
+        } else sendedData = await contentModel.createUpdate('update', +req.params.id, req.body)
+        return sendedData
     } catch (err) {
         return error(res, err.message)
     }
 })
 
-module.exports = router
+module.exports = expressRouter

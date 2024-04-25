@@ -12,6 +12,7 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  CUSTOMER
 }
 
 enum Category {
@@ -38,25 +39,18 @@ model User {
   name          String
   email         String        @unique
   number        String?
-  password      String        @db.VarChar(50)
+  password      String
   role          Role          @default(USER)
   transaction   Transaction[]
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
-}
-
-model Customers {
-  id       Int      @id @default(autoincrement())
-  name     String   @db.Text
-  email    String
-  password String
-  Tokens   Tokens[]
+  Tokens        Tokens[]
 }
 
 model Tokens {
-  id         String    @id
-  customer   Customers @relation(fields: [customerId], references: [id])
-  customerId Int
+  id     String @id
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
 }
 
 model Order {
@@ -103,31 +97,20 @@ model Nationality {
 }
 
 model Contents {
-  id        Int      @id @default(autoincrement())
-  subPage   SubPages @relation(fields: [subPageId], references: [id])
-  subPageId Int
-  section   Int
-  context   Json
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
-  Pages     Pages?   @relation(fields: [pagesId], references: [id])
-  pagesId   Int?
+  id           Int      @id @default(autoincrement())
+  page         Pages    @relation(fields: [pageId], references: [id])
+  pageId       Int
+  sectionName  String   @db.Text
+  sectionOrder Int
+  context      Json
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
 }
 
 model Pages {
   id        Int        @id @default(autoincrement())
-  name      String
+  name      String     @unique
   updatedAt DateTime   @updatedAt
   createdAt DateTime   @default(now())
   Contents  Contents[]
-  SubPages  SubPages[]
-}
-
-model SubPages {
-  id       Int        @id @default(autoincrement())
-  name     String
-  order    Int
-  page     Pages      @relation(fields: [pageId], references: [id])
-  pageId   Int
-  Contents Contents[]
 }

@@ -16,8 +16,7 @@ const pageSeed = async () => {
         for (let page of pages) {
             await prisma.pages.upsert({
                 where: { name: page },
-                create: { name: page }, 
-                update: { name: page }
+                create: { name: page}, update: { name: page }
             })
         }
     } catch (err) {
