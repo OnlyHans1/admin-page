@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref, defineProps} from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import AlertCard from '@/components/AlertCard.vue'
 const route = useRouter()
 
 const {
@@ -18,35 +19,102 @@ const {
   reduceTicket,
   selectedDate,
   discountValue,
-  cashbackValue,
   biayaLayanan,
   biayaJasa,
   formatCurrency,
-  totalHarga,
-  totalBiaya,
-  totalTagihan,
+  formattedTotalHarga,
+  formattedTotalTagihan,
   totalTicketCount,
-  createTransaction
+  createTransaction,
+  selectedNationality,
+  
 } = CheckoutHelper
 
 const { checkSessionStorage, isMancanegara } = DashboardHelper
 
-const checkoutTransaction = () => {
-  createTransaction()
-  sessionStorage.clear()
-  setTimeout(() => {
-    route.push('/')
-  }, 3000)
+const showAlert = ref(false)
+const alertType = ref('')
+const alertTitle = ref('')
+const alertMessage = ref('')
+
+
+
+const checkoutTransaction = async () => {
+  const invalid = checkValidTransaction()
+  console.log(totalTicketCount.value)
+  if(totalTicketCount.value < 1){
+    console.log('Nyobain ererror')
+    showAlert.value = true
+    alertTitle.value = 'Error'
+    alertType.value = 'danger' // Set your alert type
+    alertMessage.value = `Pilih tipe tiket terlebih dahulu`
+
+    setTimeout(() => {
+    showAlert.value = false
+    }, 1200)
+    return
+  }
+  if (invalid.length > 0) {
+    showAlert.value = true
+    alertTitle.value = 'Error'
+    alertType.value = 'danger' // Set your alert type
+    alertMessage.value = `Isi kolom ${invalid.join(', ')} terlebih dahulu.` // Set your alert message
+    
+    setTimeout(() => {
+    showAlert.value = false
+    }, 1200)
+    return
+  }
+  
+  try {
+    await createTransaction()
+    sessionStorage.clear()
+    setTimeout(() => {
+      route.push('/')
+    }, 3000)
+  } catch (error) {
+    console.error('Gagal melakukan transaksi:', error)
+    // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai jika transaksi gagal
+  }
+}
+
+
+const checkValidTransaction = () => {
+  const invalid = []
+
+  if (isMancanegara.value) {
+    if (!selectedNationality.value) {
+      invalid.push('Kewarganegaraan')
+    }
+  }
+  if (!selectedDate.value) {
+    invalid.push(' Tanggal Pemesanan')
+  }
+
+  if (!paymentSelection.value) {
+    invalid.push(' Metode Pembayaran')
+  }
+
+  // Pastikan semua input telah diisi sesuai dengan kondisi
+  return invalid
 }
 
 onMounted(() => {
   getItemsFromSessionStorage()
   checkSessionStorage()
 })
+
+
 </script>
 
 <template>
   <main>
+    <AlertCard
+      :showAlert="showAlert"
+      :alertTitle="alertTitle"
+      :alertType="alertType"
+      :alertMessage="alertMessage"
+    />
     <div class="checkout__container sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">

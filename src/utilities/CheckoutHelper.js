@@ -135,7 +135,6 @@ const saveToSessionStorage = () => {
 
 const selectedDate = ref(null)
 const discountValue = ref(0)
-const cashbackValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
@@ -149,15 +148,27 @@ const totalHarga = computed(() => {
   for (const ticket of items.value) {
     total += ticket.price * ticket.amount
   }
-  return total
+  return total * (1 - (discountValue.value || 0) / 100)
 })
-
-const totalBiaya = computed(() => {
-  return totalHarga.value + biayaLayanan.value + biayaJasa.value
+const formattedTotalHarga = computed(() => {
+  return totalHarga.value.toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
 })
 
 const totalTagihan = computed(() => {
-  return totalHarga.value - (totalHarga.value * discountValue.value / 100) - (totalHarga.value * cashbackValue.value / 100) + biayaLayanan.value + biayaJasa.value
+  return totalHarga.value + biayaLayanan.value + biayaJasa.value
+})
+const formattedTotalTagihan = computed(() => {
+  return totalTagihan.value.toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
 })
 
 const totalTicketCount = computed(() => {
@@ -184,6 +195,8 @@ const dateTime = () => {
   selectedDate.value = inputDate
 }
 
+const checkoutStatus = ref('')
+
 const createTransaction = async () => {
   const order = items.value
     .filter((item) => item.amount > 0)
@@ -205,12 +218,14 @@ const createTransaction = async () => {
         date: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
-        discount: discountValue.value > 0 ? `${discountValue.value}%` : '0%',
+        discount: discountValue.value > 0 ? `${discountValue.value}%` : '0',
         order: order
       })
     })
+    checkoutStatus.value = 'boleh'
 
     if (!response.ok) {
+      checkoutStatus.value = 'salah'
       throw new Error('Failed to create transaction. Please try again.')
     }
   } catch (error) {
@@ -241,13 +256,14 @@ export default {
   reduceTicket,
   selectedDate,
   discountValue,
-  cashbackValue,
   biayaLayanan,
   biayaJasa,
   formatCurrency,
   totalHarga,
-  totalBiaya,
+  formattedTotalHarga,
   totalTagihan,
+  formattedTotalTagihan,
   totalTicketCount,
-  createTransaction
+  createTransaction,
+  checkoutStatus
 }
