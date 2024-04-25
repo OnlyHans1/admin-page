@@ -2,7 +2,8 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import AlertCard from '@/components/AlertCard.vue';
+import AlertCard from '@/components/AlertCard.vue'
+import CheckoutHelper from '@/utilities/CheckoutHelper'
 
 const {
   selectedItems,
@@ -25,6 +26,8 @@ const {
   alertMessage
 } = DashboardHelper
 
+const { checkoutStatus } = CheckoutHelper
+
 const router = useRouter()
 
 watch(
@@ -35,9 +38,20 @@ watch(
   { deep: true }
 )
 
+const handleCheckoutStatus = () => {
+  if (checkoutStatus.value === 'boleh') {
+    showAlert.value = true
+    alertTitle.value = 'Sukses'
+    alertType.value = 'success'
+    alertMessage.value = 'Berhasil'
+    checkoutStatus.value = ''
+  }
+}
+
 onMounted(() => {
   fetchOrderList()
-});
+  handleCheckoutStatus()
+})
 </script>
 
 <template>
@@ -68,7 +82,13 @@ onMounted(() => {
             class="dashboard__card"
             @click="handleItemClick(item)"
           >
-            <img :src="item.image ? getImageURL(item.image) : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'" />
+            <img
+              :src="
+                item.image
+                  ? getImageURL(item.image)
+                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+              "
+            />
             <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
               <p class="to-ellipsis">{{ item.name }}</p>
               <p>{{ capitalizeFirstLetter(item.category) }}</p>
@@ -187,7 +207,7 @@ onMounted(() => {
   border: 2px dashed #000000;
 }
 
-.dashboard-add__button:hover + ph-plus{
+.dashboard-add__button:hover + ph-plus {
   background-color: #d9d9d9;
 }
 
