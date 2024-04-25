@@ -4,7 +4,7 @@ CREATE TABLE `Cashier` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `number` VARCHAR(191) NULL,
-    `password` VARCHAR(50) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
 
     UNIQUE INDEX `Cashier_email_key`(`email`),
     PRIMARY KEY (`id`)
@@ -24,7 +24,7 @@ CREATE TABLE `User` (
     `name` VARCHAR(191) NOT NULL,
     `email` VARCHAR(191) NOT NULL,
     `number` VARCHAR(191) NULL,
-    `password` VARCHAR(50) NOT NULL,
+    `password` VARCHAR(191) NOT NULL,
     `nationalityID` VARCHAR(191) NULL,
 
     UNIQUE INDEX `User_email_key`(`email`),
@@ -54,8 +54,8 @@ CREATE TABLE `Transaction` (
     `date` DATETIME(3) NOT NULL,
     `discount` VARCHAR(191) NOT NULL,
     `cashback` VARCHAR(191) NOT NULL,
-    `userID` VARCHAR(191) NOT NULL,
-    `cashierID` VARCHAR(191) NOT NULL,
+    `userID` VARCHAR(191) NULL,
+    `cashierID` VARCHAR(191) NULL,
     `nationalityID` VARCHAR(191) NULL,
     `guideID` VARCHAR(191) NOT NULL,
 
@@ -85,10 +85,10 @@ CREATE TABLE `Nationality` (
 ALTER TABLE `User` ADD CONSTRAINT `User_nationalityID_fkey` FOREIGN KEY (`nationalityID`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_userID_fkey` FOREIGN KEY (`userID`) REFERENCES `User`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_cashierID_fkey` FOREIGN KEY (`cashierID`) REFERENCES `Cashier`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_cashierID_fkey` FOREIGN KEY (`cashierID`) REFERENCES `Cashier`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_nationalityID_fkey` FOREIGN KEY (`nationalityID`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;

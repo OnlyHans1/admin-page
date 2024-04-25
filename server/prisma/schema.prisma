@@ -14,7 +14,7 @@ model Cashier {
   name        String
   email       String        @unique
   number      String?
-  password    String        @db.VarChar(50)
+  password    String
   transaction Transaction[]
 }
 
@@ -29,7 +29,7 @@ model User {
   name          String
   email         String        @unique
   number        String?
-  password      String        @db.VarChar(50)
+  password      String
   transaction   Transaction[]
   nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
   nationalityID String?
@@ -55,10 +55,10 @@ model Transaction {
   date          DateTime
   discount      String
   cashback      String
-  user          User          @relation(fields: [userID], references: [id])
-  userID        String
-  cashier       Cashier       @relation(fields: [cashierID], references: [id])
-  cashierID     String
+  user          User?         @relation(fields: [userID], references: [id])
+  userID        String?
+  cashier       Cashier?      @relation(fields: [cashierID], references: [id])
+  cashierID     String?
   detailTrans   DetailTrans[]
   nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
   nationalityID String?

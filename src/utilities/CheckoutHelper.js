@@ -135,12 +135,18 @@ const saveToSessionStorage = () => {
 
 const selectedDate = ref(null)
 const discountValue = ref(0)
+const cashbackValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
 
 const formatCurrency = (amount) => {
-  return parseInt(amount).toLocaleString('id-ID')
+  return parseInt(amount).toLocaleString('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  })
 }
 
 const totalHarga = computed(() => {
@@ -150,26 +156,15 @@ const totalHarga = computed(() => {
   }
   return total * (1 - (discountValue.value || 0) / 100)
 })
-const formattedTotalHarga = computed(() => {
-  return totalHarga.value.toLocaleString('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
-})
 
 const totalTagihan = computed(() => {
   return totalHarga.value + biayaLayanan.value + biayaJasa.value
 })
-const formattedTotalTagihan = computed(() => {
-  return totalTagihan.value.toLocaleString('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  })
+
+const totalBiaya = computed(() => {
+  return totalHarga.value - (discountValue.value / 100 + cashbackValue.value / 100) + biayaLayanan.value + biayaJasa.value
 })
+
 
 const totalTicketCount = computed(() => {
   let totalCount = 0
@@ -256,13 +251,13 @@ export default {
   reduceTicket,
   selectedDate,
   discountValue,
+  cashbackValue,
   biayaLayanan,
   biayaJasa,
   formatCurrency,
   totalHarga,
-  formattedTotalHarga,
   totalTagihan,
-  formattedTotalTagihan,
+  totalBiaya,
   totalTicketCount,
   createTransaction,
   checkoutStatus

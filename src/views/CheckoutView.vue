@@ -19,11 +19,13 @@ const {
   reduceTicket,
   selectedDate,
   discountValue,
+  cashbackValue,
   biayaLayanan,
   biayaJasa,
   formatCurrency,
-  formattedTotalHarga,
-  formattedTotalTagihan,
+  totalHarga,
+  totalTagihan,
+  totalBiaya,
   totalTicketCount,
   createTransaction,
   selectedNationality,
@@ -154,7 +156,7 @@ onMounted(() => {
                   <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
                       <p>{{ item.name }} ({{ item.category }})</p>
-                      <span>Rp {{ formatCurrency(item.price) }},00</span>
+                      <span>{{ formatCurrency(item.price) }},00</span>
                     </div>
                     <div class="order-details__ticket-value">
                       <button @click="reduceTicket(index)" type="button">
@@ -235,24 +237,24 @@ onMounted(() => {
               <div v-if="items.length > 1" v-for="(item, index) in items" :key="index">
                 <div class="checkout__details-pricing" v-if="item.amount > 0">
                   <p>{{ item.name }} ({{ item.category }}) x {{ item.amount }}</p>
-                  <p>Rp {{ formatCurrency(item.price * item.amount) }}</p>
+                  <p>{{ formatCurrency(item.price * item.amount) }}</p>
                 </div>
               </div>
               <div class="checkout__details-pricing">
                 <p v-if="items.length > 1">Total Tiket ({{ totalTicketCount }} Tiket)</p>
                 <p v-else>Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
-                <p>Rp {{ formatCurrency(totalHarga) }}</p>
+                <p>{{ formatCurrency(totalHarga) }}</p>
               </div>
             </div>
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Biaya Transaksi</p>
               <div class="checkout__details-pricing">
                 <p>Biaya Layanan</p>
-                <p>Rp {{ formatCurrency(biayaLayanan) }}</p>
+                <p>{{ formatCurrency(biayaLayanan) }}</p>
               </div>
               <div class="checkout__details-pricing">
                 <p>Biaya Jasa Aplikasi</p>
-                <p>Rp {{ formatCurrency(biayaJasa) }}</p>
+                <p>{{ formatCurrency(biayaJasa) }}</p>
               </div>
             </div>
             <div
@@ -263,13 +265,13 @@ onMounted(() => {
               <div class="checkout__details-pricing" v-if="discountValue > 0">
                 <p>Diskon</p>
                 <p>
-                  Rp {{ formatCurrency((totalHarga * discountValue) / 100) }} ({{ discountValue }}%)
+                  {{ formatCurrency((totalHarga * discountValue) / 100) }} ({{ discountValue }}%)
                 </p>
               </div>
               <div class="checkout__details-pricing" v-if="cashbackValue > 0">
                 <p>Cashback</p>
                 <p>
-                  Rp {{ formatCurrency((totalHarga * cashbackValue) / 100) }} ({{ cashbackValue }})%
+                  {{ formatCurrency((totalHarga * cashbackValue) / 100) }} ({{ cashbackValue }})%
                 </p>
               </div>
             </div>
@@ -282,10 +284,10 @@ onMounted(() => {
                     'checkout__details-total--strikethrough': discountValue > 0 || cashbackValue > 0
                   }"
                 >
-                  Rp {{ formatCurrency(totalBiaya) }}
+                  {{ formatCurrency(totalBiaya) }}
                 </p>
                 <p class="fw-700 fs-h6" v-if="discountValue > 0 || cashbackValue > 0">
-                  Rp {{ formatCurrency(totalTagihan) }}
+                  {{ formatCurrency(totalTagihan) }}
                 </p>
               </div>
             </div>

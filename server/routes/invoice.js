@@ -25,7 +25,7 @@ router.get('/transaction-list', async (req, res) => {
           select: {
             date: true,
             method: true,
-            user: {
+            cashier: {
               select: {
                 name: true,
                 email: true,
