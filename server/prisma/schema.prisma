@@ -34,6 +34,12 @@ enum Status {
   MENUNGGU_PEMBAYARAN
 }
 
+enum EventIteration {
+  WEEKLY
+  MONTHLY
+  YEARLY
+}
+
 model Cashier {
   id          String        @id @default(uuid())
   name        String
@@ -55,6 +61,7 @@ model User {
   email         String        @unique
   number        String?
   password      String
+  role          Role         
   transaction   Transaction[]
   nationality   Nationality?  @relation(fields: [nationalityId], references: [id])
   nationalityId String?
@@ -132,4 +139,45 @@ model Pages {
   updatedAt DateTime   @updatedAt
   createdAt DateTime   @default(now())
   Contents  Contents[]
+}
+
+model Events {
+  id        Int            @id @default(autoincrement())
+  iteration EventIteration
+  isFree    Boolean
+  price     Float          @default(0)
+  name      String
+  desc      String         @db.Text
+  image     String
+}
+
+model EventIteration {
+  id Int @id @default(autoincrement())
+}
+
+model Purchasable {
+  id               Int                @id @default(autoincrement())
+  name             String
+  desc             String             @db.Text
+  unit             String
+  price            Float?
+  priceUmum        Float?
+  priceMancanegara Float?
+  image            String
+  subType          PurchasableSubType @relation(fields: [subTypeId], references: [id])
+  subTypeId        Int
+}
+
+model PurchasableType {
+  id                 Int                  @id @default(autoincrement())
+  name               String               @unique
+  PurchasableSubType PurchasableSubType[]
+}
+
+model PurchasableSubType {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  type        PurchasableType @relation(fields: [typeId], references: [id])
+  typeId      Int
+  Purchasable Purchasable[]
 }

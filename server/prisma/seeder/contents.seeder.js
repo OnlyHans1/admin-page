@@ -1,4 +1,3 @@
-const { connect } = require("../../routes")
 const { prisma } = require("../../routes/utils/prisma")
 
 const contents = [
@@ -6,7 +5,10 @@ const contents = [
         pageId: 1,
         sectionName: "Warisan Leluhur Cirebon",
         context: {
-            xs1: "Bersama Lestarikan Keraton Tertua di Kota Cirebon",
+            xs1:{
+                label: "Bersama dasnkdnaklsdnkjasn",
+                textSize: "",
+            },
             xi1: "https://picsum.photos/200/300",
             xl1: "https://picsum.photos/200/300"
         }

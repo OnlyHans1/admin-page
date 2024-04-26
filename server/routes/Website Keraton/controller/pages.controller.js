@@ -1,9 +1,10 @@
 const { throwError } = require("../../utils/helper");
 const { success, error } = require("../../utils/response");
-const { expressRouter } = require("../../utils/router");
+var express = require('express')
+var router = express.Router()
 const pagesModels = require('../models/pages.models')
 
-expressRouter.get('/content/:id', async (req, res) => {
+router.get('/content/:id', async (req, res) => {
     let { id } = req.params
     try{
         const contents = await pagesModels.getAllContent(+id)
@@ -13,7 +14,7 @@ expressRouter.get('/content/:id', async (req, res) => {
     }
 })
 
-expressRouter.get('/:id?', async (req, res) => {
+router.get('/:id?', async (req, res) => {
     let { id } = req.params
     try {
         console.log('sdbhjsdjbhasdbjk')
@@ -25,13 +26,5 @@ expressRouter.get('/:id?', async (req, res) => {
 })
 
 
-// router.post('/pages/:id?', async (req, res) => {
-//     try{
-//         const 
-//     }catch(err){
-//         return error(res, err.message)
-//     }
-// })
 
-
-module.exports = expressRouter
+module.exports = router

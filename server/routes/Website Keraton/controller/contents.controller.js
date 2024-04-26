@@ -1,4 +1,5 @@
-const { expressRouter } = require('../../utils/router')
+var express = require('express')
+var router = express.Router()
 const { throwError } = require("../../utils/helper");
 const { success, error } = require("../../utils/response");
 const contentModel = require('../models/contents.models')
@@ -33,7 +34,7 @@ const upload = multer({
 //End Multer
 
 
-expressRouter.get('/:id?', async (req, res) => {
+router.get('/:id?', async (req, res) => {
     const { id } = req.params
     try {
         const data = id ? await contentModel.getOne(+id) : await contentModel.getAll()
@@ -43,7 +44,7 @@ expressRouter.get('/:id?', async (req, res) => {
     }
 })
 
-expressRouter.post('/:id/:ident?', upload.array('imageList'), async (req, res) => {
+router.post('/:id/:ident?', upload.array('imageList'), async (req, res) => {
     let sendedData
     try {
         if (req.files) req.body.imageList = req.files
@@ -57,4 +58,4 @@ expressRouter.post('/:id/:ident?', upload.array('imageList'), async (req, res) =
     }
 })
 
-module.exports = expressRouter
+module.exports = router
