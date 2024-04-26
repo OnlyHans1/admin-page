@@ -1,28 +1,37 @@
 <script setup>
-import { useRouter, RouterView } from 'vue-router'
-import { ref, watchEffect } from 'vue'
+import { useRouter, useRoute, RouterView } from 'vue-router'
+import { onMounted, ref, watchEffect } from 'vue'
 import Sidebar from './components/Sidebar.vue'
 import LoginHelper from './utilities/LoginHelper'
 
 const { loggedIn } = LoginHelper
 
 const router = useRouter()
-const currentPath = ref(router.path)
+const route = useRoute()
+const currentPath = ref(route.path)
 const isLoginPage = ref(currentPath.value === '/login')
+
+const routeCheck = () => {
+  currentPath.value = route.path
+  isLoginPage.value = (currentPath.value === '/login')
+}
 
 // Watch for route changes and update reactive variables
 watchEffect(() => {
-  currentPath.value = router.path
-  isLoginPage.value = currentPath.value === '/login'
-  if(!loggedIn.value) {
+  routeCheck()
+  if (!loggedIn.value) {
     router.push('/login')
   }
 })
+
+onMounted(() => {
+  routeCheck()
+}) 
 </script>
 
 <template>
   <div v-if="!isLoginPage && loggedIn">
-    <Sidebar/>
+    <Sidebar />
     <div class="pd-left-8 pd-top-2 pd-bottom-2">
       <RouterView />
     </div>
@@ -32,5 +41,4 @@ watchEffect(() => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

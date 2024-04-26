@@ -1,7 +1,9 @@
-import { ref, computed } from 'vue'
-import AlertCard from '@/components/AlertCard.vue'
+import { ref, computed, watchEffect } from 'vue'
+
+const category = ref('')
 
 const selectedItems = ref([])
+const selectedItemToEdit = ref([])
 const showConfirmationPopup = ref(false)
 
 const dataDashboard = ref([])
@@ -19,13 +21,17 @@ const fetchOrderList = async () => {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    console.log(data)
     dataDashboard.value = data
     sortDataByCreatedAt()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
 }
+
+//Mencoba Categoty
+watchEffect(() => {
+  category.value = selectedItemToEdit.value.category
+})
 
 const sortDataByCreatedAt = () => {
   dataDashboard.value.sort((a, b) => {
@@ -81,7 +87,6 @@ const decreaseAmount = (item) => {
     saveToSessionStorage()
   }
 }
-
 const saveToSessionStorage = () => {
   // Ambil data yang telah disimpan sebelumnya dari sessionStorage
   let storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
@@ -176,6 +181,7 @@ const handleItemClick = (item) => {
   }
 }
 
+
 const groupedItems = computed(() => {
   const grouped = {}
   dataDashboard.value.forEach((item) => {
@@ -190,6 +196,7 @@ const groupedItems = computed(() => {
 
 export default {
   selectedItems,
+  selectedItemToEdit,
   showConfirmationPopup,
   dataDashboard,
   isMancanegara,
@@ -208,5 +215,5 @@ export default {
   showAlert,
   alertTitle,
   alertType,
-  alertMessage
+  alertMessage,
 }

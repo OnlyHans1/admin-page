@@ -1,15 +1,22 @@
 <script setup>
+import { ref, computed, onMounted, watchEffect } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import AlertCard from '@/components/AlertCard.vue'
-import { ref, computed } from 'vue'
-import { useRouter } from 'vue-router'
-const route = useRouter()
+import DashboardHelper from '@/utilities/DashboardHelper'
 
+const { selectedItemToEdit, getImageURL } = DashboardHelper
+
+const router = useRouter()
+const route = useRoute()
+
+const editId = ref('')
 const title = ref('')
 const desc = ref('')
-const category = ref('') //Dont remove until further notice - azarel
+const category = ref('') // Dont remove until further notice - azarel
 const price = ref('')
+const imageName = ref('')
 const selectedImageURL = ref('') // State to hold the selected image URL
 const selectedImage = ref(null) // State to hold the selected image File
 const defaultImageURL = ref(
@@ -22,7 +29,6 @@ const showAlert = ref(false)
 const alertType = ref('')
 const alertTitle = ref('')
 const alertMessage = ref('')
-
 
 const insertDatabase = async () => {
   try {
@@ -45,12 +51,47 @@ const insertDatabase = async () => {
     } else {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
-        route.push('/')
-      }, 3000)
+        router.push('/')
+      }, 1200)
     }
   } catch (error) {
     console.log(error)
   }
+}
+
+const updateDatabase = async () => {
+  try {
+    const formData = new FormData()
+    formData.append('image', selectedImage.value)
+    formData.append('imgName', imageName.value)
+    formData.append('title', title.value)
+    formData.append('desc', desc.value)
+    formData.append('category', category.value.toUpperCase())
+    formData.append('price', parseFloat(price.value))
+
+    console.log([...formData])
+
+    const response = await fetch(`http://localhost:3000/edit/order-details/${encodeURIComponent(editId.value)}`, {
+      method: 'PUT',
+      body: formData
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to update order. Please try again.')
+    } else {
+      submitAlert.value = !submitAlert.value
+      setTimeout(() => {
+        router.push('/')
+      }, 1200)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const capitalizeFirstLetter = (str) => {
+  const lowercaseStr = str.toLowerCase()
+  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
 }
 
 const submit = () => {
@@ -91,7 +132,7 @@ const getEmptyFields = () => {
   return emptyFields
 }
 
-const confirm = () => {
+const confirmAdd = () => {
   const emptyFields = getEmptyFields()
 
   if (emptyFields.length > 0) {
@@ -104,16 +145,32 @@ const confirm = () => {
 
   confirmAlert.value = true
 }
+
+const currentPath = ref(route.path)
+const isEditPage = () => {
+  editId.value = selectedItemToEdit.value.id
+  if (currentPath.value === `/edit/${encodeURIComponent(editId.value)}`) {
+    title.value = selectedItemToEdit.value.name
+    desc.value = selectedItemToEdit.value.desc
+    price.value = selectedItemToEdit.value.price
+    category.value = capitalizeFirstLetter(selectedItemToEdit.value.category)
+    imageName.value = selectedItemToEdit.value.image
+    selectedImageURL.value = getImageURL(selectedItemToEdit.value.image)
+  }
+}
+
+watchEffect(() => {
+  currentPath.value = route.path
+})
+
+onMounted(() => {
+  isEditPage()
+})
 </script>
 
 <template>
-  <AlertCard
-    :showAlert="showAlert"
-    :alertTitle="alertTitle"
-    :alertType="alertType"
-    :alertMessage="alertMessage"
-    @hideAlert="showAlert = false"
-  />
+  <AlertCard :showAlert="showAlert" :alertTitle="alertTitle" :alertType="alertType" :alertMessage="alertMessage"
+    @hideAlert="showAlert = false" />
   <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
     <div class="add__alert-confirmation">
       <h2>Kamu yakin mau menambahkan {{ title ? title : 'Tiket' }}?</h2>
@@ -124,7 +181,8 @@ const confirm = () => {
     </div>
   </div>
   <div class="bubble-alert_submit" v-if="submitAlert">
-    <p>Data berhasil ditambahkan</p>
+    <p v-if="!currentPath === `/edit/${encodeURIComponent(editId.value)}`">Data berhasil ditambahkan</p>
+    <p v-else>Data berhasil diubah</p>
   </div>
 
   <main class="add">
@@ -133,13 +191,13 @@ const confirm = () => {
       <div class="add__input-card_title">
         <h6>Judul</h6>
         <div class="input_wrapper">
-          <input class="title-input" type="text" rows="1" @input="title = $event.target.value" />
+          <input class="title-input" type="text" rows="1" v-model="title" />
         </div>
       </div>
       <div class="add__input-card_title">
         <h6>Deskripsi</h6>
         <div class="input_wrapper">
-          <textarea class="desc-input" rows="1" @input="desc = $event.target.value"></textarea>
+          <textarea class="desc-input" rows="1" v-model="desc"></textarea>
         </div>
       </div>
       <div class="add__input-category">
@@ -173,7 +231,8 @@ const confirm = () => {
         </div>
       </div>
       <div class="add__preview-cta_container">
-        <button class="add__preview_button" type="submit" @click="confirm()">Tambahkan</button>
+        <button v-if="!currentPath === `/edit/${encodeURIComponent(editId.value)}`" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
+        <button v-else class="add__preview_button" type="submit" @click="updateDatabase()">Edit</button>
       </div>
     </section>
   </main>
@@ -185,6 +244,7 @@ const confirm = () => {
   width: 100%;
   gap: 10rem;
 }
+
 /* input container */
 .add__input {
   display: flex;
@@ -192,13 +252,15 @@ const confirm = () => {
   gap: 1rem;
   width: 100%;
 }
+
 /* input | title textarea */
 .title-input,
 /* input | desc textarea */
 .desc-input {
   min-width: 320px;
   width: 100%;
-  resize: none; /* Disable textarea resizing */
+  resize: none;
+  /* Disable textarea resizing */
   border: none;
   padding: 0.5rem;
   box-sizing: border-box;
@@ -208,6 +270,7 @@ const confirm = () => {
   line-height: inherit;
   border-radius: 0.5rem;
 }
+
 .desc-input {
   height: 118px;
 }
@@ -218,8 +281,10 @@ input[type='number'] {
   height: 2rem;
   border-radius: 0.5rem;
   appearance: none;
-  -webkit-appearance: none; /* Remove default appearance for webkit browsers */
-  -moz-appearance: textfield; /* Show default appearance for Firefox */
+  -webkit-appearance: none;
+  /* Remove default appearance for webkit browsers */
+  -moz-appearance: textfield;
+  /* Show default appearance for Firefox */
   background-color: transparent;
   padding-left: 35px;
   color: rgb(0, 0, 0);
@@ -233,12 +298,16 @@ input[type='number']::-webkit-outer-spin-button {
   -webkit-appearance: none;
   display: none;
 }
+
 input:focus,
 button:focus,
 textarea:focus {
-  border-color: var(--color-primary); /* Change the border color to green */
-  outline: none; /* Remove the default focus outline */
-  box-shadow: 0 0 0 2px var(--color-primary); /* Add a green box-shadow to indicate focus */
+  border-color: var(--color-primary);
+  /* Change the border color to green */
+  outline: none;
+  /* Remove the default focus outline */
+  box-shadow: 0 0 0 2px var(--color-primary);
+  /* Add a green box-shadow to indicate focus */
 }
 
 .input-price {
@@ -256,6 +325,7 @@ textarea:focus {
   display: flex;
   flex-direction: column;
 }
+
 /* preview | card container */
 .add__preview-card_container {
   margin-top: 1rem;
@@ -279,6 +349,7 @@ textarea:focus {
   font-size: 13px;
   margin-bottom: 0.5rem;
 }
+
 /* preview | card image container */
 .add__preview-image_container {
   background-color: #d9d9d9;
@@ -286,16 +357,19 @@ textarea:focus {
   height: 206px;
   border-radius: 0.6rem;
 }
+
 .add__preview-image_container img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   border-radius: inherit;
 }
+
 /* preview | card details container */
 .add__preview-card-details {
   margin-top: 1rem;
 }
+
 .add__preview-card-details-price {
   font-size: 24px;
 }
@@ -308,6 +382,7 @@ textarea:focus {
   display: flex;
   align-items: center;
 }
+
 .add__preview_button {
   margin: 0 auto;
   padding: 0.5rem 1rem;
@@ -317,6 +392,7 @@ textarea:focus {
   line-height: 28px;
   background-color: #d9d9d9;
 }
+
 .add__preview button {
   cursor: pointer;
 }
@@ -331,6 +407,7 @@ textarea:focus {
   background-color: rgb(0, 0, 0, 0.2);
   z-index: 999;
 }
+
 .add__alert-confirmation {
   position: fixed;
   top: 2rem;
@@ -349,6 +426,7 @@ textarea:focus {
   justify-content: end;
   margin-top: 1rem;
 }
+
 .add__alert-confirmation .button-group button {
   border: 0;
   padding: 0.5rem 1rem;
@@ -360,6 +438,7 @@ textarea:focus {
   font-size: 15px;
   cursor: pointer;
 }
+
 .add__alert-confirmation .button-group button:first-child {
   border: 0;
   padding: 0.5rem 1rem;
@@ -367,6 +446,7 @@ textarea:focus {
   background-color: #8f8f8f;
   color: #ffffff;
 }
+
 /* bubble alert */
 .bubble-alert_submit {
   position: fixed;
@@ -383,6 +463,7 @@ textarea:focus {
     padding-right: 1rem;
   }
 }
+
 @media screen and (max-width: 1000px) {
   .add {
     gap: 2rem;
@@ -392,7 +473,8 @@ textarea:focus {
 /* tablets */
 @media screen and (max-width: 768px) {
   .add {
-    flex-direction: column; /* Change to column layout */
+    flex-direction: column;
+    /* Change to column layout */
     align-items: center;
     gap: 4rem;
   }
@@ -406,12 +488,15 @@ textarea:focus {
 /* For phones */
 @media screen and (max-width: 480px) {
   .add__preview {
-    margin-top: 1rem; /* Add space between sections */
-    order: 1; /* Move below the input section */
+    margin-top: 1rem;
+    /* Add space between sections */
+    order: 1;
+    /* Move below the input section */
   }
 
   .add__input {
-    width: 100%; /* Take full width */
+    width: 100%;
+    /* Take full width */
   }
 }
 </style>
