@@ -39,15 +39,13 @@ const insertDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    console.log([...formData])
-
     const response = await fetch('http://localhost:3000/add/order-details', {
       method: 'POST',
       body: formData
     })
 
     if (!response.ok) {
-      throw new Error('Failed to create order. Please try again.')
+      throw new Error('Gagal membuat pesanan. Silahkan coba lagi.')
     } else {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
@@ -69,15 +67,13 @@ const updateDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    console.log([...formData])
-
     const response = await fetch(`http://localhost:3000/edit/order-details/${encodeURIComponent(editId.value)}`, {
       method: 'PUT',
       body: formData
     })
 
     if (!response.ok) {
-      throw new Error('Failed to update order. Please try again.')
+      throw new Error('Gagal mengubah pesanan. Silahkan coba lagi.')
     } else {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
@@ -181,7 +177,7 @@ onMounted(() => {
     </div>
   </div>
   <div class="bubble-alert_submit" v-if="submitAlert">
-    <p v-if="!currentPath === `/edit/${encodeURIComponent(editId.value)}`">Data berhasil ditambahkan</p>
+    <p v-if="!currentPath === `/edit/${encodeURIComponent(editId)}`">Data berhasil ditambahkan</p>
     <p v-else>Data berhasil diubah</p>
   </div>
 

@@ -21,7 +21,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage })
 
-
 // Handler rute PUT
 router.put('/order-details/:id', upload.single('image'), async function (req, res, next) {
   const { id } = req.params
@@ -40,7 +39,7 @@ router.put('/order-details/:id', upload.single('image'), async function (req, re
       data: {
         image: imageName,
         name: title,
-        desc: desc,
+        desc: desc ? desc : '',
         category: category.toUpperCase(),
         price: parseFloat(price)
       }
@@ -53,6 +52,5 @@ router.put('/order-details/:id', upload.single('image'), async function (req, re
     return res.status(500).json({ error: 'Terjadi kesalahan saat memproses permintaan' })
   }
 })
-
 
 module.exports = router
