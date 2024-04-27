@@ -9,16 +9,9 @@ const isExist = async (id) => {
     }
 }
 
-const getAll = async (query) => {
-    let { iterat, free } = query
+const getAll = async () => {
     try {
-        return await prisma.events.findMany({
-            where: {
-                ...(iterat != undefined && { iterationId: { in: iterat } }),
-                ...(free != undefined && { isFree: free })
-            },
-            include: { iteration: true }
-        })
+        return await prisma.eventIteration.findMany({ orderBy: { id: 'asc' } })
     } catch (err) {
         throwError(err)
     }
@@ -26,7 +19,7 @@ const getAll = async (query) => {
 
 const getOne = async (id) => {
     try{
-        return await prisma.events.findFirstOrThrow({
+        return await prisma.eventIteration.findFirstOrThrow({
             where: { id }
         })
     }catch(err){

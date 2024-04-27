@@ -15,9 +15,26 @@ const keratonWebsiteRouter = require('./routes/Website Keraton/controller/index'
 
 var app = express()
 
+const allowedOrigins = [
+  "https://www.postman.com", //Postman
+  "http://localhost:9000", //Development
+];
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
+  credentials: true,
+};
+
+
 app.use(logger('dev'))
 app.use(express.json())
-app.use(cors())
+app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
