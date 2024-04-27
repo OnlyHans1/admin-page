@@ -3,15 +3,12 @@ const { error, success } = require("../../utils/response");
 var express = require('express')
 var router = express.Router()
 const purchasableModel = require('../models/purchasable.models')
+const purchasableSubTypeModel = require('../models/purchasableSubType.models')
 
 router.get('/booking', async (req, res) => {
     try {
-        const tikets = await purchasableModel.getAll({ type: 1 })
-        const paket = await purchasableModel.getAll({ type: 2 })
-        console.log(paket)
-        return success(res, 'Success', {
-            tikets, paket
-        })
+        const purchasable = await purchasableSubTypeModel.getAll()
+        return success(res, 'Success', purchasable)
     } catch (err) {
         return error(res, err.message)
     }

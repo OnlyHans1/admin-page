@@ -36,13 +36,46 @@ router.get('/order-list', async (req, res) => {
         name: true,
         category: true,
         price: true,
-        createdAt: true
+        createdAt: true,
+        desc: true
       },
     });
     res.status(200).json(orders);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+router.delete('/delete-order/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Mencari pesanan dengan ID yang diberikan
+    const order = await prisma.order.findFirst({
+      where: {
+        id: id,
+      },
+    });
+
+    // Memeriksa apakah pesanan ditemukan
+    if (!order) {
+      return res.status(404).json({ error: 'Pesanan tidak ditemukan' });
+    }
+
+    // Menghapus pesanan
+    await prisma.order.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    // Memberikan respons yang menunjukkan penghapusan berhasil
+    res.status(200).json({ message: 'Pesanan berhasil dihapus' });
+  } catch (error) {
+    // Menangani error dengan lebih spesifik
+    console.error(error);
+    res.status(500).json({ error: 'Gagal menghapus pesanan' });
   }
 });
 

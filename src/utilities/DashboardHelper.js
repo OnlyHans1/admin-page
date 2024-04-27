@@ -1,8 +1,11 @@
 import { ref, computed } from 'vue'
-import AlertCard from '@/components/AlertCard.vue'
 
 const selectedItems = ref([])
+const selectedItemToDelete = ref([])
+const selectedItemToEdit = ref([])
+
 const showConfirmationPopup = ref(false)
+const showDeleteConfirmationPopup = ref(false)
 
 const dataDashboard = ref([])
 const isMancanegara = ref(false)
@@ -161,18 +164,28 @@ const handleItemClick = (item) => {
   if (item.disabled) {
     showAlert.value = true
     alertTitle.value = 'Error'
-    alertType.value = 'danger' 
+    alertType.value = 'danger'
 
     if (filterCategory.value === 'MANCANEGARA') {
-    // Set your alert type
-    alertMessage.value = `Kamu tidak bisa memilih paket selain kategori mancanegara!` // Set your alert message
+      // Set your alert type
+      alertMessage.value = 'Kamu tidak bisa memilih paket selain kategori mancanegara!' // Set your alert message
     } else {
-    alertMessage.value = `Kamu tidak bisa memilih paket selain kategori umum atau pelajar! ` // Set your alert message
+      alertMessage.value = 'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!' // Set your alert message
     }
-    
   } else {
     selectItem(item)
   }
+}
+
+const showDeleteConfirmation = () => {
+  showDeleteConfirmationPopup.value = true
+  // Menampilkan konfirmasi delete
+  selectedItemToDelete.value = selectedItems.value[0]
+}
+
+const closeDeletePopup = () => {
+  showDeleteConfirmationPopup.value = false
+  selectedItemToDelete.value = []
 }
 
 const groupedItems = computed(() => {
@@ -187,9 +200,39 @@ const groupedItems = computed(() => {
   return grouped
 })
 
+const confirmDelete = async () => {
+  try {
+    const response = await fetch(
+      `http://localhost:3000/delete-order/${encodeURIComponent(selectedItemToDelete.value.id)}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    if (response.ok) {
+      sessionStorage.clear()
+      console.log('Pesanan berhasil dihapus.')
+      setTimeout(() => {
+        location.reload()
+      }, 1000)
+    } else {
+      throw new Error('Gagal menghapus pesanan!')
+    }
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 export default {
   selectedItems,
+  selectedItemToEdit,
   showConfirmationPopup,
+  showDeleteConfirmation,
+  showDeleteConfirmationPopup,
+  confirmDelete,
   dataDashboard,
   isMancanegara,
   fetchOrderList,
@@ -198,12 +241,13 @@ export default {
   formatCurrency,
   navigateToAdd,
   closePopup,
+  closeDeletePopup,
   increaseAmount,
   decreaseAmount,
   saveToSessionStorage,
   handleItemClick,
   checkSessionStorage,
-  groupedItems, 
+  groupedItems,
   showAlert,
   alertTitle,
   alertType,

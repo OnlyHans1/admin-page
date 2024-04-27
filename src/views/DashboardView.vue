@@ -7,7 +7,11 @@ import CheckoutHelper from '@/utilities/CheckoutHelper'
 
 const {
   selectedItems,
+  selectedItemToEdit,
   showConfirmationPopup,
+  showDeleteConfirmation,
+  showDeleteConfirmationPopup,
+  confirmDelete,
   dataDashboard,
   fetchOrderList,
   getImageURL,
@@ -15,6 +19,7 @@ const {
   formatCurrency,
   navigateToAdd,
   closePopup,
+  closeDeletePopup,
   increaseAmount,
   decreaseAmount,
   saveToSessionStorage,
@@ -30,13 +35,11 @@ const { checkoutStatus } = CheckoutHelper
 
 const router = useRouter()
 
-watch(
-  selectedItems.value,
-  () => {
-    saveToSessionStorage()
-  },
-  { deep: true }
-)
+const editOrder = () => {
+  selectedItemToEdit.value = selectedItems.value[0]
+  closePopup()
+  router.push({ name: 'edit', params: { id: selectedItemToEdit.value.id } })
+}
 
 const handleCheckoutStatus = () => {
   if (checkoutStatus.value === 'boleh') {
@@ -47,6 +50,14 @@ const handleCheckoutStatus = () => {
     checkoutStatus.value = ''
   }
 }
+
+watch(
+  selectedItems.value,
+  () => {
+    saveToSessionStorage()
+  },
+  { deep: true }
+)
 
 onMounted(() => {
   fetchOrderList()
@@ -130,29 +141,61 @@ onMounted(() => {
     </div>
 
     <div
-      class="overlay popup-order__overlay w-full h-full flex justify-content-center align-items-f-end"
+      class="overlay popup-order__overlay w-full h-full pd-sd-10 pd-top-5 pd-bottom-5"
       :class="{ active: selectedItems.length > 0 }"
       @click="closePopup"
     >
-      <div
-        class="popup-order__container flex align-items-center justify-content-sb gap-1"
-        v-if="selectedItems.length > 0"
-        @click.stop
-      >
-        <div
-          class="popup-order__item-details flex fd-col justify-content-sb align-items-center w-half"
-        >
-          <h6 class="text-align-center to-ellipsis">{{ selectedItems[0].name }}</h6>
-          <h4>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h4>
-        </div>
-        <div class="popup-order__amount-controls flex align-items-center pd[0.5]">
-          <button @click.stop="decreaseAmount(selectedItems[0])">
-            <ph-minus-circle :size="24" />
-          </button>
-          <h4>{{ selectedItems[0].amount }}</h4>
-          <button @click.stop="increaseAmount(selectedItems[0])">
-            <ph-plus-circle :size="24" />
-          </button>
+      <div class="popup-order__container h-full" v-if="selectedItems.length > 0" @click.stop>
+        <div class="popup-order__item-details flex fd-col gap[0.5] pd-2 h-full">
+          <div class="flex justify-content-end w-full">
+            <ph-x :size="32" weight="bold" @click="closePopup" class="cursor-pointer" />
+          </div>
+          <div class="flex">
+            <img
+              :src="
+                selectedItems[0].image
+                  ? getImageURL(selectedItems[0].image)
+                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+              "
+              class="popup-order__image"
+            />
+            <div class="flex fd-col sm-sd-2">
+              <div>
+                <h4 class="fw-600">{{ selectedItems[0].name }}</h4>
+                <h6>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h6>
+                <h5 class="sm-top-1">Rp. {{ selectedItems[0].price }} / tiket</h5>
+              </div>
+              <div
+                class="popup-order__amount-controls flex align-items-center pd[0.5] gap-1 sm-top-1"
+              >
+                <button @click.stop="decreaseAmount(selectedItems[0])">
+                  <ph-minus-circle :size="24" />
+                </button>
+                <h4>{{ selectedItems[0].amount }}</h4>
+                <button @click.stop="increaseAmount(selectedItems[0])">
+                  <ph-plus-circle :size="24" />
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="flex fd-col justify-content-sb h-full">
+            <p>{{ selectedItems[0].desc }}</p>
+            <div class="flex fd-row justify-content-start">
+              <button
+                class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]" @click="showDeleteConfirmation()"
+              >
+                <ph-trash :size="16" weight="bold" />
+                <span class="fw-600">Delete</span>
+              </button>
+              <button
+                class="popup-order__edit-button flex align-items-center justify-content-center gap[0.5]"
+                @click="editOrder()"
+              >
+                <ph-pencil-simple :size="16" weight="bold" />
+                <span class="fw-600">Edit</span>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -167,6 +210,22 @@ onMounted(() => {
         <div class="popup-confimation__button-confirmation flex justify-content-sa">
           <button @click="router.push({ name: 'add' }), closePopup()">Ya</button>
           <button @click="closePopup()">Batal</button>
+        </div>
+      </div>
+    </div>
+    <!-- Pop up untuk delete -->
+    <div
+      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      :class="{ active: showDeleteConfirmationPopup }"
+      @click="closeDeletePopup()"
+    >
+      <div class="popup-confirmation__container" @click.stop>
+        <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
+        <div
+          class="popup-confimation__button-confirmation flex justify-content-sa align-items-center"
+        >
+          <button @click="confirmDelete()">Hapus</button>
+          <button @click="closeDeletePopup()">Batal</button>
         </div>
       </div>
     </div>
@@ -216,6 +275,7 @@ onMounted(() => {
   scrollbar-width: none;
   overflow-x: scroll;
   white-space: nowrap;
+  padding: 0.5rem;
   gap: 1rem;
   flex: 1;
 }
@@ -254,8 +314,7 @@ onMounted(() => {
 }
 
 .popup-order__container {
-  background: #d9d9d9;
-  padding: 0.5rem 1.5rem;
+  background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 514px;
@@ -295,17 +354,49 @@ onMounted(() => {
   color: white;
 }
 
-.popup-confimation__button-confirmation button:first-child {
-  background: #28a745; /* Green color for "Ya" button */
+.popup-order__image {
+  height: auto;
+  width: 40%;
+  object-fit: cover;
+  border-radius: 0.5rem;
 }
+
+.popup-order__remove-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  width: 7rem;
+  background-color: var(--color-red-600);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.popup-order__edit-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  width: 7rem;
+  background-color: var(--color-yellow);
+  color: #fff;
+  font-weight: bold;
+}
+
+.popup-confimation__button-confirmation button:first-child {
+  background: #28a745;
+  /* Green color for "Ya" button */
+}
+
 .popup-confimation__button-confirmation button:first-child:hover {
-  background: #17b53caa; /* Green color for "Ya" button */
+  background: #17b53caa;
+  /* Green color for "Ya" button */
 }
 
 .popup-confimation__button-confirmation button:last-child {
-  background: #dc3545; /* Red color for "Batal" button */
+  background: #dc3545;
+  /* Red color for "Batal" button */
 }
+
 .popup-confimation__button-confirmation button:last-child:hover {
-  background: #cd23349b; /* Red color for "Batal" button */
+  background: #cd23349b;
+  /* Red color for "Batal" button */
 }
 </style>

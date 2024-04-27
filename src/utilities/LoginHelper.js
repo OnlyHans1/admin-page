@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 
-const loggedIn = ref(false)
+const loggedIn = ref(true)
 const grantLogin = ref(false)
 
 const username = ref('')

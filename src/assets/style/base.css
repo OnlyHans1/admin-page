@@ -36,6 +36,12 @@
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
   --color-primary: #ffd978;
+  --color-green-600 : #17b53caa;
+  --color-green-500 : #28a745;
+  --color-red-700: #cd23349b;
+  --color-red-600: #bf0e23;
+  --color-red-500 :#dc3545;
+  --color-yellow : #e6b400;
 }
 
 /* semantic color variables for this project */
