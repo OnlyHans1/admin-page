@@ -6,21 +6,21 @@ const events = [
         name: "Peringatan isra mi'raj di langgar alit",
         desc: "Keluarga Keraton Kasepuhan mengadakan acara Isra Miraj di Langgar Alit yang rutin digunakan untuk peringatan hari besar Islam",
         isFree: true,
-        iteration: "WEEKLY",
+        iterationId: 1,
         image: "https://picsum.photos/200/300",
     },
     {
         name: "PPeringatan nisfu syaban di langgar alit",
         desc: "Peringatan Nisfu Syaban adalah salah satu tradisi yang dilaksanakan di Langgar Alit Keraton Kasepuhan Cirebon",
         isFree: true,
-        iteration: "MONTHLY",
+        iterationId: 2,
         image: "https://picsum.photos/200/300",
     },
     {
         name: "Tadarus di langgar alit",
         desc: "Kegiatan tadarus Alquran ini biasanya dibimbing oleh kaum masjid dan dilakukan dua kali khatam selama bulan Ramadan",
         isFree: true,
-        iteration: "YEARLY",
+        iterationId: 3,
         image: "https://picsum.photos/200/300",
     },
     {
@@ -28,7 +28,7 @@ const events = [
         desc: "Keluarga Keraton Kasepuhan mengadakan acara Isra Miraj di Langgar Alit yang rutin digunakan untuk peringatan hari besar Islam",
         isFree: false,
         price: 25000,
-        iteration: "WEEKLY",
+        iterationId: 1,
         image: "https://picsum.photos/200/300",
     },
     {
@@ -36,7 +36,7 @@ const events = [
         desc: "Peringatan Nisfu Syaban adalah salah satu tradisi yang dilaksanakan di Langgar Alit Keraton Kasepuhan Cirebon",
         isFree: false,
         price: 25000,
-        iteration: "MONTHLY",
+        iterationId: 2,
         image: "https://picsum.photos/200/300",
     },
     {
@@ -44,7 +44,7 @@ const events = [
         desc: "Kegiatan tadarus Alquran ini biasanya dibimbing oleh kaum masjid dan dilakukan dua kali khatam selama bulan Ramadan",
         isFree: false,
         price: 25000,
-        iteration: "YEARLY",
+        iterationId: 3,
         image: "https://picsum.photos/200/300",
     },
 ]

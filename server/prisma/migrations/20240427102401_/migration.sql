@@ -117,13 +117,22 @@ CREATE TABLE `Pages` (
 -- CreateTable
 CREATE TABLE `Events` (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
-    `iteration` ENUM('WEEKLY', 'MONTHLY', 'YEARLY') NOT NULL,
+    `iterationId` INTEGER NOT NULL,
     `isFree` BOOLEAN NOT NULL,
     `price` DOUBLE NOT NULL DEFAULT 0,
     `name` VARCHAR(191) NOT NULL,
     `desc` TEXT NOT NULL,
     `image` VARCHAR(191) NOT NULL,
 
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `EventIteration` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `name` VARCHAR(191) NOT NULL,
+
+    UNIQUE INDEX `EventIteration_name_key`(`name`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -187,6 +196,9 @@ ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_orderID_fkey` FOREIGN KEY 
 
 -- AddForeignKey
 ALTER TABLE `Contents` ADD CONSTRAINT `Contents_pageId_fkey` FOREIGN KEY (`pageId`) REFERENCES `Pages`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Events` ADD CONSTRAINT `Events_iterationId_fkey` FOREIGN KEY (`iterationId`) REFERENCES `EventIteration`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `Purchasable` ADD CONSTRAINT `Purchasable_subTypeId_fkey` FOREIGN KEY (`subTypeId`) REFERENCES `PurchasableSubType`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
