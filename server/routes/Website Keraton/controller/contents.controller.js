@@ -11,7 +11,7 @@ const path = require('path');
 const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
 const storage = multer.diskStorage({
     destination: (_req, _file, cb) => {
-        cb(null, 'public/content')
+        cb(null, 'public/assets/content')
     },
     filename: (_req, file, cb) => {
         crypto.pseudoRandomBytes(16, (_err, raw) => {

@@ -1,10 +1,10 @@
-var createError = require('http-errors')
 var express = require('express')
 var cors = require('cors')
 var path = require('path')
 var cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 var logger = require('morgan')
+var http = require('http')
 
 var dashboardRouter = require('./routes/dashboard')
 var addRouter = require('./routes/add')
@@ -15,7 +15,12 @@ var checkoutRouter = require('./routes/checkout')
 const keratonWebsiteRouter = require('./routes/Website Keraton/controller/index')
 
 var app = express()
+var port = normalizePort(process.env.PORT || '3000')
 
+//? INITIALIZE DEVELOPMENT SERVER
+const server = http.createServer(app)
+
+//? CORS SECTION START
 const allowedOrigins = [
   "https://www.postman.com", //Postman
   "http://localhost:9000", //Development
@@ -31,17 +36,44 @@ const corsOptions = {
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
   credentials: true,
 };
+//? CORS SECTION END
 
+//? SOCKET INTIALIZATION
+const io = require('socket.io')(
+  // httpsServer //?PRODUCTION SERVER
+  server //?DEVELOPMENT SERVER
+  ,
+  {
+    cors: {
+      origin: allowedOrigins,
+      credentials: true
+    }
+  }
+)
 
+io.on('connection', async (socket) => {
+  io.emit('online', onlineTrackJson.readDataKey())
+  socket.on('diss', () => {
+    io.emit('diss', { message: 'Log out' })
+  })
+  socket.on('disconnect', () => {
+    onlineTrackJson.deleteEntry(name)
+    io.emit('online', onlineTrackJson.readDataKey())
+  })
+
+})
+
+//? COMMON MIDDLEWARES
 app.use(logger('dev'))
 app.use(express.json())
-app.use(cors(corsOptions))
+app.use(bodyParser.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(bodyParser.json())
+app.use(cors(corsOptions))
 
+//? ROUTES
 app.use('/', dashboardRouter)
 app.use('/add', addRouter)
 app.use('/edit', editRouter)
@@ -49,14 +81,13 @@ app.use('/invoice', invoiceRouter)
 app.use('/report', reportRouter)
 app.use('/checkout', checkoutRouter)
 app.use('/keraton', keratonWebsiteRouter)
+// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-var port = normalizePort(process.env.PORT || '3000')
-app.listen(port, () =>
-  console.log(`
-🚀 Server ready at: http://localhost:${port}`)
-)
+//? RUN DEVELOPMENT SERVER
+server.listen(port, (err) => {
+  console.log(`🚀 Server ready at: http://localhost:${port}`);
+});
 
 function normalizePort(val) {
   var port = parseInt(val, 10)

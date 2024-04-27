@@ -148,7 +148,7 @@ model Events {
 
 model EventIteration {
   id     Int      @id @default(autoincrement())
-  name   String @unique
+  name   String   @unique
   Events Events[]
 }
 
