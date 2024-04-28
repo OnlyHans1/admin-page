@@ -23,7 +23,7 @@ const server = http.createServer(app)
 //? CORS SECTION START
 const allowedOrigins = [
   "https://www.postman.com", //Postman
-  "http://localhost:9000", //Development
+  "http://localhost:5173", //Development
 ];
 const corsOptions = {
   origin: function (origin, callback) {

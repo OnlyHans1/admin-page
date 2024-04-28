@@ -30,6 +30,12 @@ const alertType = ref('')
 const alertTitle = ref('')
 const alertMessage = ref('')
 
+
+function updatePrice(event) {
+  const rawValue = event.target.value.replace(/[^\d]/g, '')
+  price.value = parseInt(rawValue, 10)
+}
+
 const insertDatabase = async () => {
   try {
     const formData = new FormData()
@@ -107,8 +113,21 @@ const formattedPrice = computed(() => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(price.value)
 })
 
+const formattedPrice2 = computed(() => {
+  if (price.value) {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(price.value)
+  } else {
+    return ''
+  }
+})
+
 const updateCategory = (selectedCategory) => {
-  category.value = selectedCategory
+  category.value = selectedCategory 
+  console.log(category.value)
 }
 
 const getEmptyFields = () => {
@@ -204,7 +223,7 @@ onMounted(() => {
         <h6>Harga</h6>
         <div class="input-price">
           <p>Rp.</p>
-          <input type="number" name="" id="" v-model="price" />
+          <input type="number" name="" id="" v-model="formattedPrice2" @input="updatePrice"/>
         </div>
       </div>
     </section>

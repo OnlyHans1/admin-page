@@ -6,6 +6,7 @@ const props = defineProps({
 })
 const isDropdownOpen = ref(false)
 const selected = ref('');
+const selectedcategory = ref('');
 
 const toggleDropdown = () => {
     isDropdownOpen.value = !isDropdownOpen.value
@@ -18,7 +19,9 @@ const closeDropdownOnClickOutside = (event) => {
 };
 
 const selectOption = (value) =>{
-    selected.value = value;
+    selected.value = value || 'Umum';
+    selectedcategory = value;
+    console.log(value);
     isDropdownOpen.value = false;
     emit('option-selected', selected.value);
 } 
@@ -34,7 +37,7 @@ onUnmounted(() => {
 </script>
 <template>
   <div class="category__input-dropdown" :style="{ width: categoryWidth }">
-    <input readonly @click="toggleDropdown()" :value="selected" placeholder="Pilih Kategori" id="category">
+    <input readonly @click="toggleDropdown()" :value="selected" :placeholder="selected ? selectedcategory : 'Pilih Kategori'" id="category">
     <div class="select-icon" >
         <div class="arrow-icon" :class="{ active: isDropdownOpen }">
           <ph-caret-down :size="14" weight="bold" class="icon" />
