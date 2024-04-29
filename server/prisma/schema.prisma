@@ -43,45 +43,6 @@ model Cashier {
   transaction Transaction[]
 }
 
-// model Guide {
-//   id          String        @id @default(uuid())
-//   name        String
-//   transaction Transaction[]
-// }
-
-enum Role {
-  USER
-  ADMIN
-  CUSTOMER
-}
-
-enum Category {
-  UMUM
-  PELAJAR
-  MANCANEGARA
-}
-
-enum Interval {
-  PERMINGGU
-  PERBULAN
-  PERTAHUN
-}
-
-enum Status {
-  SUDAH_DIGUNAKAN
-  DAPAT_DIGUNAKAN
-  EXPIRED
-  MENUNGGU_PEMBAYARAN
-}
-
-model Cashier {
-  id          String        @id @default(uuid())
-  name        String
-  email       String        @unique
-  number      String?
-  password    String
-  transaction Transaction[]
-}
 model Guide {
   id          String        @id @default(uuid())
   name        String

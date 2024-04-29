@@ -40,11 +40,6 @@ const alertType = ref('')
 const alertTitle = ref('')
 const alertMessage = ref('')
 
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
-
 
 
 const checkoutTransaction = async () => {

@@ -41,15 +41,6 @@ const editOrder = () => {
   router.push({ name: 'edit', params: { id: selectedItemToEdit.value.id } })
 }
 
-const handleCheckoutStatus = () => {
-  if (checkoutStatus.value === 'boleh') {
-    showAlert.value = true
-    alertTitle.value = 'Sukses'
-    alertType.value = 'success'
-    alertMessage.value = 'Checkout telah berhasil dilakukan'
-    checkoutStatus.value = ''
-  }
-}
 
 watch(
   selectedItems.value,
