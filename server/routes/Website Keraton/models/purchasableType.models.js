@@ -2,9 +2,18 @@ const { throwError } = require("../../utils/helper")
 const { prisma } = require("../../utils/prisma")
 
 const isExist = async (id) => {
-    try{
-        return await prisma.purchasable.findFirst({ where: { id } })
-    }catch(err){
+    try {
+        return await prisma.purchasableType.findFirst({ where: { id } })
+    } catch (err) {
+        throwError(err)
+    }
+}
+
+const nameExist = async (name) => {
+    try {
+        const nameExist = await prisma.purchasableType.findFirst({ where: { name } })
+        return (nameExist != null)
+    } catch (err) {
         throwError(err)
     }
 }
@@ -20,21 +29,28 @@ const getAll = async () => {
 }
 
 const getOne = async (id) => {
-    try{
+    try {
         return await prisma.purchasableType.findFirstOrThrow({
             where: { id }, include: { PurchasableSubType: true }
         })
-    }catch(err){
+    } catch (err) {
         throwError(err)
     }
 }
 
-const create = async (id) => {
-    try{
-        
-    }catch(err){
+const createUpdate = async (ident, data = { name , id}) => {
+    try {
+        if(ident != 'edit'){
+            const alreadyExist = await nameExist(data.name)
+            if (alreadyExist) throw Error('Type name already exist')
+        }
+        return await prisma.purchasableType.upsert({
+            where: { name: data.name },
+            create: data, update: data
+        })
+    } catch (err) {
         throwError(err)
     }
 }
 
-module.exports = { isExist, getOne, getAll }
+module.exports = { isExist, getOne, getAll, createUpdate }

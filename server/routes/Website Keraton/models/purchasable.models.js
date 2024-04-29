@@ -1,5 +1,6 @@
 const { throwError } = require("../../utils/helper")
 const { prisma } = require("../../utils/prisma")
+const subTypeModel =  require('../models/purchasableSubType.models')
 
 const isExist = async (id) => {
     try{
@@ -36,4 +37,16 @@ const getOne = async (id) => {
     }
 }
 
-module.exports = { isExist, getOne, getAll }
+const createUpdate = async (ident,data = { id, name, desc, unit, price, priceUmum, priceMancanegara, image, subTypeId }) => {
+    try{
+        if(ident != 'edit'){
+            const subType = await subTypeModel.isExist(data.subTypeId)
+            if(!subType) throw Error('Sub Type didnt exist')
+        }
+        return ident != 'edit' ? await prisma.purchasable.create({ data }) : await prisma.purchasable.update({ where: { id: data.id }, data })
+    }catch(err){
+        throwError(err)
+    }
+}
+
+module.exports = { isExist, getOne, getAll, createUpdate }

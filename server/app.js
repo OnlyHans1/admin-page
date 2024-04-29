@@ -40,7 +40,6 @@ const corsOptions = {
 
 //? SOCKET INTIALIZATION
 const io = require('socket.io')(
-  // httpsServer //?PRODUCTION SERVER
   server //?DEVELOPMENT SERVER
   ,
   {

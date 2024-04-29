@@ -48,7 +48,6 @@ router.post('/:id/:ident?', upload.array('imageList'), async (req, res) => {
     let sendedData
     try {
         if (req.files) req.body.imageList = req.files
-        console.log(req.body)
         if (req.params.ident != "create") {
             sendedData = await contentModel.createUpdate('create', null, req.body)
         } else sendedData = await contentModel.createUpdate('update', +req.params.id, req.body)
