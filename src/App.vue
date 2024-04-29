@@ -26,6 +26,7 @@ watchEffect(() => {
 
 onMounted(() => {
   routeCheck()
+  router.push('/')
 }) 
 </script>
 

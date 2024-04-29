@@ -20,13 +20,13 @@ router.get('/nationality-list', async (req, res) => {
 })
 
 router.post('/create-transaction', async function (req, res, next) {
-  const { nationality, date, total, method, discount, order } = req.body
+  const { name, nationality, date, total, method, discount, order } = req.body
 
   try {
     // Menemukan kasir dengan nama "Teddy Lazuardi"
     const cashier = await prisma.cashier.findFirst({
       where: {
-        name: 'Teddy Lazuardi'
+        name: name
       }
     })
 

@@ -3,18 +3,25 @@ import LoginHelper from '@/utilities/LoginHelper'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const { loggedIn, grantLogin, username, password, checkLogin } = LoginHelper
+const { loggedIn, grantLogin, username, password, userLogin } = LoginHelper
 
-const login = () => {
-  checkLogin()
-  if (grantLogin.value) {
-    setTimeout(() => {
-      router.push('/')
-      loggedIn.value = true
-      grantLogin.value = false
-    }, 1200)
+const checkLogin = async () => {
+  try {
+    await userLogin() // Memanggil userLogin dan menunggu hingga proses login selesai
+    if (grantLogin.value) {
+      // Jika grantLogin bernilai true setelah userLogin
+      setTimeout(() => {
+        router.push('/') // Redirect ke halaman utama setelah 1.2 detik
+        loggedIn.value = true // Set nilai loggedIn menjadi true
+        grantLogin.value = false // Set nilai grantLogin kembali menjadi false
+      }, 1200)
+    }
+  } catch (error) {
+    console.error('Cek login error :', error)
   }
 }
+
+// Fungsi userLogin tidak perlu diubah, karena sudah merupakan async function yang mengembalikan Promise.
 </script>
 
 <template>
@@ -30,7 +37,7 @@ const login = () => {
           <input type="password" placeholder="Password" class="input-field" v-model="password" />
         </div>
         <div class="login-button">
-          <button class="login-btn" @click="login()">Login</button>
+          <button class="login-btn" @click="checkLogin()">Login</button>
         </div>
       </div>
     </div>
@@ -48,7 +55,7 @@ main {
   background-position: center;
   display: flex;
   justify-content: center;
-  align-items: center;  
+  align-items: center;
   min-height: 100vh;
 }
 
@@ -88,16 +95,18 @@ main {
   resize: none;
   font-size: 16px;
   background-color: rgba(255, 255, 255, 0.5);
-  transition: border-color 0.3s, box-shadow 0.3s;
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
   outline: none;
 }
 
 .input-field:focus {
-  border-color:  #ffd978;
+  border-color: #ffd978;
 }
 
 .input-field::placeholder {
-    opacity: 0.5;
+  opacity: 0.5;
 }
 .login-button {
   width: 100%;
@@ -123,10 +132,10 @@ main {
   background-color: #e6be58;
 }
 
-.txtLogin{
-    font-size: 24px;
-    text-align: center;
-    margin-bottom: 20px; 
+.txtLogin {
+  font-size: 24px;
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 /* Media query untuk tablet dengan lebar maksimum 768px */
@@ -155,7 +164,7 @@ main {
     font-size: 14px; /* Mengubah ukuran font tombol login untuk tablet */
   }
 
-  .txtLogin{
+  .txtLogin {
     font-size: 20px; /* Mengubah ukuran font judul login untuk tablet */
     margin-bottom: 15px; /* Mengubah margin bawah judul login untuk tablet */
   }

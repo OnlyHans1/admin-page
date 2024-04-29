@@ -14,7 +14,7 @@ const route = useRoute()
 const editId = ref('')
 const title = ref('')
 const desc = ref('')
-const category = ref('') // Dont remove until further notice - azarel
+const category = ref('') 
 const price = ref('')
 const imageName = ref('')
 const selectedImageURL = ref('') // State to hold the selected image URL
@@ -198,7 +198,7 @@ onMounted(() => {
       </div>
       <div class="add__input-category">
         <h6>Kategori</h6>
-        <CategoryDropdown @option-selected="updateCategory" />
+        <CategoryDropdown @option-selected="updateCategory" :initial-category="category"/>
       </div>
       <div class="add__input-price">
         <h6>Harga</h6>
@@ -227,7 +227,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="add__preview-cta_container">
-        <button v-if="!currentPath === `/edit/${encodeURIComponent(editId.value)}`" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
+        <button v-if="!currentPath === `/edit/${encodeURIComponent(editId)}`" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
         <button v-else class="add__preview_button" type="submit" @click="updateDatabase()">Edit</button>
       </div>
     </section>

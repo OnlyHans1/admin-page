@@ -1,13 +1,13 @@
 import { ref } from 'vue'
 
-const loggedIn = ref(true)
+const loggedIn = ref(false)
 const grantLogin = ref(false)
 
 const username = ref('')
 const password = ref('')
 const cashierData = ref([])
 
-const checkLogin = async () => {
+const userLogin = async () => {
   try {
     const response = await fetch('http://localhost:3000/login', {
       method: 'POST',
@@ -29,10 +29,14 @@ const checkLogin = async () => {
     cashierData.value = data.cashier // Mengakses data kasir dari respons
     grantLogin.value = true
   } catch (error) {
-    console.error('Error fetching data:', error)
-    // Menampilkan pesan kesalahan dari respons
     alert('Login gagal: ' + error.message)
   }
+}
+
+const userLogout = () => {
+  cashierData.value = []
+  loggedIn.value = false
+  grantLogin.value = false
 }
 
 export default {
@@ -40,5 +44,7 @@ export default {
   grantLogin,
   username,
   password,
-  checkLogin
+  userLogin,
+  userLogout,
+  cashierData
 }
