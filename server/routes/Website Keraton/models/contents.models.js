@@ -9,7 +9,7 @@ async function isExist(id) {
 
 const getAll = async () => {
     try {
-        return await prisma.contents.findMany()
+        return await prisma.contents.findMany({ include: { page: true } })
     } catch (err) {
         throwError(err)
     }

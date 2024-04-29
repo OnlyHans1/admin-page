@@ -2,8 +2,8 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import CheckoutHelper from '@/utilities/CheckoutHelper'
 import AlertCard from '@/components/AlertCard.vue'
+import CheckoutHelper from '@/utilities/CheckoutHelper'
 
 const {
   selectedItems,
@@ -58,6 +58,16 @@ watch(
   },
   { deep: true }
 )
+
+const handleCheckoutStatus = () => {
+  if (checkoutStatus.value === 'boleh') {
+    showAlert.value = true
+    alertTitle.value = 'Sukses'
+    alertType.value = 'success'
+    alertMessage.value = 'Berhasil'
+    checkoutStatus.value = ''
+  }
+}
 
 onMounted(() => {
   fetchOrderList()

@@ -146,8 +146,8 @@ const formatCurrency = (amount) => {
   return parseInt(amount).toLocaleString('id-ID', {
     style: 'currency',
     currency: 'IDR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
   })
 }
 
@@ -159,12 +159,12 @@ const totalHarga = computed(() => {
   return total
 })
 
-const totalBiaya = computed(() => {
-  return totalHarga.value + biayaLayanan.value + biayaJasa.value
-})
-
 const totalTagihan = computed(() => {
   return totalHarga.value - (totalHarga.value * discountValue.value / 100) + biayaLayanan.value + biayaJasa.value
+})
+
+const totalBiaya = computed(() => {
+  return totalHarga.value - (discountValue.value / 100 + cashbackValue.value / 100) + biayaLayanan.value + biayaJasa.value
 })
 
 

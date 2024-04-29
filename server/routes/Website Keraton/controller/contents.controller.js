@@ -44,7 +44,7 @@ router.get('/:id?', async (req, res) => {
     }
 })
 
-router.post('/:id/:ident?', upload.array('imageList'), async (req, res) => {
+router.post('/:ident?/:id', upload.array('imageList'), async (req, res) => {
     let sendedData
     try {
         if (req.files) req.body.imageList = req.files
