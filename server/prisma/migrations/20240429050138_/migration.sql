@@ -11,14 +11,6 @@ CREATE TABLE `Cashier` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
-CREATE TABLE `Guide` (
-    `id` VARCHAR(191) NOT NULL,
-    `name` VARCHAR(191) NOT NULL,
-
-    PRIMARY KEY (`id`)
-) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
--- CreateTable
 CREATE TABLE `User` (
     `id` VARCHAR(191) NOT NULL,
     `name` VARCHAR(191) NOT NULL,
@@ -61,12 +53,11 @@ CREATE TABLE `Transaction` (
     `method` VARCHAR(191) NOT NULL,
     `status` ENUM('SUDAH_DIGUNAKAN', 'DAPAT_DIGUNAKAN', 'EXPIRED', 'MENUNGGU_PEMBAYARAN') NOT NULL,
     `date` DATETIME(3) NOT NULL,
-    `discount` VARCHAR(191) NOT NULL,
-    `cashback` VARCHAR(191) NOT NULL,
+    `discount` VARCHAR(191) NULL,
+    `cashback` VARCHAR(191) NULL,
     `userID` VARCHAR(191) NULL,
     `cashierID` VARCHAR(191) NULL,
     `nationalityID` VARCHAR(191) NULL,
-    `guideID` VARCHAR(191) NOT NULL,
 
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
@@ -184,9 +175,6 @@ ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_cashierID_fkey` FOREIGN KE
 
 -- AddForeignKey
 ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_nationalityID_fkey` FOREIGN KEY (`nationalityID`) REFERENCES `Nationality`(`id`) ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE `Transaction` ADD CONSTRAINT `Transaction_guideID_fkey` FOREIGN KEY (`guideID`) REFERENCES `Guide`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `DetailTrans` ADD CONSTRAINT `DetailTrans_transactionID_fkey` FOREIGN KEY (`transactionID`) REFERENCES `Transaction`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
