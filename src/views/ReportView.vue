@@ -36,7 +36,7 @@ onMounted(() => {
 
 <template>
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
-    <div class="report-information__container flex fd-row justify-content-sb pd-top[1.5] pd-sd-2">
+    <div class="report-information__container flex fd-row justify-content-sb pd-2">
       <div class="report-information__income-container flex fd-col gap-1">
         <p class="fs-h5">Pendapatan hari ini</p>
         <div class="report-information__income-text flex fd-row">
@@ -96,7 +96,6 @@ onMounted(() => {
 <style scoped>
 .report-information__container {
   width: 1085px;
-  height: 277px;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
 }

@@ -1,7 +1,9 @@
 import { ref, computed } from 'vue'
-import DashboardHelper from '@/utilities/DashboardHelper'
+import DashboardHelper from './DashboardHelper'
+import LoginHelper from './LoginHelper'
 
 const { checkSessionStorage, isMancanegara } = DashboardHelper
+const { cashierData } = LoginHelper
 
 /* NationalityDropdown Helper */
 const nationalityData = ref([])
@@ -209,11 +211,13 @@ const createTransaction = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        name: cashierData.name,
         nationality: selectedNationality.value,
         date: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
-        discount: discountValue.value > 0 ? `${discountValue.value}%` : '0',
+        discount: discountValue.value > 0 ? `${(totalHarga.value * discountValue.value) / 100}` : '0',
+        cashback: cashbackValue.value > 0 ? `${(totalTagihan.value * cashbackValue.value) / 100}` : '0',
         order: order
       })
     })

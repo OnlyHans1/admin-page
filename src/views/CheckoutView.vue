@@ -5,6 +5,7 @@ import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import LoginHelper from '@/utilities/LoginHelper'
 import AlertCard from '@/components/AlertCard.vue'
 const route = useRouter()
 
@@ -28,10 +29,12 @@ const {
   totalBiaya,
   totalTicketCount,
   createTransaction,
-  selectedNationality
+  selectedNationality,
+  checkoutStatus
 } = CheckoutHelper
 
 const { checkSessionStorage, isMancanegara } = DashboardHelper
+const { cashierData } = LoginHelper
 
 const showAlert = ref(false)
 const alertType = ref('')
@@ -40,9 +43,7 @@ const alertMessage = ref('')
 
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
-  console.log(totalTicketCount.value)
   if (totalTicketCount.value < 1) {
-    console.log('Nyobain ererror')
     showAlert.value = true
     alertTitle.value = 'Error'
     alertType.value = 'danger' // Set your alert type
@@ -67,10 +68,13 @@ const checkoutTransaction = async () => {
 
   try {
     await createTransaction()
-    sessionStorage.clear()
-    setTimeout(() => {
-      route.push('/')
-    }, 3000)
+    if (checkoutStatus.value === 'boleh') {
+      sessionStorage.clear()
+      setTimeout(() => {
+        route.push('/')
+      }, 3000)
+    }
+    checkoutStatus.value = ''
   } catch (error) {
     console.error('Gagal melakukan transaksi:', error)
     // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai jika transaksi gagal
@@ -123,8 +127,8 @@ onMounted(() => {
                   <p>Detail Pemesan</p>
                 </div>
                 <div class="order-details__content w-full">
-                  <p class="fs-h5 fw-700">Teddy Lazuardi</p>
-                  <p>- (TeddyLazuardi@gmail.com)</p>
+                  <p class="fs-h5 fw-700">{{ cashierData.name }}</p>
+                  <p>- ({{ cashierData.email }})</p>
                 </div>
                 <div class="order-details__dropdown" v-if="isMancanegara">
                   <NationalityDropdown />

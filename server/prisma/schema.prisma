@@ -18,11 +18,11 @@ model Cashier {
   transaction Transaction[]
 }
 
-model Guide {
-  id          String        @id @default(uuid())
-  name        String
-  transaction Transaction[]
-}
+// model Guide {
+//   id          String        @id @default(uuid())
+//   name        String
+//   transaction Transaction[]
+// }
 
 model User {
   id            String        @id @default(uuid())
@@ -53,8 +53,8 @@ model Transaction {
   method        String
   status        Status
   date          DateTime
-  discount      String
-  cashback      String
+  discount      String?
+  cashback      String?
   user          User?         @relation(fields: [userID], references: [id])
   userID        String?
   cashier       Cashier?      @relation(fields: [cashierID], references: [id])
@@ -62,8 +62,8 @@ model Transaction {
   detailTrans   DetailTrans[]
   nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
   nationalityID String?
-  guide         Guide         @relation(fields: [guideID], references: [id])
-  guideID       String
+  // guide         Guide         @relation(fields: [guideID], references: [id])
+  // guideID       String
 }
 
 model DetailTrans {

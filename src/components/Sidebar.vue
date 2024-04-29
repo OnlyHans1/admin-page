@@ -1,6 +1,9 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
+import LoginHelper from '@/utilities/LoginHelper'
+
+const { userLogout } = LoginHelper
 
 const activeLink = ref(0)
 const route = useRoute()
@@ -28,8 +31,7 @@ watch(
   }
 )
 
-determineActiveLink();
-
+determineActiveLink()
 </script>
 <template>
   <nav>
@@ -54,7 +56,9 @@ determineActiveLink();
       </div>
       <div class="navbar-links__settings-container flex fd-col">
         <a href="#" name="Settings"><ph-gear :size="24" weight="bold" /></a>
-        <a href="#" name="Logout"><ph-sign-out :size="24" weight="bold" mirrored="mirrored"/></a>
+        <RouterLink to="/login" name="Logout"  @click="userLogout()">
+          ><ph-sign-out :size="24" weight="bold" mirrored="mirrored"
+        /></RouterLink>
       </div>
     </div>
   </nav>
@@ -116,27 +120,27 @@ nav {
   height: 3rem; /* Maintain fixed size */
   display: flex;
   justify-content: center; /* Center horizontally */
-  align-items: center; /* Center vertically */  
+  align-items: center; /* Center vertically */
   cursor: pointer;
   z-index: 999; /* Ensures it's above other elements */
   transition: background-color 0.4s ease; /* Smooth transition for background color */
 }
 
 a:hover::after {
-    content: attr(name);
-    position: absolute;
-    top: 0.5rem;
-    left: 2rem;
-    background-color: rgb(0, 0, 0, 0.8);
-    color: #fff;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    font-family: 'Poppins';
-    font-weight: 500;
-    font-size: 12px;
-    line-height: 16px;
-    white-space: nowrap;
-    z-index: 9999;
+  content: attr(name);
+  position: absolute;
+  top: 0.5rem;
+  left: 2rem;
+  background-color: rgb(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  font-family: 'Poppins';
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 16px;
+  white-space: nowrap;
+  z-index: 9999;
 }
 .active:hover::after {
   transform: translateX(15%);

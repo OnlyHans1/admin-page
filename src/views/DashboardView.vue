@@ -2,8 +2,8 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import AlertCard from '@/components/AlertCard.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
+import AlertCard from '@/components/AlertCard.vue'
 
 const {
   selectedItems,
@@ -46,7 +46,7 @@ const handleCheckoutStatus = () => {
     showAlert.value = true
     alertTitle.value = 'Sukses'
     alertType.value = 'success'
-    alertMessage.value = 'Berhasil'
+    alertMessage.value = 'Checkout telah berhasil dilakukan'
     checkoutStatus.value = ''
   }
 }
