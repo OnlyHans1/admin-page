@@ -1,27 +1,30 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, defineProps, defineEmits, watchEffect } from 'vue';
+
 const emit = defineEmits(['option-selected']);
 const props = defineProps({
-  categoryWidth: { type: String, default: '15rem' }
-})
-const isDropdownOpen = ref(false)
-const selected = ref('');
+  categoryWidth: { type: String, default: '15rem' },
+  initialCategory: { type: String, default: '' } // New prop to accept initial selected category
+});
+
+const isDropdownOpen = ref(false);
+const selected = ref(props.initialCategory); // Initialize selected with the initialCategory prop
 
 const toggleDropdown = () => {
-    isDropdownOpen.value = !isDropdownOpen.value
-}
-;
+  isDropdownOpen.value = !isDropdownOpen.value;
+};
+
 const closeDropdownOnClickOutside = (event) => {
   if (!event.target.closest('.category__input-dropdown') && !event.target.closest('.category__input-dropdown_menu')) {
     isDropdownOpen.value = false;
   }
 };
 
-const selectOption = (value) =>{
-    selected.value = value;
-    isDropdownOpen.value = false;
-    emit('option-selected', selected.value);
-} 
+const selectOption = (value) => {
+  selected.value = value;
+  isDropdownOpen.value = false;
+  emit('option-selected', selected.value);
+};
 
 onMounted(() => {
   window.addEventListener('click', closeDropdownOnClickOutside);
@@ -30,8 +33,11 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdownOnClickOutside);
 });
-
+watchEffect(() => {
+  selected.value = props.initialCategory;
+});
 </script>
+
 <template>
   <div class="category__input-dropdown" :style="{ width: categoryWidth }">
     <input readonly @click="toggleDropdown()" :value="selected" placeholder="Pilih Kategori" id="category">
