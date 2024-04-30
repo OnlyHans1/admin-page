@@ -1,4 +1,7 @@
 import { ref, computed } from 'vue'
+import GlobalHelper from './GlobalHelper'
+
+const { DB_BASE_URL } = GlobalHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref([])
@@ -17,7 +20,7 @@ const alertMessage = ref('')
 
 const fetchOrderList = async () => {
   try {
-    const response = await fetch('http://localhost:3000/order-list')
+    const response = await fetch(`${DB_BASE_URL.value}/order-list`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -49,7 +52,7 @@ const navigateToAdd = () => {
 }
 
 const getImageURL = (imageName) => {
-  return `http://localhost:3000/uploads/${imageName}`
+  return `${DB_BASE_URL.value}/uploads/${imageName}`
 }
 
 const selectItem = (item) => {
@@ -203,7 +206,7 @@ const groupedItems = computed(() => {
 const confirmDelete = async () => {
   try {
     const response = await fetch(
-      `http://localhost:3000/delete-order/${encodeURIComponent(selectedItemToDelete.value.id)}`,
+      `${DB_BASE_URL.value}/delete-order/${encodeURIComponent(selectedItemToDelete.value.id)}`,
       {
         method: 'DELETE',
         headers: {

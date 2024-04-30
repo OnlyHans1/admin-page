@@ -3,6 +3,7 @@ var router = express.Router()
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const CryptoJS = require('crypto-js');
+const jwt = require('jsonwebtoken')
 
 router.post('/login', async (req, res) => {
   const { name, password } = req.body;
@@ -18,8 +19,9 @@ router.post('/login', async (req, res) => {
     if (!cashier) {
       return res.status(401).json({ message: 'Kredensial tidak valid' });
     }
+    const token = jwt.sign(cashier, process.env.SECRET_KEY_AUTH)
 
-    res.status(200).json({ message: 'Login berhasil', cashier: cashier });
+    res.status(200).json({ token: token, cashier: cashier });
   } catch (error) {
     console.error('Error:', error);
     res.status(500).json({ message: 'Terjadi kesalahan saat login' });

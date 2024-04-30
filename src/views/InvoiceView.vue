@@ -70,7 +70,7 @@ onMounted(() => {
             <td class="invoice-table__data">{{ splitDate(item.transaction.date)[0] }}</td>
             <td class="invoice-table__data">{{ splitDate(item.transaction.date)[1] }}</td>
             <td class="invoice-table__data">
-              {{ item.transaction.user.email }} <br />
+              {{ item.transaction.cashier.email }} <br />
               <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                 detail
               </button>

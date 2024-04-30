@@ -4,7 +4,10 @@ import { useRouter, useRoute } from 'vue-router'
 import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import AlertCard from '@/components/AlertCard.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
+
+const { DB_BASE_URL } = GlobalHelper
 
 const { selectedItemToEdit, getImageURL } = DashboardHelper
 
@@ -39,7 +42,7 @@ const insertDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch('http://localhost:3000/add/order-details', {
+    const response = await fetch(`/api/add/order-details`, {
       method: 'POST',
       body: formData
     })
@@ -67,7 +70,7 @@ const updateDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`http://localhost:3000/edit/order-details/${encodeURIComponent(editId.value)}`, {
+    const response = await fetch('/api/edit/order-details/', {
       method: 'PUT',
       body: formData
     })
@@ -135,7 +138,7 @@ const confirmAdd = () => {
     showAlert.value = true
     alertTitle.value = 'Error'
     alertType.value = 'danger' // Set your alert type
-    message.value = `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.` // Set your alert message
+    alertMessage.value = `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.` // Set your alert message
     return // Prevent confirmation if there are empty fields
   }
 
@@ -177,7 +180,7 @@ onMounted(() => {
     </div>
   </div>
   <div class="bubble-alert_submit" v-if="submitAlert">
-    <p v-if="!currentPath === `/edit/${encodeURIComponent(editId)}`">Data berhasil ditambahkan</p>
+    <p v-if="currentPath === '/add'">Data berhasil ditambahkan</p>
     <p v-else>Data berhasil diubah</p>
   </div>
 
@@ -227,7 +230,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="add__preview-cta_container">
-        <button v-if="!currentPath === `/edit/${encodeURIComponent(editId)}`" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
+        <button v-if="currentPath === '/add'" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
         <button v-else class="add__preview_button" type="submit" @click="updateDatabase()">Edit</button>
       </div>
     </section>

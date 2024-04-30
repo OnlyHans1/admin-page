@@ -1,10 +1,11 @@
 <script setup>
-import { onMounted, ref, defineProps} from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import LoginHelper from '@/utilities/LoginHelper'
 import AlertCard from '@/components/AlertCard.vue'
 const route = useRouter()
 
@@ -29,7 +30,7 @@ const {
   totalTicketCount,
   createTransaction,
   selectedNationality,
-  
+  checkoutStatus
 } = CheckoutHelper
 
 const { checkSessionStorage, isMancanegara } = DashboardHelper
@@ -40,20 +41,16 @@ const alertType = ref('')
 const alertTitle = ref('')
 const alertMessage = ref('')
 
-
-
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
-  console.log(totalTicketCount.value)
-  if(totalTicketCount.value < 1){
-    console.log('Nyobain ererror')
+  if (totalTicketCount.value < 1) {
     showAlert.value = true
     alertTitle.value = 'Error'
     alertType.value = 'danger' // Set your alert type
     alertMessage.value = `Pilih tipe tiket terlebih dahulu`
 
     setTimeout(() => {
-    showAlert.value = false
+      showAlert.value = false
     }, 1200)
     return
   }
@@ -62,25 +59,27 @@ const checkoutTransaction = async () => {
     alertTitle.value = 'Error'
     alertType.value = 'danger' // Set your alert type
     alertMessage.value = `Isi kolom ${invalid.join(', ')} terlebih dahulu.` // Set your alert message
-    
+
     setTimeout(() => {
-    showAlert.value = false
+      showAlert.value = false
     }, 1200)
     return
   }
-  
+
   try {
     await createTransaction()
-    sessionStorage.clear()
-    setTimeout(() => {
-      route.push('/')
-    }, 3000)
+    if (checkoutStatus.value === 'boleh') {
+      sessionStorage.clear()
+      setTimeout(() => {
+        route.push('/')
+      }, 3000)
+    }
+    checkoutStatus.value = ''
   } catch (error) {
     console.error('Gagal melakukan transaksi:', error)
     // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai jika transaksi gagal
   }
 }
-
 
 const checkValidTransaction = () => {
   const invalid = []
@@ -106,8 +105,6 @@ onMounted(() => {
   getItemsFromSessionStorage()
   checkSessionStorage()
 })
-
-
 </script>
 
 <template>
@@ -157,7 +154,7 @@ onMounted(() => {
                   <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
                       <p>{{ item.name }} ({{ item.category }})</p>
-                      <span>{{ formatCurrency(item.price) }},00</span>
+                      <span>{{ formatCurrency(item.price) }}</span>
                     </div>
                     <div class="order-details__ticket-value">
                       <button @click="reduceTicket(index)" type="button">
@@ -272,7 +269,7 @@ onMounted(() => {
               <div class="checkout__details-pricing" v-if="cashbackValue > 0">
                 <p>Cashback</p>
                 <p>
-                  {{ formatCurrency((totalHarga * cashbackValue) / 100) }} ({{ cashbackValue }})%
+                  {{ formatCurrency((totalTagihan * cashbackValue) / 100) }} ({{ cashbackValue }})%
                 </p>
               </div>
             </div>
@@ -282,12 +279,12 @@ onMounted(() => {
                 <p
                   class="fw-700 fs-h6"
                   :class="{
-                    'checkout__details-total--strikethrough': discountValue > 0 || cashbackValue > 0
+                    'checkout__details-total--strikethrough': discountValue > 0
                   }"
                 >
                   {{ formatCurrency(totalBiaya) }}
                 </p>
-                <p class="fw-700 fs-h6" v-if="discountValue > 0 || cashbackValue > 0">
+                <p class="fw-700 fs-h6" v-if="discountValue > 0">
                   {{ formatCurrency(totalTagihan) }}
                 </p>
               </div>

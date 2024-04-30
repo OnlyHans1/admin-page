@@ -1,7 +1,9 @@
 import { ref, computed } from 'vue'
+import GlobalHelper from './GlobalHelper'
 import DashboardHelper from './DashboardHelper'
 import LoginHelper from './LoginHelper'
 
+const { DB_BASE_URL } = GlobalHelper
 const { checkSessionStorage, isMancanegara } = DashboardHelper
 const { cashierData } = LoginHelper
 
@@ -12,7 +14,7 @@ const selectedNationality = ref()
 
 const fetchNationalityData = async () => {
   try {
-    const response = await fetch('http://localhost:3000/checkout/nationality-list')
+    const response = await fetch(`${DB_BASE_URL.value}/checkout/nationality-list`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -146,8 +148,8 @@ const formatCurrency = (amount) => {
   return parseInt(amount).toLocaleString('id-ID', {
     style: 'currency',
     currency: 'IDR',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
   })
 }
 
@@ -159,14 +161,18 @@ const totalHarga = computed(() => {
   return total
 })
 
-const totalTagihan = computed(() => {
-  return totalHarga.value - (totalHarga.value * discountValue.value / 100) + biayaLayanan.value + biayaJasa.value
-})
-
 const totalBiaya = computed(() => {
-  return totalHarga.value - (discountValue.value / 100 + cashbackValue.value / 100) + biayaLayanan.value + biayaJasa.value
+  return totalHarga.value + biayaLayanan.value + biayaJasa.value
 })
 
+const totalTagihan = computed(() => {
+  return (
+    totalHarga.value -
+    (totalHarga.value * discountValue.value) / 100 +
+    biayaLayanan.value +
+    biayaJasa.value
+  )
+})
 
 const totalTicketCount = computed(() => {
   let totalCount = 0
@@ -203,9 +209,9 @@ const createTransaction = async () => {
     }))
 
   dateTime()
-  
+
   try {
-    const response = await fetch('http://localhost:3000/checkout/create-transaction', {
+    const response = await fetch(`${DB_BASE_URL.value}/checkout/create-transaction`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -216,8 +222,10 @@ const createTransaction = async () => {
         date: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
-        discount: discountValue.value > 0 ? `${(totalHarga.value * discountValue.value) / 100}` : '0',
-        cashback: cashbackValue.value > 0 ? `${(totalTagihan.value * cashbackValue.value) / 100}` : '0',
+        discount:
+          discountValue.value > 0 ? `${(totalHarga.value * discountValue.value) / 100}` : '0',
+        cashback:
+          cashbackValue.value > 0 ? `${(totalTagihan.value * cashbackValue.value) / 100}` : '0',
         order: order
       })
     })

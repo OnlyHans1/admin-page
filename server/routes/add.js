@@ -5,6 +5,7 @@ var fs = require('fs')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
+const allowedMimeTypes = ['image/png', 'image/jpg', 'image/jpeg', 'image/webp']
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     const uploadDir = './uploads' // Specify the uploads directory path
@@ -19,8 +20,17 @@ const storage = multer.diskStorage({
   }
 })
 
-const upload = multer({ storage: storage })
-
+const upload = multer({
+  storage,
+  fileFilter(req, file, cb) {
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+      req.fileValidationError = 'Only image file are allowed'
+      cb(null, false)
+      return
+    }
+    cb(null, true)
+  }
+})
 
 // Handler rute POST
 router.post('/order-details', upload.single('image'), async function (req, res, next) {

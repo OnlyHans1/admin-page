@@ -1,11 +1,13 @@
 import { ref } from 'vue'
 import * as XLSX from 'xlsx'
+import GlobalHelper from './GlobalHelper'
+
+const { DB_BASE_URL } = GlobalHelper
 
 const today = new Date()
 today.setHours(7, 0, 0, 0)
-const year = today.getFullYear();
-const month = today.getMonth() + 1;
-
+const year = today.getFullYear()
+const month = today.getMonth() + 1
 
 /* Report Global Helper */
 const filteredCategory = ref()
@@ -31,7 +33,7 @@ const incomeRevenue = ref([])
 
 const fetchIncomeRevenue = async () => {
   try {
-    const response = await fetch('http://localhost:3000/report/income-revenue')
+    const response = await fetch(`/api/report/income-revenue`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -41,6 +43,7 @@ const fetchIncomeRevenue = async () => {
     console.error('Error fetching data:', error)
   }
 }
+
 const generateExcel = () => {
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
   const monthlyTempData = JSON.parse(JSON.stringify(monthlyData.value))
@@ -101,8 +104,13 @@ const generateExcel = () => {
   // Simpan file Excel
   XLSX.writeFile(wb, 'chart_report.xlsx')
 }
+
 const printData = () => {
   const data = []
+
+  // Batasi jumlah kolom untuk data bulanan
+  const maxYearColumns = yearlyCategory.value.length
+  const maxMonthColumns = monthlyCategory.value.length
 
   // Buat salinan data tahunan dan bulanan
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
@@ -117,56 +125,19 @@ const printData = () => {
     item.data = item.data.slice(1)
   })
 
-  // Tambahkan header untuk data tahunan
-  data.push([
-    {
-      content: `Tabel Tingkat Keramaian ${targetYear.value}`,
-      colspan: 4,
-      style: 'font-weight: bold; text-align: center;'
-    }
-  ]) // Header dengan colspan 4
   const yearlyCategories = yearlyCategory.value.slice(1) // Mengambil bulan saja
-  data.push(['Bulan', 'Umum', 'Pelajar', 'Mancanegara'])
+  const yearlyTableData = [['Bulan', ...yearlyCategories]] // Tambahkan judul "Bulan" di awal
+  data.push([]) // Tambahkan baris kosong
 
   // Tambahkan data tahunan
-  yearlyCategories.forEach((month, index) => {
-    const rowData = [month]
-    yearlyTempData.forEach((item) => {
-      rowData.push(`${item.data[index]} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
+  yearlyTempData.forEach((item, index) => {
+    const rowData = [`${item.name}`] // Tambahkan kategori pada awal baris
+    item.data.slice(0, maxYearColumns - 1).forEach((value) => {
+      // Batasi jumlah kolom
+      rowData.push(`${value} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
     })
-    data.push(rowData)
+    yearlyTableData.push(rowData)
   })
-
-  // Tambahkan spasi antara tabel tahunan dan bulanan
-  data.push([])
-
-  // Tambahkan header untuk data bulanan
-  data.push([
-    {
-      content: `Tabel Tingkat Keramaian Bulan ${targetMonth.value}`,
-      colspan: 4,
-      style: 'font-weight: bold; text-align: center;'
-    }
-  ]) // Header dengan colspan 4
-  const monthlyCategories = monthlyCategory.value.slice(1) // Mengambil tanggal saja
-  data.push(['Tanggal', 'Umum', 'Pelajar', 'Mancanegara'])
-
-  // Tambahkan data bulanan
-  monthlyCategories.forEach((day, index) => {
-    const rowData = [day]
-    monthlyTempData.forEach((item) => {
-      rowData.push(`${item.data[index]} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
-    })
-    data.push(rowData)
-  })
-
-  // Buat container display flex
-  const container = document.createElement('div')
-  container.style.display = 'flex'
-  container.style.justifyContent = 'center'
-  container.style.alignItems = 'center'
-  container.style.padding = '2.5rem'
-  container.style.gap = '3rem'
 
   // Buat tabel tahunan
   const yearlyTable = document.createElement('table')
@@ -174,11 +145,10 @@ const printData = () => {
   yearlyTable.style.width = '100%'
 
   // Tambahkan data tahunan ke dalam tabel tahunan
-  data.slice(0, yearlyCategories.length + 2).forEach((rowData) => {
+  yearlyTableData.forEach((rowData) => {
     const row = yearlyTable.insertRow()
     rowData.forEach((cellData, index) => {
       const cell = row.insertCell()
-      cell.colSpan = cellData.colspan || 1 // Atur colspan jika ada, jika tidak, gunakan 1
       cell.innerHTML = cellData.content || cellData
       cell.style.cssText = cellData.style || '' // Atur gaya sel jika ada, jika tidak, gunakan yang default
       // Set text-align center untuk kolom umum, pelajar, dan mancanegara
@@ -193,12 +163,25 @@ const printData = () => {
   monthlyTable.border = '1'
   monthlyTable.style.width = '100%'
 
+  const monthlyCategories = monthlyCategory.value.slice(1) // Mengambil tanggal saja
+  const monthlyTableData = [['Tanggal', ...monthlyCategories]] // Tambahkan judul "Tanggal" di awal
+  data.push([]) // Tambahkan baris kosong
+
+  // Tambahkan data bulanan
+  monthlyTempData.forEach((item, index) => {
+    const rowData = [`${item.name}`] // Tambahkan kategori pada awal baris
+    item.data.slice(0, maxMonthColumns - 1).forEach((value) => {
+      // Batasi jumlah kolom
+      rowData.push(`${value} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
+    })
+    monthlyTableData.push(rowData)
+  })
+
   // Tambahkan data bulanan ke dalam tabel bulanan
-  data.slice(yearlyCategories.length + 3).forEach((rowData) => {
+  monthlyTableData.forEach((rowData) => {
     const row = monthlyTable.insertRow()
     rowData.forEach((cellData, index) => {
       const cell = row.insertCell()
-      cell.colSpan = cellData.colspan || 1 // Atur colspan jika ada, jika tidak, gunakan 1
       cell.innerHTML = cellData.content || cellData
       cell.style.cssText = cellData.style || '' // Atur gaya sel jika ada, jika tidak, gunakan yang default
       // Set text-align center untuk kolom umum, pelajar, dan mancanegara
@@ -208,15 +191,36 @@ const printData = () => {
     })
   })
 
+  // Buat container display flex
+  const yearContainer = document.createElement('div')
+  yearContainer.style.display = 'flex'
+  yearContainer.style.justifyContent = 'center'
+  yearContainer.style.alignItems = 'center'
+  yearContainer.style.padding = '2.5rem'
+  yearContainer.style.gap = '3rem'
+
+  const monthContainer = document.createElement('div')
+  monthContainer.style.display = 'flex'
+  monthContainer.style.justifyContent = 'center'
+  monthContainer.style.alignItems = 'center'
+  monthContainer.style.padding = '2.5rem'
+  monthContainer.style.gap = '3rem'
+
   // Tambahkan tabel tahunan dan bulanan ke dalam container
-  container.appendChild(yearlyTable)
-  container.appendChild(monthlyTable)
+  yearContainer.appendChild(yearlyTable)
+  monthContainer.appendChild(monthlyTable)
 
   // Cetak container
   const win = window.open('', '', 'fullscreen=yes')
   win.document.write('<html><head><title>Data Tingkat Keramaian</title></head><body>')
-  win.document.write('<h1 style="text-align: center;">Data Tingkat Keramaian</h1>')
-  win.document.write(container.outerHTML) // Cetak container yang berisi tabel tahunan dan bulanan
+  win.document.write(
+    `<h1 style="text-align: center;">Data Tingkat Keramaian Tahun ${targetYear.value}</h1>`
+  )
+  win.document.write(yearContainer.outerHTML)
+  win.document.write(
+    `<h1 style="text-align: center;">Data Tingkat Keramaian Bulan ${targetMonth.value}</h1>`
+  )
+  win.document.write(monthContainer.outerHTML)
   win.document.write('</body></html>')
   win.document.close()
 
@@ -237,7 +241,9 @@ const monthlyData = ref([])
 
 const fetchYearlyChartData = async () => {
   try {
-    const response = await fetch(`http://localhost:3000/report/yearly-chart-data/${encodeURIComponent(year)}`)
+    const response = await fetch(
+      `${DB_BASE_URL.value}/report/yearly-chart-data/${encodeURIComponent(year)}`
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -252,7 +258,9 @@ const fetchYearlyChartData = async () => {
 
 const fetchMonthlyChartData = async () => {
   try {
-    const response = await fetch(`http://localhost:3000/report/monthly-chart-data/${encodeURIComponent(year)}/${encodeURIComponent(month)}`)
+    const response = await fetch(
+      `${DB_BASE_URL.value}/report/monthly-chart-data/${encodeURIComponent(year)}/${encodeURIComponent(month)}`
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -273,7 +281,7 @@ const getFilteredCategory = (filter) => {
 }
 const fetchTableDataReport = async () => {
   try {
-    let url = 'http://localhost:3000/report/table-data'
+    let url = `${DB_BASE_URL.value}/report/table-data`
     if (filteredCategory.value) {
       url += `?category=${encodeURIComponent(filteredCategory.value)}`
     }
@@ -294,7 +302,7 @@ const orderInfoCardData = ref([])
 
 const fetchOrderInfoCardData = async () => {
   try {
-    const response = await fetch('http://localhost:3000/report/order-info')
+    const response = await fetch(`${DB_BASE_URL.value}/report/order-info`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }

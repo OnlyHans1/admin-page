@@ -1,4 +1,7 @@
 import { ref } from 'vue'
+import GlobalHelper from './GlobalHelper'
+
+const { DB_BASE_URL } = GlobalHelper
 
 /* InvoiceView Helper */
 const dataInvoice = ref([])
@@ -9,7 +12,7 @@ const getSearchQuery = (query) => {
 
 const fetchTransactionList = async () => {
   try {
-    let url = 'http://localhost:3000/invoice/transaction-list'
+    let url = `${DB_BASE_URL.value}/invoice/transaction-list`
     if (searchQuery.value) {
       url += `?search=${encodeURIComponent(searchQuery.value)}`
     }

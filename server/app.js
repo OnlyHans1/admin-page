@@ -23,7 +23,8 @@ const server = http.createServer(app)
 //? CORS SECTION START
 const allowedOrigins = [
   "https://www.postman.com", //Postman
-  "http://localhost:9000", //Development
+  "http://localhost:5173", // FE Development
+  "http://localhost:3000", // BE Development
 ];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -33,7 +34,7 @@ const corsOptions = {
       callback(new Error("Not allowed by CORS"));
     }
   },
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTION",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   credentials: true,
 };
 //? CORS SECTION END
@@ -80,7 +81,7 @@ app.use('/invoice', invoiceRouter)
 app.use('/report', reportRouter)
 app.use('/checkout', checkoutRouter)
 app.use('/keraton', keratonWebsiteRouter)
-// app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 
 //? RUN DEVELOPMENT SERVER
