@@ -62,6 +62,9 @@ watch(
 onMounted(() => {
   fetchOrderList()
   handleCheckoutStatus()
+  setTimeout(() => {
+    showAlert.value = false
+  }, 3000)
 })
 </script>
 
@@ -182,7 +185,8 @@ onMounted(() => {
             <p>{{ selectedItems[0].desc }}</p>
             <div class="flex fd-row justify-content-start">
               <button
-                class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]" @click="showDeleteConfirmation()"
+                class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]"
+                @click="showDeleteConfirmation()"
               >
                 <ph-trash :size="16" weight="bold" />
                 <span class="fw-600">Delete</span>

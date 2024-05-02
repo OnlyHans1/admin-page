@@ -15,6 +15,11 @@ enum Role {
   CUSTOMER
 }
 
+enum Gender {
+  MALE
+  FEMALE
+}
+
 enum Category {
   UMUM
   PELAJAR
@@ -46,6 +51,10 @@ model Cashier {
 model Guide {
   id          String        @id @default(uuid())
   name        String
+  email       String        @unique
+  gender      Gender
+  birthdate   DateTime
+  desc        String?
   DetailTrans DetailTrans[]
 }
 
