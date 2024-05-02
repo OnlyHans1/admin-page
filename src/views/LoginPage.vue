@@ -1,27 +1,23 @@
 <script setup>
 import LoginHelper from '@/utilities/LoginHelper'
+import DashboardHelper from '@/utilities/DashboardHelper'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const { loggedIn, grantLogin, username, password, userLogin } = LoginHelper
+const { username, password, userLogin } = LoginHelper
 
 const checkLogin = async () => {
   try {
-    await userLogin() // Memanggil userLogin dan menunggu hingga proses login selesai
-    if (grantLogin.value) {
-      // Jika grantLogin bernilai true setelah userLogin
-      setTimeout(() => {
-        router.push('/') // Redirect ke halaman utama setelah 1.2 detik
-        loggedIn.value = true // Set nilai loggedIn menjadi true
-        grantLogin.value = false // Set nilai grantLogin kembali menjadi false
-      }, 1200)
-    }
+    await userLogin()
+      router.replace('/')
+      DashboardHelper.showAlert.value = true
+      DashboardHelper.alertTitle.value = 'Sukses'
+      DashboardHelper.alertType.value = 'success'
+      DashboardHelper.alertMessage.value = `Login berhasil! Selamat datang ${username.value}`
   } catch (error) {
     console.error('Cek login error :', error)
   }
 }
-
-// Fungsi userLogin tidak perlu diubah, karena sudah merupakan async function yang mengembalikan Promise.
 </script>
 
 <template>

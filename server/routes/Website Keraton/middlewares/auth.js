@@ -12,7 +12,7 @@ const auth = (listAccessible = []) => async (req, res, next) => {
             const isAccessible = access.some((acc) => tokenExist.user.role.includes(acc))
             if (!isAccessible) return error(res, 'Forbidden, you have no access to this resource', 403)
         }
-        req.user = tokenExist.userS
+        req.user = tokenExist.user
         return next()
     } catch (err) {
         return error(res, err.message)

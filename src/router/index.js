@@ -6,6 +6,9 @@ import CheckoutView from '../views/CheckoutView.vue'
 import InvoiceView from '../views/InvoiceView.vue'
 import ReportView from '../views/ReportView.vue'
 import AfterCheckoutView from '../views/AfterCheckoutView.vue'
+import LoginHelper from '@/utilities/LoginHelper'
+
+const { isAuthenticated } = LoginHelper
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,7 +21,8 @@ const router = createRouter({
     {
       path: '/',
       name: 'dashboard',
-      component: DashboardView
+      component: DashboardView,
+      meta: { protected: true }
     },
     {
       path: '/add',
@@ -54,8 +58,18 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: '404',
       redirect: { name: 'dashboard' }
-    },
+    }
   ]
+})
+
+router.beforeEach((to, from, next) => {
+  if (to.meta.protected && !isAuthenticated()) {
+    next('/login')
+  } else if (to.path === '/login' && isAuthenticated()) {
+    next(from)
+  } else {
+    next()
+  }
 })
 
 export default router

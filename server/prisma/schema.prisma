@@ -46,7 +46,7 @@ model Cashier {
 model Guide {
   id          String        @id @default(uuid())
   name        String
-  transaction Transaction[]
+  DetailTrans DetailTrans[]
 }
 
 model User {
@@ -92,11 +92,9 @@ model Transaction {
   userID        String?
   cashier       Cashier?      @relation(fields: [cashierID], references: [id])
   cashierID     String?
-  detailTrans   DetailTrans[]
   nationality   Nationality?  @relation(fields: [nationalityID], references: [id])
   nationalityID String?
-  guide         Guide         @relation(fields: [guideID], references: [id])
-  guideID       String
+  detailTrans   DetailTrans[]
 }
 
 model DetailTrans {
@@ -106,6 +104,8 @@ model DetailTrans {
   transactionID String
   order         Order       @relation(fields: [orderID], references: [id])
   orderID       String
+  guide         Guide       @relation(fields: [guideID], references: [id])
+  guideID       String
 }
 
 model Nationality {

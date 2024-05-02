@@ -4,11 +4,40 @@ import GlobalHelper from './GlobalHelper'
 const { DB_BASE_URL } = GlobalHelper
 
 const loggedIn = ref(false)
-const grantLogin = ref(false)
 
 const username = ref('')
 const password = ref('')
 const cashierData = ref([])
+
+const isAuthenticated = () => {
+  const token = localStorage.getItem('token')
+  if (token) {
+    authLogin(token)
+    loggedIn.value = true
+    return true
+  }
+  localStorage.removeItem('token')
+  return false
+}
+
+const authLogin = async (token) => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/authorized`, {
+      headers: {
+        Authorization: token
+      }
+    })
+
+    if (!response.ok) {
+      throw new Error(error)
+    }
+
+    const data = await response.json()
+    cashierData.value = data
+  } catch (error) {
+    alert('Login gagal: ' + error.message)
+  }
+}
 
 const userLogin = async () => {
   try {
@@ -24,29 +53,29 @@ const userLogin = async () => {
     })
 
     if (!response.ok) {
-      const errorMessage = await response.json() // mengambil pesan dari respons
-      throw new Error(errorMessage.message) // melempar pesan kesalahan
+      const errorMessage = await response.json()
+      throw new Error(errorMessage.message)
     }
 
     const data = await response.json()
-    cashierData.value = data.cashier // Mengakses data kasir dari respons
-    grantLogin.value = true
+    localStorage.setItem('token', data.token)
+    isAuthenticated()
   } catch (error) {
     alert('Login gagal: ' + error.message)
   }
 }
 
 const userLogout = () => {
-  cashierData.value = []
+  localStorage.removeItem('token')
   loggedIn.value = false
-  grantLogin.value = false
+  cashierData.value = []
 }
 
 export default {
   loggedIn,
-  grantLogin,
   username,
   password,
+  isAuthenticated,
   userLogin,
   userLogout,
   cashierData
