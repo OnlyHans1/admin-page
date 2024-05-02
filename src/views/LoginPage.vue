@@ -10,11 +10,11 @@ const { username, password, userLogin } = LoginHelper
 const checkLogin = async () => {
   try {
     await userLogin()
-      router.replace('/')
-      DashboardHelper.showAlert.value = true
-      DashboardHelper.alertTitle.value = 'Sukses'
-      DashboardHelper.alertType.value = 'success'
-      DashboardHelper.alertMessage.value = `Login berhasil! Selamat datang ${username.value}`
+    router.replace('/')
+    DashboardHelper.showAlert.value = true
+    DashboardHelper.alertTitle.value = 'Sukses'
+    DashboardHelper.alertType.value = 'success'
+    DashboardHelper.alertMessage.value = `Login berhasil! Selamat datang ${username.value}`
   } catch (error) {
     console.error('Cek login error :', error)
   }

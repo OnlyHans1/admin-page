@@ -33,7 +33,7 @@ const incomeRevenue = ref([])
 
 const fetchIncomeRevenue = async () => {
   try {
-    const response = await fetch(`/api/report/income-revenue`)
+    const response = await fetch(`${DB_BASE_URL.value}/report/income-revenue`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }

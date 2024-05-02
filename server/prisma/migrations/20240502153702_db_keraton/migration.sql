@@ -17,6 +17,7 @@ CREATE TABLE `Guide` (
     `email` VARCHAR(191) NOT NULL,
     `gender` ENUM('MALE', 'FEMALE') NOT NULL,
     `birthdate` DATETIME(3) NOT NULL,
+    `image` VARCHAR(191) NULL,
     `desc` VARCHAR(191) NULL,
 
     UNIQUE INDEX `Guide_email_key`(`email`),
@@ -65,7 +66,8 @@ CREATE TABLE `Transaction` (
     `total` DECIMAL(18, 2) NOT NULL,
     `method` VARCHAR(191) NOT NULL,
     `status` ENUM('SUDAH_DIGUNAKAN', 'DAPAT_DIGUNAKAN', 'EXPIRED', 'MENUNGGU_PEMBAYARAN') NOT NULL,
-    `date` DATETIME(3) NOT NULL,
+    `plannedDate` DATETIME(3) NOT NULL,
+    `createdDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `discount` VARCHAR(191) NOT NULL,
     `cashback` VARCHAR(191) NOT NULL,
     `userID` VARCHAR(191) NULL,

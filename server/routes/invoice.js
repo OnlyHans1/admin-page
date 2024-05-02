@@ -23,7 +23,7 @@ router.get('/transaction-list', async (req, res) => {
         },
         transaction: {
           select: {
-            date: true,
+            plannedDate: true,
             method: true,
             cashier: {
               select: {

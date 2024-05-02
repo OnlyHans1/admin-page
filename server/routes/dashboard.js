@@ -4,6 +4,8 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
+const fs = require('fs')
+const path = require('path')
 
 router.post('/login', async (req, res) => {
   const { name, password } = req.body
@@ -93,9 +95,7 @@ router.delete('/delete-order/:id', async (req, res) => {
   try {
     // Mencari pesanan dengan ID yang diberikan
     const order = await prisma.order.findFirst({
-      where: {
-        id: id
-      }
+      where: { id: id }
     })
 
     // Memeriksa apakah pesanan ditemukan
@@ -103,12 +103,73 @@ router.delete('/delete-order/:id', async (req, res) => {
       return res.status(404).json({ error: 'Pesanan tidak ditemukan' })
     }
 
-    // Menghapus pesanan
-    await prisma.order.delete({
+    // Mencari detail transaksi terkait menggunakan ID pesanan
+    const detailTrans = await prisma.detailTrans.findFirst({
       where: {
-        id: id
+        orderID: id
+      },
+      select: {
+        id: true,
+        amount: true,
+        transactionID: true
       }
     })
+
+    // Inisialisasi nama file log dan path
+    const logFileName = `log-${new Date().toISOString().slice(0, 10)}.txt`
+    const logFilePath = path.join(path.dirname(__dirname), 'logs', logFileName)
+
+    // Buat folder logs jika belum ada
+    if (!fs.existsSync(path.join(path.dirname(__dirname), 'logs'))) {
+      fs.mkdirSync(path.join(path.dirname(__dirname), 'logs'))
+    }
+
+    // Fungsi untuk menulis log ke file
+    const writeLog = (log) => {
+      fs.appendFileSync(logFilePath, log + '\n', (err) => {
+        if (err) {
+          console.error('Gagal menulis log:', err)
+        }
+      })
+    }
+
+    // Jika ada detail transaksi terkait, maka lakukan penghapusan
+    if (detailTrans) {
+      const transaction = await prisma.transaction.findFirst({
+        where: { id: detailTrans.transactionID },
+        select: { total: true, discount: true }
+      })
+      await prisma.transaction.update({
+        where: { id: detailTrans.transactionID },
+        data: {
+          total: (transaction.total -=
+            order.price * detailTrans.amount + 3500 - transaction.discount)
+        }
+      })
+      await prisma.detailTrans.delete({
+        where: { id: detailTrans.id }
+      })
+
+      writeLog(
+        `Detail transaksi dengan ID ${detailTrans.id} yang memiliki kaitan dengan pesanan ${order.name} berhasil dihapus.`
+      )
+
+      if (transaction.total < 1) {
+        await prisma.transaction.delete({
+          where: { id: detailTrans.transactionID }
+        })
+        writeLog(
+          `Transaksi dengan ID ${detailTrans.transactionID} juga dihapus karena nilai totalnya kosong.`
+        )
+      }
+    }
+
+    // Menghapus pesanan
+    await prisma.order.delete({
+      where: { id: id }
+    })
+
+    writeLog(`Pesanan ${order.name} (${order.category}) dengan ID ${order.id} berhasil dihapus.`)
 
     // Memberikan respons yang menunjukkan penghapusan berhasil
     res.status(200).json({ message: 'Pesanan berhasil dihapus' })

@@ -11,11 +11,11 @@ const { selectedItem } = defineProps(['selectedItem'])
       <div class="invoice-detail__content-img">
         <img src="../assets/images/Logo KKC.svg" alt="Logo Keraton Kasepuhan Cirebon" />
       </div>
-      <div class="invoice-detail__container-data align-self-f-start pd-sd-1">
+      <div class="invoice-detail__container-data align-self-f-start pd-sd-1 w-full">
         <div>
           <div v-for="(value, key) in selectedItem" :key="key" class="invoice-detail__data">
             <h3 class="invoice-detail__data-title">{{ capitalizeFirstLetter(key) }}</h3>
-            <p>{{ value }}</p>
+            <p class="to-ellipsis">{{ value }}</p>
           </div>
         </div>
       </div>
@@ -65,7 +65,6 @@ const { selectedItem } = defineProps(['selectedItem'])
   font-size: 16px;
   margin-bottom: 5px;
   margin-left: 10px;
-
 }
 .invoice-detail__button {
   display: flex;

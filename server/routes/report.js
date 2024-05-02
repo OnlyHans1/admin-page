@@ -48,7 +48,7 @@ function generateYearlyCategory(yearlyData) {
 
   yearlyData.forEach((order) => {
     order.detailTrans.forEach((detail) => {
-      const month = detail.transaction.date.getMonth() + 1
+      const month = detail.transaction.createdDate.getMonth() + 1
       usedMonths = month
     })
   })
@@ -67,7 +67,7 @@ function generateMonthlyCategory(monthlyData, daysInMonth) {
 
   monthlyData.forEach((order) => {
     order.detailTrans.forEach((detail) => {
-      const day = detail.transaction.date.getDate()
+      const day = detail.transaction.createdDate.getDate()
       usedDays = day
     })
   })
@@ -90,7 +90,7 @@ router.get('/table-data', async function (req, res, next) {
       select: {
         amount: true,
         transaction: {
-          select: { date: true }
+          select: { createdDate: true }
         },
         order: {
           select: { id: true, name: true, category: true, price: true }
@@ -123,7 +123,7 @@ router.get('/order-info', async function (req, res, next) {
         detailTrans: {
           where: {
             transaction: {
-              date: {
+              createdDate: {
                 gte: startDate,
                 lte: endDate
               }
@@ -176,7 +176,7 @@ router.get('/income-revenue', async function (req, res, next) {
   try {
     const transactions = await prisma.transaction.findMany({
       where: {
-        date: {
+        createdDate: {
           gte: startDate,
           lte: endDate
         }
@@ -186,7 +186,6 @@ router.get('/income-revenue', async function (req, res, next) {
       }
     })
 
-    
     const total = parseInt(transactions.reduce((acc, curr) => acc + parseInt(curr.total), 0))
 
     res.status(200).json({ total: total })
@@ -212,7 +211,7 @@ router.get('/yearly-chart-data/:targetYear', async (req, res, next) => {
         detailTrans: {
           where: {
             transaction: {
-              date: {
+              createdDate: {
                 gte: startDate,
                 lte: endDate
               }
@@ -222,7 +221,7 @@ router.get('/yearly-chart-data/:targetYear', async (req, res, next) => {
             amount: true,
             transaction: {
               select: {
-                date: true
+                createdDate: true
               }
             }
           }
@@ -247,7 +246,7 @@ router.get('/yearly-chart-data/:targetYear', async (req, res, next) => {
         .map((cat) => cat.toUpperCase())
         .indexOf(order.category.toUpperCase())
       order.detailTrans.forEach((detail) => {
-        const month = detail.transaction.date.getMonth() + 1
+        const month = detail.transaction.createdDate.getMonth() + 1
         const amount = detail.amount
         if (categoryIndex !== -1) {
           yearlyChartData[categoryIndex].data[month] += parseInt(amount)
@@ -285,7 +284,7 @@ router.get('/monthly-chart-data/:targetYear/:targetMonth', async (req, res, next
         detailTrans: {
           where: {
             transaction: {
-              date: {
+              createdDate: {
                 gte: startTarget,
                 lte: endTarget
               }
@@ -295,7 +294,7 @@ router.get('/monthly-chart-data/:targetYear/:targetMonth', async (req, res, next
             amount: true,
             transaction: {
               select: {
-                date: true
+                createdDate: true
               }
             }
           }
@@ -320,7 +319,7 @@ router.get('/monthly-chart-data/:targetYear/:targetMonth', async (req, res, next
         .map((cat) => cat.toUpperCase())
         .indexOf(order.category.toUpperCase())
       order.detailTrans.forEach((detail) => {
-        const day = detail.transaction.date.getDate()
+        const day = detail.transaction.createdDate.getDate()
         const amount = detail.amount
         if (categoryIndex !== -1) {
           monthlyChartData[categoryIndex].data[day] += amount

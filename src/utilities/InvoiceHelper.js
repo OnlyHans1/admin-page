@@ -87,7 +87,7 @@ const showDetail = (item) => {
   selectedItem.value = {
     nama: item.transaction.cashier.name,
     reservasi: item.order.name,
-    jadwal: formatDate(item.transaction.date),
+    jadwal: formatDate(item.transaction.plannedDate),
     ...(item.transaction.cashier.number != null && { 'no. telp': item.transaction.cashier.number }),
     pembayaran: item.transaction.method
   }

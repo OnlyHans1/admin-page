@@ -192,31 +192,22 @@ const selectPayment = (paymentMethod) => {
   paymentSelect.value = false
 }
 
-//Guide Selection
-const guideSelection = ref('')
-const guideSelect = ref(false)
 
-const guideSelectors = ref(true)
-const guideSelectBio = ref(false)
-const guideSelectTicket = ref(false)
 
 //Main Page Component
 const guideSelectPage = () => {
   guideSelect.value = !guideSelect.value
-  
 }
 
-const guideSelectPageBio = () => {
+const guideSelectPageBio = (guide) => {
   guideSelectBio.value = !guideSelectBio.value
   guideSelectors.value = !guideSelectors.value
-
+  selectedGuide.value = guide
 }
 const guideSelectPageTicket = () => {
   guideSelectTicket.value = !guideSelectTicket.value
   guideSelectBio.value = !guideSelectBio.value
   guideSelectors.value = false
-
-
 }
 
 //DateTime
@@ -233,7 +224,8 @@ const createTransaction = async () => {
     .filter((item) => item.amount > 0)
     .map((item) => ({
       id: item.id,
-      amount: item.amount
+      amount: item.amount,
+      guideId: item.guideId
     }))
 
   dateTime()
@@ -247,7 +239,7 @@ const createTransaction = async () => {
       body: JSON.stringify({
         name: cashierData.name,
         nationality: selectedNationality.value,
-        date: selectedDate.value,
+        plannedDate: selectedDate.value,
         total: totalTagihan.value,
         method: paymentSelection.value.toUpperCase(),
         discount:
@@ -257,47 +249,72 @@ const createTransaction = async () => {
         order: order
       })
     })
-    checkoutStatus.value = 'boleh'
 
     if (!response.ok) {
       checkoutStatus.value = 'salah'
       throw new Error('Failed to create transaction. Please try again.')
     }
+
+    checkoutStatus.value = 'boleh'
+    sessionStorage.clear()
   } catch (error) {
     console.log(error)
   }
 }
 
+const fetchGuideData = async () => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/checkout/guide-list`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    guideData.value = data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
 
-const guideSeeder = [
-  {
-    id : 1,
-    name: 'Teddy Lazuardi',
-    umur : 16,
-    email: 'TeddyLazuardi@gmail.com',
-    number: '085678901234',
-    desc : 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet'
-  },
-  {
-    id : 2,
-    name: 'admin',
-    umur : 20,
-    email: 'admin@dewa.com',
-    number: '999999999999',
-    desc : 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet'
-  },
-  {
-    id : 3,
-    name: 'Test Dummy',
-    umur : 20,
-    email: 'admin@dewa.com',
-    number: '999999999999',
-    desc : 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet'
-  },
-];
+//Guide Selection
+const guideData = ref([])
+const guideSelection = ref([])
+const guideSelect = ref(false)
 
+const guideSelectors = ref(true)
+const guideSelectBio = ref(false)
+const guideSelectTicket = ref(false)
 
+const selectedGuide = ref([])
 
+const isGuideChecked = (id) => {
+  return items.value.some((item) => item.guideId === id)
+}
+
+const addGuide = (index) => {
+  items.value[index].guideId = selectedGuide.value.id
+  items.value[index].guideName = selectedGuide.value.name
+  guideSelection.value.push({ ...selectedGuide.value })
+}
+
+const formattedGuideSelection = computed(() => {
+  return guideSelection.value.map((guide) => guide.name).join(', ')
+})
+
+function determineAge(birthdate) {
+  const birthDate = new Date(birthdate)
+  const currentDate = new Date()
+
+  const age = currentDate.getFullYear() - birthDate.getFullYear()
+
+  const isBirthdayPassed =
+    currentDate.getMonth() > birthDate.getMonth() ||
+    (currentDate.getMonth() === birthDate.getMonth() &&
+      currentDate.getDate() >= birthDate.getDate())
+
+  const finalAge = isBirthdayPassed ? age : age - 1
+
+  return finalAge
+}
 
 export default {
   selectedNationality,
@@ -332,13 +349,19 @@ export default {
   totalTicketCount,
   createTransaction,
   checkoutStatus,
+  guideData,
+  selectedGuide,
   guideSelect,
   guideSelectPage,
   guideSelection,
   guideSelectBio,
   guideSelectPageBio,
   guideSelectors,
-  guideSeeder,
   guideSelectTicket,
-  guideSelectPageTicket
+  guideSelectPageTicket,
+  addGuide,
+  isGuideChecked,
+  formattedGuideSelection,
+  fetchGuideData,
+  determineAge
 }

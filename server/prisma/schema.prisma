@@ -54,6 +54,7 @@ model Guide {
   email       String        @unique
   gender      Gender
   birthdate   DateTime
+  image       String?
   desc        String?
   DetailTrans DetailTrans[]
 }
@@ -94,7 +95,8 @@ model Transaction {
   total         Decimal       @db.Decimal(18, 2)
   method        String
   status        Status
-  date          DateTime
+  plannedDate   DateTime
+  createdDate   DateTime      @default(now())
   discount      String
   cashback      String
   user          User?         @relation(fields: [userID], references: [id])

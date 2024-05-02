@@ -7,7 +7,6 @@ import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 import AlertCard from '@/components/AlertCard.vue'
-import GuideDropdown from '@/components/GuideDropdown.vue'
 const route = useRouter()
 
 const {
@@ -32,6 +31,7 @@ const {
   createTransaction,
   selectedNationality,
   checkoutStatus,
+  guideData,
   guideSelect,
   guideSelection,
   guideSelectPageBio,
@@ -39,13 +39,16 @@ const {
   guideSelectPage,
   guideSelectors,
   selectedGuide,
-  guideSeeder,
   guideSelectTicket,
-  guideSelectPageTicket
+  guideSelectPageTicket,
+  addGuide,
+  isGuideChecked,
+  formattedGuideSelection,
+  fetchGuideData,
+  determineAge
 } = CheckoutHelper
 
-
-const { checkSessionStorage, isMancanegara } = DashboardHelper
+const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
 const { cashierData } = LoginHelper
 
 const showAlert = ref(false)
@@ -81,9 +84,9 @@ const checkoutTransaction = async () => {
   try {
     await createTransaction()
     if (checkoutStatus.value === 'boleh') {
-      sessionStorage.clear()
       setTimeout(() => {
-        route.push('/')
+        route.replace('/')
+        sessionStorage.clear()
       }, 3000)
     }
     checkoutStatus.value = ''
@@ -114,12 +117,10 @@ const checkValidTransaction = () => {
 }
 
 onMounted(() => {
+  fetchGuideData()
   getItemsFromSessionStorage()
   checkSessionStorage()
 })
-
-
-
 </script>
 
 <template>
@@ -217,10 +218,12 @@ onMounted(() => {
                 <p>Pilih Guide</p>
               </div>
               <div class="order-details__guide-select" @click="guideSelectPage">
-                <div v-if="guideSelection" class="order-details__guide-select-content if">
+                <div
+                  v-if="guideSelection.length > 0"
+                  class="order-details__guide-select-content if"
+                >
                   <div class="flex align-items-center gap[0.5]">
-                    
-                    {{ guideSelection }}
+                    {{ formattedGuideSelection }}
                   </div>
                 </div>
                 <div v-else class="order-details__guide-select-content else">
@@ -230,119 +233,115 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <section 
-                class="order-details__select-content_modal-overlay"
-                v-if="guideSelect">
-
+              <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
                 <div class="order-details__guide-select-content_modal sm-4">
                   <div class="order-details__guide-select-content_modal-header">
-                    <h5 class="fw-600">Guide</h5>  
+                    <h5 class="fw-600">Guide</h5>
                     <ph-x :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
-                  <div class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2">
-
-                      <div
-                        v-if="guideSelectors"
-                        v-for="(guide, index) in guideSeeder"
-                        :key="index"
-                        class="order-detail__guide-select-content_guide-selector flex sm-bottom-1"
-                      >
-                        <span class="flex gap[0.5] pd[0.5]">
-                          <input
-                            type="radio"
-                            name="guide"
-                            :id="'guide-' + guide.name"
-                            class="cursor-pointer"
-                            :value="guide.name"
-                            v-model="guideSelection"
-                          />
-                          <label :for="guide.name">{{ guide.name }}</label>
-                        </span>
-                        <div
-                          class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                          @click="guideSelectPageBio"
-                        >
-                          <ph-caret-right :size="16" weight="bold" />
+                  <div
+                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+                  >
+                    <div
+                      v-if="guideSelectors"
+                      v-for="(guide, index) in guideData"
+                      :key="index"
+                      class="order-detail__guide-select-content_guide-selector flex sm-bottom-1"
+                    >
+                      <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
+                        <div class="order-detail__guide-select-content_guide-selector_radio">
+                          <div v-if="isGuideChecked(guide.id, guide.name)" class="selected"></div>
                         </div>
-                      
+                        <label :for="guide.name">{{ guide.name }}</label>
+                      </span>
+                      <div
+                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                        @click="guideSelectPageBio(guide)"
+                      >
+                        <ph-caret-right :size="16" weight="bold" />
+                      </div>
                     </div>
 
                     <div class="order-details__guide-select_biodata relative" v-if="guideSelectBio">
-                      <div class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-                       @click="guideSelectPageBio">
+                      <div
+                        class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
+                        @click="guideSelectPageBio"
+                      >
                         <ph-caret-left :size="16" weight="bold" />
                         <h6>Kembali</h6>
                       </div>
-                      
+
                       <div class="guide-select_biodata-content flex gap-2">
                         <div class="">
                           <img
-                          :src="
-                           'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                          "
-                          class="guide-select_biodata-image"
+                            :src="
+                              selectedGuide.image
+                                ? getImageURL(selectedGuide.image)
+                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
+                            class="guide-select_biodata-image"
                           />
                           <div class="flex justify-content-sb">
-                            <div class="guide-select_biodata_add-ticket w-full" @click="guideSelectPageTicket">
-                              Tambahkan Tiket<ph-caret-right :size="16" weight="bold"/>
+                            <div
+                              class="guide-select_biodata_add-ticket w-full"
+                              @click="guideSelectPageTicket"
+                            >
+                              Tambahkan Tiket<ph-caret-right :size="16" weight="bold" />
                             </div>
                           </div>
                         </div>
 
                         <div class="guide-select_biodata-information">
-                          <h6>Nama Lengkap</h6>
-                          <p>Umur</p>
-                          <p>email@email.com</p>
-                          <p>desc</p>
+                          <h6>{{ selectedGuide.name }}</h6>
+                          <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
+                          <p>{{ selectedGuide.email }}</p>
+                          <p>{{ selectedGuide.desc }}</p>
                         </div>
                       </div>
-
-
-
                     </div>
 
-                    <div class="order-details__guide-select_ticket relative" v-if="guideSelectTicket">
-                      <div class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-                       @click="guideSelectPageTicket">
+                    <div
+                      class="order-details__guide-select_ticket relative"
+                      v-if="guideSelectTicket"
+                    >
+                      <div
+                        class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
+                        @click="guideSelectPageTicket"
+                      >
                         <ph-caret-left :size="16" weight="bold" />
                         <h6>Kembali</h6>
                       </div>
-                      
-                      <div class="guide-select_ticket flex justify-content-sb sm-bottom-1">
-                        <div class="flex gap-1 ">
+
+                      <div
+                        v-for="(item, index) in items"
+                        :key="index"
+                        class="guide-select_ticket flex justify-content-sb sm-bottom-1"
+                      >
+                        <div class="flex gap-1">
                           <img
-                            :src="
-                            'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                            "
+                            :src="'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'"
                             class="guide-select_ticket-image"
-                            />
+                          />
                           <div class="flex fd-col">
-                            <p class="fw-600">Title tiket</p>
-                            <p>Date time</p>
-                            <p>Harga</p>
+                            <p class="fw-600">{{ item.name }}</p>
+                            <p>{{ formatCurrency(item.price) }}</p>
                           </div>
                         </div>
                         <div class="guide-select_ticket-cta flex align-items-center">
-                          <button class="guide-select_ticket-btn flex align-items-center">
+                          <button
+                            class="guide-select_ticket-btn flex align-items-center"
+                            @click.prevent="addGuide(index)"
+                          >
                             <ph-plus :size="16" weight="bold" />
                           </button>
                         </div>
                       </div>
-
-                    </div>
-
-
-
                     </div>
                   </div>
-                
-
+                </div>
               </section>
 
-              <section
-                class="order-details__select-content_modal-overlay"
-                v-if="paymentSelect"
-              >
+              <section class="order-details__select-content_modal-overlay" v-if="paymentSelect">
                 <div class="order-details__payment-select-content_modal">
                   <div
                     class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
@@ -354,14 +353,17 @@ onMounted(() => {
                     class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1"
                   >
                     <button @click="selectPayment('Cash')">
-                      <span><ph-money :size="16" weight="bold" />
+                      <span
+                        ><ph-money :size="16" weight="bold" />
                         <h6>Cash</h6>
                       </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                     <button @click="selectPayment('Kartu Kredit/Debit')">
-                      <span><ph-credit-card :size="16" weight="bold" />
-                        <h6>Kartu Kredit/Debit</h6></span>
+                      <span
+                        ><ph-credit-card :size="16" weight="bold" />
+                        <h6>Kartu Kredit/Debit</h6></span
+                      >
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                   </div>
@@ -448,7 +450,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-
 main {
   font-family: 'Raleway';
 }
@@ -655,7 +656,7 @@ main {
   color: rgba(227, 38, 38, 1);
 }
 
-.order-details__guide-select-content_modal{
+.order-details__guide-select-content_modal {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -663,7 +664,7 @@ main {
   height: 80%;
   overflow: hidden;
   z-index: 100;
-  position : relative
+  position: relative;
 }
 
 .order-details__guide-select-content_modal-header {
@@ -675,21 +676,36 @@ main {
   border-bottom: 1px solid black;
 }
 
-
-.order-detail__guide-select-content_guide-selector{
+.order-detail__guide-select-content_guide-selector {
   display: flex;
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
   width: 30%;
-  
 }
-.order-detail__guide-select-content_guide-selector .bg-yellow{
+.order-detail__guide-select-content_guide-selector .bg-yellow {
   background-color: #e6be58;
-  border-radius: 0  0.5rem 0.5rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
 }
 
-.guide-select_biodata-image{
+.order-detail__guide-select-content_guide-selector_radio {
+  background-color: transparent;
+  border: 0.5px solid black;
+  border-radius: 100%;
+  width: 0.8rem;
+  height: 0.8rem;
+  padding: 0.1rem;
+}
+
+.order-detail__guide-select-content_guide-selector_radio > .selected {
+  background-color: #e6be58;
+  filter: blur(1px);
+  border-radius: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.guide-select_biodata-image {
   width: 300px;
   max-width: 300px;
   height: 300px;
@@ -697,7 +713,7 @@ main {
   object-fit: cover;
 }
 
-.guide-select_biodata_add-ticket{
+.guide-select_biodata_add-ticket {
   border-radius: 0.25rem;
   background-color: var(--color-primary);
   display: flex;
@@ -708,20 +724,20 @@ main {
   cursor: pointer;
 }
 
-.guide-select_ticket{
+.guide-select_ticket {
   padding: 1rem;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.guide-select_ticket-image{
+.guide-select_ticket-image {
   max-height: 70px;
   max-width: 100px;
 }
 
-.guide-select_ticket-btn{
+.guide-select_ticket-btn {
   padding: 0.5rem;
-  background-color:var(--color-primary) ;
+  background-color: var(--color-primary);
   border-radius: 0.25rem;
 }
 

@@ -3,6 +3,16 @@ var router = express.Router()
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
+router.get('/guide-list', async (req, res) => {
+  try {
+    const guide = await prisma.guide.findMany()
+    res.status(200).json(guide)
+  } catch (error) {
+    console.error(error)
+    res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 router.get('/nationality-list', async (req, res) => {
   try {
     const nationalities = await prisma.nationality.findMany({
@@ -20,7 +30,8 @@ router.get('/nationality-list', async (req, res) => {
 })
 
 router.post('/create-transaction', async function (req, res, next) {
-  const { name, nationality, date, total, method, discount, order } = req.body
+  const { name, nationality, plannedDate, total, method, discount, cashback, order } = req.body
+  console.log(order)
 
   try {
     // Menemukan kasir dengan nama "Teddy Lazuardi"
@@ -37,11 +48,12 @@ router.post('/create-transaction', async function (req, res, next) {
     // Membuat transaksi dan menghubungkannya dengan kasir
     const transaction = await prisma.transaction.create({
       data: {
-        date: date,
         total: total,
         method: method,
         status: 'DAPAT_DIGUNAKAN',
         discount: discount,
+        cashback: cashback,
+        plannedDate: plannedDate,
         cashier: {
           connect: {
             id: cashier.id
@@ -66,7 +78,7 @@ router.post('/create-transaction', async function (req, res, next) {
           },
           guide: {
             connect: {
-              email: 'bukantopik@gmail.com'
+              id: o.guideId
             }
           },
           order: {
