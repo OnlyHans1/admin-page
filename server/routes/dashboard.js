@@ -2,7 +2,7 @@ var express = require('express')
 var router = express.Router()
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-const CryptoJS = require('crypto-js')
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 router.post('/login', async (req, res) => {
@@ -11,14 +11,17 @@ router.post('/login', async (req, res) => {
   try {
     const cashier = await prisma.cashier.findFirst({
       where: {
-        name: name,
-        password: CryptoJS.SHA256(password).toString()
+        name: name
       }
     })
 
     if (!cashier) {
-      return res.status(401).json({ message: 'Kredensial tidak valid' })
+      return res.status(401).json({ message: 'Username tidak ditemukan' })
     }
+    await bcrypt.compare(password, cashier.password).then((match) => {
+      if (!match) throw Error('Password tidak sesuai')
+    })
+
     const token = jwt.sign(cashier, process.env.SECRET_KEY_AUTH, { expiresIn: '1h' })
 
     res.status(200).json({ token: token })
@@ -45,7 +48,6 @@ const verifyToken = (req, res, next) => {
 }
 
 router.get('/authorized', verifyToken, async (req, res) => {
-  
   try {
     const id = req.cashier.id
     const cashier = await prisma.cashier.findFirst({

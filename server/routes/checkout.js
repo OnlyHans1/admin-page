@@ -64,6 +64,11 @@ router.post('/create-transaction', async function (req, res, next) {
               id: transaction.id
             }
           },
+          guide: {
+            connect: {
+              email: 'bukantopik@gmail.com'
+            }
+          },
           order: {
             connect: {
               id: o.id
