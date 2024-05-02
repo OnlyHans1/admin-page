@@ -3,6 +3,7 @@ import GlobalHelper from './GlobalHelper'
 
 const { DB_BASE_URL } = GlobalHelper
 
+const grantLogin = ref(false)
 const loggedIn = ref(false)
 
 const username = ref('')

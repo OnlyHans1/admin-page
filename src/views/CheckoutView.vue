@@ -7,6 +7,7 @@ import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 import AlertCard from '@/components/AlertCard.vue'
+import GuideDropdown from '@/components/GuideDropdown.vue'
 const route = useRouter()
 
 const {
@@ -30,8 +31,19 @@ const {
   totalTicketCount,
   createTransaction,
   selectedNationality,
-  checkoutStatus
+  checkoutStatus,
+  guideSelect,
+  guideSelection,
+  guideSelectPageBio,
+  guideSelectBio,
+  guideSelectPage,
+  guideSelectors,
+  selectedGuide,
+  guideSeeder,
+  guideSelectTicket,
+  guideSelectPageTicket
 } = CheckoutHelper
+
 
 const { checkSessionStorage, isMancanegara } = DashboardHelper
 const { cashierData } = LoginHelper
@@ -105,6 +117,9 @@ onMounted(() => {
   getItemsFromSessionStorage()
   checkSessionStorage()
 })
+
+
+
 </script>
 
 <template>
@@ -197,26 +212,156 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
+              <div class="order-details__content sm-top-1">
+                <ph-binoculars :size="24" weight="bold" class="header-icons" />
+                <p>Pilih Guide</p>
+              </div>
+              <div class="order-details__guide-select" @click="guideSelectPage">
+                <div v-if="guideSelection" class="order-details__guide-select-content if">
+                  <div class="flex align-items-center gap[0.5]">
+                    
+                    {{ guideSelection }}
+                  </div>
+                </div>
+                <div v-else class="order-details__guide-select-content else">
+                  <ph-warning-octagon :size="16" weight="fill" color="red" />
+                  <p>Anda belum memilih guide</p>
+                </div>
+                <ph-caret-right :size="16" weight="bold" />
+              </div>
+
+              <section 
+                class="order-details__select-content_modal-overlay"
+                v-if="guideSelect">
+
+                <div class="order-details__guide-select-content_modal sm-4">
+                  <div class="order-details__guide-select-content_modal-header">
+                    <h5 class="fw-600">Guide</h5>  
+                    <ph-x :size="20" weight="bold" @click="guideSelectPage" />
+                  </div>
+                  <div class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2">
+
+                      <div
+                        v-if="guideSelectors"
+                        v-for="(guide, index) in guideSeeder"
+                        :key="index"
+                        class="order-detail__guide-select-content_guide-selector flex sm-bottom-1"
+                      >
+                        <span class="flex gap[0.5] pd[0.5]">
+                          <input
+                            type="radio"
+                            name="guide"
+                            :id="'guide-' + guide.name"
+                            class="cursor-pointer"
+                            :value="guide.name"
+                            v-model="guideSelection"
+                          />
+                          <label :for="guide.name">{{ guide.name }}</label>
+                        </span>
+                        <div
+                          class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                          @click="guideSelectPageBio"
+                        >
+                          <ph-caret-right :size="16" weight="bold" />
+                        </div>
+                      
+                    </div>
+
+                    <div class="order-details__guide-select_biodata relative" v-if="guideSelectBio">
+                      <div class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
+                       @click="guideSelectPageBio">
+                        <ph-caret-left :size="16" weight="bold" />
+                        <h6>Kembali</h6>
+                      </div>
+                      
+                      <div class="guide-select_biodata-content flex gap-2">
+                        <div class="">
+                          <img
+                          :src="
+                           'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                          "
+                          class="guide-select_biodata-image"
+                          />
+                          <div class="flex justify-content-sb">
+                            <div class="guide-select_biodata_add-ticket w-full" @click="guideSelectPageTicket">
+                              Tambahkan Tiket<ph-caret-right :size="16" weight="bold"/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="guide-select_biodata-information">
+                          <h6>Nama Lengkap</h6>
+                          <p>Umur</p>
+                          <p>email@email.com</p>
+                          <p>desc</p>
+                        </div>
+                      </div>
+
+
+
+                    </div>
+
+                    <div class="order-details__guide-select_ticket relative" v-if="guideSelectTicket">
+                      <div class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
+                       @click="guideSelectPageTicket">
+                        <ph-caret-left :size="16" weight="bold" />
+                        <h6>Kembali</h6>
+                      </div>
+                      
+                      <div class="guide-select_ticket flex justify-content-sb sm-bottom-1">
+                        <div class="flex gap-1 ">
+                          <img
+                            :src="
+                            'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
+                            class="guide-select_ticket-image"
+                            />
+                          <div class="flex fd-col">
+                            <p class="fw-600">Title tiket</p>
+                            <p>Date time</p>
+                            <p>Harga</p>
+                          </div>
+                        </div>
+                        <div class="guide-select_ticket-cta flex align-items-center">
+                          <button class="guide-select_ticket-btn flex align-items-center">
+                            <ph-plus :size="16" weight="bold" />
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+
+
+
+                    </div>
+                  </div>
+                
+
+              </section>
+
               <section
-                class="order-details__payment-select-content_modal-overlay"
+                class="order-details__select-content_modal-overlay"
                 v-if="paymentSelect"
               >
                 <div class="order-details__payment-select-content_modal">
                   <div
                     class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
                   >
-                    <h3 class="fw-600">Pilih Metode Pembayaran</h3>
+                    <h5 class="fw-600">Pilih Metode Pembayaran</h5>
                     <ph-x :size="20" weight="bold" @click="showPaymentSelect" />
                   </div>
                   <div
                     class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1"
                   >
                     <button @click="selectPayment('Cash')">
-                      <span><ph-money :size="16" weight="bold" />Cash</span>
+                      <span><ph-money :size="16" weight="bold" />
+                        <h6>Cash</h6>
+                      </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                     <button @click="selectPayment('Kartu Kredit/Debit')">
-                      <span><ph-credit-card :size="16" weight="bold" />Kartu Kredit/Debit</span>
+                      <span><ph-credit-card :size="16" weight="bold" />
+                        <h6>Kartu Kredit/Debit</h6></span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                   </div>
@@ -303,6 +448,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
+
 main {
   font-family: 'Raleway';
 }
@@ -333,7 +479,6 @@ main {
   display: flex;
   flex-direction: column;
 }
-
 .order-details__content {
   display: flex;
   flex-direction: row;
@@ -432,7 +577,7 @@ main {
 .pricings-slider__container {
   font-family: 'Poppins';
 }
-
+.order-details__guide-select,
 .order-details__payment-select {
   width: 522px;
   height: 50px;
@@ -446,6 +591,7 @@ main {
   cursor: pointer;
 }
 
+.order-details__guide-select-content,
 .order-details__payment-select-content {
   display: flex;
   align-items: center;
@@ -454,7 +600,7 @@ main {
   line-height: 22px;
 }
 
-.order-details__payment-select-content_modal-overlay {
+.order-details__select-content_modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -469,7 +615,7 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30%;
+  width: 60%;
   z-index: 100;
   background-color: rgb(245, 245, 245);
   border-radius: 0.5rem;
@@ -507,6 +653,76 @@ main {
 .order-details__payment-select-content.else i {
   font-size: 16px;
   color: rgba(227, 38, 38, 1);
+}
+
+.order-details__guide-select-content_modal{
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 514px;
+  height: 80%;
+  overflow: hidden;
+  z-index: 100;
+  position : relative
+}
+
+.order-details__guide-select-content_modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 1rem;
+  border-bottom: 1px solid black;
+}
+
+
+.order-detail__guide-select-content_guide-selector{
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+  width: 30%;
+  
+}
+.order-detail__guide-select-content_guide-selector .bg-yellow{
+  background-color: #e6be58;
+  border-radius: 0  0.5rem 0.5rem 0;
+}
+
+.guide-select_biodata-image{
+  width: 300px;
+  max-width: 300px;
+  height: 300px;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+.guide-select_biodata_add-ticket{
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  display: flex;
+  padding: 0.5rem;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.guide-select_ticket{
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.guide-select_ticket-image{
+  max-height: 70px;
+  max-width: 100px;
+}
+
+.guide-select_ticket-btn{
+  padding: 0.5rem;
+  background-color:var(--color-primary) ;
+  border-radius: 0.25rem;
 }
 
 .checkout__details-container {

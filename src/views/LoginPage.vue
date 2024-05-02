@@ -2,6 +2,7 @@
 import LoginHelper from '@/utilities/LoginHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import { useRouter } from 'vue-router'
+import { ref } from 'vue';
 
 const router = useRouter()
 const { username, password, userLogin } = LoginHelper
@@ -18,6 +19,19 @@ const checkLogin = async () => {
     console.error('Cek login error :', error)
   }
 }
+const showPasswordText = ref('Show Password');
+const passwordFieldType = ref('password');
+
+const toggleShowPassword = () => {
+  if (passwordFieldType.value === 'password') {
+    passwordFieldType.value = 'text';
+    showPasswordText.value = 'Hide Password';
+  } else {
+    passwordFieldType.value = 'password';
+    showPasswordText.value = 'Show Password';
+  }
+};
+// Fungsi userLogin tidak perlu diubah, karena sudah merupakan async function yang mengembalikan Promise.
 </script>
 
 <template>
@@ -26,11 +40,22 @@ const checkLogin = async () => {
       <div class="login-container__content-img">
         <img src="../assets/images/Logo KKC.svg" alt="Logo Keraton Kasepuhan Cirebon" />
       </div>
-      <div class="login-container__data">
+      <div class="login-container__data w-full">
         <div class="txtLogin">LOGIN</div>
         <div class="login-textfield">
           <input type="text" placeholder="Username" class="input-field" v-model="username" />
-          <input type="password" placeholder="Password" class="input-field" v-model="password" />
+          <div class="password-input-container">
+            <input
+              :type="passwordFieldType"
+              placeholder="Password"
+              class="input-field"
+              v-model="password"
+            />
+            
+            <button @click="toggleShowPassword" class="password-toggle-btn">
+              <component :is="showPasswordText === 'Hide Password' ? 'ph-eye-slash' : 'ph-eye'" :size="24" :color="'#545454'" />
+            </button>
+          </div>
         </div>
         <div class="login-button">
           <button class="login-btn" @click="checkLogin()">Login</button>
@@ -107,7 +132,7 @@ main {
 .login-button {
   width: 100%;
   text-align: center;
-  margin-top: 30px;
+  margin-top: 3px;
 }
 
 .login-btn {
@@ -132,6 +157,26 @@ main {
   font-size: 24px;
   text-align: center;
   margin-bottom: 20px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
+}
+
+.password-input-container {
+  position: relative;
+}
+
+.password-toggle-btn {
+  position: absolute;
+  top: 52%;
+  right: 10px;
+  transform: translateY(-50%);
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.password-toggle-btn:focus {
+  outline: none;
 }
 
 /* Media query untuk tablet dengan lebar maksimum 768px */

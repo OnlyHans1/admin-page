@@ -181,7 +181,7 @@ const totalTicketCount = computed(() => {
   }
   return totalCount
 })
-
+//Payment Method Selection
 const paymentSelection = ref('')
 const paymentSelect = ref(false)
 const showPaymentSelect = () => {
@@ -192,6 +192,34 @@ const selectPayment = (paymentMethod) => {
   paymentSelect.value = false
 }
 
+//Guide Selection
+const guideSelection = ref('')
+const guideSelect = ref(false)
+
+const guideSelectors = ref(true)
+const guideSelectBio = ref(false)
+const guideSelectTicket = ref(false)
+
+//Main Page Component
+const guideSelectPage = () => {
+  guideSelect.value = !guideSelect.value
+  
+}
+
+const guideSelectPageBio = () => {
+  guideSelectBio.value = !guideSelectBio.value
+  guideSelectors.value = !guideSelectors.value
+
+}
+const guideSelectPageTicket = () => {
+  guideSelectTicket.value = !guideSelectTicket.value
+  guideSelectBio.value = !guideSelectBio.value
+  guideSelectors.value = false
+
+
+}
+
+//DateTime
 const dateTime = () => {
   const inputDate = new Date(selectedDate.value)
   inputDate.setHours(inputDate.getHours() + 7)
@@ -240,6 +268,37 @@ const createTransaction = async () => {
   }
 }
 
+
+const guideSeeder = [
+  {
+    id : 1,
+    name: 'Teddy Lazuardi',
+    umur : 16,
+    email: 'TeddyLazuardi@gmail.com',
+    number: '085678901234',
+    desc : 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet'
+  },
+  {
+    id : 2,
+    name: 'admin',
+    umur : 20,
+    email: 'admin@dewa.com',
+    number: '999999999999',
+    desc : 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet'
+  },
+  {
+    id : 3,
+    name: 'Test Dummy',
+    umur : 20,
+    email: 'admin@dewa.com',
+    number: '999999999999',
+    desc : 'Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet'
+  },
+];
+
+
+
+
 export default {
   selectedNationality,
   fetchNationalityData,
@@ -272,5 +331,14 @@ export default {
   totalBiaya,
   totalTicketCount,
   createTransaction,
-  checkoutStatus
+  checkoutStatus,
+  guideSelect,
+  guideSelectPage,
+  guideSelection,
+  guideSelectBio,
+  guideSelectPageBio,
+  guideSelectors,
+  guideSeeder,
+  guideSelectTicket,
+  guideSelectPageTicket
 }

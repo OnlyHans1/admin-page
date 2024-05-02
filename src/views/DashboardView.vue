@@ -363,6 +363,7 @@ onMounted(() => {
   width: 40%;
   object-fit: cover;
   border-radius: 0.5rem;
+  max-height: 500px;
 }
 
 .popup-order__remove-button {
