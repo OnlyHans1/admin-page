@@ -6,7 +6,6 @@ import DashboardHelper from '@/utilities/DashboardHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
 const { userLogout } = LoginHelper
-const { showAlert, alertTitle, alertType, alertMessage } = DashboardHelper
 
 const activeLink = ref(0)
 const route = useRoute()

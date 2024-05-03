@@ -2,6 +2,8 @@ import { ref } from 'vue'
 
 const DB_BASE_URL = ref('http://localhost:3000')
 
+const showLoader = ref(false)
+
 const showAlert = ref(false)
 const alertTitle = ref('')
 const alertType = ref('')
@@ -20,6 +22,7 @@ const assignAlert = (show, title, type, message) => {
 export default {
   DB_BASE_URL,
   assignAlert,
+  showLoader,
   showAlert,
   alertTitle,
   alertType,

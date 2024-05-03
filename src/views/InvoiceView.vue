@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, watch } from 'vue'
+import GlobalHelper from '@/utilities/GlobalHelper';
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
 import InvoiceHelper from '@/utilities/InvoiceHelper'
 
@@ -26,6 +27,7 @@ watch(
 )
 
 onMounted(() => {
+  GlobalHelper.showLoader.value = true
   fetchTransactionList()
 })
 </script>

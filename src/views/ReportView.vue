@@ -4,6 +4,7 @@ import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
 import ReportHelper from '@/utilities/ReportHelper'
 
 const {
@@ -26,11 +27,19 @@ const category = ref('')
 const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
 }
+const checkData = async () => {
+  try {
+    GlobalHelper.showLoader.value = true
+    await fetchIncomeRevenue()
+    await fetchYearlyChartData()
+    await fetchMonthlyChartData()
+  } catch (error) {
+    console.error(error)
+  }
+}
 
 onMounted(() => {
-  fetchIncomeRevenue()
-  fetchYearlyChartData()
-  fetchMonthlyChartData()
+  checkData()
 })
 </script>
 

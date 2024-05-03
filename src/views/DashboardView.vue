@@ -2,6 +2,8 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
+import LoginHelper from '@/utilities/LoginHelper'
 
 const {
   selectedItems,
@@ -22,7 +24,7 @@ const {
   decreaseAmount,
   saveToSessionStorage,
   handleItemClick,
-  groupedItems,
+  groupedItems
 } = DashboardHelper
 
 const router = useRouter()
@@ -41,8 +43,23 @@ watch(
   { deep: true }
 )
 
+const checkData = async () => {
+  try {
+    GlobalHelper.showLoader.value = true
+    await fetchOrderList()
+    GlobalHelper.assignAlert(
+      true,
+      'Sukses',
+      'success',
+      `Login berhasil! Selamat datang ${LoginHelper.cashierData.value.name}`
+    )
+  } catch (error) {
+    console.error(error)
+  }
+}
+
 onMounted(() => {
-  fetchOrderList()
+  checkData()
 })
 </script>
 
@@ -180,9 +197,12 @@ onMounted(() => {
       :class="{ active: showConfirmationPopup }"
       @click="closePopup()"
     >
-      <div class="popup-confirmation__container" @click.stop>
+      <div
+        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
+        @click.stop
+      >
         <h5 class="text-align-center">Pindah ke Halaman Tambah?</h5>
-        <div class="popup-confimation__button-confirmation flex justify-content-sa">
+        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
           <button @click="router.push({ name: 'add' }), closePopup()">Ya</button>
           <button @click="closePopup()">Batal</button>
         </div>
@@ -194,11 +214,12 @@ onMounted(() => {
       :class="{ active: showDeleteConfirmationPopup }"
       @click="closeDeletePopup()"
     >
-      <div class="popup-confirmation__container" @click.stop>
+      <div
+        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
+        @click.stop
+      >
         <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
-        <div
-          class="popup-confimation__button-confirmation flex justify-content-sa align-items-center"
-        >
+        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
           <button @click="confirmDelete()">Hapus</button>
           <button @click="closeDeletePopup()">Batal</button>
         </div>

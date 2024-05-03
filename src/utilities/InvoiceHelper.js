@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL } = GlobalHelper
+const { DB_BASE_URL, showLoader } = GlobalHelper
 
 /* InvoiceView Helper */
 const dataInvoice = ref([])
@@ -22,6 +22,7 @@ const fetchTransactionList = async () => {
     }
     const data = await response.json()
     dataInvoice.value = data
+    showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
   }

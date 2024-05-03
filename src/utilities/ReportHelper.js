@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import * as XLSX from 'xlsx'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL } = GlobalHelper
+const { DB_BASE_URL, showLoader } = GlobalHelper
 
 const today = new Date()
 today.setHours(7, 0, 0, 0)
@@ -268,6 +268,7 @@ const fetchMonthlyChartData = async () => {
     targetMonth.value = data.targetMonth
     monthlyCategory.value = data.monthlyCategory
     monthlyData.value = data.monthlyData
+    showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
   }

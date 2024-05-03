@@ -11,9 +11,7 @@ const checkLogin = async () => {
   try {
     await userLogin()
     if (loggedIn.value) {
-      window.alert = () => {};
       router.replace('/')
-      GlobalHelper.assignAlert(true, 'Sukses', 'success', `Login berhasil! Selamat datang ${username.value}`)
     }
   } catch (error) {
     GlobalHelper.assignAlert(true, 'Error', 'danger', 'Login gagal!')
@@ -33,7 +31,6 @@ const toggleShowPassword = () => {
     showPasswordText.value = 'Show Password'
   }
 }
-// Fungsi userLogin tidak perlu diubah, karena sudah merupakan async function yang mengembalikan Promise.
 </script>
 
 <template>
@@ -64,7 +61,7 @@ const toggleShowPassword = () => {
           </div>
         </div>
         <div class="login-button">
-          <button class="login-btn" @click="checkLogin()">Login</button>
+          <button class="login-btn" @click="checkLogin()" @keydown.enter="checkLogin">Login</button>
         </div>
       </div>
     </div>

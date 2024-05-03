@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, assignAlert } = GlobalHelper
+const { DB_BASE_URL, assignAlert, showLoader } = GlobalHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref([])
@@ -22,6 +22,7 @@ const fetchOrderList = async () => {
     const data = await response.json()
     dataDashboard.value = data
     sortDataByCreatedAt()
+    showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
   }
