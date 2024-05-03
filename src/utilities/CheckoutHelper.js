@@ -86,12 +86,20 @@ const closeDropdownOutside = (event) => {
 /* CheckoutView Helper */
 
 const getItemsFromSessionStorage = () => {
-  const savedItems = sessionStorage.getItem('selectedItems')
+  const savedItems = sessionStorage.getItem('selectedItems');
   if (savedItems) {
-    items.value = JSON.parse(savedItems)
+    const parsedItems = JSON.parse(savedItems);
+    for (let item of parsedItems) {
+      item.guideId = item.guideId || "";
+      item.guideName = item.guideName || "";
+    }
+    items.value = parsedItems;
+    return parsedItems;
   }
-  return []
+  return [];
 }
+
+
 
 const items = ref([])
 
@@ -290,32 +298,28 @@ const isGuideChecked = computed(() => {
   }
 })
 
+const updateItems = (props) => {
+  items.value[props].guideId = selectedGuide.value.id;
+  items.value[props].guideName = selectedGuide.value.name;
+}
+
 const addGuide = (index) => {
-  const existingIndex = items.value.findIndex((item) => item.guideId === selectedGuide.value.id)
+  const existingIndex = items.value.findIndex((item) => item.guideId === selectedGuide.value.id);
   const previousSelectionIndex = guideSelection.value.findIndex(
     (guide) => guide.id === items.value[index].guideId
-  )
-
+  );
   if (existingIndex === -1) {
-    items.value[index].guideId = selectedGuide.value.id
-    items.value[index].guideName = selectedGuide.value.name
-
-    if (previousSelectionIndex !== -1) {
-      guideSelection.value.splice(previousSelectionIndex, 1)
-    }
-
-    guideSelection.value.push({ ...selectedGuide.value })
+    updateItems(index)
   } else {
-    items.value[existingIndex].guideId = selectedGuide.value.id
-    items.value[existingIndex].guideName = selectedGuide.value.name
-
-    if (previousSelectionIndex !== -1) {
-      guideSelection.value.splice(previousSelectionIndex, 1)
-    }
-
-    guideSelection.value.push({ ...selectedGuide.value })
+    updateItems(existingIndex)
   }
+  if (previousSelectionIndex !== -1) {
+    guideSelection.value.splice(previousSelectionIndex, 1);
+  }
+  guideSelection.value.push({ ...selectedGuide.value });
+  sessionStorage.setItem('selectedItems', JSON.stringify(items.value));
 }
+
 
 const formattedGuideSelection = computed(() => {
   return guideSelection.value.map((guide) => guide.name).join(', ')
@@ -335,6 +339,12 @@ function determineAge(birthdate) {
   const finalAge = isBirthdayPassed ? age : age - 1
 
   return finalAge
+}
+
+function formatGender(gender) {
+  if (gender === 'MALE') return 'L'
+  else if (gender === 'FEMALE') return 'P'
+  return '?'
 }
 
 export default {
@@ -384,5 +394,6 @@ export default {
   isGuideChecked,
   formattedGuideSelection,
   fetchGuideData,
-  determineAge
+  determineAge,
+  formatGender
 }

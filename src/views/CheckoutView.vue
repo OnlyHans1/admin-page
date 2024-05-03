@@ -45,7 +45,8 @@ const {
   isGuideChecked,
   formattedGuideSelection,
   fetchGuideData,
-  determineAge
+  determineAge,
+  formatGender
 } = CheckoutHelper
 
 const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
@@ -117,7 +118,7 @@ const checkValidTransaction = () => {
 }
 
 watchEffect(() => {
-  console.log(guideSelection.value)
+  console.log(items.value)
 })
 
 onMounted(() => {
@@ -296,7 +297,7 @@ onMounted(() => {
                         </div>
 
                         <div class="guide-select_biodata-information">
-                          <h6>{{ selectedGuide.name }}</h6>
+                          <h6>{{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})</h6>
                           <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
                           <p>{{ selectedGuide.email }}</p>
                           <p>{{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}</p>
