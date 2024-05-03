@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, defineProps, defineEmits, watchEffect } from 'vue';
+import { ref, onMounted, onUnmounted, watchEffect } from 'vue';
 
 const emit = defineEmits(['option-selected']);
 const props = defineProps({

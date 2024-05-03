@@ -47,12 +47,6 @@ const checkData = async () => {
   try {
     GlobalHelper.showLoader.value = true
     await fetchOrderList()
-    GlobalHelper.assignAlert(
-      true,
-      'Sukses',
-      'success',
-      `Login berhasil! Selamat datang ${LoginHelper.cashierData.value.name}`
-    )
   } catch (error) {
     console.error(error)
   }

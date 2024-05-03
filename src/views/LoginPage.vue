@@ -10,6 +10,12 @@ const { loggedIn, username, password, userLogin } = LoginHelper
 const checkLogin = async () => {
   try {
     await userLogin()
+    GlobalHelper.assignAlert(
+      true,
+      'Sukses',
+      'success',
+      `Login berhasil! Selamat datang ${LoginHelper.cashierData.value.name}`
+    )
     if (loggedIn.value) {
       router.replace('/')
     }
