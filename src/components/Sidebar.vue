@@ -2,15 +2,14 @@
 import { useRoute } from 'vue-router'
 import { ref, watch } from 'vue'
 import LoginHelper from '@/utilities/LoginHelper'
-import DashboardHelper from '@/utilities/DashboardHelper';
+import DashboardHelper from '@/utilities/DashboardHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
 
 const { userLogout } = LoginHelper
-const { 
-  showAlert, alertTitle, alertType, alertMessage } = DashboardHelper
+const { showAlert, alertTitle, alertType, alertMessage } = DashboardHelper
 
 const activeLink = ref(0)
 const route = useRoute()
-
 
 const determineActiveLink = () => {
   const path = route.path
@@ -29,14 +28,7 @@ const determineActiveLink = () => {
 }
 
 const disabled = () => {
-  showAlert.value = true
-  alertTitle.value = 'Error'
-  alertType.value = 'danger' 
-  alertMessage.value = `Fitur Ini Belum Tersedia`
-
-  setTimeout(() => {
-      showAlert.value = false
-    }, 1200)
+  GlobalHelper.assignAlert(true, 'Error', 'danger', 'Fitur Ini Belum Tersedia')
 }
 watch(
   () => route.path,
@@ -70,9 +62,9 @@ determineActiveLink()
       </div>
       <div class="navbar-links__settings-container flex fd-col">
         <a href="#" name="Settings" @click="disabled()">
-          <ph-gear :size="24" weight="bold" color="#545454"/>
-          </a>
-        <RouterLink to="/login" name="Logout"  @click="userLogout()">
+          <ph-gear :size="24" weight="bold" color="#545454" />
+        </a>
+        <RouterLink to="/login" name="Logout" @click="userLogout()">
           <ph-sign-out :size="24" weight="bold" mirrored="mirrored"
         /></RouterLink>
       </div>
