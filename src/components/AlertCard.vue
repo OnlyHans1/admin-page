@@ -1,28 +1,23 @@
 <template>
   <transition name="fade">
-    <div v-if="showAlert" class="custom-alert" :class="[ 'alert-' + alertType]">
+    <div v-if="showAlert" class="custom-alert" :class="['alert-' + alertType]">
       <div class="alert__content">
         <h5 class="fw-600">{{ alertTitle }}</h5>
         <p>{{ alertMessage }}</p>
       </div>
-      <button @click="hideAlertHandler"><ph-x :size="20" weight="bold"/></button>
+      <button @click="closeAlert"><ph-x :size="20" weight="bold" /></button>
     </div>
   </transition>
 </template>
 
 <script setup>
-const props = defineProps({
-    showAlert: Boolean,
-    alertTitle: String,
-    alertType: String,
-    alertMessage: String
-});
+import GlobalHelper from '@/utilities/GlobalHelper'
 
-const hideAlertHandler = () => {
-  emits('hideAlert');
-};
+const { showAlert, alertTitle, alertType, alertMessage } = GlobalHelper
 
-const emits = defineEmits(['hideAlert', 'showAlert']);
+const closeAlert = () => {
+  showAlert.value = false
+}
 </script>
 
 <style scoped>
@@ -61,7 +56,6 @@ const emits = defineEmits(['hideAlert', 'showAlert']);
 .fade-enter {
   opacity: 0; /* Set initial opacity to 0 for fade-in effect */
   transition: opacity 0.5s; /* Adjust transition duration as needed */
-
 }
 
 .fade-enter-active,

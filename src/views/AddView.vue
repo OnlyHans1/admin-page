@@ -3,7 +3,6 @@ import { ref, computed, onMounted, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
-import AlertCard from '@/components/AlertCard.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 
@@ -28,11 +27,6 @@ const defaultImageURL = ref(
 const submitAlert = ref(false)
 const confirmAlert = ref(false)
 
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
-
 const insertDatabase = async () => {
   try {
     const formData = new FormData()
@@ -42,7 +36,7 @@ const insertDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`/api/add/order-details`, {
+    const response = await fetch(`${DB_BASE_URL}/add/order-details`, {
       method: 'POST',
       body: formData
     })
@@ -70,7 +64,7 @@ const updateDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch('/api/edit/order-details/', {
+    const response = await fetch(`${DB_BASE_URL}/edit/order-details/`, {
       method: 'PUT',
       body: formData
     })
@@ -135,11 +129,8 @@ const confirmAdd = () => {
   const emptyFields = getEmptyFields()
 
   if (emptyFields.length > 0) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger' // Set your alert type
-    alertMessage.value = `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.` // Set your alert message
-    return // Prevent confirmation if there are empty fields
+    GlobalHelper.assignAlert(true, 'Error', 'danger', `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.`)
+    return
   }
 
   confirmAlert.value = true
@@ -168,8 +159,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <AlertCard :showAlert="showAlert" :alertTitle="alertTitle" :alertType="alertType" :alertMessage="alertMessage"
-    @hideAlert="showAlert = false" />
   <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
     <div class="add__alert-confirmation">
       <h2>Kamu yakin mau menambahkan {{ title ? title : 'Tiket' }}?</h2>

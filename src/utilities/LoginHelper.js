@@ -1,9 +1,10 @@
 import { ref } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL } = GlobalHelper
+const { DB_BASE_URL, assignAlert } = GlobalHelper
 
 const loggedIn = ref(false)
+const grantLogin = ref(false)
 
 const username = ref('')
 const password = ref('')
@@ -34,8 +35,9 @@ const authLogin = async (token) => {
 
     const data = await response.json()
     cashierData.value = data
+    grantLogin.value = true
   } catch (error) {
-    alert('Login gagal: ' + error.message)
+    assignAlert(true, 'Error', 'danger', `Login gagal! ${error}`)
   }
 }
 
@@ -61,7 +63,7 @@ const userLogin = async () => {
     localStorage.setItem('token', data.token)
     isAuthenticated()
   } catch (error) {
-    alert('Login gagal: ' + error.message)
+    assignAlert(true, 'Error', 'danger', `Login gagal! ${error}`)
   }
 }
 
@@ -73,6 +75,7 @@ const userLogout = () => {
 
 export default {
   loggedIn,
+  grantLogin,
   username,
   password,
   isAuthenticated,

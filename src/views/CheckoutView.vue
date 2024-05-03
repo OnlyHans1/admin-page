@@ -6,7 +6,7 @@ import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import LoginHelper from '@/utilities/LoginHelper'
-import AlertCard from '@/components/AlertCard.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
 const route = useRouter()
 
 const {
@@ -49,36 +49,18 @@ const {
   formatGender
 } = CheckoutHelper
 
+const { assignAlert } = GlobalHelper
 const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
 const { cashierData } = LoginHelper
-
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
 
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
   if (totalTicketCount.value < 1) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger' // Set your alert type
-    alertMessage.value = `Pilih tipe tiket terlebih dahulu`
-
-    setTimeout(() => {
-      showAlert.value = false
-    }, 1200)
+    assignAlert(true, 'Error', 'danger', 'Pilih tipe tiket terlebih dahulu')
     return
   }
   if (invalid.length > 0) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger' // Set your alert type
-    alertMessage.value = `Isi kolom ${invalid.join(', ')} terlebih dahulu.` // Set your alert message
-
-    setTimeout(() => {
-      showAlert.value = false
-    }, 1200)
+    assignAlert(true, 'Error', 'danger', `Isi kolom ${invalid.join(', ')} terlebih dahulu.`)
     return
   }
 
@@ -89,11 +71,11 @@ const checkoutTransaction = async () => {
         route.replace('/')
         sessionStorage.clear()
       }, 3000)
+      assignAlert(true, 'Sukses', 'success', 'Transaksi berhasil dibuat!')
     }
     checkoutStatus.value = ''
   } catch (error) {
-    console.error('Gagal melakukan transaksi:', error)
-    // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai jika transaksi gagal
+    assignAlert(true, 'Error', 'danger', 'Transaksi gagal!')
   }
 }
 
@@ -130,12 +112,6 @@ onMounted(() => {
 
 <template>
   <main>
-    <AlertCard
-      :showAlert="showAlert"
-      :alertTitle="alertTitle"
-      :alertType="alertType"
-      :alertMessage="alertMessage"
-    />
     <div class="checkout__container sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
@@ -300,7 +276,9 @@ onMounted(() => {
                           <h6>{{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})</h6>
                           <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
                           <p>{{ selectedGuide.email }}</p>
-                          <p>{{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}</p>
+                          <p>
+                            {{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -336,7 +314,8 @@ onMounted(() => {
                         <div class="guide-select_ticket-cta flex align-items-center">
                           <button
                             class="guide-select_ticket-btn flex align-items-center"
-                            @click.prevent="addGuide(index)" @click="guideSelectPageTicket"
+                            @click.prevent="addGuide(index)"
+                            @click="guideSelectPageTicket"
                           >
                             <ph-plus :size="16" weight="bold" />
                           </button>

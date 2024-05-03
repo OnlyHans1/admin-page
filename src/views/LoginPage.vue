@@ -2,21 +2,21 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import LoginHelper from '@/utilities/LoginHelper'
-import DashboardHelper from '@/utilities/DashboardHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
 
 const router = useRouter()
-const { username, password, userLogin } = LoginHelper
+const { grantLogin, username, password, userLogin } = LoginHelper
 
 const checkLogin = async () => {
   try {
     await userLogin()
-    router.replace('/')
-    DashboardHelper.showAlert.value = true
-    DashboardHelper.alertTitle.value = 'Sukses'
-    DashboardHelper.alertType.value = 'success'
-    DashboardHelper.alertMessage.value = `Login berhasil! Selamat datang ${username.value}`
+    if (grantLogin.value) {
+      router.replace('/')
+      GlobalHelper.assignAlert(true, 'Sukses', 'success', `Login berhasil! Selamat datang ${username.value}`)
+    }
   } catch (error) {
-    console.error('Cek login error :', error)
+    GlobalHelper.assignAlert(true, 'Error', 'danger', 'Login gagal!')
+    console.error(error)
   }
 }
 

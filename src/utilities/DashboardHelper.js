@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL } = GlobalHelper
+const { DB_BASE_URL, assignAlert } = GlobalHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref([])
@@ -12,11 +12,6 @@ const showDeleteConfirmationPopup = ref(false)
 
 const dataDashboard = ref([])
 const isMancanegara = ref(false)
-
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
 
 const fetchOrderList = async () => {
   try {
@@ -165,15 +160,10 @@ const handleItemClick = (item) => {
   const filterCategory = ref(checkSessionStorage())
   handleCategorySelection(filterCategory.value)
   if (item.disabled) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger'
-
     if (filterCategory.value === 'MANCANEGARA') {
-      // Set your alert type
-      alertMessage.value = 'Kamu tidak bisa memilih paket selain kategori mancanegara!' // Set your alert message
+      assignAlert(true, 'Error', 'danger', 'Kamu tidak bisa memilih paket selain kategori mancanegara!')
     } else {
-      alertMessage.value = 'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!' // Set your alert message
+      assignAlert(true, 'Error', 'danger', 'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!')
     }
   } else {
     selectItem(item)
@@ -188,7 +178,6 @@ const showDeleteConfirmation = () => {
 
 const closeDeletePopup = () => {
   showDeleteConfirmationPopup.value = false
-  selectedItemToDelete.value = []
 }
 
 const groupedItems = computed(() => {
@@ -217,12 +206,15 @@ const confirmDelete = async () => {
 
     if (response.ok) {
       sessionStorage.clear()
-      console.log('Pesanan berhasil dihapus.')
+      closePopup()
+      closeDeletePopup()
+      assignAlert(true, 'Sukses', 'success', `Pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category}) berhasil dihapus!`)
+      selectedItemToDelete.value = []
       setTimeout(() => {
         location.reload()
-      }, 1000)
+      }, 3000)
     } else {
-      throw new Error('Gagal menghapus pesanan!')
+      assignAlert(true, 'Error', 'danger', `Gagal menghapus pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category})!`)
     }
   } catch (error) {
     console.error(error)
@@ -251,8 +243,4 @@ export default {
   handleItemClick,
   checkSessionStorage,
   groupedItems,
-  showAlert,
-  alertTitle,
-  alertType,
-  alertMessage
 }

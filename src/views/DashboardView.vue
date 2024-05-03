@@ -2,8 +2,10 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import CheckoutHelper from '@/utilities/CheckoutHelper'
-import AlertCard from '@/components/AlertCard.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
+
+const { assignAlert } = GlobalHelper
+
 
 const {
   selectedItems,
@@ -25,13 +27,7 @@ const {
   saveToSessionStorage,
   handleItemClick,
   groupedItems,
-  showAlert,
-  alertTitle,
-  alertType,
-  alertMessage
 } = DashboardHelper
-
-const { checkoutStatus } = CheckoutHelper
 
 const router = useRouter()
 
@@ -39,16 +35,6 @@ const editOrder = () => {
   selectedItemToEdit.value = selectedItems.value[0]
   closePopup()
   router.push({ name: 'edit', params: { id: selectedItemToEdit.value.id } })
-}
-
-const handleCheckoutStatus = () => {
-  if (checkoutStatus.value === 'boleh') {
-    showAlert.value = true
-    alertTitle.value = 'Sukses'
-    alertType.value = 'success'
-    alertMessage.value = 'Checkout telah berhasil dilakukan'
-    checkoutStatus.value = ''
-  }
 }
 
 watch(
@@ -61,21 +47,10 @@ watch(
 
 onMounted(() => {
   fetchOrderList()
-  handleCheckoutStatus()
-  setTimeout(() => {
-    showAlert.value = false
-  }, 3000)
 })
 </script>
 
 <template>
-  <AlertCard
-    :showAlert="showAlert"
-    :alertTitle="alertTitle"
-    :alertType="alertType"
-    :alertMessage="alertMessage"
-    @hideAlert="showAlert = false"
-  />
   <div class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2">
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
