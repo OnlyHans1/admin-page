@@ -1,8 +1,8 @@
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import LoginHelper from '@/utilities/LoginHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import { useRouter } from 'vue-router'
-import { ref } from 'vue';
 
 const router = useRouter()
 const { username, password, userLogin } = LoginHelper
@@ -19,18 +19,19 @@ const checkLogin = async () => {
     console.error('Cek login error :', error)
   }
 }
-const showPasswordText = ref('Show Password');
-const passwordFieldType = ref('password');
+
+const showPasswordText = ref('Show Password')
+const passwordFieldType = ref('password')
 
 const toggleShowPassword = () => {
   if (passwordFieldType.value === 'password') {
-    passwordFieldType.value = 'text';
-    showPasswordText.value = 'Hide Password';
+    passwordFieldType.value = 'text'
+    showPasswordText.value = 'Hide Password'
   } else {
-    passwordFieldType.value = 'password';
-    showPasswordText.value = 'Show Password';
+    passwordFieldType.value = 'password'
+    showPasswordText.value = 'Show Password'
   }
-};
+}
 // Fungsi userLogin tidak perlu diubah, karena sudah merupakan async function yang mengembalikan Promise.
 </script>
 
@@ -51,9 +52,13 @@ const toggleShowPassword = () => {
               class="input-field"
               v-model="password"
             />
-            
+
             <button @click="toggleShowPassword" class="password-toggle-btn">
-              <component :is="showPasswordText === 'Hide Password' ? 'ph-eye-slash' : 'ph-eye'" :size="24" :color="'#545454'" />
+              <component
+                :is="showPasswordText === 'Hide Password' ? 'ph-eye-slash' : 'ph-eye'"
+                :size="24"
+                :color="'#545454'"
+              />
             </button>
           </div>
         </div>

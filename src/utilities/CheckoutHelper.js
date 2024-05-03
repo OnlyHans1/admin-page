@@ -192,8 +192,6 @@ const selectPayment = (paymentMethod) => {
   paymentSelect.value = false
 }
 
-
-
 //Main Page Component
 const guideSelectPage = () => {
   guideSelect.value = !guideSelect.value
@@ -286,14 +284,37 @@ const guideSelectTicket = ref(false)
 
 const selectedGuide = ref([])
 
-const isGuideChecked = (id) => {
-  return items.value.some((item) => item.guideId === id)
-}
+const isGuideChecked = computed(() => {
+  return (guideId) => {
+    return guideSelection.value.some((guide) => guide.id === guideId)
+  }
+})
 
 const addGuide = (index) => {
-  items.value[index].guideId = selectedGuide.value.id
-  items.value[index].guideName = selectedGuide.value.name
-  guideSelection.value.push({ ...selectedGuide.value })
+  const existingIndex = items.value.findIndex((item) => item.guideId === selectedGuide.value.id)
+  const previousSelectionIndex = guideSelection.value.findIndex(
+    (guide) => guide.id === items.value[index].guideId
+  )
+
+  if (existingIndex === -1) {
+    items.value[index].guideId = selectedGuide.value.id
+    items.value[index].guideName = selectedGuide.value.name
+
+    if (previousSelectionIndex !== -1) {
+      guideSelection.value.splice(previousSelectionIndex, 1)
+    }
+
+    guideSelection.value.push({ ...selectedGuide.value })
+  } else {
+    items.value[existingIndex].guideId = selectedGuide.value.id
+    items.value[existingIndex].guideName = selectedGuide.value.name
+
+    if (previousSelectionIndex !== -1) {
+      guideSelection.value.splice(previousSelectionIndex, 1)
+    }
+
+    guideSelection.value.push({ ...selectedGuide.value })
+  }
 }
 
 const formattedGuideSelection = computed(() => {

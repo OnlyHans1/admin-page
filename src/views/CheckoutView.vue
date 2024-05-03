@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
@@ -115,6 +115,10 @@ const checkValidTransaction = () => {
   // Pastikan semua input telah diisi sesuai dengan kondisi
   return invalid
 }
+
+watchEffect(() => {
+  console.log(guideSelection.value)
+})
 
 onMounted(() => {
   fetchGuideData()
@@ -250,7 +254,7 @@ onMounted(() => {
                     >
                       <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
                         <div class="order-detail__guide-select-content_guide-selector_radio">
-                          <div v-if="isGuideChecked(guide.id, guide.name)" class="selected"></div>
+                          <div v-if="isGuideChecked(guide.id)" class="selected"></div>
                         </div>
                         <label :for="guide.name">{{ guide.name }}</label>
                       </span>
@@ -295,7 +299,7 @@ onMounted(() => {
                           <h6>{{ selectedGuide.name }}</h6>
                           <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
                           <p>{{ selectedGuide.email }}</p>
-                          <p>{{ selectedGuide.desc }}</p>
+                          <p>{{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}</p>
                         </div>
                       </div>
                     </div>
@@ -325,12 +329,13 @@ onMounted(() => {
                           <div class="flex fd-col">
                             <p class="fw-600">{{ item.name }}</p>
                             <p>{{ formatCurrency(item.price) }}</p>
+                            <p>{{ `${item.amount} Tiket` }}</p>
                           </div>
                         </div>
                         <div class="guide-select_ticket-cta flex align-items-center">
                           <button
                             class="guide-select_ticket-btn flex align-items-center"
-                            @click.prevent="addGuide(index)"
+                            @click.prevent="addGuide(index)" @click="guideSelectPageTicket"
                           >
                             <ph-plus :size="16" weight="bold" />
                           </button>

@@ -3,7 +3,6 @@ import GlobalHelper from './GlobalHelper'
 
 const { DB_BASE_URL } = GlobalHelper
 
-const grantLogin = ref(false)
 const loggedIn = ref(false)
 
 const username = ref('')
@@ -60,7 +59,6 @@ const userLogin = async () => {
 
     const data = await response.json()
     localStorage.setItem('token', data.token)
-    sessionStorage.clear()
     isAuthenticated()
   } catch (error) {
     alert('Login gagal: ' + error.message)
@@ -69,7 +67,6 @@ const userLogin = async () => {
 
 const userLogout = () => {
   localStorage.removeItem('token')
-  sessionStorage.clear()
   loggedIn.value = false
   cashierData.value = []
 }
