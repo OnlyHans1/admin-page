@@ -5,12 +5,13 @@ import LoginHelper from '@/utilities/LoginHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
 const router = useRouter()
-const { grantLogin, username, password, userLogin } = LoginHelper
+const { loggedIn, username, password, userLogin } = LoginHelper
 
 const checkLogin = async () => {
   try {
     await userLogin()
-    if (grantLogin.value) {
+    if (loggedIn.value) {
+      window.alert = () => {};
       router.replace('/')
       GlobalHelper.assignAlert(true, 'Sukses', 'success', `Login berhasil! Selamat datang ${username.value}`)
     }

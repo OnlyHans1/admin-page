@@ -4,7 +4,6 @@ import GlobalHelper from './GlobalHelper'
 const { DB_BASE_URL, assignAlert } = GlobalHelper
 
 const loggedIn = ref(false)
-const grantLogin = ref(false)
 
 const username = ref('')
 const password = ref('')
@@ -35,7 +34,6 @@ const authLogin = async (token) => {
 
     const data = await response.json()
     cashierData.value = data
-    grantLogin.value = true
   } catch (error) {
     assignAlert(true, 'Error', 'danger', `Login gagal! ${error}`)
   }
@@ -70,12 +68,12 @@ const userLogin = async () => {
 const userLogout = () => {
   localStorage.removeItem('token')
   loggedIn.value = false
+  assignAlert(true, 'Sukses', 'success', `${cashierData.value.name} berhasil logout!`)
   cashierData.value = []
 }
 
 export default {
   loggedIn,
-  grantLogin,
   username,
   password,
   isAuthenticated,

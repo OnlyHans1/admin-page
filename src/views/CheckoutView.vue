@@ -70,6 +70,7 @@ const checkoutTransaction = async () => {
       setTimeout(() => {
         route.replace('/')
         sessionStorage.clear()
+        location.reload()
       }, 3000)
       assignAlert(true, 'Sukses', 'success', 'Transaksi berhasil dibuat!')
     }

@@ -2,10 +2,6 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import GlobalHelper from '@/utilities/GlobalHelper'
-
-const { assignAlert } = GlobalHelper
-
 
 const {
   selectedItems,
