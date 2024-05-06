@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '@/views/LoginPage.vue'
-import DashboardView from '../views/DashboardView.vue'
-import AddView from '../views/AddView.vue'
-import CheckoutView from '../views/CheckoutView.vue'
-import InvoiceView from '../views/InvoiceView.vue'
-import ReportView from '../views/ReportView.vue'
-import AfterCheckoutView from '../views/AfterCheckoutView.vue'
+import DashboardView from '@/views/DashboardView.vue'
+import AddView from '@/views/AddView.vue'
+import CheckoutView from '@/views/CheckoutView.vue'
+import InvoiceView from '@/views/InvoiceView.vue'
+import ReportView from '@/views/ReportView.vue'
+import SettingsView from '@/views/SettingsView.vue'
+import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
 import LoginHelper from '@/utilities/LoginHelper'
 
 const { isAuthenticated } = LoginHelper
@@ -27,7 +28,8 @@ const router = createRouter({
     {
       path: '/add',
       name: 'add',
-      component: AddView
+      component: AddView,
+      meta: { protected: true }
     },
     {
       path: '/edit/:id',
@@ -37,17 +39,26 @@ const router = createRouter({
     {
       path: '/checkout',
       name: 'checkout',
-      component: CheckoutView
+      component: CheckoutView,
+      meta: { protected: true }
     },
     {
       path: '/invoice',
       name: 'invoice',
-      component: InvoiceView
+      component: InvoiceView,
+      meta: { protected: true }
     },
     {
       path: '/report',
       name: 'report',
-      component: ReportView
+      component: ReportView,
+      meta: { protected: true }
+    },
+    {
+      path: '/settings',
+      name: 'settings',
+      component: SettingsView,
+      meta: { protected: true }
     },
     {
       path: '/after-checkout',
@@ -62,13 +73,19 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach((to, from, next) => {
-  if (to.meta.protected && !isAuthenticated()) {
+router.beforeEach(async (to, from, next) => {
+  try {
+    const authenticated = await isAuthenticated()
+    if (to.meta.protected && !authenticated) {
+      next('/login')
+    } else if (to.path === '/login' && authenticated) {
+      next(from)
+    } else {
+      next()
+    }
+  } catch (error) {
+    console.error(error)
     next('/login')
-  } else if (to.path === '/login' && isAuthenticated()) {
-    next(from)
-  } else {
-    next()
   }
 })
 

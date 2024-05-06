@@ -51,7 +51,7 @@ const {
 
 const { assignAlert } = GlobalHelper
 const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
-const { cashierData } = LoginHelper
+const { userData } = LoginHelper
 
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
@@ -67,11 +67,11 @@ const checkoutTransaction = async () => {
   try {
     await createTransaction()
     if (checkoutStatus.value === 'boleh') {
+      route.push('/')
       setTimeout(() => {
-        route.replace('/')
         sessionStorage.clear()
         location.reload()
-      }, 3000)
+      }, 500)
       assignAlert(true, 'Sukses', 'success', 'Transaksi berhasil dibuat!')
     }
     checkoutStatus.value = ''
@@ -100,9 +100,7 @@ const checkValidTransaction = () => {
   return invalid
 }
 
-watchEffect(() => {
-  console.log(items.value)
-})
+watchEffect(() => {})
 
 onMounted(() => {
   fetchGuideData()
@@ -125,8 +123,8 @@ onMounted(() => {
                   <p>Detail Pemesan</p>
                 </div>
                 <div class="order-details__content w-full">
-                  <p class="fs-h5 fw-700">{{ cashierData.name }}</p>
-                  <p>- ({{ cashierData.email }})</p>
+                  <p class="fs-h5 fw-700">{{ userData.name }}</p>
+                  <p>- ({{ userData.email }})</p>
                 </div>
                 <div class="order-details__dropdown" v-if="isMancanegara">
                   <NationalityDropdown />
@@ -222,13 +220,13 @@ onMounted(() => {
                     <ph-x :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
                   <div
-                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2" :class="{'grid' : guideSelectors}"
                   >
                     <div
                       v-if="guideSelectors"
                       v-for="(guide, index) in guideData"
                       :key="index"
-                      class="order-detail__guide-select-content_guide-selector flex sm-bottom-1"
+                      class="order-detail__guide-select-content_guide-selector flex"
                     >
                       <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
                         <div class="order-detail__guide-select-content_guide-selector_radio">
@@ -274,7 +272,9 @@ onMounted(() => {
                         </div>
 
                         <div class="guide-select_biodata-information">
-                          <h6>{{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})</h6>
+                          <h6>
+                            {{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})
+                          </h6>
                           <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
                           <p>{{ selectedGuide.email }}</p>
                           <p>
@@ -303,7 +303,11 @@ onMounted(() => {
                       >
                         <div class="flex gap-1">
                           <img
-                            :src="'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'"
+                            :src="
+                              item.image
+                                ? getImageURL(item.image)
+                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
                             class="guide-select_ticket-image"
                           />
                           <div class="flex fd-col">
@@ -662,12 +666,17 @@ main {
   border-bottom: 1px solid black;
 }
 
+.order-detail__guide-select-content_modal-content.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1rem;
+  align-content: center;
+}
+
 .order-detail__guide-select-content_guide-selector {
-  display: flex;
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
-  width: 30%;
 }
 .order-detail__guide-select-content_guide-selector .bg-yellow {
   background-color: #e6be58;

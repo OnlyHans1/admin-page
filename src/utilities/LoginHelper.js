@@ -7,16 +7,26 @@ const loggedIn = ref(false)
 
 const username = ref('')
 const password = ref('')
-const cashierData = ref([])
+const userData = ref([])
 
-const isAuthenticated = () => {
+const isAuthenticated = async () => {
   const token = localStorage.getItem('token')
   if (token) {
-    authLogin(token)
-    loggedIn.value = true
-    return true
+    try {
+      const success = await authLogin(token)
+      if (success) {
+        loggedIn.value = true
+        return true
+      } else {
+        loggedIn.value = false
+        return false
+      }
+    } catch (error) {
+      console.error(error)
+      localStorage.removeItem('token')
+      return false
+    }
   }
-  localStorage.removeItem('token')
   return false
 }
 
@@ -29,13 +39,16 @@ const authLogin = async (token) => {
     })
 
     if (!response.ok) {
-      throw new Error(error)
+      const error = await response.json()
+      throw new Error(error.message)
     }
 
     const data = await response.json()
-    cashierData.value = data
+    userData.value = data
+    return true
   } catch (error) {
-    assignAlert(true, 'Error', 'danger', `Login gagal! ${error}`)
+    console.error(error)
+    return false
   }
 }
 
@@ -53,23 +66,24 @@ const userLogin = async () => {
     })
 
     if (!response.ok) {
-      const errorMessage = await response.json()
-      throw new Error(errorMessage.message)
+      const error = await response.json()
+      assignAlert(true, 'Error', 'danger', `Login gagal! ${error.message}`)
+      throw new Error(error)
     }
 
     const data = await response.json()
     localStorage.setItem('token', data.token)
     isAuthenticated()
   } catch (error) {
-    assignAlert(true, 'Error', 'danger', `Login gagal! ${error}`)
+    console.error(error)
   }
 }
 
 const userLogout = () => {
   localStorage.removeItem('token')
   loggedIn.value = false
-  assignAlert(true, 'Sukses', 'success', `${cashierData.value.name} berhasil logout!`)
-  cashierData.value = []
+  assignAlert(true, 'Sukses', 'success', `${userData.value.name} berhasil logout!`)
+  userData.value = []
 }
 
 export default {
@@ -79,5 +93,5 @@ export default {
   isAuthenticated,
   userLogin,
   userLogout,
-  cashierData
+  userData
 }

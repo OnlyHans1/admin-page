@@ -15,6 +15,7 @@
     "@vueform/slider": "^2.1.10",
     "apexcharts": "^3.46.0",
     "dotenv": "^16.4.5",
+    "html2canvas": "^1.4.1",
     "npm": "^10.4.0",
     "pinia": "^2.1.7",
     "vue": "^3.4.15",

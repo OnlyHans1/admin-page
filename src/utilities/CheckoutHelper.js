@@ -5,7 +5,7 @@ import LoginHelper from './LoginHelper'
 
 const { DB_BASE_URL } = GlobalHelper
 const { checkSessionStorage, isMancanegara } = DashboardHelper
-const { cashierData } = LoginHelper
+const { userData } = LoginHelper
 
 /* NationalityDropdown Helper */
 const nationalityData = ref([])
@@ -85,6 +85,7 @@ const closeDropdownOutside = (event) => {
 
 /* CheckoutView Helper */
 
+const items = ref([])
 const getItemsFromSessionStorage = () => {
   const savedItems = sessionStorage.getItem('selectedItems');
   if (savedItems) {
@@ -97,22 +98,6 @@ const getItemsFromSessionStorage = () => {
     return parsedItems;
   }
   return [];
-}
-
-
-
-const items = ref([])
-
-function addTicket(index) {
-  items.value[index].amount++
-  saveToSessionStorage()
-}
-
-function reduceTicket(index) {
-  if (items.value[index].amount > 0) {
-    items.value[index].amount--
-    saveToSessionStorage()
-  }
 }
 
 const saveToSessionStorage = () => {
@@ -143,6 +128,18 @@ const saveToSessionStorage = () => {
   sessionStorage.setItem('selectedItems', JSON.stringify(storedItems))
   isMancanegara.value = false
   checkSessionStorage()
+}
+
+function addTicket(index) {
+  items.value[index].amount++
+  saveToSessionStorage()
+}
+
+function reduceTicket(index) {
+  if (items.value[index].amount > 0) {
+    items.value[index].amount--
+    saveToSessionStorage()
+  }
 }
 
 const selectedDate = ref(null)
@@ -189,6 +186,7 @@ const totalTicketCount = computed(() => {
   }
   return totalCount
 })
+
 //Payment Method Selection
 const paymentSelection = ref('')
 const paymentSelect = ref(false)
@@ -198,22 +196,6 @@ const showPaymentSelect = () => {
 const selectPayment = (paymentMethod) => {
   paymentSelection.value = paymentMethod
   paymentSelect.value = false
-}
-
-//Main Page Component
-const guideSelectPage = () => {
-  guideSelect.value = !guideSelect.value
-}
-
-const guideSelectPageBio = (guide) => {
-  guideSelectBio.value = !guideSelectBio.value
-  guideSelectors.value = !guideSelectors.value
-  selectedGuide.value = guide
-}
-const guideSelectPageTicket = () => {
-  guideSelectTicket.value = !guideSelectTicket.value
-  guideSelectBio.value = !guideSelectBio.value
-  guideSelectors.value = false
 }
 
 //DateTime
@@ -243,7 +225,7 @@ const createTransaction = async () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        name: cashierData.name,
+        name: userData.value.name,
         nationality: selectedNationality.value,
         plannedDate: selectedDate.value,
         total: totalTagihan.value,
@@ -291,6 +273,21 @@ const guideSelectBio = ref(false)
 const guideSelectTicket = ref(false)
 
 const selectedGuide = ref([])
+
+const guideSelectPage = () => {
+  guideSelect.value = !guideSelect.value
+}
+
+const guideSelectPageBio = (guide) => {
+  guideSelectBio.value = !guideSelectBio.value
+  guideSelectors.value = !guideSelectors.value
+  selectedGuide.value = guide
+}
+const guideSelectPageTicket = () => {
+  guideSelectTicket.value = !guideSelectTicket.value
+  guideSelectBio.value = !guideSelectBio.value
+  guideSelectors.value = false
+}
 
 const isGuideChecked = computed(() => {
   return (guideId) => {

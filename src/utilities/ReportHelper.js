@@ -6,12 +6,11 @@ const { DB_BASE_URL, showLoader } = GlobalHelper
 
 const today = new Date()
 today.setHours(7, 0, 0, 0)
-const year = today.getFullYear()
-const month = today.getMonth() + 1
+const currentYear = today.getFullYear()
+const currentMonth = today.getMonth() + 1
+const monthName = today.toLocaleString('id-ID', { month: 'long' });
 
 /* Report Global Helper */
-const filteredCategory = ref()
-
 const capitalizeFirstLetter = (str) => {
   const lowercaseStr = str.toLowerCase()
   return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
@@ -61,7 +60,7 @@ const generateExcel = () => {
   // Buat sheet untuk data tahunan
   const yearlySheetData = [
     // Baris untuk header primary
-    [`Tabel Tingkat Keramaian ${targetYear.value}`],
+    [`Tabel Tingkat Keramaian ${targetYears.value}`],
     // Baris untuk header kategori dan nama kategori
     ['Bulan', 'Umum', 'Pelajar', 'Mancanegara'],
     // Baris untuk bulan
@@ -126,16 +125,19 @@ const printData = () => {
   })
 
   const yearlyCategories = yearlyCategory.value.slice(1) // Mengambil bulan saja
-  const yearlyTableData = [['Bulan', ...yearlyCategories]] // Tambahkan judul "Bulan" di awal
+  const yearlyTableData = [['Bulan', ...yearlyCategories, 'Total']] // Tambahkan judul "Bulan" di awal
   data.push([]) // Tambahkan baris kosong
 
   // Tambahkan data tahunan
   yearlyTempData.forEach((item, index) => {
     const rowData = [`${item.name}`] // Tambahkan kategori pada awal baris
+    let total = 0
     item.data.slice(0, maxYearColumns - 1).forEach((value) => {
       // Batasi jumlah kolom
       rowData.push(`${value} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
+      total += value
     })
+    rowData.push(`${total} Tiket`)
     yearlyTableData.push(rowData)
   })
 
@@ -164,16 +166,19 @@ const printData = () => {
   monthlyTable.style.width = '100%'
 
   const monthlyCategories = monthlyCategory.value.slice(1) // Mengambil tanggal saja
-  const monthlyTableData = [['Tanggal', ...monthlyCategories]] // Tambahkan judul "Tanggal" di awal
+  const monthlyTableData = [['Tanggal', ...monthlyCategories, 'Total']] // Tambahkan judul "Tanggal" di awal
   data.push([]) // Tambahkan baris kosong
 
   // Tambahkan data bulanan
   monthlyTempData.forEach((item, index) => {
     const rowData = [`${item.name}`] // Tambahkan kategori pada awal baris
+    let total = 0
     item.data.slice(0, maxMonthColumns - 1).forEach((value) => {
       // Batasi jumlah kolom
       rowData.push(`${value} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
+      total += value
     })
+    rowData.push(`${total} Tiket`)
     monthlyTableData.push(rowData)
   })
 
@@ -209,12 +214,11 @@ const printData = () => {
   // Tambahkan tabel tahunan dan bulanan ke dalam container
   yearContainer.appendChild(yearlyTable)
   monthContainer.appendChild(monthlyTable)
-
   // Cetak container
   const win = window.open('', '', 'fullscreen=yes')
   win.document.write('<html><head><title>Data Tingkat Keramaian</title></head><body>')
   win.document.write(
-    `<h1 style="text-align: center;">Data Tingkat Keramaian Tahun ${targetYear.value}</h1>`
+    `<h1 style="text-align: center;">Data Tingkat Keramaian Tahun ${targetYears.value}</h1>`
   )
   win.document.write(yearContainer.outerHTML)
   win.document.write(
@@ -231,24 +235,53 @@ const printData = () => {
 }
 
 /* ChartReport Helper*/
-const targetYear = ref([])
+const selectedYear = ref(0)
+const selectedMonth = ref(0)
+const selectedMonthName = ref('')
+const targetYears = ref([])
 const yearlyCategory = ref([])
 const yearlyData = ref([])
 
-const targetMonth = ref([])
+const targetMonths = ref([])
 const monthlyCategory = ref([])
 const monthlyData = ref([])
 
+const fetchTargetYears = async () => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/report/target-years`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    if (!targetYears.value.includes(currentYear)) {
+      targetYears.value.push(currentYear)
+    }
+    targetYears.value = data
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+const changeSelectedYear = async (year) => {
+  try {
+    selectedYear.value = year
+    showLoader.value = true
+    await fetchYearlyChartData()
+    await fetchMonthlyChartData()
+  } catch (error) {
+    console.error(error)
+  }
+}
 const fetchYearlyChartData = async () => {
+  yearlyCategory.value = []
+  yearlyData.value = []
   try {
     const response = await fetch(
-      `${DB_BASE_URL.value}/report/yearly-chart-data/${encodeURIComponent(year)}`
+      `${DB_BASE_URL.value}/report/yearly-chart-data/${encodeURIComponent(selectedYear.value)}`
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    targetYear.value = data.targetYear
     yearlyCategory.value = data.yearlyCategory
     yearlyData.value = data.yearlyData
   } catch (error) {
@@ -256,16 +289,102 @@ const fetchYearlyChartData = async () => {
   }
 }
 
+const fetchTargetMonths = async () => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/report/target-months`)
+    if (!response.ok) {
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    const monthNames = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ]
+
+    const formattedMonths = data.map((month) => {
+      return monthNames[parseInt(month) - 1]
+    })
+    const currentMonthName = monthNames[new Date().getMonth()]
+    if (!formattedMonths.includes(currentMonthName)) {
+      formattedMonths.push(currentMonthName)
+    }
+    targetMonths.value = formattedMonths
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+const changeSelectedMonth = async (monthName) => {
+  try {
+    const monthNames = [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ]
+
+    // Mendapatkan indeks dari nama bulan yang diberikan
+    const monthIndex = monthNames.indexOf(monthName)
+
+    // Jika nama bulan ditemukan dalam array, mengatur nilai selectedMonth menjadi indeks bulan tersebut
+    if (monthIndex !== -1) {
+      selectedMonth.value = monthIndex + 1 // Menambah 1 karena indeks bulan dimulai dari 0
+    } else {
+      console.error('Invalid month name:', monthName)
+      return
+    }
+
+    showLoader.value = true
+    await fetchYearlyChartData()
+    await fetchMonthlyChartData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+const setMonthLocaleString = () => {
+  // Mendapatkan nama bulan untuk selectedMonth
+  const monthNames = [
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
+  ]
+  selectedMonthName.value = monthNames[new Date().getMonth()]
+}
 const fetchMonthlyChartData = async () => {
   try {
     const response = await fetch(
-      `${DB_BASE_URL.value}/report/monthly-chart-data/${encodeURIComponent(year)}/${encodeURIComponent(month)}`
+      `${DB_BASE_URL.value}/report/monthly-chart-data/${encodeURIComponent(selectedYear.value)}/${encodeURIComponent(selectedMonth.value)}`
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    targetMonth.value = data.targetMonth
     monthlyCategory.value = data.monthlyCategory
     monthlyData.value = data.monthlyData
     showLoader.value = false
@@ -276,15 +395,18 @@ const fetchMonthlyChartData = async () => {
 
 /* TableReport Helper */
 const activityReportData = ref([])
+const category = ref('')
 
-const getFilteredCategory = (filter) => {
-  filteredCategory.value = filter
+const updateCategory = (selectedCategory) => {
+  category.value = selectedCategory
+  fetchTableDataReport()
 }
+
 const fetchTableDataReport = async () => {
   try {
     let url = `${DB_BASE_URL.value}/report/table-data`
-    if (filteredCategory.value) {
-      url += `?category=${encodeURIComponent(filteredCategory.value)}`
+    if (category.value && category.value !== '') {
+      url += `?category=${encodeURIComponent(category.value)}`
     }
     const response = await fetch(url)
     if (!response.ok) {
@@ -319,17 +441,29 @@ export default {
   fetchIncomeRevenue,
   generateExcel,
   printData,
-  targetYear,
+  currentYear,
+  selectedYear,
+  targetYears,
   yearlyCategory,
   yearlyData,
+  changeSelectedYear,
+  fetchTargetYears,
   fetchYearlyChartData,
-  targetMonth,
+  currentMonth,
+  monthName,
+  selectedMonth,
+  selectedMonthName,
+  targetMonths,
   monthlyCategory,
   monthlyData,
+  changeSelectedMonth,
+  fetchTargetMonths,
+  setMonthLocaleString,
   fetchMonthlyChartData,
   activityReportData,
   fetchTableDataReport,
-  getFilteredCategory,
+  category,
+  updateCategory,
   capitalizeFirstLetter,
   formatDate,
   formatCurrency,

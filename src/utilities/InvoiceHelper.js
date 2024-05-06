@@ -86,10 +86,10 @@ const formatDate = (dateTime) => {
 
 const showDetail = (item) => {
   selectedItem.value = {
-    nama: item.transaction.cashier.name,
+    nama: item.transaction.user.name,
     reservasi: item.order.name,
     jadwal: formatDate(item.transaction.plannedDate),
-    ...(item.transaction.cashier.number != null && { 'no. telp': item.transaction.cashier.number }),
+    ...(item.transaction.user.number != null && { 'no. telp': item.transaction.user.number }),
     pembayaran: item.transaction.method
   }
   showDetailPopup()

@@ -1,22 +1,23 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import LoginHelper from '@/utilities/LoginHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
 const router = useRouter()
-const { loggedIn, username, password, userLogin } = LoginHelper
+const { loggedIn, username, password, userLogin, isAuthenticated } = LoginHelper
 
 const checkLogin = async () => {
   try {
     await userLogin()
-    GlobalHelper.assignAlert(
-      true,
-      'Sukses',
-      'success',
-      `Login berhasil! Selamat datang ${LoginHelper.cashierData.value.name}`
-    )
-    if (loggedIn.value) {
+    const authenticated = await isAuthenticated()
+    if (authenticated) {
+      GlobalHelper.assignAlert(
+        true,
+        'Sukses',
+        'success',
+        `Login berhasil! Selamat datang ${username.value}`
+      )
       router.replace('/')
     }
   } catch (error) {
@@ -37,6 +38,12 @@ const toggleShowPassword = () => {
     showPasswordText.value = 'Show Password'
   }
 }
+
+watch(loggedIn, (newValue) => {
+  if (newValue) {
+    loggedIn.value = newValue
+  }
+})
 </script>
 
 <template>

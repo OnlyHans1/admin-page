@@ -36,7 +36,7 @@ const insertDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`${DB_BASE_URL}/add/order-details`, {
+    const response = await fetch(`${DB_BASE_URL.value}/add/order-details`, {
       method: 'POST',
       body: formData
     })
@@ -64,7 +64,7 @@ const updateDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`${DB_BASE_URL}/edit/order-details/`, {
+    const response = await fetch(`${DB_BASE_URL.value}/edit/order-details/${encodeURIComponent(editId.value)}`, {
       method: 'PUT',
       body: formData
     })

@@ -3,7 +3,6 @@ import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
-import LoginHelper from '@/utilities/LoginHelper'
 
 const {
   selectedItems,
@@ -334,7 +333,7 @@ onMounted(() => {
   transition: transform 0.3s ease;
 }
 
-.popup-confirmation__overlay.active .popup-confirmation__container {
+.popup-confirmation_overlay.active .popup-confirmation_container {
   transform: translateY(0);
 }
 
