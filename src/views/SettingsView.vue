@@ -1,7 +1,18 @@
 <script setup>
 import CheckoutHelper from '@/utilities/CheckoutHelper';
 
-const { biayaJasa, biayaLayanan } = CheckoutHelper
+const { biayaJasa, biayaLayanan } = CheckoutHelper;
+
+let formattedBiayaLayanan = biayaLayanan.value.toString();
+let formattedBiayaJasa = biayaJasa.value.toString();
+
+const updateBiayaLayanan = (event) => {
+  biayaLayanan.value = Number(event.target.value);
+};
+
+const updateBiayaJasa = (event) => {
+  biayaJasa.value = Number(event.target.value);
+};
 </script>
 <template>
     <h1>Pengaturan Biaya</h1>
@@ -9,11 +20,11 @@ const { biayaJasa, biayaLayanan } = CheckoutHelper
     <div class="super-admin">
         <div class="fee">
             <h2>Biaya Layanan</h2>
-            <input name="layanan" v-model="biayaLayanan">
+            <input name="layanan" v-model="formattedBiayaLayanan" @input="updateBiayaLayanan">
         </div>
         <div class="service">
             <h2>Biaya Jasa Aplikasi</h2>
-            <input name="jasa" v-model="biayaJasa">
+            <input name="jasa" v-model="formattedBiayaJasa" @input="updateBiayaJasa">
         </div>
     </div>
     <button class="save">Simpan</button>
