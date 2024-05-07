@@ -14,7 +14,7 @@ const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value;
 };
 
-const closeDropdownOnClickOutside = (event) => {
+const closeDropdownOnClickOutside = (event) => {  
   if (!event.target.closest('.category__input-dropdown') && !event.target.closest('.category__input-dropdown_menu')) {
     isDropdownOpen.value = false;
   }

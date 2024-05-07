@@ -1,5 +1,6 @@
 <script setup>
 import CheckoutHelper from '@/utilities/CheckoutHelper';
+import LoginHelper from '@/utilities/LoginHelper';
 import { onMounted } from 'vue';
 
 const { biayaJasa, biayaLayanan, guideSelectPage, guideData,
@@ -16,32 +17,40 @@ const { biayaJasa, biayaLayanan, guideSelectPage, guideData,
     formattedGuideSelection,
     fetchGuideData, } = CheckoutHelper
 
+    
     onMounted(() => {
         fetchGuideData()
-    })
+    });
+
 </script>
 <template>
-    <h1>Pengaturan Biaya</h1>
-    <div class="container">
-        <div class="super-admin">
-            <div class="fee">
-                <h2>Biaya Layanan</h2>
-                <input name="layanan" v-model="biayaLayanan">
+    <main class="container">
+        <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
+        <section class="super-admin flex fd-col " v-if="LoginHelper.userData.value.role !== 'SUPER_ADMIN'">
+            <h5>Pengaturan Biaya</h5>
+            <div class="super-admin__input">
+                <div class="fee">
+                    <p>Biaya Layanan</p>
+                    <input name="layanan" v-model="biayaLayanan">
+                </div>
+                <div class="service">
+                    <p>Biaya Jasa Aplikasi</p>
+                    <input name="jasa" v-model="biayaJasa">
+                </div>
             </div>
-            <div class="service">
-                <h2>Biaya Jasa Aplikasi</h2>
-                <input name="jasa" v-model="biayaJasa">
+            <div class="flex">
+                <button class="save">Simpan</button>
+                <button class="reset">Reset</button>
             </div>
-        </div>
-        <button class="save">Simpan</button>
-        <button class="reset">Reset</button>
-        <div class="admin">
-            <h1>Pengaturan Admin</h1>
+        </section>
+
+        <section class="admin">
+            <h5>Pengaturan Admin</h5>
             <button class="guide" @click="guideSelectPage">
                 <span>Guide</span>
                 <ph-gear :size="20" weight="fill" />
             </button>
-        </div>
+        </section>
 
         <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
             <div class="order-details__guide-select-content_modal sm-4">
@@ -134,27 +143,13 @@ const { biayaJasa, biayaLayanan, guideSelectPage, guideData,
             </div>
         </section>
 
-    </div>
+    </main>
 </template>
 <style scoped>
 body {
     font-family: 'Raleway', sans-serif;
 }
 
-h1 {
-    font-size: 2rem;
-}
-
-h2 {
-    font-size: 1rem;
-}
-
-.super-admin {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: left;
-}
 
 input {
     width: 16rem;
@@ -209,6 +204,10 @@ input:focus {
 
 .admin {
     margin-top: 3rem;
+}
+.super-admin__input{
+    display: inline-flex;
+    margin-top: 1rem;
 }
 
 .guide {

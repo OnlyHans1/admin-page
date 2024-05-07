@@ -1,14 +1,17 @@
 <script setup>
-import { ref, computed, onMounted, watchEffect } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import OrderTypeDropdown from '@/components/OrderTypeDropdown.vue'
 
 const { DB_BASE_URL } = GlobalHelper
 
-const { selectedItemToEdit, getImageURL } = DashboardHelper
+const { selectedItemToEdit, getImageURL, } = DashboardHelper
+
+const { assignAlert } = GlobalHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -108,6 +111,8 @@ const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
 }
 
+
+
 const getEmptyFields = () => {
   const emptyFields = []
   if (!title.value.trim()) {
@@ -122,8 +127,56 @@ const getEmptyFields = () => {
   if (!String(price.value).trim()) {
     emptyFields.push('Harga')
   }
+  if (!String(selectedorderType.value).trim()) {
+    emptyFields.push('Tipe Tiket')
+  }
+  if (!String(selectedSubtype.value).trim()) {
+    emptyFields.push('Subtipe Tiket')
+  }
   return emptyFields
 }
+
+const orderType = ref('')
+
+const selectedOrderType = ref('');
+
+const isSubtypeDropdownOpen = ref(false);
+const selectedSubtype = ref('');
+
+const toggleSubtypeDropdown = () => {
+  if (isSubtypeDisabled.value){
+    assignAlert(true, 'Error', 'danger', 'Tolong pilih tipe tiket terlebih dahulu!')
+  }
+  else {
+    isSubtypeDropdownOpen.value = !isSubtypeDropdownOpen.value;
+  }
+};
+
+const selectSubtypeOption = (value) => {
+  selectedSubtype.value = value;
+  isSubtypeDropdownOpen.value = false;
+ ;
+};
+
+const isSubtypeDisabled = computed(() => {
+  return !selectedOrderType.value; // Disable if selectedorderType is empty
+})
+
+const combinedOrderType = computed(() => {
+  const orderType = selectedOrderType.value || 'Tipe Tiket';
+  const subtype = selectedSubtype.value || 'Subtipe Tiket';
+  return `${orderType} | ${subtype}`;
+})
+
+const updateOrderType = (value) => {
+  selectedOrderType.value = value
+}
+
+const closeDropdownOnClickOutside = (event) => {  
+  if (!event.target.closest('.subtype__input-dropdown') && !event.target.closest('.subtype__input-dropdown_menu')) {
+    isSubtypeDropdownOpen.value = false;
+  }
+};
 
 const confirmAdd = () => {
   const emptyFields = getEmptyFields()
@@ -155,7 +208,12 @@ watchEffect(() => {
 
 onMounted(() => {
   isEditPage()
-})
+  window.addEventListener('click', closeDropdownOnClickOutside);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeDropdownOnClickOutside);
+});
 </script>
 
 <template>
@@ -173,7 +231,7 @@ onMounted(() => {
     <p v-else>Data berhasil diubah</p>
   </div>
 
-  <main class="add">
+  <main class="add pd-bottom-2">
     <section class="add__input">
       <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
       <div class="add__input-card_title">
@@ -191,6 +249,37 @@ onMounted(() => {
       <div class="add__input-category">
         <h6>Kategori</h6>
         <CategoryDropdown @option-selected="updateCategory" :initial-category="category"/>
+      </div>        
+      <div class="add__input-ticket_subtype">
+        <h6>Tipe Tiket</h6>
+        <div class="flex gap-1">
+          <!-- Ticket Type Dropdown -->
+          
+          <orderTypeDropdown @option-selected="updateOrderType"/>
+
+          <!-- Ticket SubType Dropdown -->
+          
+          <div class="subtype__input-dropdown" :class="{ active: !isSubtypeDisabled }">
+            <input readonly 
+              @click="toggleSubtypeDropdown()"
+              :value="selectedSubtype" 
+              :class="{ active: !isSubtypeDisabled }"
+              placeholder="Pilih Subtipe Tiket" 
+              id="subtype">
+            <div class="select-icon">
+              <div class="arrow-icon" :class="{ active: isSubtypeDropdownOpen }">
+                <ph-caret-down :size="14" weight="bold" class="icon" />
+              </div>
+            </div>
+            <div class="ticket-type__input-dropdown_menu" :class="{ active: isSubtypeDropdownOpen }">
+              <p @click="selectSubtypeOption('Silahturahmi')">Silahturahmi</p>
+              <p @click="selectSubtypeOption('Non-Silahturahmi')">Non-Silahturahmi</p>
+              <p @click="selectSubtypeOption('Mancanegara')">Mancanegara</p>
+            </div>
+          </div>
+
+      </div>
+
       </div>
       <div class="add__input-price">
         <h6>Harga</h6>
@@ -201,16 +290,19 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="add__preview w-full">
+    <section class="add__preview w-full sticky">
       <h5>Preview</h5>
       <div class="add__preview-card_container">
-        <h6 class="add__preview-category">{{ category ? category : 'Category' }}</h6>
+        <div class="flex gap[0.5]">
+          <h6 class="add__preview-category">{{ category ? category : 'Kategori' }}</h6>
+          <h6 class="add__preview-category">{{ combinedOrderType ? combinedOrderType : 'Tipe Ticket' }}</h6>
+        </div>
         <div class="add__preview-image_container">
           <img :src="selectedImageURL ? selectedImageURL : defaultImageURL" alt="" />
         </div>
         <div class="add__preview-card_details sm-top-1">
-          <h5 class="fw-600">{{ title ? title : 'Card Title' }}</h5>
-          <p>{{ desc ? desc : 'Card Description' }}</p>
+          <h5 class="fw-600">{{ title ? title : 'Judul' }}</h5>
+          <p>{{ desc ? desc : 'Deskripsi' }}</p>
           <div class="add__preview-card-details-price">
             <h5 class="fw-600 sm-top-1">
               <span class="fw-600">{{ formattedPrice }}</span>
@@ -227,6 +319,100 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.subtype__input-dropdown{
+  position: relative;
+  height: 2rem;
+  width: 15rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(126, 126, 126);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.subtype__input-dropdown.active {
+  position: relative;
+  height: 2rem;
+  width: 15rem;
+  border-radius: 0.5rem;
+  border: 1px solid black;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.subtype__input-dropdown input.active,
+.ticket-type__input-dropdown input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  cursor: pointer;
+}
+.subtype__input-dropdown input{
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  cursor: not-allowed;
+
+}
+
+.select-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.arrow-icon {
+  transition: all 300ms ease;
+}
+
+.arrow-icon.active {
+  transform: rotate(180deg);
+}
+.subtype__input-dropdown_menu,
+.ticket-type__input-dropdown_menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  display: none;
+  overflow: hidden;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
+  z-index: 200;
+}
+
+.subtype__input-dropdown_menu.active,
+.ticket-type__input-dropdown_menu.active {
+  display: block;
+}
+
+.subtype__input-dropdown_menu p,
+.ticket-type__input-dropdown_menu p {
+  padding: 0.3rem 0.6rem;
+}
+
+.subtype__input-dropdown_menu p:hover,
+.ticket-type__input-dropdown_menu p:hover {
+  background-color: rgb(233, 233, 233);
+}
+
+.subtype__input-dropdown_menu p:hover:first-child,
+.ticket-type__input-dropdown_menu p:hover:first-child {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.subtype__input-dropdown_menu p:hover:last-child,
+.ticket-type__input-dropdown_menu p:hover:last-child {
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
 .add {
   display: flex;
   width: 100%;
@@ -265,7 +451,7 @@ onMounted(() => {
 
 /* input harga */
 input[type='number'] {
-  width: 20rem;
+  width: 15rem;
   height: 2rem;
   border-radius: 0.5rem;
   appearance: none;

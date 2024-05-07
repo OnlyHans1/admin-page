@@ -186,7 +186,7 @@ onMounted(() => {
     </div>
 
     <div
-      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      class="popup-confirmation__overlay w-full flex justify-content-center align-items-center"
       :class="{ active: showConfirmationPopup }"
       @click="closePopup()"
     >
@@ -311,6 +311,10 @@ onMounted(() => {
 }
 
 .popup-confirmation__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
@@ -328,13 +332,13 @@ onMounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 345px;
   overflow: hidden;
-  margin-top: auto;
+  margin-top: 5rem;
   transform: translateY(-50%);
   transition: transform 0.3s ease;
 }
 
 .popup-confirmation_overlay.active .popup-confirmation_container {
-  transform: translateY(0);
+  transform: translateY(50%);
 }
 
 .popup-confimation__button-confirmation button {
