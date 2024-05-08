@@ -1,29 +1,77 @@
 <script setup>
-import { onMounted, ref } from 'vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
-import InputFoto from '@/components/InputFoto.vue'
-import router from '@/router'
+import DashboardHelper from '@/utilities/DashboardHelper'
+import LoginHelper from '@/utilities/LoginHelper'
+import SettingsHelper from '@/utilities/SettingsHelper'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-const {
-  biayaJasa,
-  biayaLayanan,
-  guideSelectPage,
-  guideData,
-  guideSelect,
-  guideSelectPageBio,
-  guideSelectors,
-  addGuide,
-  isGuideChecked,
-  fetchGuideData
+import InputFoto from '@/components/InputFoto.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
+
+const { biayaJasa, biayaLayanan, guideSelectPage, guideData,
+    guideSelect,
+    guideSelection,
+    guideSelectPageBio,
+    guideSelectBio,
+    guideSelectors,
+    selectedGuide,
+    guideSelectTicket,
+    guideSelectPageTicket,
+    addGuide,
+    isGuideChecked,
+    formattedGuideSelection,
+    fetchGuideData, 
 } = CheckoutHelper
 
+const { fetchOrderList, 
+    getImageURL, 
+    capitalizeFirstLetter,
+    formatCurrency,
+    showDeleteConfirmation,
+    showDeleteConfirmationPopup,
+    selectedItemToEdit,
+    selectedItems,
+    closePopup,
+    closeDeletePopup,
+    confirmDelete,
+    dataDashboard 
+} = DashboardHelper
+
+const { fetchTargetedData } = SettingsHelper
+
+const { assignAlert } = GlobalHelper
+
+const router = useRouter()
+
+//Modal Guide
 const isAddingGuideModalVisible = ref(false)
 const isEditGuideModalVisible = ref(false)
 const selectedImageURL = ref('')
 
-onMounted(() => {
-  fetchGuideData()
-})
+const editOrder = async (id) => {
+  await fetchTargetedData(id)
+  router.push({ name: 'edit', params: { id: id } })
+}
+const checkSettingsData = async () => {
+  try {
+    await fetchOrderList()
+    await fetchGuideData()
+  } catch (error) {
+    console.error(error)
+  }
+}
+
+const orderSelect = ref(false)
+const orderSelectPage = () => {
+  orderSelect.value = !orderSelect.value
+}
+
+const feePage = ref(false)
+const toggleFeePage = () => {
+    feePage.value = !feePage.value
+}
+
 
 const showAddGuideModal = () => {
   isAddingGuideModalVisible.value = true
@@ -41,6 +89,7 @@ const hideEditGuideModal = () => {
   isEditGuideModalVisible.value = false
 }
 
+//Modal Fees
 let formattedBiayaLayanan = biayaLayanan.value.toString()
 let formattedBiayaJasa = biayaJasa.value.toString()
 
@@ -59,41 +108,189 @@ const handleFileSelected = (file) => {
   }
   reader.readAsDataURL(file)
 }
+
+const saveSettings = () => {
+  biayaLayanan.value = Number(newBiayaLayanan.value)
+  biayaJasa.value = Number(newBiayaJasa.value)
+  sessionStorage.setItem('biayaLayanan', biayaLayanan.value)
+  sessionStorage.setItem('biayaJasa', biayaJasa.value)
+
+  assignAlert(true, 'Sukses', 'success', 'Biaya berhasil diubah!')
+  setTimeout(() => {
+    feePage.value = false
+  }, 3000)  
+}
+
+const resetSettings = () => {
+  // Reset biaya layanan dan biaya jasa ke nilai default
+  biayaLayanan.value = 2500
+  biayaJasa.value = 1000
+  newBiayaLayanan.value = biayaLayanan.value
+  newBiayaJasa.value = biayaJasa.value
+  sessionStorage.setItem('biayaLayanan', biayaLayanan.value)
+  sessionStorage.setItem('biayaJasa', biayaJasa.value)
+
+  assignAlert(true, 'Sukses', 'success', 'Biaya berhasil di-reset!')
+  setTimeout(() => {
+    feePage.value = false
+  }, 3000)  
+
+}
+
+const fetchFeeSettings = () => {
+  const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan');
+  if (savedBiayaLayanan) {
+    biayaLayanan.value = parseInt(savedBiayaLayanan);
+  }
+  
+  const savedBiayaJasa = sessionStorage.getItem('biayaJasa');
+  if (savedBiayaJasa) {
+    biayaJasa.value = parseInt(savedBiayaJasa);
+  }
+}
+
+const newBiayaLayanan = ref(biayaLayanan.value)
+const newBiayaJasa = ref(biayaJasa.value)
+
+
+
+onMounted(() => {
+    fetchGuideData()
+    fetchFeeSettings()
+    checkSettingsData()
+});
 </script>
 
 <template>
-  <div>
-    <h1>Pengaturan Biaya</h1>
-    <div class="container">
-      <div class="super-admin">
-        <div class="fee">
-          <h2>Biaya Layanan</h2>
-          <input
-            class="input_biaya"
-            name="layanan"
-            v-model="formattedBiayaLayanan"
-            @input="updateBiayaLayanan"
-          />
+  <main>
+    <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
+
+    <section
+      class="settings_modal-overlay w-full h-full"
+      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
+    >
+      <div class="settings_modal-container">
+        <div class="settings__orders-content_modal-header">
+          <h5 class="fw-600">Fees</h5>
+          <ph-x :size="20" weight="bold" @click="toggleFeePage"/>
         </div>
-        <div class="service">
-          <h2>Biaya Jasa Aplikasi</h2>
-          <input
-            class="input_biaya"
-            name="jasa"
-            v-model="formattedBiayaJasa"
-            @input="updateBiayaJasa"
-          />
+        <div class="settings__fees-content_modal pd-1">
+            <div class="settings__fees-content_modal_input-group">
+                <div class="fee">
+                <p>Biaya Layanan</p>
+                <input
+                    class="input_biaya"
+                    name="layanan"
+                    v-model="newBiayaLayanan"
+                />
+                </div>
+                <div class="service">
+                <p>Biaya Jasa Aplikasi</p>
+                <input
+                    class="input_biaya"
+                    name="jasa"
+                    v-model="newBiayaJasa"
+                />
+                </div>
+                <button class="save"  @click="saveSettings">Simpan</button>
+                <button class="reset" @click="resetSettings">Reset</button>
+            </div>
         </div>
-      </div>
-      <button class="save">Simpan</button>
-      <button class="reset">Reset</button>
-      <div class="admin">
-        <h1>Pengaturan Admin</h1>
-        <button class="guide" @click="guideSelectPage">
-          <span>Guide</span>
-          <ph-gear :size="20" weight="fill" />
+        </div>
+    </section>
+
+    <section class="admin">
+        <div class="settings__menu">
+        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
+            <ph-coins :size="48" color="var(--color-primary)" />
+            <span>Fees</span>
         </button>
+        <button class="settings__menu-items" @click="guideSelectPage">
+            <ph-binoculars :size="48" color="var(--color-primary)" weight="fill"/>
+            <span>Guide</span>
+            </button>
+        <button class="settings__menu-items" @click="orderSelectPage">
+            <ph-ticket :size="48" color="var(--color-primary)" />
+            <span>Orders</span>
+        </button>
+        
+        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
+            <ph-squares-four :size="48" color="var(--color-primary)" />
+            <span>Category</span>
+        </button>
+        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
+            <ph-folder :size="48" color="var(--color-primary)" />
+            <span>Tipe</span>
+        </button>
+        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
+            <ph-folders :size="48" color="var(--color-primary)" />
+            <span>Subtipe</span>
+        </button>
+        
+        
+        </div>
+      
+    </section>
+
+    <section class="settings_modal-overlay  flex align-items-center justify-content-center w-full h-full" v-if="orderSelect">
+      <div class="settings_modal-container">
+        <div class="settings__fees-content_modal-header">
+          <h5 class="fw-600">Orders</h5>
+          <ph-x :size="20" weight="bold" @click="orderSelectPage" />
+        </div>
+        <div class="settings__orders-content pd-1">
+          <div class="" v-for="(item, index) in dataDashboard" :key="index">
+            <div class="settings__orders-content_item flex gap-1">
+              <img
+                :src="
+                  item.image
+                    ? getImageURL(item.image)
+                    : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                "
+              />
+              <div class="settings__orders-group-content w-full">
+                <div class="settings__orders-content_item-head">
+                  <h6>{{ item.name }}</h6>
+                  <p>Rp{{ formatCurrency(item.price) }}</p>
+                  <p>{{ capitalizeFirstLetter(item.category) }}</p>
+                </div>
+                <div class="settings__orders-content_item-cta flex align-items-end gap-1">
+                  <button
+                    class="settings-order__edit-button flex align-items-center justify-content-center gap[0.5]"
+                    @click="editOrder(item.id)"
+                  >
+                    <ph-pencil-simple :size="16" weight="bold" />
+                  </button>
+                  <button
+                    class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
+                    @click="showDeleteConfirmation(item.id)"
+                  >
+                    <ph-trash :size="16" weight="bold" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <div
+      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      :class="{ active: showDeleteConfirmationPopup }"
+      @click="closeDeletePopup()"
+    >
+      <div
+        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
+        @click.stop
+      >
+        <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
+        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
+          <button @click="confirmDelete()">Hapus</button>
+          <button @click="closeDeletePopup()">Batal</button>
+        </div>
+      </div>
+    </div>
 
       <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
         <div class="order-details__guide-select-content_modal sm-4">
@@ -227,28 +424,12 @@ const handleFileSelected = (file) => {
           </div>
         </div>
       </section>
-    </div>
-  </div>
+    </main>
 </template>
 
 <style scoped>
 body {
   font-family: 'Raleway', sans-serif;
-}
-
-h1 {
-  font-size: 2rem;
-}
-
-h2 {
-  font-size: 1rem;
-}
-
-.super-admin {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: left;
 }
 
 .input_biaya {
@@ -273,6 +454,11 @@ input:focus {
   margin-top: 2rem;
   color: white;
   border-radius: 20px;
+  width: 5.5rem;
+  height: 2rem;
+  margin-top: 2rem;
+  color: white;
+  border-radius: 20px;
 }
 
 .save {
@@ -292,31 +478,31 @@ input:focus {
   background: #cd23349b;
 }
 
-.admin {
-  margin-top: 3rem;
-}
-.super-admin__input{
-    display: inline-flex;
-    margin-top: 1rem;
+
+.settings__menu{
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-gap: 1rem;
 }
 
-.guide {
+.settings__menu-items {
   padding: 0.5rem;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  width: 16rem;
-  height: 2.5rem;
-  margin-right: 8rem;
+  justify-content: center;
+  width: 10rem;
+  height: 10rem;
   margin-top: 1rem;
-  font-size: 1rem;
+  font-size: 1.5rem;
   font-family: 'Raleway', sans-serif;
-  text-align: left;
   border: 1px solid black;
   border-radius: 5px;
+  box-shadow: 1px 3px 10px rgb(0, 0, 0, 0.2);
 }
 
-.guide span {
-  margin-right: 10.5rem;
+.settings__menu-items span {
+    font-weight: 600;
 }
 
 .addGuide {
@@ -342,7 +528,6 @@ input:focus {
   background-color: rgb(0, 0, 0, 0.2);
   z-index: 999;
 }
-
 .order-details__payment-select-content_modal {
   position: fixed;
   top: 50%;
@@ -359,12 +544,6 @@ input:focus {
   cursor: pointer;
 }
 
-.order-details__payment-select-content_modal-content {
-  border-top: 1px solid black;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
 
 .order-details__guide-select-content_modal {
   background: #ffffff;
@@ -377,7 +556,15 @@ input:focus {
   position: relative;
 }
 
+.settings__fees-content_modal-header,
+.settings__orders-content_modal-header,
 .order-details__guide-select-content_modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 1rem;
+  border-bottom: 1px solid black;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -397,9 +584,14 @@ input:focus {
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
 }
 
 .order-detail__guide-select-content_guide-selector .bg-yellow {
+  background-color: #e6be58;
+  border-radius: 0 0.5rem 0.5rem 0;
   background-color: #e6be58;
   border-radius: 0 0.5rem 0.5rem 0;
 }
@@ -411,6 +603,177 @@ input:focus {
   width: 0.8rem;
   height: 0.8rem;
   padding: 0.1rem;
+  background-color: transparent;
+  border: 0.5px solid black;
+  border-radius: 100%;
+  width: 0.8rem;
+  height: 0.8rem;
+  padding: 0.1rem;
+}
+
+.order-detail__guide-select-content_guide-selector_radio > .selected {
+  background-color: #e6be58;
+  filter: blur(1px);
+  border-radius: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+
+
+
+
+.settings_modal-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 1;
+  transition: opacity 0.2s ease-in-out;
+  width: 100%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 900;
+}
+
+.settings_modal-container {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  overflow: auto;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 900;
+}
+
+.settings__orders-content {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 1rem;
+  align-content: center;
+  overflow: scroll;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #ccc transparent
+}
+
+.settings__orders-content::-webkit-scrollbar {
+  width: 20px; /* Width of the scrollbar */
+  border-radius: 10px; /* Border radius to match card */
+}
+
+/* Track (the area where the scrollbar is) */
+.settings__orders-content::-webkit-scrollbar-track {
+  background: transparent; /* Transparent background */
+}
+
+/* Handle (the draggable part of the scrollbar) */
+.settings__orders-content::-webkit-scrollbar-thumb {
+  background-color: #ccc; /* Color of the scrollbar handle */
+  border-radius: 10px; /* Border radius to match card */
+}
+
+/* Handle on hover */
+.settings__orders-content::-webkit-scrollbar-thumb:hover {
+  background-color: #aaa; /* Darker color when hovered */
+}
+
+.settings__orders-group-content {
+  display: inline-flex;
+  justify-content: space-between;
+}
+.settings__orders-content_item {
+  padding: 1rem;
+  box-shadow: 0 2px 10px rgb(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+}
+.settings__orders-content_item img {
+  height: 100px;
+  max-height: 100px;
+  width: auto;
+  max-width: 150px;
+  object-fit: cover;
+}
+.settings__orders-content_item-head h6 {
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.settings-order__remove-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  width: 4rem;
+  background-color: var(--color-red-600);
+  color: #fff;
+  font-weight: bold;
+  margin-right: 0.5rem;
+}
+
+.settings-order__edit-button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  width: 4rem;
+  background-color: var(--color-yellow);
+  color: #fff;
+  font-weight: bold;
+}
+
+.popup-confirmation__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+  pointer-events: none;
+}
+
+.popup-confirmation__overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.popup-confirmation__container {
+  background: #d9d9d9;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 345px;
+  overflow: hidden;
+  margin-top: 5rem;
+  transform: translateY(-50%);
+  transition: transform 0.3s ease;
+}
+
+.popup-confirmation_overlay.active .popup-confirmation_container {
+  transform: translateY(50%);
+}
+
+.popup-confimation__button-confirmation button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  color: white;
+}
+
+.guide-select_biodata-image {
+  width: 300px;
+  max-width: 300px;
+  height: 300px;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+.guide-select_biodata_add-ticket {
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  display: flex;
+  padding: 0.5rem;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .guide-select_ticket {
@@ -424,9 +787,14 @@ input:focus {
 .guide-select_ticket-image {
   max-height: 70px;
   max-width: 100px;
+  max-height: 70px;
+  max-width: 100px;
 }
 
 .guide-select_ticket-btn {
+  padding: 0.5rem;
+  background-color: var(--color-primary);
+  border-radius: 0.25rem;
   padding: 0.5rem;
   background-color: var(--color-primary);
   border-radius: 0.25rem;

@@ -5,10 +5,12 @@ import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
+import SettingsHelper from '@/utilities/SettingsHelper'
 import OrderTypeDropdown from '@/components/OrderTypeDropdown.vue'
 
 const { DB_BASE_URL, ORDER_BASE_URL, showLoader, assignAlert } = GlobalHelper
-const { selectedItemToEdit, getImageURL, } = DashboardHelper
+const { getImageURL } = DashboardHelper
+const { targetedData } = SettingsHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -16,7 +18,7 @@ const route = useRoute()
 const editId = ref('')
 const title = ref('')
 const desc = ref('')
-const category = ref('') 
+const category = ref('')
 const price = ref('')
 const imageName = ref('')
 const selectedImageURL = ref('') // State to hold the selected image URL
@@ -38,10 +40,13 @@ const insertDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/create`, {
-      method: 'POST',
-      body: formData
-    })
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/create`,
+      {
+        method: 'POST',
+        body: formData
+      }
+    )
 
     if (!response.ok) {
       showLoader.value = false
@@ -51,7 +56,12 @@ const insertDatabase = async () => {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
         router.push('/')
-        assignAlert(true, 'Sukses', 'success', `Berhasil membuat pesanan ${title.value} (${category.value.toUpperCase()})`)
+        assignAlert(
+          true,
+          'Sukses',
+          'success',
+          `Berhasil membuat pesanan ${title.value} (${category.value.toUpperCase()})`
+        )
       }, 1200)
     }
   } catch (error) {
@@ -71,10 +81,13 @@ const updateDatabase = async () => {
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/update/${encodeURIComponent(editId.value)}`, {
-      method: 'POST',
-      body: formData
-    })
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/update/${encodeURIComponent(editId.value)}`,
+      {
+        method: 'POST',
+        body: formData
+      }
+    )
 
     if (!response.ok) {
       showLoader.value = false
@@ -84,7 +97,12 @@ const updateDatabase = async () => {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
         router.push('/')
-        assignAlert(true, 'Sukses', 'success', `Berhasil mengubah pesanan ke ${title.value} (${category.value.toUpperCase()})`)
+        assignAlert(
+          true,
+          'Sukses',
+          'success',
+          `Berhasil mengubah pesanan ke ${title.value} (${category.value.toUpperCase()})`
+        )
       }, 1200)
     }
   } catch (error) {
@@ -118,8 +136,6 @@ const updateCategory = (selectedCategory) => {
   category.value = selectedCategory
 }
 
-
-
 const getEmptyFields = () => {
   const emptyFields = []
   if (!title.value.trim()) {
@@ -145,51 +161,57 @@ const getEmptyFields = () => {
 
 const orderType = ref('')
 
-const selectedOrderType = ref('');
+const selectedOrderType = ref('')
 
-const isSubtypeDropdownOpen = ref(false);
-const selectedSubtype = ref('');
+const isSubtypeDropdownOpen = ref(false)
+const selectedSubtype = ref('')
 
 const toggleSubtypeDropdown = () => {
-  if (isSubtypeDisabled.value){
+  if (isSubtypeDisabled.value) {
     assignAlert(true, 'Error', 'danger', 'Tolong pilih tipe tiket terlebih dahulu!')
+  } else {
+    isSubtypeDropdownOpen.value = !isSubtypeDropdownOpen.value
   }
-  else {
-    isSubtypeDropdownOpen.value = !isSubtypeDropdownOpen.value;
-  }
-};
+}
 
 const selectSubtypeOption = (value) => {
-  selectedSubtype.value = value;
-  isSubtypeDropdownOpen.value = false;
- ;
-};
+  selectedSubtype.value = value
+  isSubtypeDropdownOpen.value = false
+}
 
 const isSubtypeDisabled = computed(() => {
-  return !selectedOrderType.value; // Disable if selectedorderType is empty
+  return !selectedOrderType.value // Disable if selectedorderType is empty
 })
 
 const combinedOrderType = computed(() => {
-  const orderType = selectedOrderType.value || 'Tipe Tiket';
-  const subtype = selectedSubtype.value || 'Subtipe Tiket';
-  return `${orderType} | ${subtype}`;
+  const orderType = selectedOrderType.value || 'Tipe Tiket'
+  const subtype = selectedSubtype.value || 'Subtipe Tiket'
+  return `${orderType} | ${subtype}`
 })
 
 const updateOrderType = (value) => {
   selectedOrderType.value = value
 }
 
-const closeDropdownOnClickOutside = (event) => {  
-  if (!event.target.closest('.subtype__input-dropdown') && !event.target.closest('.subtype__input-dropdown_menu')) {
-    isSubtypeDropdownOpen.value = false;
+const closeDropdownOnClickOutside = (event) => {
+  if (
+    !event.target.closest('.subtype__input-dropdown') &&
+    !event.target.closest('.subtype__input-dropdown_menu')
+  ) {
+    isSubtypeDropdownOpen.value = false
   }
-};
+}
 
 const confirmAdd = () => {
   const emptyFields = getEmptyFields()
 
   if (emptyFields.length > 0) {
-    GlobalHelper.assignAlert(true, 'Error', 'danger', `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.`)
+    GlobalHelper.assignAlert(
+      true,
+      'Error',
+      'danger',
+      `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.`
+    )
     return
   }
 
@@ -197,15 +219,17 @@ const confirmAdd = () => {
 }
 
 const currentPath = ref(route.path)
-const isEditPage = () => {
-  editId.value = selectedItemToEdit.value.id
-  if (currentPath.value === `/edit/${encodeURIComponent(editId.value)}`) {
-    title.value = selectedItemToEdit.value.name
-    desc.value = selectedItemToEdit.value.desc
-    price.value = selectedItemToEdit.value.price
-    category.value = capitalizeFirstLetter(selectedItemToEdit.value.category)
-    imageName.value = selectedItemToEdit.value.image !== '' ? selectedItemToEdit.value.image : ''
-    selectedImageURL.value = selectedItemToEdit.value.image ? getImageURL(selectedItemToEdit.value.image) : ''
+
+const isEditPage = async () => {
+  console.log('tes ini')
+  if (currentPath.value !== '/add') {
+    console.log('ini edit')
+    title.value = targetedData.value.name
+    desc.value = targetedData.value.desc
+    price.value = targetedData.value.price
+    category.value = capitalizeFirstLetter(targetedData.value.category)
+    imageName.value = targetedData.value.image !== '' ? targetedData.value.image : ''
+    selectedImageURL.value = targetedData.value.image ? getImageURL(targetedData.value.image) : ''
   }
 }
 
@@ -215,12 +239,12 @@ watchEffect(() => {
 
 onMounted(() => {
   isEditPage()
-  window.addEventListener('click', closeDropdownOnClickOutside);
-});
+  window.addEventListener('click', closeDropdownOnClickOutside)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('click', closeDropdownOnClickOutside);
-});
+  window.removeEventListener('click', closeDropdownOnClickOutside)
+})
 </script>
 
 <template>
@@ -255,38 +279,41 @@ onUnmounted(() => {
       </div>
       <div class="add__input-category">
         <h6>Kategori</h6>
-        <CategoryDropdown @option-selected="updateCategory" :initial-category="category"/>
-      </div>        
+        <CategoryDropdown @option-selected="updateCategory" :initial-category="category" />
+      </div>
       <div class="add__input-ticket_subtype">
         <h6>Tipe Tiket</h6>
         <div class="flex gap-1">
           <!-- Ticket Type Dropdown -->
-          
-          <orderTypeDropdown @option-selected="updateOrderType"/>
+
+          <orderTypeDropdown @option-selected="updateOrderType" />
 
           <!-- Ticket SubType Dropdown -->
-          
+
           <div class="subtype__input-dropdown" :class="{ active: !isSubtypeDisabled }">
-            <input readonly 
+            <input
+              readonly
               @click="toggleSubtypeDropdown()"
-              :value="selectedSubtype" 
+              :value="selectedSubtype"
               :class="{ active: !isSubtypeDisabled }"
-              placeholder="Pilih Subtipe Tiket" 
-              id="subtype">
+              placeholder="Pilih Subtipe Tiket"
+              id="subtype"
+            />
             <div class="select-icon">
               <div class="arrow-icon" :class="{ active: isSubtypeDropdownOpen }">
                 <ph-caret-down :size="14" weight="bold" class="icon" />
               </div>
             </div>
-            <div class="ticket-type__input-dropdown_menu" :class="{ active: isSubtypeDropdownOpen }">
+            <div
+              class="ticket-type__input-dropdown_menu"
+              :class="{ active: isSubtypeDropdownOpen }"
+            >
               <p @click="selectSubtypeOption('Silahturahmi')">Silahturahmi</p>
               <p @click="selectSubtypeOption('Non-Silahturahmi')">Non-Silahturahmi</p>
               <p @click="selectSubtypeOption('Mancanegara')">Mancanegara</p>
             </div>
           </div>
-
-      </div>
-
+        </div>
       </div>
       <div class="add__input-price">
         <h6>Harga</h6>
@@ -302,7 +329,9 @@ onUnmounted(() => {
       <div class="add__preview-card_container">
         <div class="flex gap[0.5]">
           <h6 class="add__preview-category">{{ category ? category : 'Kategori' }}</h6>
-          <h6 class="add__preview-category">{{ combinedOrderType ? combinedOrderType : 'Tipe Ticket' }}</h6>
+          <h6 class="add__preview-category">
+            {{ combinedOrderType ? combinedOrderType : 'Tipe Ticket' }}
+          </h6>
         </div>
         <div class="add__preview-image_container">
           <img :src="selectedImageURL ? selectedImageURL : defaultImageURL" alt="" />
@@ -318,15 +347,24 @@ onUnmounted(() => {
         </div>
       </div>
       <div class="add__preview-cta_container">
-        <button v-if="currentPath === '/add'" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
-        <button v-else class="add__preview_button" type="submit" @click="updateDatabase()">Edit</button>
+        <button
+          v-if="currentPath === '/add'"
+          class="add__preview_button"
+          type="submit"
+          @click="confirmAdd()"
+        >
+          Tambahkan
+        </button>
+        <button v-else class="add__preview_button" type="submit" @click="updateDatabase()">
+          Edit
+        </button>
       </div>
     </section>
   </main>
 </template>
 
 <style scoped>
-.subtype__input-dropdown{
+.subtype__input-dropdown {
   position: relative;
   height: 2rem;
   width: 15rem;
@@ -356,7 +394,7 @@ onUnmounted(() => {
   background-color: transparent;
   cursor: pointer;
 }
-.subtype__input-dropdown input{
+.subtype__input-dropdown input {
   width: 100%;
   height: 100%;
   border: 0;
@@ -364,7 +402,6 @@ onUnmounted(() => {
   padding: 0.5rem;
   background-color: transparent;
   cursor: not-allowed;
-
 }
 
 .select-icon {

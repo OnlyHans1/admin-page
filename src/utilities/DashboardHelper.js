@@ -1,11 +1,12 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
+import SettingsHelper from './SettingsHelper'
 
 const { DB_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
+const { targetedData, fetchTargetedData } = SettingsHelper
 
 const selectedItems = ref([])
-const selectedItemToDelete = ref([])
-const selectedItemToEdit = ref([])
+const selectedItemToDelete = ref('')
 
 const showConfirmationPopup = ref(false)
 const showDeleteConfirmationPopup = ref(false)
@@ -182,14 +183,16 @@ const handleItemClick = (item) => {
   }
 }
 
-const showDeleteConfirmation = () => {
+const showDeleteConfirmation = (id) => {
   showDeleteConfirmationPopup.value = true
+  selectedItemToDelete.value = id
+  console.log(selectedItemToDelete.value)
   // Menampilkan konfirmasi delete
-  selectedItemToDelete.value = selectedItems.value[0]
 }
 
 const closeDeletePopup = () => {
   showDeleteConfirmationPopup.value = false
+  selectedItemToDelete.value = ''
 }
 
 const groupedItems = computed(() => {
@@ -207,8 +210,9 @@ const groupedItems = computed(() => {
 const confirmDelete = async () => {
   try {
     showLoader.value = true
+    await fetchTargetedData(selectedItemToDelete.value)
     const response = await fetch(
-      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/delete/${encodeURIComponent(selectedItemToDelete.value.id)}`,
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/delete/${encodeURIComponent(selectedItemToDelete.value)}`,
       {
         method: 'POST',
         headers: {
@@ -226,9 +230,8 @@ const confirmDelete = async () => {
         true,
         'Sukses',
         'success',
-        `Pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category}) berhasil dihapus!`
+        `Pesanan ${targetedData.value.name} (${targetedData.value.category}) berhasil dihapus!`
       )
-      selectedItemToDelete.value = []
       setTimeout(() => {
         location.reload()
       }, 3000)
@@ -237,7 +240,7 @@ const confirmDelete = async () => {
         true,
         'Error',
         'danger',
-        `Gagal menghapus pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category})!`
+        `Gagal menghapus pesanan ${targetedData.value.name} (${targetedData.value.category})!`
       )
     }
   } catch (error) {
@@ -247,7 +250,6 @@ const confirmDelete = async () => {
 
 export default {
   selectedItems,
-  selectedItemToEdit,
   showConfirmationPopup,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
