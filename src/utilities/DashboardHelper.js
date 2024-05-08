@@ -208,7 +208,7 @@ const confirmDelete = async () => {
   try {
     showLoader.value = true
     const response = await fetch(
-      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details/delete/${encodeURIComponent(selectedItemToDelete.value.id)}`,
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/delete/${encodeURIComponent(selectedItemToDelete.value.id)}`,
       {
         method: 'POST',
         headers: {
