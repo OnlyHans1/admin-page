@@ -3,7 +3,8 @@ import GlobalHelper from './GlobalHelper'
 import DashboardHelper from './DashboardHelper'
 import LoginHelper from './LoginHelper'
 
-const { DB_BASE_URL } = GlobalHelper
+const { DB_BASE_URL, GUIDE_BASE_URL, NATIONALITY_BASE_URL, TRANSACTION_BASE_URL, showLoader } =
+  GlobalHelper
 const { checkSessionStorage, isMancanegara } = DashboardHelper
 const { userData } = LoginHelper
 
@@ -14,12 +15,14 @@ const selectedNationality = ref()
 
 const fetchNationalityData = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/checkout/nationality-list`)
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${NATIONALITY_BASE_URL.value}/nationality-list`
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    nationalityData.value = data
+    nationalityData.value = data.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -87,17 +90,17 @@ const closeDropdownOutside = (event) => {
 
 const items = ref([])
 const getItemsFromSessionStorage = () => {
-  const savedItems = sessionStorage.getItem('selectedItems');
+  const savedItems = sessionStorage.getItem('selectedItems')
   if (savedItems) {
-    const parsedItems = JSON.parse(savedItems);
+    const parsedItems = JSON.parse(savedItems)
     for (let item of parsedItems) {
-      item.guideId = item.guideId || "";
-      item.guideName = item.guideName || "";
+      item.guideId = item.guideId || ''
+      item.guideName = item.guideName || ''
     }
-    items.value = parsedItems;
-    return parsedItems;
+    items.value = parsedItems
+    return parsedItems
   }
-  return [];
+  return []
 }
 
 const saveToSessionStorage = () => {
@@ -206,7 +209,7 @@ const dateTime = () => {
 }
 
 const checkoutStatus = ref('')
-
+const paymentStatus = ref('')
 const createTransaction = async () => {
   const order = items.value
     .filter((item) => item.amount > 0)
@@ -219,31 +222,39 @@ const createTransaction = async () => {
   dateTime()
 
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/checkout/create-transaction`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        name: userData.value.name,
-        nationality: selectedNationality.value,
-        plannedDate: selectedDate.value,
-        total: totalTagihan.value,
-        method: paymentSelection.value.toUpperCase(),
-        discount:
-          discountValue.value > 0 ? `${(totalHarga.value * discountValue.value) / 100}` : '0',
-        cashback:
-          cashbackValue.value > 0 ? `${(totalTagihan.value * cashbackValue.value) / 100}` : '0',
-        order: order
-      })
-    })
+    showLoader.value = true
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/create-transaction`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: userData.value.name,
+          nationality: selectedNationality.value,
+          plannedDate: selectedDate.value,
+          total: totalTagihan.value.toFixed(2),
+          method: paymentSelection.value.toUpperCase(),
+          status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
+          discount:
+            discountValue.value > 0 ? `${(totalHarga.value * discountValue.value) / 100}` : '0',
+          cashback:
+            cashbackValue.value > 0 ? `${(totalTagihan.value * cashbackValue.value) / 100}` : '0',
+          order: order
+        })
+      }
+    )
 
     if (!response.ok) {
       checkoutStatus.value = 'salah'
+      showLoader.value = false
       throw new Error('Failed to create transaction. Please try again.')
     }
 
     checkoutStatus.value = 'boleh'
+    showLoader.value = false
     sessionStorage.clear()
   } catch (error) {
     console.log(error)
@@ -252,12 +263,12 @@ const createTransaction = async () => {
 
 const fetchGuideData = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/checkout/guide-list`)
+    const response = await fetch(`${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-list`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    guideData.value = data
+    const res = await response.json()
+    guideData.value = res.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -296,27 +307,26 @@ const isGuideChecked = computed(() => {
 })
 
 const updateItems = (props) => {
-  items.value[props].guideId = selectedGuide.value.id;
-  items.value[props].guideName = selectedGuide.value.name;
+  items.value[props].guideId = selectedGuide.value.id
+  items.value[props].guideName = selectedGuide.value.name
 }
 
 const addGuide = (index) => {
-  const existingIndex = items.value.findIndex((item) => item.guideId === selectedGuide.value.id);
+  const existingIndex = items.value.findIndex((item) => item.guideId === selectedGuide.value.id)
   const previousSelectionIndex = guideSelection.value.findIndex(
     (guide) => guide.id === items.value[index].guideId
-  );
+  )
   if (existingIndex === -1) {
     updateItems(index)
   } else {
     updateItems(existingIndex)
   }
   if (previousSelectionIndex !== -1) {
-    guideSelection.value.splice(previousSelectionIndex, 1);
+    guideSelection.value.splice(previousSelectionIndex, 1)
   }
-  guideSelection.value.push({ ...selectedGuide.value });
-  sessionStorage.setItem('selectedItems', JSON.stringify(items.value));
+  guideSelection.value.push({ ...selectedGuide.value })
+  sessionStorage.setItem('selectedItems', JSON.stringify(items.value))
 }
-
 
 const formattedGuideSelection = computed(() => {
   return guideSelection.value.map((guide) => guide.name).join(', ')

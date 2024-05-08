@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, assignAlert, showLoader } = GlobalHelper
+const { DB_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref([])
@@ -15,12 +15,13 @@ const isMancanegara = ref(false)
 
 const fetchOrderList = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/order-list`)
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details`)
     if (!response.ok) {
+      showLoader.value = false
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    dataDashboard.value = data
+    dataDashboard.value = data.data
     sortDataByCreatedAt()
     showLoader.value = false
   } catch (error) {
@@ -162,9 +163,19 @@ const handleItemClick = (item) => {
   handleCategorySelection(filterCategory.value)
   if (item.disabled) {
     if (filterCategory.value === 'MANCANEGARA') {
-      assignAlert(true, 'Error', 'danger', 'Kamu tidak bisa memilih paket selain kategori mancanegara!')
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        'Kamu tidak bisa memilih paket selain kategori mancanegara!'
+      )
     } else {
-      assignAlert(true, 'Error', 'danger', 'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!')
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!'
+      )
     }
   } else {
     selectItem(item)
@@ -195,10 +206,11 @@ const groupedItems = computed(() => {
 
 const confirmDelete = async () => {
   try {
+    showLoader.value = true
     const response = await fetch(
-      `${DB_BASE_URL.value}/delete-order/${encodeURIComponent(selectedItemToDelete.value.id)}`,
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details/delete/${encodeURIComponent(selectedItemToDelete.value.id)}`,
       {
-        method: 'DELETE',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         }
@@ -206,16 +218,27 @@ const confirmDelete = async () => {
     )
 
     if (response.ok) {
+      showLoader.value = false
       sessionStorage.clear()
       closePopup()
       closeDeletePopup()
-      assignAlert(true, 'Sukses', 'success', `Pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category}) berhasil dihapus!`)
+      assignAlert(
+        true,
+        'Sukses',
+        'success',
+        `Pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category}) berhasil dihapus!`
+      )
       selectedItemToDelete.value = []
       setTimeout(() => {
         location.reload()
       }, 3000)
     } else {
-      assignAlert(true, 'Error', 'danger', `Gagal menghapus pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category})!`)
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        `Gagal menghapus pesanan ${selectedItemToDelete.value.name} (${selectedItemToDelete.value.category})!`
+      )
     }
   } catch (error) {
     console.error(error)
@@ -243,5 +266,5 @@ export default {
   saveToSessionStorage,
   handleItemClick,
   checkSessionStorage,
-  groupedItems,
+  groupedItems
 }

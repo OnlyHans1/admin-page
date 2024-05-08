@@ -7,11 +7,8 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import OrderTypeDropdown from '@/components/OrderTypeDropdown.vue'
 
-const { DB_BASE_URL } = GlobalHelper
-
+const { DB_BASE_URL, ORDER_BASE_URL, showLoader, assignAlert } = GlobalHelper
 const { selectedItemToEdit, getImageURL, } = DashboardHelper
-
-const { assignAlert } = GlobalHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -32,24 +29,29 @@ const confirmAlert = ref(false)
 
 const insertDatabase = async () => {
   try {
+    showLoader.value = true
+
     const formData = new FormData()
     formData.append('image', selectedImage.value)
-    formData.append('title', title.value)
+    formData.append('name', title.value)
     formData.append('desc', desc.value)
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`${DB_BASE_URL.value}/add/order-details`, {
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details/create`, {
       method: 'POST',
       body: formData
     })
 
     if (!response.ok) {
-      throw new Error('Gagal membuat pesanan. Silahkan coba lagi.')
+      showLoader.value = false
+      assignAlert(true, 'Error', 'danger', 'Gagal membuat pesanan! Silahkan coba lagi.')
     } else {
+      showLoader.value = false
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
         router.push('/')
+        assignAlert(true, 'Sukses', 'success', `Berhasil membuat pesanan ${title.value} (${category.value.toUpperCase()})`)
       }, 1200)
     }
   } catch (error) {
@@ -59,25 +61,30 @@ const insertDatabase = async () => {
 
 const updateDatabase = async () => {
   try {
+    showLoader.value = true
+
     const formData = new FormData()
     formData.append('image', selectedImage.value)
     formData.append('imgName', imageName.value)
-    formData.append('title', title.value)
+    formData.append('name', title.value)
     formData.append('desc', desc.value)
     formData.append('category', category.value.toUpperCase())
     formData.append('price', parseFloat(price.value))
 
-    const response = await fetch(`${DB_BASE_URL.value}/edit/order-details/${encodeURIComponent(editId.value)}`, {
-      method: 'PUT',
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details/update/${encodeURIComponent(editId.value)}`, {
+      method: 'POST',
       body: formData
     })
 
     if (!response.ok) {
-      throw new Error('Gagal mengubah pesanan. Silahkan coba lagi.')
+      showLoader.value = false
+      assignAlert(true, 'Error', 'danger', 'Gagal mengubah pesanan! Silahkan coba lagi.')
     } else {
+      showLoader.value = false
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
         router.push('/')
+        assignAlert(true, 'Sukses', 'success', `Berhasil mengubah pesanan ke ${title.value} (${category.value.toUpperCase()})`)
       }, 1200)
     }
   } catch (error) {
@@ -197,8 +204,8 @@ const isEditPage = () => {
     desc.value = selectedItemToEdit.value.desc
     price.value = selectedItemToEdit.value.price
     category.value = capitalizeFirstLetter(selectedItemToEdit.value.category)
-    imageName.value = selectedItemToEdit.value.image
-    selectedImageURL.value = getImageURL(selectedItemToEdit.value.image)
+    imageName.value = selectedItemToEdit.value.image !== '' ? selectedItemToEdit.value.image : ''
+    selectedImageURL.value = selectedItemToEdit.value.image ? getImageURL(selectedItemToEdit.value.image) : ''
   }
 }
 

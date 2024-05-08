@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, assignAlert } = GlobalHelper
+const { DB_BASE_URL, USER_BASE_URL, assignAlert, showLoader } = GlobalHelper
 
 const loggedIn = ref(false)
 
@@ -16,6 +16,7 @@ const isAuthenticated = async () => {
       const success = await authLogin(token)
       if (success) {
         loggedIn.value = true
+
         return true
       } else {
         loggedIn.value = false
@@ -32,7 +33,7 @@ const isAuthenticated = async () => {
 
 const authLogin = async (token) => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/authorized`, {
+    const response = await fetch(`${DB_BASE_URL.value}/${USER_BASE_URL.value}/admin-auth`, {
       headers: {
         Authorization: token
       }
@@ -40,11 +41,13 @@ const authLogin = async (token) => {
 
     if (!response.ok) {
       const error = await response.json()
+      showLoader.value = false
       throw new Error(error.message)
     }
 
     const data = await response.json()
-    userData.value = data
+    userData.value = data.data
+    showLoader.value = false
     return true
   } catch (error) {
     console.error(error)
@@ -54,7 +57,9 @@ const authLogin = async (token) => {
 
 const userLogin = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/login`, {
+    showLoader.value = true
+
+    const response = await fetch(`${DB_BASE_URL.value}/${USER_BASE_URL.value}/admin-login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -67,12 +72,13 @@ const userLogin = async () => {
 
     if (!response.ok) {
       const error = await response.json()
+      showLoader.value = false
       assignAlert(true, 'Error', 'danger', `Login gagal! ${error.message}`)
-      throw new Error(error)
+      throw new Error(error.message)
     }
 
     const data = await response.json()
-    localStorage.setItem('token', data.token)
+    localStorage.setItem('token', data.data)
     isAuthenticated()
   } catch (error) {
     console.error(error)

@@ -125,7 +125,7 @@ onMounted(() => {
     </div>
 
     <div
-      class="overlay popup-order__overlay w-full h-full pd-sd-10 pd-top-5 pd-bottom-5"
+      class="overlay popup-order__overlay flex align-items-center justify-content-center w-full h-full"
       :class="{ active: selectedItems.length > 0 }"
       @click="closePopup"
     >
@@ -306,7 +306,8 @@ onMounted(() => {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 514px;
+  width: 80vw;
+  max-height: 80vh;
   overflow: hidden;
 }
 
@@ -332,8 +333,8 @@ onMounted(() => {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 345px;
   overflow: hidden;
-  margin-top: 5rem;
-  transform: translateY(-50%);
+  margin-top: auto;
+  transform: translateY(0);
   transition: transform 0.3s ease;
 }
 
@@ -348,11 +349,9 @@ onMounted(() => {
 }
 
 .popup-order__image {
-  height: auto;
-  width: 40%;
+  max-height: 32vh;
   object-fit: cover;
   border-radius: 0.5rem;
-  max-height: 500px;
 }
 
 .popup-order__remove-button {

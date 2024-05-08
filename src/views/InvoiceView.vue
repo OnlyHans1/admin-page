@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, watch } from 'vue'
-import GlobalHelper from '@/utilities/GlobalHelper';
+import GlobalHelper from '@/utilities/GlobalHelper'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
 import InvoiceHelper from '@/utilities/InvoiceHelper'
 
@@ -9,6 +9,7 @@ const {
   getSearchQuery,
   fetchTransactionList,
   searchQuery,
+  resetSearch,
   selectedItem,
   splitDate,
   detailPopup,
@@ -35,20 +36,15 @@ onMounted(() => {
 <template>
   <div class="invoice-container">
     <!-- Search -->
-    <div class="invoice-search">
-      <div class="invoice-search__box">
-        <div class="invoice-search__icon">
-          <i class="ri-search-line"></i>
-        </div>
-        <div class="invoice-search__input">
-          <input
-            type="text"
-            class="invoice-search__input-field"
-            v-model="searchQuery"
-            placeholder="Search..."
-          />
-        </div>
-      </div>
+    <div class="invoice-search flex align-items-center">
+      <i class="ri-search-line invoice-search__icon"></i>
+      <input
+        type="text"
+        class="invoice-search__input-field"
+        v-model="searchQuery"
+        placeholder="Search..."
+      />
+      <ph-x v-if="searchQuery" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
     </div>
 
     <!-- Invoice -->
@@ -65,7 +61,12 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody>
-          <tr v-if="dataInvoice" v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
+          <tr
+            v-if="dataInvoice"
+            v-for="(item, index) in dataInvoice"
+            :key="index"
+            class="invoice-table__row-data"
+          >
             <td class="invoice-table__data">{{ index + 1 }}</td>
             <td class="invoice-table__data">{{ item.transaction.user.name }}</td>
             <td class="invoice-table__data">{{ item.order.name }}</td>
@@ -98,33 +99,22 @@ onMounted(() => {
 .invoice-search {
   width: 601px;
   background-color: #d9d9d9;
-  margin-left: 24%;
   border-radius: 10px;
-  height: 41px;
-  margin: 0 2.5rem;
-}
-.invoice-search__box {
-  display: flex;
-  border-radius: 3px;
   overflow: hidden;
+  height: 42px;
+  padding: 0.5rem;
+  margin-inline: 0.5rem;
 }
 .invoice-search__icon {
   align-items: center;
   justify-content: center;
   width: 50px;
   display: flex;
-  margin-left: 10px;
-  margin-top: 5px;
-}
-.invoice-search__input {
-  flex: 1;
-  border-radius: 10px;
 }
 .invoice-search__input-field {
+  flex: 1;
   border: none;
-  padding: 8px;
   width: 95%;
-  margin-top: 2px;
   background-color: #d9d9d9;
   font-family: 'Poppins';
 }
@@ -170,7 +160,7 @@ onMounted(() => {
   font-weight: 400;
   font-size: 22px;
   vertical-align: top;
-  max-width: 200px; 
+  max-width: 200px;
   white-space: wrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -202,11 +192,5 @@ onMounted(() => {
 }
 .invoice-table__button:hover {
   background-color: #ffd477;
-}
-
-@media screen and (max-width: 1280px) {
-  .invoice-search {
-    margin-left: 2%;
-  }
 }
 </style>

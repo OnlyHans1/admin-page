@@ -29,7 +29,7 @@ const closeAlert = () => {
   padding: 20px;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  z-index: 10;
+  z-index: 1000;
   border-radius: 1rem;
   display: flex;
   gap: 1rem;

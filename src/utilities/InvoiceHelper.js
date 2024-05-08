@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, showLoader } = GlobalHelper
+const { DB_BASE_URL, DETAILTRANS_BASE_URL, showLoader } = GlobalHelper
 
 /* InvoiceView Helper */
 const dataInvoice = ref([])
@@ -12,7 +12,7 @@ const getSearchQuery = (query) => {
 
 const fetchTransactionList = async () => {
   try {
-    let url = `${DB_BASE_URL.value}/invoice/transaction-list`
+    let url = `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/transaction-invoice`
     if (searchQuery.value) {
       url += `?search=${encodeURIComponent(searchQuery.value)}`
     }
@@ -21,7 +21,7 @@ const fetchTransactionList = async () => {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    dataInvoice.value = data
+    dataInvoice.value = data.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -29,6 +29,10 @@ const fetchTransactionList = async () => {
 }
 
 const searchQuery = ref(null)
+const resetSearch = () => {
+  searchQuery.value = ''
+}
+
 const selectedItem = ref(null)
 
 const splitDate = (dateTime) => {
@@ -115,6 +119,7 @@ export default {
   getSearchQuery,
   fetchTransactionList,
   searchQuery,
+  resetSearch,
   selectedItem,
   splitDate,
   showDetail,

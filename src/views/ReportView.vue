@@ -115,7 +115,7 @@ onMounted(() => {
 <template>
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
       <div class="report-information__container flex fd-row justify-content-sb pd-2">
-        <div class="report-information__income-container flex fd-col gap-[2.25]">
+        <div class="report-information__income-container flex fd-col">
           <p class="fs-h5">Pendapatan hari ini</p>
           <div class="report-information__income-text flex fd-row">
             <span class="report-information__income-desc">Rp </span>
