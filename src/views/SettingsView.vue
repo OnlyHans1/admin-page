@@ -74,20 +74,40 @@ const toggleFeePage = () => {
 
 
 const showAddGuideModal = () => {
-  isAddingGuideModalVisible.value = true
-}
+  isAddingGuideModalVisible.value = true;
+};
 
 const hideAddGuideModal = () => {
-  isAddingGuideModalVisible.value = false
-}
+  isAddingGuideModalVisible.value = false;
+};
 
 const showEditGuideModal = () => {
-  isEditGuideModalVisible.value = true
-}
+  isEditGuideModalVisible.value = true;
+};
 
 const hideEditGuideModal = () => {
-  isEditGuideModalVisible.value = false
-}
+  isEditGuideModalVisible.value = false;
+};
+
+//Modal Type and Subtype
+const isTypeVisible = ref(false);
+const isSubtypeVisible = ref(false);
+
+const showTypeModal = () => {
+  isTypeVisible.value = true;
+};
+
+const hideTypeModal = () => {
+  isTypeVisible.value = false;
+};
+
+const showSubtypeModal = () => {
+  isSubtypeVisible.value = true;
+};
+
+const hideSubtypeModal = () => {
+  isSubtypeVisible.value = false;
+};
 
 //Modal Fees
 let formattedBiayaLayanan = biayaLayanan.value.toString()
@@ -218,16 +238,14 @@ onMounted(() => {
             <ph-squares-four :size="48" color="var(--color-primary)" />
             <span>Category</span>
         </button>
-        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
+        <button class="settings__menu-items" @click="showTypeModal" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
             <ph-folder :size="48" color="var(--color-primary)" />
             <span>Tipe</span>
         </button>
-        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
+        <button class="settings__menu-items" @click="showSubtypeModal" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
             <ph-folders :size="48" color="var(--color-primary)" />
             <span>Subtipe</span>
-        </button>
-        
-        
+        </button>        
         </div>
       
     </section>
@@ -424,6 +442,61 @@ onMounted(() => {
           </div>
         </div>
       </section>
+      
+      <!--Type Modal-->
+      <div class="type-popup__container" v-if="isTypeVisible">
+        <div class="type-popup__container-content">
+          <div class="type-popup__content-header">
+            <h5 class="fw-600">Tipe</h5>
+            <ph-x :size="20" weight="bold" @click="hideTypeModal"/>
+          </div>
+          <button class="btn-type__tambah flex justify-content-center align-items-center gap[0.5]">
+            <p>Tambah</p>
+            <ph-plus :size="16" weight="bold" />
+          </button>
+          <div class="type-popup__content-body">
+            <div class="body-item">
+              <h6>Nama</h6>
+              <ph-pencil-simple :size="24" weight="bold" />
+              <ph-trash :size="24" weight="bold" />
+            </div>
+            <!-- Hapus Jika Sudah Memasuki BackEnd -->
+            <div class="body-item">
+              <h6>Nama</h6>
+              <ph-pencil-simple :size="24" weight="bold" />
+              <ph-trash :size="24" weight="bold" />
+            </div>
+            <div class="body-item">
+              <h6>Nama</h6>
+              <ph-pencil-simple :size="24" weight="bold" />
+              <ph-trash :size="24" weight="bold" />
+            </div>
+            <!--  -->
+          </div>
+        </div>
+      </div>
+
+      <!--Subtype Modal-->
+      <div class="subtype-popup__container" v-if="isSubtypeVisible">
+        <div class="subtype-popup__container-content">
+          <div class="subtype-popup__content-header">
+            <h5 class="fw-600">Subtipe</h5>
+            <ph-x :size="20" weight="bold" @click="hideSubtypeModal"/>
+          </div>
+          <div class="subtype-popup__content-body">
+            <h6>Nama</h6>
+            <input type="text" name="" required>
+            <h6>Type</h6>
+            <select name="type" required>
+              <option value="">Pilih Subtipe Tiket</option>
+              <option value="type1">Tipe 1</option>
+              <option value="type2">Tipe 2</option>
+              <option value="type3">Tipe 3</option>
+            </select>
+          </div>
+          <button class="btn-subtype">Simpan</button>
+        </div>
+      </div>
     </main>
 </template>
 
@@ -453,11 +526,7 @@ input:focus {
   height: 2rem;
   margin-top: 2rem;
   color: white;
-  border-radius: 20px;
-  width: 5.5rem;
-  height: 2rem;
-  margin-top: 2rem;
-  color: white;
+  font-weight: bold;
   border-radius: 20px;
 }
 
@@ -879,10 +948,10 @@ input:focus {
   height: 1rem;
   border-radius: 50%;
   border: 1px solid black;
-  position: relative; /* Tambahkan properti position */
+  position: relative; 
 }
 
-/* Tambahkan pseudoelemen ::before */
+
 .input-biodata .gender input[type='radio']::before {
   content: '';
   position: absolute;
@@ -903,9 +972,10 @@ input:focus {
   width: 5.5rem;
   height: 2rem;
   margin-top: 1rem;
-  color: black;
+  color: white;
   border-radius: 20px;
   background-color: #e6be58;
+  font-weight: bold;
 }
 
 .sv-guide:hover {
@@ -932,8 +1002,9 @@ input:focus {
   margin: 0.5rem;
   width: 5.5rem;
   height: 2rem;
-  color: black;
+  color: white;
   border-radius: 20px;
+  font-weight: bold;
 }
 
 .input-image-preview {
@@ -954,4 +1025,147 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
 }
+
+/* Type CSS */
+.type-popup__container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.type-popup__container-content {
+  background: white;
+  border-radius: 5px;
+  width: 30rem;
+  height: 500px;
+  font-family: 'Raleway';
+  display: flex;
+  flex-direction: column;
+}
+
+.type-popup__content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  margin-top: 1rem;
+  border-bottom: 1px solid black;
+  padding: 0 1rem;
+  cursor: pointer;
+}
+
+.type-popup__content-header h5 {
+  margin-left: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn-type__tambah {
+  width: 8rem;
+  height: 2rem;
+  color: black;
+  margin-top: 1rem;
+  margin-left: 1rem;
+  border-radius: 10px;
+  background-color: #e6be58;
+}
+
+.body-item {
+  display: flex;
+  align-items: center;
+  width: 27rem;
+  height: 3rem;
+  border-radius: 10px;
+  margin: 1rem;
+  border: 2px solid #333;
+}
+
+.body-item h6 {
+  margin-left: 0.5rem;
+  margin-right: 18.5rem;
+}
+
+
+/* Subtype CSS */
+.subtype-popup__container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.subtype-popup__container-content {
+  background-color: white;
+  border-radius: 5px;
+  width: 30rem;
+  height: 330px;
+  font-family: 'Raleway';
+  display: flex;
+  flex-direction: column;
+}
+
+.subtype-popup__content-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: left;
+  margin-top: 0.5rem;
+  border-bottom: 1px solid black;
+  padding: 0 1rem;
+  cursor: pointer;
+}
+
+.subtype-popup__content-header h5 {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.subtype-popup__content-body {
+  padding: 1rem;
+}
+
+.subtype-popup__content-body h6 {
+  text-align: left;
+  margin-top: 0.5rem;
+}
+
+.subtype-popup__content-body input,
+.subtype-popup__content-body select {
+  height: 2.5rem;
+  width: calc(100% - 1rem);
+  border-radius: 10px;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  font-family: 'Raleway';
+  border: 2px solid #333;
+}
+
+.subtype-popup__content-body input:focus {
+  border: 2px solid #e6be58; 
+  outline: none; 
+}
+
+.btn-subtype {
+  width: 5.5rem;
+  height: 2rem;
+  color: white;
+  margin-top: 0.5rem;
+  margin-left: 1rem;
+  border-radius: 20px;
+  background-color: #e6be58;
+  font-weight: bold;
+}
+
 </style>
