@@ -36,7 +36,7 @@ onMounted(() => {
         >
           <td>{{ index + 1 }}</td>
           <td class="to-ellipsis">{{ item.order.name }}</td>
-          <td>{{ capitalizeFirstLetter(item.order.category) }}</td>
+          <td>{{ item.order.category.name }}</td>
           <td>{{ formatDate(item.transaction.createdDate) }}</td>
           <td>{{ item.amount }}</td>
           <td>{{ formatCurrency(item.total_price) }}</td>

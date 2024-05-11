@@ -3,7 +3,7 @@ import GlobalHelper from './GlobalHelper'
 import SettingsHelper from './SettingsHelper'
 
 const { DB_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
-const { targetedData, fetchTargetedData } = SettingsHelper
+const { targetedData, fetchTargetedOrder } = SettingsHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref('')
@@ -34,11 +34,6 @@ const sortDataByCreatedAt = () => {
   dataDashboard.value.sort((a, b) => {
     return new Date(b.createdAt) - new Date(a.createdAt)
   })
-}
-
-const capitalizeFirstLetter = (str) => {
-  const lowercaseStr = str.toLowerCase()
-  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
 }
 
 const formatCurrency = (amount) => {
@@ -121,12 +116,12 @@ const checkSessionStorage = () => {
   // Memeriksa apakah sessionStorageData memiliki nilai
   if (sessionStorageData && sessionStorageData.length > 0) {
     for (const item of sessionStorageData) {
-      if (item && item.category === 'MANCANEGARA') {
+      if (item && item.category === 'Mancanegara') {
         isMancanegara.value = true
-        return 'MANCANEGARA'
-      } else if (item && item.category !== 'MANCANEGARA') {
+        return 'Mancanegara'
+      } else if (item && item.category !== 'Mancanegara') {
         isMancanegara.value = false
-        return 'NOT_MANCANEGARA'
+        return 'Not_Mancanegara'
       }
     }
     return ''
@@ -136,17 +131,17 @@ const checkSessionStorage = () => {
 // Fungsi untuk menangani pemilihan kategori
 const handleCategorySelection = (filterCategory) => {
   // Jika kategori Mancanegara dipilih dan tidak ada item dengan kategori MANCANEGARA di sessionStorage, nonaktifkan kategori lainnya
-  if (filterCategory === 'MANCANEGARA') {
+  if (filterCategory === 'Mancanegara') {
     // Nonaktifkan item dengan kategori UMUM dan PELAJAR
     dataDashboard.value.forEach((item) => {
-      if (item.category !== 'MANCANEGARA') {
+      if (item.category !== 'Mancanegara') {
         item.disabled = true
       }
     })
-  } else if (filterCategory === 'NOT_MANCANEGARA') {
+  } else if (filterCategory === 'Not_Mancanegara') {
     // Nonaktifkan item dengan kategori MANCANEGARA
     dataDashboard.value.forEach((item) => {
-      if (item.category === 'MANCANEGARA') {
+      if (item.category === 'Mancanegara') {
         item.disabled = true
       }
     })
@@ -163,7 +158,7 @@ const handleItemClick = (item) => {
   const filterCategory = ref(checkSessionStorage())
   handleCategorySelection(filterCategory.value)
   if (item.disabled) {
-    if (filterCategory.value === 'MANCANEGARA') {
+    if (filterCategory.value === 'Mancanegara') {
       assignAlert(
         true,
         'Error',
@@ -186,8 +181,6 @@ const handleItemClick = (item) => {
 const showDeleteConfirmation = (id) => {
   showDeleteConfirmationPopup.value = true
   selectedItemToDelete.value = id
-  console.log(selectedItemToDelete.value)
-  // Menampilkan konfirmasi delete
 }
 
 const closeDeletePopup = () => {
@@ -198,7 +191,7 @@ const closeDeletePopup = () => {
 const groupedItems = computed(() => {
   const grouped = {}
   dataDashboard.value.forEach((item) => {
-    const category = item.category
+    const category = item.category.name
     if (!grouped[category]) {
       grouped[category] = []
     }
@@ -210,7 +203,7 @@ const groupedItems = computed(() => {
 const confirmDelete = async () => {
   try {
     showLoader.value = true
-    await fetchTargetedData(selectedItemToDelete.value)
+    await fetchTargetedOrder(selectedItemToDelete.value)
     const response = await fetch(
       `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/delete/${encodeURIComponent(selectedItemToDelete.value)}`,
       {
@@ -258,7 +251,6 @@ export default {
   isMancanegara,
   fetchOrderList,
   getImageURL,
-  capitalizeFirstLetter,
   formatCurrency,
   navigateToAdd,
   closePopup,

@@ -14,7 +14,6 @@ const {
   dataDashboard,
   fetchOrderList,
   getImageURL,
-  capitalizeFirstLetter,
   formatCurrency,
   navigateToAdd,
   closePopup,
@@ -86,7 +85,7 @@ onMounted(() => {
             />
             <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
               <p class="to-ellipsis">{{ item.name }}</p>
-              <p>{{ capitalizeFirstLetter(item.category) }}</p>
+              <p>{{ item.category.name }}</p>
               <p>Rp. {{ formatCurrency(item.price) }}</p>
             </div>
           </div>
@@ -99,7 +98,7 @@ onMounted(() => {
       :key="category"
       :class="`dashboard-${category.toLowerCase()}__container w-full`"
     >
-      <h4>{{ capitalizeFirstLetter(category) }}</h4>
+      <h4>{{ category }}</h4>
       <div class="dashboard__card-container flex fd-row w-full pd-top-1 pd-sd-2">
         <div
           v-for="(item, index) in items"
@@ -117,7 +116,7 @@ onMounted(() => {
           />
           <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
             <p class="to-ellipsis">{{ item.name }}</p>
-            <p>{{ capitalizeFirstLetter(item.category) }}</p>
+            <p>{{ item.category.name }}</p>
             <p>Rp. {{ formatCurrency(item.price) }}</p>
           </div>
         </div>
@@ -146,7 +145,7 @@ onMounted(() => {
             <div class="flex fd-col sm-sd-2">
               <div>
                 <h4 class="fw-600">{{ selectedItems[0].name }}</h4>
-                <h6>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h6>
+                <h6>{{ selectedItems[0].category.name }}</h6>
                 <h5 class="sm-top-1">Rp. {{ selectedItems[0].price }} / tiket</h5>
               </div>
               <div
@@ -375,21 +374,17 @@ onMounted(() => {
 
 .popup-confimation__button-confirmation button:first-child {
   background: #28a745;
-  /* Green color for "Ya" button */
 }
 
 .popup-confimation__button-confirmation button:first-child:hover {
   background: #17b53caa;
-  /* Green color for "Ya" button */
 }
 
 .popup-confimation__button-confirmation button:last-child {
   background: #dc3545;
-  /* Red color for "Batal" button */
 }
 
 .popup-confimation__button-confirmation button:last-child:hover {
   background: #cd23349b;
-  /* Red color for "Batal" button */
 }
 </style>

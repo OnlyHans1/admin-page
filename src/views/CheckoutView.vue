@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watchEffect } from 'vue'
+import { onMounted, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
@@ -149,7 +149,7 @@ onMounted(() => {
                 <div v-for="(item, index) in items" :key="index">
                   <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
-                      <p>{{ item.name }} ({{ item.category }})</p>
+                      <p>{{ item.name }} ({{ item.category.name }})</p>
                       <span>{{ formatCurrency(item.price) }}</span>
                     </div>
                     <div class="order-details__ticket-value">
@@ -371,7 +371,7 @@ onMounted(() => {
               <p class="fw-700 fs-h6">Total Pemesanan</p>
               <div v-if="items.length > 1" v-for="(item, index) in items" :key="index">
                 <div class="checkout__details-pricing" v-if="item.amount > 0">
-                  <p>{{ item.name }} ({{ item.category }}) x {{ item.amount }}</p>
+                  <p>{{ item.name }} ({{ item.category.name }}) x {{ item.amount }}</p>
                   <p>{{ formatCurrency(item.price * item.amount) }}</p>
                 </div>
               </div>

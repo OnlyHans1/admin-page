@@ -37,7 +37,8 @@ const insertDatabase = async () => {
     formData.append('image', selectedImage.value)
     formData.append('name', title.value)
     formData.append('desc', desc.value)
-    formData.append('category', category.value.toUpperCase())
+    formData.append('category', category.value)
+    formData.append('typeId', selectedTypeId.value)
     formData.append('price', parseFloat(price.value))
 
     const response = await fetch(
@@ -56,12 +57,7 @@ const insertDatabase = async () => {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
         router.push('/')
-        assignAlert(
-          true,
-          'Sukses',
-          'success',
-          `Berhasil membuat pesanan ${title.value} (${category.value.toUpperCase()})`
-        )
+        assignAlert(true, 'Sukses', 'success', `Berhasil membuat pesanan ${title.value} (${category.value})`)
       }, 1200)
     }
   } catch (error) {
@@ -78,7 +74,8 @@ const updateDatabase = async () => {
     formData.append('imgName', imageName.value)
     formData.append('name', title.value)
     formData.append('desc', desc.value)
-    formData.append('category', category.value.toUpperCase())
+    formData.append('category', category.value)
+    formData.append('typeId', selectedTypeId.value)
     formData.append('price', parseFloat(price.value))
 
     const response = await fetch(
@@ -97,22 +94,12 @@ const updateDatabase = async () => {
       submitAlert.value = !submitAlert.value
       setTimeout(() => {
         router.push('/')
-        assignAlert(
-          true,
-          'Sukses',
-          'success',
-          `Berhasil mengubah pesanan ke ${title.value} (${category.value.toUpperCase()})`
-        )
+        assignAlert(true, 'Sukses', 'success', `Berhasil mengubah pesanan ke ${title.value} (${category.value})`)
       }, 1200)
     }
   } catch (error) {
     console.log(error)
   }
-}
-
-const capitalizeFirstLetter = (str) => {
-  const lowercaseStr = str.toLowerCase()
-  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
 }
 
 const submit = () => {
@@ -159,9 +146,8 @@ const getEmptyFields = () => {
   return emptyFields
 }
 
-const orderType = ref('')
-
 const selectedOrderType = ref('')
+const selectedTypeId = ref('')
 
 const isSubtypeDropdownOpen = ref(false)
 const selectedSubtype = ref('')
@@ -190,7 +176,8 @@ const combinedOrderType = computed(() => {
 })
 
 const updateOrderType = (value) => {
-  selectedOrderType.value = value
+  selectedOrderType.value = value[0].name
+  selectedTypeId.value = value[0].id
 }
 
 const closeDropdownOnClickOutside = (event) => {
@@ -221,13 +208,12 @@ const confirmAdd = () => {
 const currentPath = ref(route.path)
 
 const isEditPage = async () => {
-  console.log('tes ini')
   if (currentPath.value !== '/add') {
-    console.log('ini edit')
     title.value = targetedData.value.name
     desc.value = targetedData.value.desc
     price.value = targetedData.value.price
-    category.value = capitalizeFirstLetter(targetedData.value.category)
+    category.value = targetedData.value.category
+    selectedTypeId.value = targetedData.value.typeId
     imageName.value = targetedData.value.image !== '' ? targetedData.value.image : ''
     selectedImageURL.value = targetedData.value.image ? getImageURL(targetedData.value.image) : ''
   }

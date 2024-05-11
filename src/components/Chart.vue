@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const { targetDate, dataSeries, dataCategory } = defineProps([
   'targetDate',
@@ -105,7 +105,7 @@ const chartOptions = ref({
 
 watch(dataCategory, (newValue, oldValue) => {
   chartOptions.value.xaxis.categories = newValue
-})
+}, { immediate: true })
 </script>
 
 <template>

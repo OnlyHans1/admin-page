@@ -1,44 +1,38 @@
 <script setup>
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 import SettingsHelper from '@/utilities/SettingsHelper'
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 
 import InputFoto from '@/components/InputFoto.vue'
-import GlobalHelper from '@/utilities/GlobalHelper'
+import TriSettingsPopup from '@/components/TriSettingsPopup.vue'
 
-const { biayaJasa, biayaLayanan, guideSelectPage, guideData,
-    guideSelect,
-    guideSelection,
-    guideSelectPageBio,
-    guideSelectBio,
-    guideSelectors,
-    selectedGuide,
-    guideSelectTicket,
-    guideSelectPageTicket,
-    addGuide,
-    isGuideChecked,
-    formattedGuideSelection,
-    fetchGuideData, 
+const {
+  biayaJasa,
+  biayaLayanan,
+  guideSelectPage,
+  guideData,
+  guideSelect,
+  guideSelectors,
+  isGuideChecked,
+  fetchGuideData
 } = CheckoutHelper
 
-const { fetchOrderList, 
-    getImageURL, 
-    capitalizeFirstLetter,
-    formatCurrency,
-    showDeleteConfirmation,
-    showDeleteConfirmationPopup,
-    selectedItemToEdit,
-    selectedItems,
-    closePopup,
-    closeDeletePopup,
-    confirmDelete,
-    dataDashboard 
+const {
+  fetchOrderList,
+  getImageURL,
+  formatCurrency,
+  showDeleteConfirmation,
+  showDeleteConfirmationPopup,
+  closeDeletePopup,
+  confirmDelete,
+  dataDashboard
 } = DashboardHelper
 
-const { fetchTargetedData } = SettingsHelper
+const { modePopup, isPopupVisible, fetchTargetedData } = SettingsHelper
 
 const { assignAlert } = GlobalHelper
 
@@ -69,58 +63,36 @@ const orderSelectPage = () => {
 
 const feePage = ref(false)
 const toggleFeePage = () => {
-    feePage.value = !feePage.value
+  feePage.value = !feePage.value
 }
-
 
 const showAddGuideModal = () => {
-  isAddingGuideModalVisible.value = true;
-};
+  isAddingGuideModalVisible.value = true
+}
 
 const hideAddGuideModal = () => {
-  isAddingGuideModalVisible.value = false;
-};
+  isAddingGuideModalVisible.value = false
+}
 
 const showEditGuideModal = () => {
-  isEditGuideModalVisible.value = true;
-};
+  isEditGuideModalVisible.value = true
+}
 
 const hideEditGuideModal = () => {
-  isEditGuideModalVisible.value = false;
-};
+  isEditGuideModalVisible.value = false
+}
 
 //Modal Type and Subtype
-const isTypeVisible = ref(false);
-const isSubtypeVisible = ref(false);
-
-const showTypeModal = () => {
-  isTypeVisible.value = true;
-};
-
-const hideTypeModal = () => {
-  isTypeVisible.value = false;
-};
-
-const showSubtypeModal = () => {
-  isSubtypeVisible.value = true;
-};
-
-const hideSubtypeModal = () => {
-  isSubtypeVisible.value = false;
-};
+const showSettingsPopup = (value) => {
+  modePopup.value = value
+  isPopupVisible.value = true
+}
+const hideSettingsPopup = () => {
+  modePopup.value = ''
+  isPopupVisible.value = false
+}
 
 //Modal Fees
-let formattedBiayaLayanan = biayaLayanan.value.toString()
-let formattedBiayaJasa = biayaJasa.value.toString()
-
-const updateBiayaLayanan = (event) => {
-  biayaLayanan.value = Number(event.target.value)
-}
-
-const updateBiayaJasa = (event) => {
-  biayaJasa.value = Number(event.target.value)
-}
-
 const handleFileSelected = (file) => {
   const reader = new FileReader()
   reader.onload = () => {
@@ -138,7 +110,7 @@ const saveSettings = () => {
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil diubah!')
   setTimeout(() => {
     feePage.value = false
-  }, 3000)  
+  }, 3000)
 }
 
 const resetSettings = () => {
@@ -153,32 +125,29 @@ const resetSettings = () => {
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil di-reset!')
   setTimeout(() => {
     feePage.value = false
-  }, 3000)  
-
+  }, 3000)
 }
 
 const fetchFeeSettings = () => {
-  const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan');
+  const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
   if (savedBiayaLayanan) {
-    biayaLayanan.value = parseInt(savedBiayaLayanan);
+    biayaLayanan.value = parseInt(savedBiayaLayanan)
   }
-  
-  const savedBiayaJasa = sessionStorage.getItem('biayaJasa');
+
+  const savedBiayaJasa = sessionStorage.getItem('biayaJasa')
   if (savedBiayaJasa) {
-    biayaJasa.value = parseInt(savedBiayaJasa);
+    biayaJasa.value = parseInt(savedBiayaJasa)
   }
 }
 
 const newBiayaLayanan = ref(biayaLayanan.value)
 const newBiayaJasa = ref(biayaJasa.value)
 
-
-
 onMounted(() => {
-    fetchGuideData()
-    fetchFeeSettings()
-    checkSettingsData()
-});
+  fetchGuideData()
+  fetchFeeSettings()
+  checkSettingsData()
+})
 </script>
 
 <template>
@@ -192,65 +161,75 @@ onMounted(() => {
       <div class="settings_modal-container">
         <div class="settings__orders-content_modal-header">
           <h5 class="fw-600">Fees</h5>
-          <ph-x :size="20" weight="bold" @click="toggleFeePage"/>
+          <ph-x :size="20" weight="bold" @click="toggleFeePage" />
         </div>
         <div class="settings__fees-content_modal pd-1">
-            <div class="settings__fees-content_modal_input-group">
-                <div class="fee">
-                <p>Biaya Layanan</p>
-                <input
-                    class="input_biaya"
-                    name="layanan"
-                    v-model="newBiayaLayanan"
-                />
-                </div>
-                <div class="service">
-                <p>Biaya Jasa Aplikasi</p>
-                <input
-                    class="input_biaya"
-                    name="jasa"
-                    v-model="newBiayaJasa"
-                />
-                </div>
-                <button class="save"  @click="saveSettings">Simpan</button>
-                <button class="reset" @click="resetSettings">Reset</button>
+          <div class="settings__fees-content_modal_input-group">
+            <div class="fee">
+              <p>Biaya Layanan</p>
+              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
             </div>
+            <div class="service">
+              <p>Biaya Jasa Aplikasi</p>
+              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
+            </div>
+            <button class="save" @click="saveSettings">Simpan</button>
+            <button class="reset" @click="resetSettings">Reset</button>
+          </div>
         </div>
-        </div>
+      </div>
     </section>
 
     <section class="admin">
-        <div class="settings__menu">
-        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
-            <ph-coins :size="48" color="var(--color-primary)" />
-            <span>Fees</span>
+      <div class="settings__menu">
+        <button
+          class="settings__menu-items"
+          @click="toggleFeePage"
+          v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
+        >
+          <ph-coins :size="48" color="var(--color-primary)" />
+          <span>Fees</span>
         </button>
         <button class="settings__menu-items" @click="guideSelectPage">
-            <ph-binoculars :size="48" color="var(--color-primary)" weight="fill"/>
-            <span>Guide</span>
-            </button>
+          <ph-binoculars :size="48" color="var(--color-primary)" weight="fill" />
+          <span>Guide</span>
+        </button>
         <button class="settings__menu-items" @click="orderSelectPage">
-            <ph-ticket :size="48" color="var(--color-primary)" />
-            <span>Orders</span>
+          <ph-ticket :size="48" color="var(--color-primary)" />
+          <span>Orders</span>
         </button>
-        
-        <button class="settings__menu-items" @click="toggleFeePage" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
-            <ph-squares-four :size="48" color="var(--color-primary)" />
-            <span>Category</span>
+
+        <button
+          class="settings__menu-items"
+          @click="showSettingsPopup('category')"
+          v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
+        >
+          <ph-squares-four :size="48" color="var(--color-primary)" />
+          <span>Category</span>
         </button>
-        <button class="settings__menu-items" @click="showTypeModal" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
-            <ph-folder :size="48" color="var(--color-primary)" />
-            <span>Tipe</span>
+        <button
+          class="settings__menu-items"
+          @click="showSettingsPopup('type')"
+          v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
+        >
+          <ph-folder :size="48" color="var(--color-primary)" />
+          <span>Type</span>
         </button>
-        <button class="settings__menu-items" @click="showSubtypeModal" v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'">
-            <ph-folders :size="48" color="var(--color-primary)" />
-            <span>Subtipe</span>
-        </button>        
-        </div>
-      
+        <button
+          class="settings__menu-items"
+          @click="showSettingsPopup('subtype')"
+          v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
+        >
+          <ph-folders :size="48" color="var(--color-primary)" />
+          <span>Sub Type</span>
+        </button>
+      </div>
     </section>
 
-    <section class="settings_modal-overlay  flex align-items-center justify-content-center w-full h-full" v-if="orderSelect">
+    <section
+      class="settings_modal-overlay flex align-items-center justify-content-center w-full h-full"
+      v-if="orderSelect"
+    >
       <div class="settings_modal-container">
         <div class="settings__fees-content_modal-header">
           <h5 class="fw-600">Orders</h5>
@@ -270,7 +249,7 @@ onMounted(() => {
                 <div class="settings__orders-content_item-head">
                   <h6>{{ item.name }}</h6>
                   <p>Rp{{ formatCurrency(item.price) }}</p>
-                  <p>{{ capitalizeFirstLetter(item.category) }}</p>
+                  <p>{{ item.category.name }}</p>
                 </div>
                 <div class="settings__orders-content_item-cta flex align-items-end gap-1">
                   <button
@@ -310,194 +289,136 @@ onMounted(() => {
       </div>
     </div>
 
-      <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
-        <div class="order-details__guide-select-content_modal sm-4">
+    <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
+      <div class="order-details__guide-select-content_modal">
+        <div class="order-details__guide-select-content_modal-header">
+          <h5 class="fw-600">Guide</h5>
+          <ph-x :size="20" weight="bold" @click="guideSelectPage" />
+        </div>
+        <button
+          class="addGuide flex justify-content-center align-items-center gap[0.5]"
+          @click="showAddGuideModal"
+        >
+          <p>Tambah Guide</p>
+          <ph-plus :size="16" weight="bold"></ph-plus>
+        </button>
+        <div
+          class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+          :class="{ grid: guideSelectors }"
+        >
+          <div
+            v-if="guideSelectors"
+            v-for="(guide, index) in guideData"
+            :key="index"
+            class="order-detail__guide-select-content_guide-selector flex"
+          >
+            <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
+              <div class="order-detail__guide-select-content_guide-selector_radio">
+                <div v-if="isGuideChecked(guide.id)" class="selected"></div>
+              </div>
+              <p>{{ guide.name }}</p>
+            </span>
+            <div
+              class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+              @click="showEditGuideModal"
+            >
+              <ph-caret-right :size="16" weight="bold" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="order-details__select-content_modal-overlay" v-if="isAddingGuideModalVisible">
+        <div class="order-details__guide-select-content_modal w-full" @click.stop>
           <div class="order-details__guide-select-content_modal-header">
             <h5 class="fw-600">Guide</h5>
             <ph-x :size="20" weight="bold" @click="guideSelectPage" />
           </div>
-          <button
-            class="addGuide flex justify-content-center align-items-center gap[0.5]"
-            @click="showAddGuideModal"
-          >
-            <p>Tambah Guide</p>
-            <ph-plus :size="16" weight="bold"></ph-plus>
-          </button>
           <div
-            class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
-            :class="{ grid: guideSelectors }"
+            class="order-details__guide-select_breadcrumb flex align-items-center gap-1 cursor-pointer"
+            @click="hideAddGuideModal"
           >
+            <ph-caret-left :size="16" weight="bold" />
+            <h6 weight="light">Kembali</h6>
+          </div>
+          <div class="flex gap-2">
             <div
-              v-if="guideSelectors"
-              v-for="(guide, index) in guideData"
-              :key="index"
-              class="order-detail__guide-select-content_guide-selector flex"
+              class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
             >
-              <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
-                <div class="order-detail__guide-select-content_guide-selector_radio">
-                  <div v-if="isGuideChecked(guide.id)" class="selected"></div>
+              <div class="input-image-preview">
+                <div class="image-preview" v-if="selectedImageURL">
+                  <h6 class="image-preview-label">Preview</h6>
+                  <img :src="selectedImageURL" alt="preview" class="preview-image" />
                 </div>
-                <label :for="guide.name">{{ guide.name }}</label>
-              </span>
-              <div
-                class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                @click="showEditGuideModal"
-              >
-                <ph-caret-right :size="16" weight="bold" />
               </div>
+              <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
             </div>
-          </div>
-        </div>
 
-        <div class="pop" v-if="isAddingGuideModalVisible">
-          <div class="order-details__guide-select-content_modal sm-4" @click.stop>
-            <div class="order-details__guide-select-content_modal-header">
-              <h5 class="fw-600">Guide</h5>
-              <ph-x :size="20" weight="bold" @click="guideSelectPage" />
-            </div>
-            <div
-              class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-              @click="hideAddGuideModal"
-            >
-              <ph-caret-left :size="16" weight="bold" />
-              <h6 weight="light">Kembali</h6>
-            </div>
-            <div class="flex gap-2">
-              <div
-                class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
-              >
-                <div class="input-image-preview">
-                  <div class="image-preview" v-if="selectedImageURL">
-                    <h6 class="image-preview-label">Preview</h6>
-                    <img :src="selectedImageURL" alt="preview" class="preview-image" />
-                  </div>
+            <div class="input-biodata">
+              <div class="input_wrapper flex fd-col">
+                <input type="text" placeholder="Nama" required />
+                <div class="gender">
+                  <input type="radio" name="gender" value="pria" />Pria
+                  <input type="radio" name="gender" value="wanita" /> Wanita
                 </div>
-                <InputFoto
-                  @file-selected="handleFileSelected"
-                  :selectedImageURL="selectedImageURL"
-                />
+                <input type="date" name="date" />
+                <input type="text" name="email" placeholder="Masukan Email" />
               </div>
-
-              <div class="input-biodata">
-                <div class="input_wrapper flex fd-col">
-                  <input type="text" placeholder="Nama" required />
-                  <div class="gender">
-                    <input type="radio" name="gender" value="pria" />Pria
-                    <input type="radio" name="gender" value="wanita" /> Wanita
-                  </div>
-                  <input type="date" name="date" />
-                  <input type="text" name="email" placeholder="Masukan Email" />
-                </div>
-                <textarea rows="1" v-model="desc"></textarea>
-                <button class="sv-guide">Simpan</button>
-              </div>
+              <textarea rows="1" v-model="desc"></textarea>
+              <button class="sv-guide">Simpan</button>
             </div>
-          </div>
-        </div>
-
-        <div class="pop" v-if="isEditGuideModalVisible">
-          <div class="order-details__guide-select-content_modal sm-4" @click.stop>
-            <div class="order-details__guide-select-content_modal-header">
-              <h5 class="fw-600">Guide</h5>
-              <ph-x :size="20" weight="bold" @click="guideSelectPage" />
-            </div>
-            <div
-              class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-              @click="hideEditGuideModal"
-            >
-              <ph-caret-left :size="16" weight="bold" />
-              <h6 weight="light">Kembali</h6>
-            </div>
-            <div class="flex gap-2">
-              <div
-                class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
-              >
-                <div class="input-image-preview">
-                  <div class="image-preview" v-if="selectedImageURL">
-                    <h6 class="image-preview-label">Preview</h6>
-                    <img :src="selectedImageURL" alt="preview" class="preview-image" />
-                  </div>
-                </div>
-                <InputFoto
-                  @file-selected="handleFileSelected"
-                  :selectedImageURL="selectedImageURL"
-                />
-              </div>
-
-              <div class="input-biodata">
-                <div class="input_wrapper flex fd-col">
-                  <input type="text" placeholder="Nama" required />
-                  <div class="gender">
-                    <input type="radio" name="gender" value="pria" />Pria
-                    <input type="radio" name="gender" value="wanita" /> Wanita
-                  </div>
-                  <input type="date" name="date" />
-                  <input type="text" name="email" placeholder="Masukan Email" />
-                </div>
-                <textarea rows="1" v-model="desc"></textarea>
-                <button class="edit-guide">Edit</button>
-                <button class="delete-guide">Delete</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      <!--Type Modal-->
-      <div class="type-popup__container" v-if="isTypeVisible">
-        <div class="type-popup__container-content">
-          <div class="type-popup__content-header">
-            <h5 class="fw-600">Tipe</h5>
-            <ph-x :size="20" weight="bold" @click="hideTypeModal"/>
-          </div>
-          <button class="btn-type__tambah flex justify-content-center align-items-center gap[0.5]">
-            <p>Tambah</p>
-            <ph-plus :size="16" weight="bold" />
-          </button>
-          <div class="type-popup__content-body">
-            <div class="body-item">
-              <h6>Nama</h6>
-              <ph-pencil-simple :size="24" weight="bold" />
-              <ph-trash :size="24" weight="bold" />
-            </div>
-            <!-- Hapus Jika Sudah Memasuki BackEnd -->
-            <div class="body-item">
-              <h6>Nama</h6>
-              <ph-pencil-simple :size="24" weight="bold" />
-              <ph-trash :size="24" weight="bold" />
-            </div>
-            <div class="body-item">
-              <h6>Nama</h6>
-              <ph-pencil-simple :size="24" weight="bold" />
-              <ph-trash :size="24" weight="bold" />
-            </div>
-            <!--  -->
           </div>
         </div>
       </div>
 
-      <!--Subtype Modal-->
-      <div class="subtype-popup__container" v-if="isSubtypeVisible">
-        <div class="subtype-popup__container-content">
-          <div class="subtype-popup__content-header">
-            <h5 class="fw-600">Subtipe</h5>
-            <ph-x :size="20" weight="bold" @click="hideSubtypeModal"/>
+      <div class="order-details__select-content_modal-overlay" v-if="isEditGuideModalVisible">
+        <div class="order-details__guide-select-content_modal w-full" @click.stop>
+          <div class="order-details__guide-select-content_modal-header">
+            <h5 class="fw-600">Guide</h5>
+            <ph-x :size="20" weight="bold" @click="guideSelectPage" />
           </div>
-          <div class="subtype-popup__content-body">
-            <h6>Nama</h6>
-            <input type="text" name="" required>
-            <h6>Type</h6>
-            <select name="type" required>
-              <option value="">Pilih Subtipe Tiket</option>
-              <option value="type1">Tipe 1</option>
-              <option value="type2">Tipe 2</option>
-              <option value="type3">Tipe 3</option>
-            </select>
+          <div
+            class="order-details__guide-select_breadcrumb flex align-items-center gap-1 cursor-pointer"
+            @click="hideEditGuideModal"
+          >
+            <ph-caret-left :size="16" weight="bold" />
+            <h6 weight="light">Kembali</h6>
           </div>
-          <button class="btn-subtype">Simpan</button>
+          <div class="flex gap-2">
+            <div
+              class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
+            >
+              <div class="input-image-preview">
+                <div class="image-preview" v-if="selectedImageURL">
+                  <h6 class="image-preview-label">Preview</h6>
+                  <img :src="selectedImageURL" alt="preview" class="preview-image" />
+                </div>
+              </div>
+              <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
+            </div>
+
+            <div class="input-biodata">
+              <div class="input_wrapper flex fd-col">
+                <input type="text" placeholder="Nama" required />
+                <div class="gender">
+                  <input type="radio" name="gender" value="pria" />Pria
+                  <input type="radio" name="gender" value="wanita" /> Wanita
+                </div>
+                <input type="date" name="date" />
+                <input type="text" name="email" placeholder="Masukan Email" />
+              </div>
+              <textarea rows="1" v-model="desc"></textarea>
+              <button class="edit-guide">Edit</button>
+              <button class="delete-guide">Delete</button>
+            </div>
+          </div>
         </div>
       </div>
-    </main>
+    </section>
+
+    <!--Tri Settings Modal-->
+    <TriSettingsPopup @closeModal="hideSettingsPopup()" />
+  </main>
 </template>
 
 <style scoped>
@@ -547,11 +468,10 @@ input:focus {
   background: #cd23349b;
 }
 
-
-.settings__menu{
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-gap: 1rem;
+.settings__menu {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 1rem;
 }
 
 .settings__menu-items {
@@ -571,7 +491,7 @@ input:focus {
 }
 
 .settings__menu-items span {
-    font-weight: 600;
+  font-weight: 600;
 }
 
 .addGuide {
@@ -593,7 +513,11 @@ input:focus {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100dvh;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
   background-color: rgb(0, 0, 0, 0.2);
   z-index: 999;
 }
@@ -613,12 +537,12 @@ input:focus {
   cursor: pointer;
 }
 
-
 .order-details__guide-select-content_modal {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 514px;
+  min-height: 480px;
   padding-bottom: 2rem;
   overflow: hidden;
   z-index: 100;
@@ -688,10 +612,6 @@ input:focus {
   height: 100%;
 }
 
-
-
-
-
 .settings_modal-overlay {
   background: rgba(0, 0, 0, 0.5);
   opacity: 1;
@@ -724,7 +644,7 @@ input:focus {
   align-content: center;
   overflow: scroll;
   scrollbar-width: thin; /* For Firefox */
-  scrollbar-color: #ccc transparent
+  scrollbar-color: #ccc transparent;
 }
 
 .settings__orders-content::-webkit-scrollbar {
@@ -826,6 +746,19 @@ input:focus {
   color: white;
 }
 
+.popup-confimation__button-confirmation button:first-child {
+  background: #28a745;
+}
+.popup-confimation__button-confirmation button:first-child:hover {
+  background: #17b53caa;
+}
+.popup-confimation__button-confirmation button:last-child {
+  background: #dc3545;
+}
+.popup-confimation__button-confirmation button:last-child:hover {
+  background: #cd23349b;
+}
+
 .guide-select_biodata-image {
   width: 300px;
   max-width: 300px;
@@ -881,26 +814,6 @@ input:focus {
   justify-content: center;
 }
 
-.pop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100dvh;
-  background-color: rgb(0, 0, 0, 0.2);
-  z-index: 999;
-}
-.pop-content {
-  background: #ffffff;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 514px;
-  height: 80%;
-  overflow: hidden;
-  z-index: 100;
-  position: relative;
-}
-
 .input-biodata {
   margin-left: 3rem;
 }
@@ -948,9 +861,8 @@ input:focus {
   height: 1rem;
   border-radius: 50%;
   border: 1px solid black;
-  position: relative; 
+  position: relative;
 }
-
 
 .input-biodata .gender input[type='radio']::before {
   content: '';
@@ -994,7 +906,7 @@ input:focus {
   background: #dc3545;
 }
 
-.delete-guide:hover{
+.delete-guide:hover {
   background: #cd23349b;
 }
 .edit-guide,
@@ -1025,147 +937,4 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
 }
-
-/* Type CSS */
-.type-popup__container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.type-popup__container-content {
-  background: white;
-  border-radius: 5px;
-  width: 30rem;
-  height: 500px;
-  font-family: 'Raleway';
-  display: flex;
-  flex-direction: column;
-}
-
-.type-popup__content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: left;
-  margin-top: 1rem;
-  border-bottom: 1px solid black;
-  padding: 0 1rem;
-  cursor: pointer;
-}
-
-.type-popup__content-header h5 {
-  margin-left: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.btn-type__tambah {
-  width: 8rem;
-  height: 2rem;
-  color: black;
-  margin-top: 1rem;
-  margin-left: 1rem;
-  border-radius: 10px;
-  background-color: #e6be58;
-}
-
-.body-item {
-  display: flex;
-  align-items: center;
-  width: 27rem;
-  height: 3rem;
-  border-radius: 10px;
-  margin: 1rem;
-  border: 2px solid #333;
-}
-
-.body-item h6 {
-  margin-left: 0.5rem;
-  margin-right: 18.5rem;
-}
-
-
-/* Subtype CSS */
-.subtype-popup__container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-.subtype-popup__container-content {
-  background-color: white;
-  border-radius: 5px;
-  width: 30rem;
-  height: 330px;
-  font-family: 'Raleway';
-  display: flex;
-  flex-direction: column;
-}
-
-.subtype-popup__content-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  text-align: left;
-  margin-top: 0.5rem;
-  border-bottom: 1px solid black;
-  padding: 0 1rem;
-  cursor: pointer;
-}
-
-.subtype-popup__content-header h5 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.subtype-popup__content-body {
-  padding: 1rem;
-}
-
-.subtype-popup__content-body h6 {
-  text-align: left;
-  margin-top: 0.5rem;
-}
-
-.subtype-popup__content-body input,
-.subtype-popup__content-body select {
-  height: 2.5rem;
-  width: calc(100% - 1rem);
-  border-radius: 10px;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  font-family: 'Raleway';
-  border: 2px solid #333;
-}
-
-.subtype-popup__content-body input:focus {
-  border: 2px solid #e6be58; 
-  outline: none; 
-}
-
-.btn-subtype {
-  width: 5.5rem;
-  height: 2rem;
-  color: white;
-  margin-top: 0.5rem;
-  margin-left: 1rem;
-  border-radius: 20px;
-  background-color: #e6be58;
-  font-weight: bold;
-}
-
 </style>

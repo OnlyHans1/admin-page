@@ -5,6 +5,7 @@ const USER_BASE_URL = ref('keraton-pos/user')
 const ORDER_BASE_URL = ref('keraton-pos/order')
 const ORDERTYPE_BASE_URL = ref('keraton-pos/order-type')
 const ORDERSUBTYPE_BASE_URL = ref('keraton-pos/order-subtype')
+const CATEGORY_BASE_URL = ref('keraton-pos/category')
 const TRANSACTION_BASE_URL = ref('keraton-pos/transaction')
 const DETAILTRANS_BASE_URL = ref('keraton-pos/detail-trans')
 const GUIDE_BASE_URL = ref('keraton-pos/guide')
@@ -33,6 +34,7 @@ export default {
   ORDER_BASE_URL,
   ORDERTYPE_BASE_URL,
   ORDERSUBTYPE_BASE_URL,
+  CATEGORY_BASE_URL,
   TRANSACTION_BASE_URL,
   DETAILTRANS_BASE_URL,
   GUIDE_BASE_URL,

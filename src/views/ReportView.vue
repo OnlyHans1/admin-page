@@ -37,6 +37,7 @@ const {
 
 const checkData = async () => {
   try {
+    isShowChart.value = false
     GlobalHelper.showLoader.value = true
     await fetchIncomeRevenue()
     await fetchTargetYears()
@@ -46,11 +47,13 @@ const checkData = async () => {
     setMonthLocaleString()
     await fetchYearlyChartData()
     await fetchMonthlyChartData()
+    isShowChart.value = true
   } catch (error) {
     console.error(error)
   }
 }
 
+const isShowChart = ref(false)
 const yearDropdownOpen = ref(false)
 const monthDropdownOpen = ref(false)
 
@@ -120,7 +123,7 @@ onMounted(() => {
           <div class="report-information__income-text flex fd-row">
             <span class="report-information__income-desc">Rp </span>
             <span class="report-information__income-details">{{
-              formatCurrency(incomeRevenue.total)
+              formatCurrency(incomeRevenue)
             }}</span>
           </div>
         </div>
@@ -132,7 +135,7 @@ onMounted(() => {
         </div>
       </div>
       <div class="report-revenue__container flex fd-col">
-        <div id="report__screenshot-target"
+        <div id="report__screenshot-target"  v-if="isShowChart"
           class="report-revenue__chart-container flex fd-row align-items-center justify-content-center gap[1.5]"
         >
           <div

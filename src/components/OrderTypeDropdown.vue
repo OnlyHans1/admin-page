@@ -1,60 +1,83 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
 
-const emit = defineEmits(['option-selected']);
+const { DB_BASE_URL, ORDERTYPE_BASE_URL, showLoader } = GlobalHelper
 
-const isOpen = ref(false);
-const selectedOrderType = ref('');
+const emit = defineEmits(['option-selected'])
 
-const options = ['Tiket', 'Paket', 'Mancanegara']; // Example options
+const isOpen = ref(false)
+const selectedOrderType = ref([])
+
+const options = ref([])
+
+const fetchOrderType = async () => {
+  try {
+    showLoader.value = true
+
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDERTYPE_BASE_URL.value}/type-details`)
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    options.value = data.data
+    showLoader.value = false
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
 
 const toggleDropdown = () => {
-  isOpen.value = !isOpen.value;
-};
+  isOpen.value = !isOpen.value
+}
 
-const selectOption = (value) => {
-  selectedOrderType.value = value;
-  isOpen.value = false;
-  emit('option-selected', selectedOrderType.value);
+const selectOption = (id, name) => {
+  selectedOrderType.value[0] = { id, name }
+  isOpen.value = false
+  emit('option-selected', selectedOrderType.value)
+}
 
-};
-
-const closeDropdownOnClickOutside = (event) => {  
-  if (!event.target.closest('.order-type__input-dropdown') && !event.target.closest('.order-type__input-dropdown_menu')) {
-    isOpen.value = false;
+const closeDropdownOnClickOutside = (event) => {
+  if (
+    !event.target.closest('.order-type__input-dropdown') &&
+    !event.target.closest('.order-type__input-dropdown_menu')
+  ) {
+    isOpen.value = false
   }
-};
+}
 
 onMounted(() => {
-  window.addEventListener('click', closeDropdownOnClickOutside);
-});
+  fetchOrderType()
+  window.addEventListener('click', closeDropdownOnClickOutside)
+})
 
 onUnmounted(() => {
-  window.removeEventListener('click', closeDropdownOnClickOutside);
-});
-
+  window.removeEventListener('click', closeDropdownOnClickOutside)
+})
 </script>
 
-
 <template>
-    <div class="order-type__input-dropdown">
-      <input
-        readonly
-        @click="toggleDropdown"
-        :value="selectedOrderType"
-        placeholder="Pilih Tipe Tiket"
-      />
-      <div class="select-icon" @click="toggleDropdown">
-        <div class="arrow-icon" :class="{ active: isOpen }">
-          <ph-caret-down :size="14" weight="bold" class="icon" />
-        </div>
-      </div>
-      <div class="order-type__input-dropdown_menu" :class="{ active: isOpen }">
-        <p v-for="option in options" :key="option" @click="selectOption(option)">{{ option }}</p>
+  <div class="order-type__input-dropdown">
+    <input
+      readonly
+      @click="toggleDropdown"
+      :value="selectedOrderType"
+      placeholder="Pilih Tipe Tiket"
+    />
+    <div class="select-icon" @click="toggleDropdown">
+      <div class="arrow-icon" :class="{ active: isOpen }">
+        <ph-caret-down :size="14" weight="bold" class="icon" />
       </div>
     </div>
+    <div class="order-type__input-dropdown_menu" :class="{ active: isOpen }">
+      <p v-for="option in options" :key="option.id" @click="selectOption(option.id, option.name)">
+        {{ option.name }}
+      </p>
+    </div>
+  </div>
 </template>
-  
+
 <style scoped>
 .order-type__input-dropdown {
   position: relative;

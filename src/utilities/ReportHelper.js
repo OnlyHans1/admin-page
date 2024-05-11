@@ -2,13 +2,13 @@ import { ref } from 'vue'
 import * as XLSX from 'xlsx'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, showLoader } = GlobalHelper
+const { DB_BASE_URL, TRANSACTION_BASE_URL, ORDER_BASE_URL, DETAILTRANS_BASE_URL,showLoader } = GlobalHelper
 
 const today = new Date()
 today.setHours(7, 0, 0, 0)
 const currentYear = today.getFullYear()
 const currentMonth = today.getMonth() + 1
-const monthName = today.toLocaleString('id-ID', { month: 'long' });
+const monthName = today.toLocaleString('id-ID', { month: 'long' })
 
 /* Report Global Helper */
 const capitalizeFirstLetter = (str) => {
@@ -32,12 +32,14 @@ const incomeRevenue = ref([])
 
 const fetchIncomeRevenue = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/report/income-revenue`)
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue`
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    incomeRevenue.value = data
+    incomeRevenue.value = data.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -248,7 +250,7 @@ const monthlyData = ref([])
 
 const fetchTargetYears = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/report/target-years`)
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/target-revenue/year`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -256,7 +258,7 @@ const fetchTargetYears = async () => {
     if (!targetYears.value.includes(currentYear)) {
       targetYears.value.push(currentYear)
     }
-    targetYears.value = data
+    targetYears.value = data.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -276,14 +278,14 @@ const fetchYearlyChartData = async () => {
   yearlyData.value = []
   try {
     const response = await fetch(
-      `${DB_BASE_URL.value}/report/yearly-chart-data/${encodeURIComponent(selectedYear.value)}`
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/chart-data/${encodeURIComponent(selectedYear.value)}`
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    yearlyCategory.value = data.yearlyCategory
-    yearlyData.value = data.yearlyData
+    yearlyCategory.value = data.data.yearlyCategory
+    yearlyData.value = data.data.yearlyData
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -291,7 +293,7 @@ const fetchYearlyChartData = async () => {
 
 const fetchTargetMonths = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/report/target-months`)
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/target-revenue/month`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -311,7 +313,7 @@ const fetchTargetMonths = async () => {
       'Desember'
     ]
 
-    const formattedMonths = data.map((month) => {
+    const formattedMonths = data.data.map((month) => {
       return monthNames[parseInt(month) - 1]
     })
     const currentMonthName = monthNames[new Date().getMonth()]
@@ -379,14 +381,14 @@ const setMonthLocaleString = () => {
 const fetchMonthlyChartData = async () => {
   try {
     const response = await fetch(
-      `${DB_BASE_URL.value}/report/monthly-chart-data/${encodeURIComponent(selectedYear.value)}/${encodeURIComponent(selectedMonth.value)}`
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/chart-data/${encodeURIComponent(selectedYear.value)}/${encodeURIComponent(selectedMonth.value)}`
     )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    monthlyCategory.value = data.monthlyCategory
-    monthlyData.value = data.monthlyData
+    monthlyCategory.value = data.data.monthlyCategory
+    monthlyData.value = data.data.monthlyData
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -404,7 +406,7 @@ const updateCategory = (selectedCategory) => {
 
 const fetchTableDataReport = async () => {
   try {
-    let url = `${DB_BASE_URL.value}/report/table-data`
+    let url = `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/table-data`
     if (category.value && category.value !== '') {
       url += `?category=${encodeURIComponent(category.value)}`
     }
@@ -413,8 +415,7 @@ const fetchTableDataReport = async () => {
       throw new Error('Failed to fetch data Report')
     }
     const data = await response.json()
-    // Mengatur nilai activityReportData dengan hasil dari API
-    activityReportData.value = data
+    activityReportData.value = data.data
   } catch (error) {
     console.error('Error fetching data Report:', error)
   }
@@ -425,12 +426,12 @@ const orderInfoCardData = ref([])
 
 const fetchOrderInfoCardData = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/report/order-info`)
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/recent-purchase`)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    orderInfoCardData.value = data
+    orderInfoCardData.value = data.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
