@@ -20,20 +20,25 @@ const {
   deleteCategory
 } = SettingsHelper
 
-const { showDeleteConfirmationPopup, closeDeletePopup } = DashboardHelper
+const { showDeleteConfirmationPopup } = DashboardHelper
 
-const showSettingsExtension = () => {
+const showSettingsExtension = (value) => {
   isSettingExtended.value = true
   isPopupVisible.value = false
+  dataTarget.value = value ? value : []
 }
 const hideSettingsExtension = () => {
   isSettingExtended.value = false
   isPopupVisible.value = true
 }
 
-const showDeleteConfirmation = (index) => {
+const showDeleteConfirmation = (value) => {
   showDeleteConfirmationPopup.value = true
-  dataTarget.value = popupData.value[index]
+  dataTarget.value = value
+}
+const closeDeleteConfirmation = () => {
+  showDeleteConfirmationPopup.value = false
+  dataTarget.value = []
 }
 
 const emits = defineEmits(['closeModal'])
@@ -88,6 +93,7 @@ watchEffect(() => {
       <div class="settings-popup__content flex fd-col gap-1 pd-1">
         <button
           class="settings-popup__add-button flex justify-content-center align-items-center gap[0.5]"
+          @click="showSettingsExtension()"
         >
           <p class="fw-600">Tambah</p>
           <ph-plus :size="16" weight="bold" />
@@ -105,14 +111,14 @@ watchEffect(() => {
                 :size="24"
                 color="#e6be58"
                 weight="fill"
-                @click="showSettingsExtension"
+                @click="showSettingsExtension(item)"
               />
               <ph-trash
                 class="cursor-pointer"
                 :size="24"
                 color="#eb0000"
                 weight="fill"
-                @click="showDeleteConfirmation(index)"
+                @click="showDeleteConfirmation(item)"
               />
             </div>
           </div>
@@ -124,7 +130,7 @@ watchEffect(() => {
   <div
     class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
     :class="{ active: showDeleteConfirmationPopup }"
-    @click="closeDeletePopup()"
+    @click="closeDeleteConfirmation()"
   >
     <div
       class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
@@ -133,7 +139,7 @@ watchEffect(() => {
       <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus {{ popupTitle }}?</h5>
       <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
         <button @click="deleteItem(dataTarget.id)">Hapus</button>
-        <button @click="closeDeletePopup()">Batal</button>
+        <button @click="closeDeleteConfirmation()">Batal</button>
       </div>
     </div>
   </div>
