@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { Vue3ColorPicker } from '@cyhnkckali/vue3-color-picker'
 import SettingsHelper from '@/utilities/SettingsHelper'
 import OrderTypeDropdown from '@/components/OrderTypeDropdown.vue'
 
@@ -39,7 +40,7 @@ const checkState = () => {
 }
 const callAction = () => {
   const data = checkFormData()
-  
+
   if (modeExtension.value === 'update') {
     switch (modePopup.value) {
       case 'type':
@@ -104,7 +105,7 @@ onMounted(() => {
         v-if="modePopup === 'category'"
       >
         <p>Color</p>
-        <input type="color" required />
+        <Vue3ColorPicker v-model="color" mode="solid" :showColorList="false" :showEyeDrop="false" :showAlpha="false" type="HEX"/>
       </div>
       <div class="settings-popup-extension__content-cta pd-top-1">
         <button class="settings-popup-extension__save-btn" @click="callAction()">Simpan</button>

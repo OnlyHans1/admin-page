@@ -11,6 +11,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@cyhnkckali/vue3-color-picker": "^1.1.9",
     "@phosphor-icons/vue": "^2.1.6",
     "@vueform/slider": "^2.1.10",
     "apexcharts": "^3.46.0",

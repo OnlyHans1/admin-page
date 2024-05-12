@@ -10,13 +10,12 @@ const password = ref('')
 const userData = ref([])
 
 const isAuthenticated = async () => {
-  const token = localStorage.getItem('token')
+  const token = getCookie('token')
   if (token) {
     try {
       const success = await authLogin(token)
       if (success) {
         loggedIn.value = true
-
         return true
       } else {
         loggedIn.value = false
@@ -24,7 +23,7 @@ const isAuthenticated = async () => {
       }
     } catch (error) {
       console.error(error)
-      localStorage.removeItem('token')
+      removeCookie('token')
       return false
     }
   }
@@ -78,7 +77,7 @@ const userLogin = async () => {
     }
 
     const data = await response.json()
-    localStorage.setItem('token', data.data)
+    setCookie('token', data.data, 1)
     isAuthenticated()
   } catch (error) {
     console.error(error)
@@ -86,10 +85,24 @@ const userLogin = async () => {
 }
 
 const userLogout = () => {
-  localStorage.removeItem('token')
+  removeCookie('token')
   loggedIn.value = false
   assignAlert(true, 'Sukses', 'success', `${userData.value.name} berhasil logout!`)
   userData.value = []
+}
+const getCookie = (name) => {
+  const value = `; ${document.cookie}`
+  const parts = value.split(`; ${name}=`)
+  if (parts.length === 2) return parts.pop().split(';').shift()
+}
+const setCookie = (name, value, days) => {
+  const date = new Date()
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000)
+  const expires = `expires=${date.toUTCString()}`
+  document.cookie = `${name}=${value};${expires};path=/`
+}
+const removeCookie = (name) => {
+  document.cookie = `${name}=; Max-Age=-99999999;`
 }
 
 export default {
