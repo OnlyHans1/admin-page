@@ -9,7 +9,7 @@ import SettingsView from '@/views/SettingsView.vue'
 import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
 import LoginHelper from '@/utilities/LoginHelper'
 
-const { isAuthenticated } = LoginHelper
+const { isAuthenticated, userData } = LoginHelper
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +34,8 @@ const router = createRouter({
     {
       path: '/edit/:id',
       name: 'edit',
-      component: AddView
+      component: AddView,
+      meta: { protected: true }
     },
     {
       path: '/checkout',

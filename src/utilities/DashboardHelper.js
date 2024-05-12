@@ -199,11 +199,9 @@ const groupedItems = computed(() => {
   })
   return grouped
 })
-
-const confirmDelete = async () => {
+const deleteOrder = async () => {
   try {
     showLoader.value = true
-    await fetchTargetedOrder(selectedItemToDelete.value)
     const response = await fetch(
       `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/delete/${encodeURIComponent(selectedItemToDelete.value)}`,
       {
@@ -223,7 +221,7 @@ const confirmDelete = async () => {
         true,
         'Sukses',
         'success',
-        `Pesanan ${targetedData.value.name} (${targetedData.value.category}) berhasil dihapus!`
+        `Pesanan ${targetedData.value.name} (${targetedData.value.category.name}) berhasil dihapus!`
       )
       setTimeout(() => {
         location.reload()
@@ -233,9 +231,17 @@ const confirmDelete = async () => {
         true,
         'Error',
         'danger',
-        `Gagal menghapus pesanan ${targetedData.value.name} (${targetedData.value.category})!`
+        `Gagal menghapus pesanan ${targetedData.value.name} (${targetedData.value.category.name})!`
       )
     }
+  } catch (error) {
+    console.error(error)
+  }
+}
+const confirmDelete = async () => {
+  try {
+    await fetchTargetedOrder(selectedItemToDelete.value)
+    await deleteOrder()
   } catch (error) {
     console.error(error)
   }

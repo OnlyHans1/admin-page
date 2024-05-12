@@ -1,7 +1,6 @@
 <script setup>
-import { watchEffect } from 'vue'
+import { ref, watchEffect } from 'vue'
 import SettingsHelper from '@/utilities/SettingsHelper'
-import DashboardHelper from '@/utilities/DashboardHelper'
 
 import TriSettingsExtend from '@/components/TriSettingsExtend.vue'
 
@@ -20,7 +19,7 @@ const {
   deleteCategory
 } = SettingsHelper
 
-const { showDeleteConfirmationPopup } = DashboardHelper
+const showDeleteSettingsPopup = ref(false)
 
 const showSettingsExtension = (value) => {
   isSettingExtended.value = true
@@ -33,11 +32,11 @@ const hideSettingsExtension = () => {
 }
 
 const showDeleteConfirmation = (value) => {
-  showDeleteConfirmationPopup.value = true
+  showDeleteSettingsPopup.value = true
   dataTarget.value = value
 }
 const closeDeleteConfirmation = () => {
-  showDeleteConfirmationPopup.value = false
+  showDeleteSettingsPopup.value = false
   dataTarget.value = []
 }
 
@@ -129,7 +128,7 @@ watchEffect(() => {
 
   <div
     class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
-    :class="{ active: showDeleteConfirmationPopup }"
+    :class="{ active: showDeleteSettingsPopup }"
     @click="closeDeleteConfirmation()"
   >
     <div

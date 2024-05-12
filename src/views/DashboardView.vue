@@ -6,7 +6,6 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 
 const {
   selectedItems,
-  selectedItemToEdit,
   showConfirmationPopup,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
@@ -28,9 +27,9 @@ const {
 const router = useRouter()
 
 const editOrder = () => {
-  selectedItemToEdit.value = selectedItems.value[0]
+  const id = selectedItems.value[0].id
   closePopup()
-  router.push({ name: 'edit', params: { id: selectedItemToEdit.value.id } })
+  router.push({ name: 'edit', params: { id: id } })
 }
 
 watch(
@@ -166,7 +165,7 @@ onMounted(() => {
             <div class="flex fd-row justify-content-start">
               <button
                 class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]"
-                @click="showDeleteConfirmation()"
+                @click="showDeleteConfirmation(selectedItems[0].id)"
               >
                 <ph-trash :size="16" weight="bold" />
                 <span class="fw-600">Delete</span>

@@ -32,7 +32,7 @@ const {
   dataDashboard
 } = DashboardHelper
 
-const { modePopup, isPopupVisible, fetchTargetedData } = SettingsHelper
+const { modePopup, isPopupVisible, fetchTargetedOrder } = SettingsHelper
 
 const { assignAlert } = GlobalHelper
 
@@ -44,7 +44,7 @@ const isEditGuideModalVisible = ref(false)
 const selectedImageURL = ref('')
 
 const editOrder = async (id) => {
-  await fetchTargetedData(id)
+  await fetchTargetedOrder(id)
   router.push({ name: 'edit', params: { id: id } })
 }
 const checkSettingsData = async () => {

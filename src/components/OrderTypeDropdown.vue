@@ -1,15 +1,21 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watchEffect } from 'vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
+import AddHelper from '@/utilities/AddHelper'
 
 const { DB_BASE_URL, ORDERTYPE_BASE_URL, showLoader } = GlobalHelper
+const { fetchRelatedOrderSubType } = AddHelper
 
 const emit = defineEmits(['option-selected'])
+const props = defineProps({
+  initialOrderType: { type: Object, default: {} }
+})
 
 const isOpen = ref(false)
-const selectedOrderType = ref([])
+const selectedOrderType = ref(props.initialOrderType)
+const orderType = ref(props.initialOrderType.orderType)
 
-const options = ref([])
+const orderTypeOptions = ref([])
 
 const fetchOrderType = async () => {
   try {
@@ -21,7 +27,7 @@ const fetchOrderType = async () => {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    options.value = data.data
+    orderTypeOptions.value = data.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -35,6 +41,8 @@ const toggleDropdown = () => {
 const selectOption = (id, name) => {
   selectedOrderType.value[0] = { id, name }
   isOpen.value = false
+  orderType.value = name
+  fetchRelatedOrderSubType(id)
   emit('option-selected', selectedOrderType.value)
 }
 
@@ -51,27 +59,29 @@ onMounted(() => {
   fetchOrderType()
   window.addEventListener('click', closeDropdownOnClickOutside)
 })
-
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdownOnClickOutside)
+})
+watchEffect(() => {
+  selectedOrderType.value = props.initialOrderType
+  orderType.value = props.initialOrderType.orderType
 })
 </script>
 
 <template>
   <div class="order-type__input-dropdown">
-    <input
-      readonly
-      @click="toggleDropdown"
-      :value="selectedOrderType"
-      placeholder="Pilih Tipe Tiket"
-    />
+    <input readonly @click="toggleDropdown" :value="orderType" placeholder="Pilih Tipe Tiket" />
     <div class="select-icon" @click="toggleDropdown">
       <div class="arrow-icon" :class="{ active: isOpen }">
         <ph-caret-down :size="14" weight="bold" class="icon" />
       </div>
     </div>
     <div class="order-type__input-dropdown_menu" :class="{ active: isOpen }">
-      <p v-for="option in options" :key="option.id" @click="selectOption(option.id, option.name)">
+      <p
+        v-for="option in orderTypeOptions"
+        :key="option.id"
+        @click="selectOption(option.id, option.name)"
+      >
         {{ option.name }}
       </p>
     </div>
