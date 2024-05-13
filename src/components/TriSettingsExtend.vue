@@ -21,6 +21,7 @@ const {
 
 const id = ref(null)
 const name = ref('')
+const orderType = ref('')
 const orderTypeId = ref(null)
 const color = ref('')
 
@@ -31,10 +32,12 @@ const closeExtension = () => {
 
 const checkState = () => {
   if (modeExtension.value === 'update') {
-    id.value = dataTarget.value.id ? Number(dataTarget.value.id) : null
-    name.value = dataTarget.value.name ? dataTarget.value.name : ''
-    orderTypeId.value = dataTarget.value.orderTypeId ? dataTarget.value.orderTypeId : null
-    color.value = dataTarget.value.color ? dataTarget.value.color : ''
+    const data = dataTarget.value
+    id.value = data.id ? Number(data.id) : null
+    name.value = dataTarget.value.name ? data.name : ''
+    orderType.value = data.orderType ? data.orderType.name : null
+    orderTypeId.value = data.orderTypeId ? data.orderTypeId : null
+    color.value = data.color ? data.color : ''
   }
 }
 const callAction = () => {
@@ -75,6 +78,10 @@ const checkFormData = () => {
   if (color.value) formData.append('color', color.value)
   return formData
 }
+const updateOrderTypeDropdown = (value) => {
+  orderType.value = value[0].name
+  orderTypeId.value = value[0].id
+}
 
 onMounted(() => {
   checkState()
@@ -97,7 +104,10 @@ onMounted(() => {
         v-if="modePopup === 'subtype'"
       >
         <p>Type</p>
-        <OrderTypeDropdown />
+        <OrderTypeDropdown
+          @option-selected="updateOrderTypeDropdown"
+          :initial-order-type="{ orderTypeId, orderType }"
+        />
       </div>
       <div
         class="settings-popup-extension__content-category flex fd-col gap[0.5]"
