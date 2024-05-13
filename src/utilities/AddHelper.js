@@ -177,7 +177,7 @@ const assignEditData = () => {
   orderSubTypeId.value = data.orderSubType ? data.orderSubType.id : 0
   orderSubType.value = data.orderSubType ? data.orderSubType.name : ''
   imageName.value = data.image !== '' ? data.image : ''
-  selectedImageURL.value = data.image ? getImageURL(image) : ''
+  selectedImageURL.value = data.image ? getImageURL(data.image) : ''
 }
 
 export default {

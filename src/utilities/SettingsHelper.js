@@ -39,6 +39,24 @@ const fetchTargetedOrder = async (id) => {
     console.error('Error fetching data:', error)
   }
 }
+const fetchTargetedGuide = async (id) => {
+  try {
+    showLoader.value = true
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-list/${encodeURIComponent(id)}`
+    )
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to fetch data')
+    }
+    const data = await response.json()
+    targetedData.value = data.data
+    showLoader.value = false
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
 const fetchOrderType = async () => {
   try {
     showLoader.value = true
@@ -281,6 +299,29 @@ const updateGuide = async (data, id) => {
     console.error('Error fetching data:', error)
   }
 }
+const deleteGuide = async (id) => {
+  try {
+    showLoader.value = true
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-action/delete/${encodeURIComponent(id)}`,
+      {
+        method: 'POST'
+      }
+    )
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to fetch data')
+    }
+    showLoader.value = false
+    assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Tipe!')
+    setTimeout(() => {
+      location.reload()
+    }, 1500)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
 const deleteOrderType = async (id) => {
   try {
     showLoader.value = true
@@ -361,16 +402,20 @@ export default {
   isPopupVisible,
   isSettingExtended,
   fetchTargetedOrder,
+  fetchTargetedGuide,
   fetchOrderType,
   fetchOrderSubType,
   fetchCategory,
+  createGuide,
   createOrderType,
   createOrderSubType,
   createCategory,
+  updateGuide,
   updateOrderType,
   updateOrderSubType,
   updateCategory,
+  deleteGuide,
   deleteOrderType,
   deleteOrderSubType,
-  deleteCategory
+  deleteCategory,
 }

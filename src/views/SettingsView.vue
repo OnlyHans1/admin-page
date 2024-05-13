@@ -35,10 +35,15 @@ const {
 const {
   modePopup,
   isPopupVisible,
+  targetedData,
   fetchTargetedOrder,
+  fetchTargetedGuide,
   fetchOrderType,
   fetchOrderSubType,
-  fetchCategory
+  fetchCategory,
+  createGuide,
+  updateGuide,
+  deleteGuide
 } = SettingsHelper
 
 const { assignAlert } = GlobalHelper
@@ -69,11 +74,27 @@ const showAddGuideModal = () => {
 const hideAddGuideModal = () => {
   isAddingGuideModalVisible.value = false
 }
-const showEditGuideModal = () => {
-  isEditGuideModalVisible.value = true
+const showEditGuideModal = async (id) => {
+  try {
+    await fetchTargetedGuide(id)
+    const data = targetedData.value
+    guideId.value = data.id
+    guideName.value = data.name
+    guideDesc.value = data.desc
+    guideBirthdate.value = data.birthdate
+    guideGender.value = data.gender
+    guideEmail.value = data.email
+    guideImageName.value = data.image !== '' ? data.image : ''
+    guideSelectedImageURL.value = data.image ? getImageURL(data.image) : ''
+    isEditGuideModalVisible.value = true
+    console.log(targetedData.value)
+  } catch (err) {
+    console.error(err)
+  }
 }
 const hideEditGuideModal = () => {
   isEditGuideModalVisible.value = false
+  targetedData.value = []
 }
 
 //Modal Type and Subtype
@@ -139,6 +160,7 @@ const newBiayaJasa = ref(biayaJasa.value)
 
 const checkSettingsData = async () => {
   try {
+    targetedData.value = []
     await fetchOrderList()
     await fetchGuideData()
     await fetchOrderType()
@@ -148,6 +170,23 @@ const checkSettingsData = async () => {
     console.error(error)
   }
 }
+
+const callAction = async (action) => {
+  const data = createFormData()
+
+  switch (action) {
+    case 'create':
+      createGuide(data)
+      break
+    case 'update':
+      updateGuide(data, guideId.value)
+      break
+    case 'delete':
+      deleteGuide(guideId.value)
+      break
+  }
+}
+
 onMounted(() => {
   checkSettingsData()
   fetchFeeSettings()
@@ -324,7 +363,7 @@ onMounted(() => {
             </span>
             <div
               class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-              @click="showEditGuideModal"
+              @click="showEditGuideModal(guide.id)"
             >
               <ph-caret-right :size="16" weight="bold" />
             </div>
@@ -362,14 +401,14 @@ onMounted(() => {
               <div class="input_wrapper flex fd-col">
                 <input type="text" placeholder="Nama" required />
                 <div class="gender">
-                  <input type="radio" name="gender" value="pria" />Pria
-                  <input type="radio" name="gender" value="wanita" /> Wanita
+                  <input type="radio" name="gender" value="MALE" />Pria
+                  <input type="radio" name="gender" value="FEMALE" /> Wanita
                 </div>
                 <input type="date" name="date" />
                 <input type="text" name="email" placeholder="Masukan Email" />
               </div>
               <textarea rows="1" v-model="desc"></textarea>
-              <button class="sv-guide">Simpan</button>
+              <button class="sv-guide" @click="callAction('create')">Simpan</button>
             </div>
           </div>
         </div>
@@ -412,8 +451,8 @@ onMounted(() => {
                 <input type="text" name="email" placeholder="Masukan Email" />
               </div>
               <textarea rows="1" v-model="desc"></textarea>
-              <button class="edit-guide">Edit</button>
-              <button class="delete-guide">Delete</button>
+              <button class="edit-guide" @click="callAction('update')">Edit</button>
+              <button class="delete-guide" @click="callAction('delete')">Delete</button>
             </div>
           </div>
         </div>
