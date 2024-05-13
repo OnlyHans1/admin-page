@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
@@ -43,7 +43,18 @@ const {
   fetchCategory,
   createGuide,
   updateGuide,
-  deleteGuide
+  deleteGuide,
+  guideId,
+  guideName,
+  guideDesc,
+  guideBirthdate,
+  guideGender,
+  guideEmail,
+  guideSelectedImageURL,
+  guideImageName,
+  guideSelectedImage,
+  selectedImage,
+  defaultImageURL
 } = SettingsHelper
 
 const { assignAlert } = GlobalHelper
@@ -51,6 +62,7 @@ const { assignAlert } = GlobalHelper
 const router = useRouter()
 
 //Modal Guide
+const isGuideModalVisible = ref(false)
 const isAddingGuideModalVisible = ref(false)
 const isEditGuideModalVisible = ref(false)
 const selectedImageURL = ref('')
@@ -64,17 +76,53 @@ const orderSelect = ref(false)
 const orderSelectPage = () => {
   orderSelect.value = !orderSelect.value
 }
+
 const feePage = ref(false)
 const toggleFeePage = () => {
   feePage.value = !feePage.value
 }
-const showAddGuideModal = () => {
-  isAddingGuideModalVisible.value = true
+const showGuideModal = (mode, id) => {
+  isGuideModalVisible.value = true
+  if (mode === 'create') {
+    resetData()
+    targetedData.value = []
+    isEditGuideModalVisible.value = false
+    isAddingGuideModalVisible.value = true
+  } else {
+    isAddingGuideModalVisible.value = false
+    isEditGuideModalVisible.value = true
+    assignEditGuideData(id)
+  }
 }
-const hideAddGuideModal = () => {
-  isAddingGuideModalVisible.value = false
+
+const hideGuideModal = () => {
+  isGuideModalVisible.value = false
 }
-const showEditGuideModal = async (id) => {
+
+const formatGuideBirthDate = (birthdate) => {
+  const date = new Date(birthdate)
+  if (!isNaN(date.getTime())) {
+    const isoDate = date.toISOString().split('T')[0] // Get ISO date without time
+    return `${isoDate}T07:00:00.000Z`
+  }
+  return ''
+}
+
+const createGuideFormData = (action) => {
+  const date = new Date(guideBirthdate.value)
+  const isoDate = date.toISOString().split('T')[0]
+  const formData = new FormData()
+  formData.append('image', guideSelectedImage.value)
+  if (action !== 'update') formData.append('imgName', guideImageName.value)
+  formData.append('name', guideName.value)
+  formData.append('email', guideEmail.value)
+  formData.append('birthdate', `${isoDate}T07:00:00.000Z`)
+  formData.append('gender', guideGender.value)
+  formData.append('desc', guideDesc.value ? guideDesc.value : '')
+  return formData
+}
+
+const assignEditGuideData = async (id) => {
   try {
     await fetchTargetedGuide(id)
     const data = targetedData.value
@@ -87,14 +135,19 @@ const showEditGuideModal = async (id) => {
     guideImageName.value = data.image !== '' ? data.image : ''
     guideSelectedImageURL.value = data.image ? getImageURL(data.image) : ''
     isEditGuideModalVisible.value = true
-    console.log(targetedData.value)
   } catch (err) {
     console.error(err)
   }
 }
-const hideEditGuideModal = () => {
-  isEditGuideModalVisible.value = false
-  targetedData.value = []
+const resetData = () => {
+  guideId.value = ''
+  guideName.value = ''
+  guideDesc.value = ''
+  guideBirthdate.value = ''
+  guideGender.value = ''
+  guideEmail.value = ''
+  guideImageName.value = ''
+  guideSelectedImageURL.value = ''
 }
 
 //Modal Type and Subtype
@@ -109,11 +162,9 @@ const hideSettingsPopup = () => {
 
 //Modal Fees
 const handleFileSelected = (file) => {
-  const reader = new FileReader()
-  reader.onload = () => {
-    selectedImageURL.value = reader.result
-  }
-  reader.readAsDataURL(file)
+  const imageURL = URL.createObjectURL(file)
+  guideSelectedImage.value = file
+  guideSelectedImageURL.value = imageURL
 }
 
 const saveSettings = () => {
@@ -155,6 +206,17 @@ const fetchFeeSettings = () => {
   }
 }
 
+const assignEditGuide = () => {
+  const data = guideData.value
+  guideId.value = data.id
+  guideName.value = data.name
+  guideDesc.value = data.desc
+  guideBirthdate.value = data.birthdate
+  guideGender.value = data.gender
+  guideEmail.value = data.email
+  guideSelectedImageURL.value = data.image ? getImageURL(image) : ''
+}
+
 const newBiayaLayanan = ref(biayaLayanan.value)
 const newBiayaJasa = ref(biayaJasa.value)
 
@@ -166,13 +228,14 @@ const checkSettingsData = async () => {
     await fetchOrderType()
     await fetchOrderSubType()
     await fetchCategory()
+    assignEditGuide()
   } catch (error) {
     console.error(error)
   }
 }
 
 const callAction = async (action) => {
-  const data = createFormData()
+  const data = createGuideFormData()
 
   switch (action) {
     case 'create':
@@ -187,6 +250,22 @@ const callAction = async (action) => {
   }
 }
 
+const formattedDate = ref(formatDate(guideBirthdate.value))
+function formatDate(isoDate) {
+  const date = new Date(isoDate)
+  const year = date.getUTCFullYear()
+  const month = `${date.getUTCMonth() + 1}`.padStart(2, '0')
+  const day = `${date.getUTCDate()}`.padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+watch(guideBirthdate, (newValue) => {
+  formattedDate.value = formatDate(newValue)
+})
+function updateGuideBirthdate(event) {
+  guideBirthdate.value = event.target.value
+}
+
+const checkGuideState = () => {}
 onMounted(() => {
   checkSettingsData()
   fetchFeeSettings()
@@ -195,6 +274,23 @@ onMounted(() => {
 
 <template>
   <main>
+    <div
+      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      :class="{ active: showDeleteConfirmationPopup }"
+      @click="closeDeletePopup()"
+    >
+      <div
+        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
+        @click.stop
+      >
+        <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
+        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
+          <button @click="confirmDelete()">Hapus</button>
+          <button @click="closeDeletePopup()">Batal</button>
+        </div>
+      </div>
+    </div>
+
     <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
 
     <section
@@ -315,23 +411,6 @@ onMounted(() => {
       </div>
     </section>
 
-    <div
-      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
-      :class="{ active: showDeleteConfirmationPopup }"
-      @click="closeDeletePopup()"
-    >
-      <div
-        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
-        @click.stop
-      >
-        <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
-        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
-          <button @click="confirmDelete()">Hapus</button>
-          <button @click="closeDeletePopup()">Batal</button>
-        </div>
-      </div>
-    </div>
-
     <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
       <div class="order-details__guide-select-content_modal">
         <div class="order-details__guide-select-content_modal-header">
@@ -340,7 +419,7 @@ onMounted(() => {
         </div>
         <button
           class="addGuide flex justify-content-center align-items-center gap[0.5]"
-          @click="showAddGuideModal"
+          @click="showGuideModal('create')"
         >
           <p>Tambah Guide</p>
           <ph-plus :size="16" weight="bold"></ph-plus>
@@ -363,7 +442,7 @@ onMounted(() => {
             </span>
             <div
               class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-              @click="showEditGuideModal(guide.id)"
+              @click="showGuideModal('edit', guide.id)"
             >
               <ph-caret-right :size="16" weight="bold" />
             </div>
@@ -371,88 +450,64 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="order-details__select-content_modal-overlay" v-if="isAddingGuideModalVisible">
+      <div class="order-details__select-content_modal-overlay" v-if="isGuideModalVisible">
         <div class="order-details__guide-select-content_modal w-full" @click.stop>
           <div class="order-details__guide-select-content_modal-header">
-            <h5 class="fw-600">Guide</h5>
+            <h5 class="fw-600" v-if="isAddingGuideModalVisible">Tambah Guide</h5>
+            <h5 class="fw-600" v-if="isEditGuideModalVisible">Edit Guide</h5>
+
             <ph-x :size="20" weight="bold" @click="guideSelectPage" />
           </div>
           <div
             class="order-details__guide-select_breadcrumb flex align-items-center gap-1 cursor-pointer"
-            @click="hideAddGuideModal"
+            @click="hideGuideModal"
           >
             <ph-caret-left :size="16" weight="bold" />
             <h6 weight="light">Kembali</h6>
           </div>
-          <div class="flex gap-2">
+          <div class="flex gap-2 w-full">
             <div
               class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
             >
               <div class="input-image-preview">
-                <div class="image-preview" v-if="selectedImageURL">
+                <div class="image-preview" v-if="guideSelectedImageURL">
                   <h6 class="image-preview-label">Preview</h6>
-                  <img :src="selectedImageURL" alt="preview" class="preview-image" />
+                  <img :src="guideSelectedImageURL" alt="preview" class="preview-image" />
                 </div>
               </div>
-              <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
+              <InputFoto @file-selected="handleFileSelected" :selectedImageURL="guideSelectedImageURL" />
             </div>
 
             <div class="input-biodata">
               <div class="input_wrapper flex fd-col">
-                <input type="text" placeholder="Nama" required />
+                <input type="text" placeholder="Nama" required v-model="guideName" />
                 <div class="gender">
-                  <input type="radio" name="gender" value="MALE" />Pria
-                  <input type="radio" name="gender" value="FEMALE" /> Wanita
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="MALE"
+                    v-model="guideGender"
+                    :checked="guideGender === 'MALE'"
+                  />Pria
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="FEMALE"
+                    v-model="guideGender"
+                    :checked="guideGender === 'FEMALE'"
+                  />
+                  Wanita
                 </div>
-                <input type="date" name="date" />
-                <input type="text" name="email" placeholder="Masukan Email" />
+                <input type="date" name="date" v-model="formattedDate" @input="updateGuideBirthdate" />
+                <input type="text" name="email" placeholder="Masukan Email" v-model="guideEmail" />
               </div>
-              <textarea rows="1" v-model="desc"></textarea>
-              <button class="sv-guide" @click="callAction('create')">Simpan</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="order-details__select-content_modal-overlay" v-if="isEditGuideModalVisible">
-        <div class="order-details__guide-select-content_modal w-full" @click.stop>
-          <div class="order-details__guide-select-content_modal-header">
-            <h5 class="fw-600">Guide</h5>
-            <ph-x :size="20" weight="bold" @click="guideSelectPage" />
-          </div>
-          <div
-            class="order-details__guide-select_breadcrumb flex align-items-center gap-1 cursor-pointer"
-            @click="hideEditGuideModal"
-          >
-            <ph-caret-left :size="16" weight="bold" />
-            <h6 weight="light">Kembali</h6>
-          </div>
-          <div class="flex gap-2">
-            <div
-              class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
-            >
-              <div class="input-image-preview">
-                <div class="image-preview" v-if="selectedImageURL">
-                  <h6 class="image-preview-label">Preview</h6>
-                  <img :src="selectedImageURL" alt="preview" class="preview-image" />
-                </div>
+              <textarea rows="1" v-model="guideDesc"></textarea>
+              <button class="sv-guide" @click="callAction('create')" v-if="isAddingGuideModalVisible">Simpan</button>
+              <div class="flex gap-1" v-if="isEditGuideModalVisible">
+                <button class="edit-guide" @click="callAction('update')">Edit</button>
+                <button class="delete-guide" @click="callAction('delete')">Delete</button>
+                
               </div>
-              <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
-            </div>
-
-            <div class="input-biodata">
-              <div class="input_wrapper flex fd-col">
-                <input type="text" placeholder="Nama" required />
-                <div class="gender">
-                  <input type="radio" name="gender" value="pria" />Pria
-                  <input type="radio" name="gender" value="wanita" /> Wanita
-                </div>
-                <input type="date" name="date" />
-                <input type="text" name="email" placeholder="Masukan Email" />
-              </div>
-              <textarea rows="1" v-model="desc"></textarea>
-              <button class="edit-guide" @click="callAction('update')">Edit</button>
-              <button class="delete-guide" @click="callAction('delete')">Delete</button>
             </div>
           </div>
         </div>
@@ -516,6 +571,7 @@ input:focus {
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 1rem;
 }
+
 
 .settings__menu-items {
   padding: 0.5rem;
@@ -858,13 +914,14 @@ input:focus {
 }
 
 .input-biodata {
+  width: 100%;
   margin-left: 3rem;
 }
 
 .input-biodata input[type='text'],
 .input-biodata input[type='date'],
 .input-biodata input[type='email'] {
-  width: 37rem;
+  width: calc(100% - 3rem);
   height: 3rem;
   margin-bottom: 1rem;
   font-size: 1rem;
@@ -879,7 +936,7 @@ input:focus {
 
 .input-biodata textarea {
   min-height: 200px;
-  min-width: 100%;
+  min-width: calc(100% - 3rem);
   resize: none;
   border: 2px solid black;
   border-radius: 0.5rem;
@@ -979,5 +1036,28 @@ input:focus {
   max-height: 200px;
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
+}
+
+
+@media (max-width: 768px) {
+  .settings__menu {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .settings__menu-items {
+    width: 8rem;
+    height: 8rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .settings__menu {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .settings__menu-items {
+    width: 7rem;
+    height: 7rem;
+  }
 }
 </style>

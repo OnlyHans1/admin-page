@@ -1,15 +1,19 @@
 <script setup>
-import { RouterView } from 'vue-router'
+import { RouterView, useRouter } from 'vue-router'
 import { watchEffect } from 'vue'
 import Sidebar from './components/Sidebar.vue'
 import LoginHelper from './utilities/LoginHelper'
 import GlobalHelper from './utilities/GlobalHelper'
 import AlertCard from './components/AlertCard.vue'
 import WebLoader from './components/WebLoader.vue'
-const { loggedIn, isAuthenticated } = LoginHelper
+const { loggedIn, isAuthenticated, userData } = LoginHelper
 
+const router = useRouter()
 watchEffect(() => {
-  isAuthenticated()
+  if (!userData.value) {
+    const auth = isAuthenticated()
+    if (!auth) router.push('/login')
+  }
 })
 </script>
 

@@ -12,6 +12,20 @@ const {
   showLoader
 } = GlobalHelper
 
+
+const guideId = ref('')
+const guideName = ref('')
+const guideDesc = ref('')
+const guideBirthdate = ref(null)
+const guideGender = ref('')
+const guideEmail = ref('')
+const guideSelectedImageURL = ref('') // State to hold the selected image URL
+const guideSelectedImage = ref(null) // State to hold the selected image File
+const defaultImageURL = ref(
+  'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+)
+const guideImageName = ref('')
+
 const targetedData = ref([])
 const popupData = ref([])
 const modePopup = ref('')
@@ -184,7 +198,7 @@ const createGuide = async (data) => {
     showLoader.value = true
 
     const response = await fetch(
-      `${DB_BASE_URL.value}/${CATEGORY_BASE_URL.value}/category-action/create`,
+      `${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-action/create`,
       {
         method: 'POST',
         body: data
@@ -291,7 +305,7 @@ const updateGuide = async (data, id) => {
       throw new Error('Failed to fetch data')
     }
     showLoader.value = false
-    assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Kategori!')
+    assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Guide!')
     setTimeout(() => {
       location.reload()
     }, 1500)
@@ -314,7 +328,7 @@ const deleteGuide = async (id) => {
       throw new Error('Failed to fetch data')
     }
     showLoader.value = false
-    assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Tipe!')
+    assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Guide!')
     setTimeout(() => {
       location.reload()
     }, 1500)
@@ -392,7 +406,21 @@ const deleteCategory = async (id) => {
   }
 }
 
+
+
+
 export default {
+  guideId,
+  guideName,
+  guideDesc,
+  guideBirthdate,
+  guideGender,
+  guideEmail,
+  guideSelectedImageURL,
+  guideSelectedImage,
+  guideImageName,
+  defaultImageURL,
+  fetchTargetedGuide,
   targetedData,
   popupData,
   modePopup,
