@@ -7,6 +7,7 @@ const {
   ORDERTYPE_BASE_URL,
   ORDERSUBTYPE_BASE_URL,
   CATEGORY_BASE_URL,
+  GUIDE_BASE_URL,
   assignAlert,
   showLoader
 } = GlobalHelper
@@ -18,6 +19,7 @@ const isPopupVisible = ref(false)
 const isSettingExtended = ref(false)
 const popupTitle = ref('')
 const dataTarget = ref([])
+const modeExtension = ref('')
 
 const fetchTargetedOrder = async (id) => {
   try {
@@ -140,7 +142,7 @@ const createCategory = async (data) => {
     showLoader.value = true
 
     const response = await fetch(
-      `${DB_BASE_URL.value}/${CATEGORY_BASE_URL.value}/category-action/create`,
+      `${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-action/create`,
       {
         method: 'POST',
         body: data
@@ -152,6 +154,30 @@ const createCategory = async (data) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Kategori!')
+    setTimeout(() => {
+      location.reload()
+    }, 1500)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+const createGuide = async (data) => {
+  try {
+    showLoader.value = true
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${CATEGORY_BASE_URL.value}/category-action/create`,
+      {
+        method: 'POST',
+        body: data
+      }
+    )
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to fetch data')
+    }
+    showLoader.value = false
+    assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Guide!')
     setTimeout(() => {
       location.reload()
     }, 1500)
@@ -213,6 +239,30 @@ const updateCategory = async (data, id) => {
 
     const response = await fetch(
       `${DB_BASE_URL.value}/${CATEGORY_BASE_URL.value}/category-action/update/${encodeURIComponent(id)}`,
+      {
+        method: 'POST',
+        body: data
+      }
+    )
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to fetch data')
+    }
+    showLoader.value = false
+    assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Kategori!')
+    setTimeout(() => {
+      location.reload()
+    }, 1500)
+  } catch (error) {
+    console.error('Error fetching data:', error)
+  }
+}
+const updateGuide = async (data, id) => {
+  try {
+    showLoader.value = true
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-action/update/${encodeURIComponent(id)}`,
       {
         method: 'POST',
         body: data
@@ -307,6 +357,7 @@ export default {
   modePopup,
   popupTitle,
   dataTarget,
+  modeExtension,
   isPopupVisible,
   isSettingExtended,
   fetchTargetedOrder,

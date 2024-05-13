@@ -8,6 +8,7 @@ const {
   modePopup,
   popupTitle,
   dataTarget,
+  modeExtension,
   isPopupVisible,
   isSettingExtended,
   createOrderType,
@@ -22,7 +23,6 @@ const id = ref(null)
 const name = ref('')
 const orderTypeId = ref(null)
 const color = ref('')
-const modeExtension = ref('')
 
 const emits = defineEmits(['closeExtension'])
 const closeExtension = () => {
@@ -30,13 +30,12 @@ const closeExtension = () => {
 }
 
 const checkState = () => {
-  if (dataTarget.value) {
-    modeExtension.value = 'update'
+  if (modeExtension.value === 'update') {
     id.value = dataTarget.value.id ? Number(dataTarget.value.id) : null
     name.value = dataTarget.value.name ? dataTarget.value.name : ''
     orderTypeId.value = dataTarget.value.orderTypeId ? dataTarget.value.orderTypeId : null
     color.value = dataTarget.value.color ? dataTarget.value.color : ''
-  } else modeExtension.value = 'create'
+  }
 }
 const callAction = () => {
   const data = checkFormData()
@@ -105,7 +104,14 @@ onMounted(() => {
         v-if="modePopup === 'category'"
       >
         <p>Color</p>
-        <Vue3ColorPicker v-model="color" mode="solid" :showColorList="false" :showEyeDrop="false" :showAlpha="false" type="HEX"/>
+        <Vue3ColorPicker
+          v-model="color"
+          mode="solid"
+          :showColorList="false"
+          :showEyeDrop="false"
+          :showAlpha="false"
+          type="HEX"
+        />
       </div>
       <div class="settings-popup-extension__content-cta pd-top-1">
         <button class="settings-popup-extension__save-btn" @click="callAction()">Simpan</button>

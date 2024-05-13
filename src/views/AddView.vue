@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watchEffect } from 'vue'
+import { ref, onMounted, onUnmounted, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
@@ -39,7 +39,7 @@ const {
   closeDropdownOnClickOutside,
   assignEditData
 } = AddHelper
-const { fetchTargetedOrder } = SettingsHelper
+const { fetchTargetedOrder, fetchOrderType, fetchCategory } = SettingsHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -128,6 +128,17 @@ const isEditPage = async () => {
     assignEditData()
   }
 }
+const checkData = async () => {
+  try {
+    await fetchOrderType()
+    await fetchRelatedOrderSubType(orderTypeId.value)
+    await fetchCategory()
+    resetData()
+    await isEditPage()
+  } catch (err) {
+    console.error(err)
+  }
+}
 
 watchEffect(() => {
   currentPath.value = route.path
@@ -135,9 +146,7 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  fetchRelatedOrderSubType(orderTypeId.value)
-  resetData()
-  isEditPage()
+  checkData()
   window.addEventListener('click', closeDropdownOnClickOutside)
 })
 

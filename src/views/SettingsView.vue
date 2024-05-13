@@ -32,7 +32,14 @@ const {
   dataDashboard
 } = DashboardHelper
 
-const { modePopup, isPopupVisible, fetchTargetedOrder } = SettingsHelper
+const {
+  modePopup,
+  isPopupVisible,
+  fetchTargetedOrder,
+  fetchOrderType,
+  fetchOrderSubType,
+  fetchCategory
+} = SettingsHelper
 
 const { assignAlert } = GlobalHelper
 
@@ -47,37 +54,24 @@ const editOrder = async (id) => {
   await fetchTargetedOrder(id)
   router.push({ name: 'edit', params: { id: id } })
 }
-const checkSettingsData = async () => {
-  try {
-    await fetchOrderList()
-    await fetchGuideData()
-  } catch (error) {
-    console.error(error)
-  }
-}
 
 const orderSelect = ref(false)
 const orderSelectPage = () => {
   orderSelect.value = !orderSelect.value
 }
-
 const feePage = ref(false)
 const toggleFeePage = () => {
   feePage.value = !feePage.value
 }
-
 const showAddGuideModal = () => {
   isAddingGuideModalVisible.value = true
 }
-
 const hideAddGuideModal = () => {
   isAddingGuideModalVisible.value = false
 }
-
 const showEditGuideModal = () => {
   isEditGuideModalVisible.value = true
 }
-
 const hideEditGuideModal = () => {
   isEditGuideModalVisible.value = false
 }
@@ -143,10 +137,20 @@ const fetchFeeSettings = () => {
 const newBiayaLayanan = ref(biayaLayanan.value)
 const newBiayaJasa = ref(biayaJasa.value)
 
+const checkSettingsData = async () => {
+  try {
+    await fetchOrderList()
+    await fetchGuideData()
+    await fetchOrderType()
+    await fetchOrderSubType()
+    await fetchCategory()
+  } catch (error) {
+    console.error(error)
+  }
+}
 onMounted(() => {
-  fetchGuideData()
-  fetchFeeSettings()
   checkSettingsData()
+  fetchFeeSettings()
 })
 </script>
 

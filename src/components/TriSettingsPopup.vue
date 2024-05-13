@@ -11,6 +11,7 @@ const {
   isSettingExtended,
   popupTitle,
   dataTarget,
+  modeExtension,
   fetchOrderType,
   fetchOrderSubType,
   fetchCategory,
@@ -21,14 +22,16 @@ const {
 
 const showDeleteSettingsPopup = ref(false)
 
-const showSettingsExtension = (value) => {
+const showSettingsExtension = (mode, value) => {
   isSettingExtended.value = true
   isPopupVisible.value = false
+  modeExtension.value = mode
   dataTarget.value = value ? value : []
 }
 const hideSettingsExtension = () => {
   isSettingExtended.value = false
   isPopupVisible.value = true
+  modeExtension.value = ''
 }
 
 const showDeleteConfirmation = (value) => {
@@ -56,7 +59,7 @@ const deleteItem = (id) => {
       deleteCategory(id)
       break
   }
-  showDeleteConfirmationPopup.value = false
+  showDeleteSettingsPopup.value = false
   isPopupVisible.value = false
 }
 
@@ -92,7 +95,7 @@ watchEffect(() => {
       <div class="settings-popup__content flex fd-col gap-1 pd-1">
         <button
           class="settings-popup__add-button flex justify-content-center align-items-center gap[0.5]"
-          @click="showSettingsExtension()"
+          @click="showSettingsExtension('create')"
         >
           <p class="fw-600">Tambah</p>
           <ph-plus :size="16" weight="bold" />
@@ -110,7 +113,7 @@ watchEffect(() => {
                 :size="24"
                 color="#e6be58"
                 weight="fill"
-                @click="showSettingsExtension(item)"
+                @click="showSettingsExtension('update', item)"
               />
               <ph-trash
                 class="cursor-pointer"
