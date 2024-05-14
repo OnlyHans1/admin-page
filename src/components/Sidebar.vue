@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref, watch } from 'vue'
+import { ref, watch, watchEffect } from 'vue'
 import LoginHelper from '@/utilities/LoginHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
@@ -43,8 +43,9 @@ watch(
     determineActiveLink()
   }
 )
-
-determineActiveLink()
+watchEffect(() => {
+  if (!userData.value) router.push('/login')
+})
 </script>
 <template>
   <nav>

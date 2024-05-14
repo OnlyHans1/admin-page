@@ -13,6 +13,7 @@ import TriSettingsPopup from '@/components/TriSettingsPopup.vue'
 const {
   biayaJasa,
   biayaLayanan,
+  fetchFeeSettings,
   guideSelectPage,
   guideData,
   guideSelect,
@@ -53,8 +54,6 @@ const {
   guideSelectedImageURL,
   guideImageName,
   guideSelectedImage,
-  selectedImage,
-  defaultImageURL
 } = SettingsHelper
 
 const { assignAlert } = GlobalHelper
@@ -65,7 +64,6 @@ const router = useRouter()
 const isGuideModalVisible = ref(false)
 const isAddingGuideModalVisible = ref(false)
 const isEditGuideModalVisible = ref(false)
-const selectedImageURL = ref('')
 
 const editOrder = async (id) => {
   await fetchTargetedOrder(id)
@@ -99,21 +97,12 @@ const hideGuideModal = () => {
   isGuideModalVisible.value = false
 }
 
-const formatGuideBirthDate = (birthdate) => {
-  const date = new Date(birthdate)
-  if (!isNaN(date.getTime())) {
-    const isoDate = date.toISOString().split('T')[0] // Get ISO date without time
-    return `${isoDate}T07:00:00.000Z`
-  }
-  return ''
-}
-
 const createGuideFormData = (action) => {
   const date = new Date(guideBirthdate.value)
   const isoDate = date.toISOString().split('T')[0]
   const formData = new FormData()
   formData.append('image', guideSelectedImage.value)
-  if (action !== 'update') formData.append('imgName', guideImageName.value)
+  if (action === 'update') formData.append('imgName', guideImageName.value)
   formData.append('name', guideName.value)
   formData.append('email', guideEmail.value)
   formData.append('birthdate', `${isoDate}T07:00:00.000Z`)
@@ -174,9 +163,7 @@ const saveSettings = () => {
   sessionStorage.setItem('biayaJasa', biayaJasa.value)
 
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil diubah!')
-  setTimeout(() => {
-    feePage.value = false
-  }, 3000)
+  feePage.value = false
 }
 
 const resetSettings = () => {
@@ -189,21 +176,6 @@ const resetSettings = () => {
   sessionStorage.setItem('biayaJasa', biayaJasa.value)
 
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil di-reset!')
-  setTimeout(() => {
-    feePage.value = false
-  }, 3000)
-}
-
-const fetchFeeSettings = () => {
-  const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
-  if (savedBiayaLayanan) {
-    biayaLayanan.value = parseInt(savedBiayaLayanan)
-  }
-
-  const savedBiayaJasa = sessionStorage.getItem('biayaJasa')
-  if (savedBiayaJasa) {
-    biayaJasa.value = parseInt(savedBiayaJasa)
-  }
 }
 
 const assignEditGuide = () => {
@@ -264,8 +236,6 @@ watch(guideBirthdate, (newValue) => {
 function updateGuideBirthdate(event) {
   guideBirthdate.value = event.target.value
 }
-
-const checkGuideState = () => {}
 onMounted(() => {
   checkSettingsData()
   fetchFeeSettings()
@@ -475,7 +445,10 @@ onMounted(() => {
                   <img :src="guideSelectedImageURL" alt="preview" class="preview-image" />
                 </div>
               </div>
-              <InputFoto @file-selected="handleFileSelected" :selectedImageURL="guideSelectedImageURL" />
+              <InputFoto
+                @file-selected="handleFileSelected"
+                :selectedImageURL="guideSelectedImageURL"
+              />
             </div>
 
             <div class="input-biodata">
@@ -498,15 +471,25 @@ onMounted(() => {
                   />
                   Wanita
                 </div>
-                <input type="date" name="date" v-model="formattedDate" @input="updateGuideBirthdate" />
+                <input
+                  type="date"
+                  name="date"
+                  v-model="formattedDate"
+                  @input="updateGuideBirthdate"
+                />
                 <input type="text" name="email" placeholder="Masukan Email" v-model="guideEmail" />
               </div>
               <textarea rows="1" v-model="guideDesc"></textarea>
-              <button class="sv-guide" @click="callAction('create')" v-if="isAddingGuideModalVisible">Simpan</button>
+              <button
+                class="sv-guide"
+                @click="callAction('create')"
+                v-if="isAddingGuideModalVisible"
+              >
+                Simpan
+              </button>
               <div class="flex gap-1" v-if="isEditGuideModalVisible">
                 <button class="edit-guide" @click="callAction('update')">Edit</button>
                 <button class="delete-guide" @click="callAction('delete')">Delete</button>
-                
               </div>
             </div>
           </div>
@@ -571,7 +554,6 @@ input:focus {
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 1rem;
 }
-
 
 .settings__menu-items {
   padding: 0.5rem;
@@ -1037,7 +1019,6 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
 }
-
 
 @media (max-width: 768px) {
   .settings__menu {

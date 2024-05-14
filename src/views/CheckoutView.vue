@@ -23,6 +23,7 @@ const {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  fetchFeeSettings,
   formatCurrency,
   totalHarga,
   totalTagihan,
@@ -46,7 +47,9 @@ const {
   formattedGuideSelection,
   fetchGuideData,
   determineAge,
-  formatGender
+  formatGender,
+  fetchUnavailableGuide,
+  checkGuideAvailability
 } = CheckoutHelper
 
 const { assignAlert } = GlobalHelper
@@ -79,7 +82,6 @@ const checkoutTransaction = async () => {
     assignAlert(true, 'Error', 'danger', 'Transaksi gagal!')
   }
 }
-
 const checkValidTransaction = () => {
   const invalid = []
 
@@ -100,12 +102,11 @@ const checkValidTransaction = () => {
   return invalid
 }
 
-watchEffect(() => {})
-
 onMounted(() => {
   fetchGuideData()
   getItemsFromSessionStorage()
   checkSessionStorage()
+  fetchFeeSettings()
 })
 </script>
 
@@ -141,6 +142,7 @@ onMounted(() => {
                       type="datetime-local"
                       class="ticket__input-date"
                       v-model="selectedDate"
+                      @input="fetchUnavailableGuide()"
                     />
                     <label>Tanggal Pemesanan</label>
                   </div>
@@ -220,7 +222,8 @@ onMounted(() => {
                     <ph-x :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
                   <div
-                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2" :class="{'grid' : guideSelectors}"
+                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+                    :class="{ grid: guideSelectors }"
                   >
                     <div
                       v-if="guideSelectors"
@@ -234,9 +237,15 @@ onMounted(() => {
                         </div>
                         <label :for="guide.name">{{ guide.name }}</label>
                       </span>
-                      <div
+                      <div v-if="!checkGuideAvailability(guide.id)"
                         class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
                         @click="guideSelectPageBio(guide)"
+                      >
+                        <ph-caret-right :size="16" weight="bold" />
+                      </div>
+                      <div v-else
+                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                        @click="assignAlert(true, 'Error', 'danger', `Guide ${guide.name} tidak tersedia!`)"
                       >
                         <ph-caret-right :size="16" weight="bold" />
                       </div>

@@ -45,7 +45,7 @@ const resetData = () => {
 const createFormData = (action) => {
   const formData = new FormData()
   formData.append('image', selectedImage.value)
-  if (action !== 'update') formData.append('imgName', imageName.value)
+  if (action === 'update') formData.append('imgName', imageName.value)
   formData.append('name', title.value)
   formData.append('desc', desc.value ? desc.value : '')
   formData.append('categoryId', categoryId.value)

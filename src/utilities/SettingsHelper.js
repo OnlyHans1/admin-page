@@ -174,7 +174,7 @@ const createCategory = async (data) => {
     showLoader.value = true
 
     const response = await fetch(
-      `${DB_BASE_URL.value}/${GUIDE_BASE_URL.value}/guide-action/create`,
+      `${DB_BASE_URL.value}/${CATEGORY_BASE_URL.value}/category-action/create`,
       {
         method: 'POST',
         body: data

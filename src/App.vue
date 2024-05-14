@@ -6,14 +6,10 @@ import LoginHelper from './utilities/LoginHelper'
 import GlobalHelper from './utilities/GlobalHelper'
 import AlertCard from './components/AlertCard.vue'
 import WebLoader from './components/WebLoader.vue'
-const { loggedIn, isAuthenticated, userData } = LoginHelper
+const { loggedIn, isAuthenticated } = LoginHelper
 
-const router = useRouter()
 watchEffect(() => {
-  if (!userData.value) {
-    const auth = isAuthenticated()
-    if (!auth) router.push('/login')
-  }
+isAuthenticated()
 })
 </script>
 

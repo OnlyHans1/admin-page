@@ -3,8 +3,14 @@ import GlobalHelper from './GlobalHelper'
 import DashboardHelper from './DashboardHelper'
 import LoginHelper from './LoginHelper'
 
-const { DB_BASE_URL, GUIDE_BASE_URL, NATIONALITY_BASE_URL, TRANSACTION_BASE_URL, showLoader } =
-  GlobalHelper
+const {
+  DB_BASE_URL,
+  GUIDE_BASE_URL,
+  NATIONALITY_BASE_URL,
+  TRANSACTION_BASE_URL,
+  DETAILTRANS_BASE_URL,
+  showLoader
+} = GlobalHelper
 const { checkSessionStorage, isMancanegara } = DashboardHelper
 const { userData } = LoginHelper
 
@@ -151,6 +157,17 @@ const cashbackValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
+const fetchFeeSettings = () => {
+  const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
+  if (savedBiayaLayanan) {
+    biayaLayanan.value = parseInt(savedBiayaLayanan)
+  }
+
+  const savedBiayaJasa = sessionStorage.getItem('biayaJasa')
+  if (savedBiayaJasa) {
+    biayaJasa.value = parseInt(savedBiayaJasa)
+  }
+}
 
 const formatCurrency = (amount) => {
   return parseInt(amount).toLocaleString('id-ID', {
@@ -354,6 +371,36 @@ function formatGender(gender) {
   return '?'
 }
 
+const unavailableGuideData = ref([])
+const fetchUnavailableGuide = async () => {
+  try {
+    showLoader.value = true
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/unavailable-guide?date=${selectedDate.value}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to fetch unavailable guide. Please try again.')
+    }
+    const data = await response.json()
+    unavailableGuideData.value = data.data
+    showLoader.value = false
+  } catch (error) {
+    console.log(error)
+  }
+}
+const checkGuideAvailability = (id) => {
+  return unavailableGuideData.value.some((data) => data.guide.id === id)
+}
+
 export default {
   selectedNationality,
   fetchNationalityData,
@@ -380,6 +427,7 @@ export default {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  fetchFeeSettings,
   formatCurrency,
   totalHarga,
   totalTagihan,
@@ -402,5 +450,8 @@ export default {
   formattedGuideSelection,
   fetchGuideData,
   determineAge,
-  formatGender
+  formatGender,
+  fetchUnavailableGuide,
+  unavailableGuideData,
+  checkGuideAvailability
 }

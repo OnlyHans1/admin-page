@@ -116,10 +116,10 @@ const checkSessionStorage = () => {
   // Memeriksa apakah sessionStorageData memiliki nilai
   if (sessionStorageData && sessionStorageData.length > 0) {
     for (const item of sessionStorageData) {
-      if (item && item.category === 'Mancanegara') {
+      if (item && item.category.name === 'Mancanegara') {
         isMancanegara.value = true
         return 'Mancanegara'
-      } else if (item && item.category !== 'Mancanegara') {
+      } else if (item && item.category.name !== 'Mancanegara') {
         isMancanegara.value = false
         return 'Not_Mancanegara'
       }
@@ -134,14 +134,14 @@ const handleCategorySelection = (filterCategory) => {
   if (filterCategory === 'Mancanegara') {
     // Nonaktifkan item dengan kategori UMUM dan PELAJAR
     dataDashboard.value.forEach((item) => {
-      if (item.category !== 'Mancanegara') {
+      if (item.category.name !== 'Mancanegara') {
         item.disabled = true
       }
     })
   } else if (filterCategory === 'Not_Mancanegara') {
     // Nonaktifkan item dengan kategori MANCANEGARA
     dataDashboard.value.forEach((item) => {
-      if (item.category === 'Mancanegara') {
+      if (item.category.name === 'Mancanegara') {
         item.disabled = true
       }
     })
