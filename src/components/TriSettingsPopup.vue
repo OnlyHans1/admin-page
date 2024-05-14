@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, computed } from 'vue'
 import SettingsHelper from '@/utilities/SettingsHelper'
 
 import TriSettingsExtend from '@/components/TriSettingsExtend.vue'
@@ -63,6 +63,9 @@ const deleteItem = (id) => {
   isPopupVisible.value = false
 }
 
+
+
+
 watchEffect(() => {
   switch (modePopup.value) {
     case 'type':
@@ -92,7 +95,7 @@ watchEffect(() => {
         <h6 class="fw-600">{{ popupTitle }}</h6>
         <ph-x :size="20" weight="bold" class="cursor-pointer" @click="closeModal()" />
       </div>
-      <div class="settings-popup__content flex fd-col gap-1 pd-1">
+      <div class="settings-popup__content scrollable flex fd-col gap-1 pd-1">
         <button
           class="settings-popup__add-button flex justify-content-center align-items-center gap[0.5]"
           @click="showSettingsExtension('create')"
@@ -100,7 +103,7 @@ watchEffect(() => {
           <p class="fw-600">Tambah</p>
           <ph-plus :size="16" weight="bold" />
         </button>
-        <div class="settings-popup__content-data flex fd-col gap[0.5]">
+        <div class="settings-popup__content-data  h-full flex fd-col gap[0.5]" >
           <div
             class="settings-popup__item flex align-items-center justify-content-sb pd-1 w-full"
             v-for="(item, index) in popupData"
@@ -168,6 +171,7 @@ watchEffect(() => {
   font-family: 'Raleway';
   display: flex;
   flex-direction: column;
+  max-height: 80vh;
 }
 
 .settings-popup__header {
@@ -254,5 +258,10 @@ watchEffect(() => {
   align-items: center;
   justify-content: center;
   z-index: 999;
+}
+
+
+.scrollable {
+  overflow-y: scroll;
 }
 </style>

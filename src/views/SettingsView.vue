@@ -263,31 +263,7 @@ onMounted(() => {
 
     <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
 
-    <section
-      class="settings_modal-overlay w-full h-full"
-      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
-    >
-      <div class="settings_modal-container">
-        <div class="settings__orders-content_modal-header">
-          <h5 class="fw-600">Fees</h5>
-          <ph-x :size="20" weight="bold" @click="toggleFeePage" />
-        </div>
-        <div class="settings__fees-content_modal pd-1">
-          <div class="settings__fees-content_modal_input-group">
-            <div class="fee">
-              <p>Biaya Layanan</p>
-              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
-            </div>
-            <div class="service">
-              <p>Biaya Jasa Aplikasi</p>
-              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
-            </div>
-            <button class="save" @click="saveSettings">Simpan</button>
-            <button class="reset" @click="resetSettings">Reset</button>
-          </div>
-        </div>
-      </div>
-    </section>
+    
 
     <section class="admin">
       <div class="settings__menu">
@@ -336,16 +312,43 @@ onMounted(() => {
     </section>
 
     <section
+      class="settings_modal-overlay w-full h-full"
+      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
+    >
+      <div class="settings_modal-container">
+        <div class="settings__orders-content_modal-header">
+          <h5 class="fw-600">Fees</h5>
+          <ph-x :size="20" weight="bold" @click="toggleFeePage" />
+        </div>
+        <div class="settings__fees-content_modal pd-1">
+          <div class="settings__fees-content_modal_input-group flex fd-col gap-1">
+            <div class="fee">
+              <p>Biaya Layanan</p>
+              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
+            </div>
+            <div class="service">
+              <p>Biaya Jasa Aplikasi</p>
+              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
+            </div>
+            </div>
+            <button class="save" @click="saveSettings">Simpan</button>
+            <button class="reset" @click="resetSettings">Reset</button>
+        </div>
+      </div>
+    </section>
+
+    <section
       class="settings_modal-overlay flex align-items-center justify-content-center w-full h-full"
       v-if="orderSelect"
     >
-      <div class="settings_modal-container">
+      <div class="settings_modal-container flex fd-col">
         <div class="settings__fees-content_modal-header">
           <h5 class="fw-600">Orders</h5>
           <ph-x :size="20" weight="bold" @click="orderSelectPage" />
         </div>
+
         <div class="settings__orders-content pd-1">
-          <div class="" v-for="(item, index) in dataDashboard" :key="index">
+          <div class="x" v-for="(item, index) in dataDashboard" :key="index">
             <div class="settings__orders-content_item flex gap-1">
               <img
                 :src="
@@ -442,7 +445,7 @@ onMounted(() => {
               <div class="input-image-preview">
                 <div class="image-preview" v-if="guideSelectedImageURL">
                   <h6 class="image-preview-label">Preview</h6>
-                  <img :src="guideSelectedImageURL" alt="preview" class="preview-image" />
+                  <img :src="guideSelectedImageURL" alt="Image" class="preview-image" />
                 </div>
               </div>
               <InputFoto
@@ -508,11 +511,9 @@ body {
 }
 
 .input_biaya {
-  width: 16rem;
+  width: 20rem;
   height: 2.5rem;
-  margin-right: 8rem;
   font-size: 1rem;
-  font-family: 'Raleway', sans-serif;
   border-radius: 5px;
   padding: 0.5rem;
 }
@@ -639,12 +640,6 @@ input:focus {
   cursor: pointer;
   padding: 1rem;
   border-bottom: 1px solid black;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  padding: 1rem;
-  border-bottom: 1px solid black;
 }
 
 .order-detail__guide-select-content_modal-content.grid {
@@ -658,25 +653,15 @@ input:focus {
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
-  justify-content: space-between;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 0.5rem;
+
 }
 
 .order-detail__guide-select-content_guide-selector .bg-yellow {
   background-color: #e6be58;
   border-radius: 0 0.5rem 0.5rem 0;
-  background-color: #e6be58;
-  border-radius: 0 0.5rem 0.5rem 0;
 }
 
 .order-detail__guide-select-content_guide-selector_radio {
-  background-color: transparent;
-  border: 0.5px solid black;
-  border-radius: 100%;
-  width: 0.8rem;
-  height: 0.8rem;
-  padding: 0.1rem;
   background-color: transparent;
   border: 0.5px solid black;
   border-radius: 100%;
@@ -709,21 +694,22 @@ input:focus {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-height: 80vh;
-  overflow: auto;
+  overflow: hidden;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 900;
 }
+.x {
 
+}
 .settings__orders-content {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   grid-gap: 1rem;
-  align-content: center;
-  overflow: scroll;
+  overflow: auto;
+  height: 40rem;
   scrollbar-width: thin; /* For Firefox */
   scrollbar-color: #ccc transparent;
 }
