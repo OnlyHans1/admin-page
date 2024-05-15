@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
@@ -53,14 +53,14 @@ const {
   guideEmail,
   guideSelectedImageURL,
   guideImageName,
-  guideSelectedImage,
+  guideSelectedImage
 } = SettingsHelper
 
 const { assignAlert } = GlobalHelper
 
 const router = useRouter()
 
-//Modal Guide
+// Modal Guide
 const isGuideModalVisible = ref(false)
 const isAddingGuideModalVisible = ref(false)
 const isEditGuideModalVisible = ref(false)
@@ -79,18 +79,22 @@ const feePage = ref(false)
 const toggleFeePage = () => {
   feePage.value = !feePage.value
 }
-const showGuideModal = (mode, id) => {
-  isGuideModalVisible.value = true
-  if (mode === 'create') {
-    resetData()
-    targetedData.value = []
-    isEditGuideModalVisible.value = false
-    isAddingGuideModalVisible.value = true
-  } else {
-    isAddingGuideModalVisible.value = false
-    isEditGuideModalVisible.value = true
-    assignEditGuideData(id)
+const showGuideModal = async (mode, id) => {
+  try {
+    if (mode === 'create') {
+      resetData()
+      targetedData.value = []
+      isEditGuideModalVisible.value = false
+      isAddingGuideModalVisible.value = true
+    } else {
+      isAddingGuideModalVisible.value = false
+      isEditGuideModalVisible.value = true
+      await assignEditGuideData(id)
+    }
+  } catch (err) {
+    console.error(err)
   }
+  isGuideModalVisible.value = true
 }
 
 const hideGuideModal = () => {
@@ -121,7 +125,7 @@ const assignEditGuideData = async (id) => {
     guideBirthdate.value = data.birthdate
     guideGender.value = data.gender
     guideEmail.value = data.email
-    guideImageName.value = data.image !== '' ? data.image : ''
+    guideImageName.value = data.image ? data.image : ''
     guideSelectedImageURL.value = data.image ? getImageURL(data.image) : ''
     isEditGuideModalVisible.value = true
   } catch (err) {
@@ -139,7 +143,7 @@ const resetData = () => {
   guideSelectedImageURL.value = ''
 }
 
-//Modal Type and Subtype
+// Modal Type and Subtype
 const showSettingsPopup = (value) => {
   modePopup.value = value
   isPopupVisible.value = true
@@ -149,7 +153,7 @@ const hideSettingsPopup = () => {
   isPopupVisible.value = false
 }
 
-//Modal Fees
+// Modal Fees
 const handleFileSelected = (file) => {
   const imageURL = URL.createObjectURL(file)
   guideSelectedImage.value = file
@@ -178,17 +182,6 @@ const resetSettings = () => {
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil di-reset!')
 }
 
-const assignEditGuide = () => {
-  const data = guideData.value
-  guideId.value = data.id
-  guideName.value = data.name
-  guideDesc.value = data.desc
-  guideBirthdate.value = data.birthdate
-  guideGender.value = data.gender
-  guideEmail.value = data.email
-  guideSelectedImageURL.value = data.image ? getImageURL(image) : ''
-}
-
 const newBiayaLayanan = ref(biayaLayanan.value)
 const newBiayaJasa = ref(biayaJasa.value)
 
@@ -200,14 +193,13 @@ const checkSettingsData = async () => {
     await fetchOrderType()
     await fetchOrderSubType()
     await fetchCategory()
-    assignEditGuide()
   } catch (error) {
     console.error(error)
   }
 }
 
 const callAction = async (action) => {
-  const data = createGuideFormData()
+  const data = createGuideFormData(action)
 
   switch (action) {
     case 'create':
@@ -245,7 +237,7 @@ onMounted(() => {
 <template>
   <main>
     <div
-      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      class="popup-confirmation__overlay w-full h-full flex justify-content-center"
       :class="{ active: showDeleteConfirmationPopup }"
       @click="closeDeletePopup()"
     >
@@ -263,7 +255,31 @@ onMounted(() => {
 
     <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
 
-    
+    <section
+      class="settings_modal-overlay overlay w-full h-full overlay flex align-items-center justify-content-center"
+      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
+    >
+      <div class="settings_modal-container">
+        <div class="settings__orders-content_modal-header">
+          <h5 class="fw-600">Fees</h5>
+          <ph-x :size="20" weight="bold" @click="toggleFeePage" />
+        </div>
+        <div class="settings__fees-content_modal pd-1">
+          <div class="settings__fees-content_modal_input-group">
+            <div class="fee">
+              <p>Biaya Layanan</p>
+              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
+            </div>
+            <div class="service">
+              <p>Biaya Jasa Aplikasi</p>
+              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
+            </div>
+            <button class="save" @click="saveSettings">Simpan</button>
+            <button class="reset" @click="resetSettings">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
 
     <section class="admin">
       <div class="settings__menu">
@@ -312,71 +328,47 @@ onMounted(() => {
     </section>
 
     <section
-      class="settings_modal-overlay w-full h-full"
-      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
-    >
-      <div class="settings_modal-container">
-        <div class="settings__orders-content_modal-header">
-          <h5 class="fw-600">Fees</h5>
-          <ph-x :size="20" weight="bold" @click="toggleFeePage" />
-        </div>
-        <div class="settings__fees-content_modal pd-1">
-          <div class="settings__fees-content_modal_input-group flex fd-col gap-1">
-            <div class="fee">
-              <p>Biaya Layanan</p>
-              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
-            </div>
-            <div class="service">
-              <p>Biaya Jasa Aplikasi</p>
-              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
-            </div>
-            </div>
-            <button class="save" @click="saveSettings">Simpan</button>
-            <button class="reset" @click="resetSettings">Reset</button>
-        </div>
-      </div>
-    </section>
-
-    <section
-      class="settings_modal-overlay flex align-items-center justify-content-center w-full h-full"
+      class="settings_modal-overlay overlay flex align-items-center justify-content-center w-full h-full"
       v-if="orderSelect"
     >
-      <div class="settings_modal-container flex fd-col">
+      <div class="settings_modal-container">
         <div class="settings__fees-content_modal-header">
           <h5 class="fw-600">Orders</h5>
           <ph-x :size="20" weight="bold" @click="orderSelectPage" />
         </div>
 
         <div class="settings__orders-content pd-1">
-          <div class="x" v-for="(item, index) in dataDashboard" :key="index">
-            <div class="settings__orders-content_item flex gap-1">
-              <img
-                :src="
-                  item.image
-                    ? getImageURL(item.image)
-                    : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                "
-              />
-              <div class="settings__orders-group-content w-full">
-                <div class="settings__orders-content_item-head">
-                  <h6>{{ item.name }}</h6>
-                  <p>Rp{{ formatCurrency(item.price) }}</p>
-                  <p>{{ item.category.name }}</p>
-                </div>
-                <div class="settings__orders-content_item-cta flex align-items-end gap-1">
-                  <button
-                    class="settings-order__edit-button flex align-items-center justify-content-center gap[0.5]"
-                    @click="editOrder(item.id)"
-                  >
-                    <ph-pencil-simple :size="16" weight="bold" />
-                  </button>
-                  <button
-                    class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
-                    @click="showDeleteConfirmation(item.id)"
-                  >
-                    <ph-trash :size="16" weight="bold" />
-                  </button>
-                </div>
+          <div
+            class="settings__orders-content_item flex gap-1"
+            v-for="(item, index) in dataDashboard"
+            :key="index"
+          >
+            <img
+              :src="
+                item.image
+                  ? getImageURL(item.image)
+                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+              "
+            />
+            <div class="settings__orders-group-content flex fd-col justify-content-sb">
+              <div class="settings__orders-content_item-head">
+                <h6 class="to-ellipsis">{{ item.name }}</h6>
+                <p>Rp{{ formatCurrency(item.price) }}</p>
+                <p>{{ item.category.name }}</p>
+              </div>
+              <div class="settings__orders-content_item-cta flex justify-content-end gap-1">
+                <button
+                  class="settings-order__edit-button flex align-items-center justify-content-center gap[0.5]"
+                  @click="editOrder(item.id)"
+                >
+                  <ph-pencil-simple :size="16" weight="bold" />
+                </button>
+                <button
+                  class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
+                  @click="showDeleteConfirmation(item.id)"
+                >
+                  <ph-trash :size="16" weight="bold" />
+                </button>
               </div>
             </div>
           </div>
@@ -384,7 +376,10 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
+    <section
+      class="order-details__select-content_modal-overlay overlay w-full h-full flex align-items-center justify-content-center"
+      v-if="guideSelect"
+    >
       <div class="order-details__guide-select-content_modal">
         <div class="order-details__guide-select-content_modal-header">
           <h5 class="fw-600">Guide</h5>
@@ -423,7 +418,10 @@ onMounted(() => {
         </div>
       </div>
 
-      <div class="order-details__select-content_modal-overlay" v-if="isGuideModalVisible">
+      <div
+        class="order-details__select-content_modal-overlay overlay w-full h-full flex align-items-center justify-content-center"
+        v-if="isGuideModalVisible"
+      >
         <div class="order-details__guide-select-content_modal w-full" @click.stop>
           <div class="order-details__guide-select-content_modal-header">
             <h5 class="fw-600" v-if="isAddingGuideModalVisible">Tambah Guide</h5>
@@ -590,19 +588,6 @@ input:focus {
   margin: 1rem;
 }
 
-.order-details__select-content_modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  background-color: rgb(0, 0, 0, 0.2);
-  z-index: 999;
-}
 .order-details__payment-select-content_modal {
   position: fixed;
   top: 50%;
@@ -679,30 +664,19 @@ input:focus {
 }
 
 .settings_modal-overlay {
-  background: rgba(0, 0, 0, 0.5);
   opacity: 1;
   transition: opacity 0.2s ease-in-out;
-  width: 100%;
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 900;
 }
 
 .settings_modal-container {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  max-height: 80vh;
+  max-width: 90vw;
   overflow: hidden;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 900;
-}
-.x {
-
+  position: fixed;
+  z-index: 10;
 }
 .settings__orders-content {
   display: grid;
@@ -735,10 +709,6 @@ input:focus {
   background-color: #aaa; /* Darker color when hovered */
 }
 
-.settings__orders-group-content {
-  display: inline-flex;
-  justify-content: space-between;
-}
 .settings__orders-content_item {
   padding: 1rem;
   box-shadow: 0 2px 10px rgb(0, 0, 0, 0.2);
@@ -780,7 +750,7 @@ input:focus {
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 999;
+  z-index: 1000;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
@@ -797,6 +767,7 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 345px;
+  max-height: 143px;
   overflow: hidden;
   margin-top: 5rem;
   transform: translateY(-50%);

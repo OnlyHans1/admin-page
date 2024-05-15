@@ -69,7 +69,7 @@ onMounted(() => {
           >
             <td class="invoice-table__data">{{ index + 1 }}</td>
             <td class="invoice-table__data">{{ item.transaction.user.name }}</td>
-            <td class="invoice-table__data">{{ item.order.name }}</td>
+            <td class="invoice-table__data">{{ item.order.name }} ({{ item.order.category.name }})</td>
             <td class="invoice-table__data">{{ splitDate(item.transaction.plannedDate)[0] }}</td>
             <td class="invoice-table__data">{{ splitDate(item.transaction.plannedDate)[1] }}</td>
             <td class="invoice-table__data">

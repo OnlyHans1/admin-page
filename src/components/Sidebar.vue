@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref, watch, watchEffect } from 'vue'
+import { onMounted, ref, watch, watchEffect } from 'vue'
 import LoginHelper from '@/utilities/LoginHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
@@ -43,8 +43,17 @@ watch(
     determineActiveLink()
   }
 )
+onMounted(() => {
+  if (!userData.value) {
+    userLogout()
+    router.replace('/login')
+  }
+})
 watchEffect(() => {
-  if (!userData.value) router.push('/login')
+  if (!userData.value) {
+    userLogout()
+    router.replace('/login')
+  }
 })
 </script>
 <template>
@@ -70,9 +79,9 @@ watchEffect(() => {
       </div>
       <div class="navbar-links__settings-container flex fd-col">
         <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 4 }">
-          <ph-gear :size="24" weight="bold" :class="{ 'disabled': userData.role === 'CASHIER' }" />
+          <ph-gear :size="24" weight="bold" :class="{ disabled: userData.role === 'CASHIER' }" />
         </a>
-        <RouterLink to="/login" name="Logout" @click="userLogout()">
+        <RouterLink to="/login" name="Logout" @click="userLogout(), router.replace('/login')">
           <ph-sign-out :size="24" weight="bold" mirrored="mirrored"
         /></RouterLink>
       </div>

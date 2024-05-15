@@ -85,11 +85,11 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="settings-popup-extension__overlay" v-if="isSettingExtended">
+  <div class="settings-popup-extension__overlay overlay w-full h-full flex align-items-center justify-content-center" v-if="isSettingExtended">
     <TriSettingsExtend @closeExtension="hideSettingsExtension()" />
   </div>
 
-  <div class="settings-popup__overlay" v-if="isPopupVisible">
+  <div class="settings-popup__overlay overlay w-full h-full flex align-items-center justify-content-center" v-if="isPopupVisible">
     <div class="settings-popup__container">
       <div class="settings-popup__header flex justify-content-sb align-items-center pd-1">
         <h6 class="fw-600">{{ popupTitle }}</h6>
@@ -133,7 +133,7 @@ watchEffect(() => {
   </div>
 
   <div
-    class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+    class="popup-confirmation__overlay w-full h-full flex justify-content-center"
     :class="{ active: showDeleteSettingsPopup }"
     @click="closeDeleteConfirmation()"
   >
@@ -151,19 +151,6 @@ watchEffect(() => {
 </template>
 
 <style scoped>
-.settings-popup__overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
 .settings-popup__container {
   background: white;
   border-radius: 5px;
@@ -215,6 +202,7 @@ watchEffect(() => {
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 345px;
+  max-height: 143px;
   overflow: hidden;
   margin-top: 5rem;
   transform: translateY(-50%);
@@ -246,21 +234,6 @@ watchEffect(() => {
 .popup-confimation__button-confirmation button:last-child:hover {
   background: #cd23349b;
 }
-
-.settings-popup-extension__overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-}
-
-
 .scrollable {
   overflow-y: scroll;
 }

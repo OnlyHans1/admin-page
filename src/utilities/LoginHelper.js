@@ -112,5 +112,8 @@ export default {
   isAuthenticated,
   userLogin,
   userLogout,
-  userData
+  userData,
+  getCookie,
+  setCookie,
+  removeCookie
 }

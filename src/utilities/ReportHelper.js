@@ -62,7 +62,7 @@ const generateExcel = () => {
   // Buat sheet untuk data tahunan
   const yearlySheetData = [
     // Baris untuk header primary
-    [`Tabel Tingkat Keramaian ${targetYears.value}`],
+    [`Tabel Tingkat Keramaian ${selectedYear.value}`],
     // Baris untuk header kategori dan nama kategori
     ['Bulan', 'Umum', 'Pelajar', 'Mancanegara'],
     // Baris untuk bulan
@@ -84,7 +84,7 @@ const generateExcel = () => {
   // Buat sheet untuk data bulanan
   const monthlySheetData = [
     // Baris untuk header primary
-    [`Tabel Tingkat Keramaian Bulan ${targetMonth.value}`],
+    [`Tabel Tingkat Keramaian Bulan ${selectedMonthName.value}`],
     // Baris untuk header kategori dan nama kategori
     ['Tanggal', 'Umum', 'Pelajar', 'Mancanegara'],
     // Baris untuk hari
@@ -220,11 +220,11 @@ const printData = () => {
   const win = window.open('', '', 'fullscreen=yes')
   win.document.write('<html><head><title>Data Tingkat Keramaian</title></head><body>')
   win.document.write(
-    `<h1 style="text-align: center;">Data Tingkat Keramaian Tahun ${targetYears.value}</h1>`
+    `<h1 style="text-align: center;">Data Tingkat Keramaian Tahun ${selectedYear.value}</h1>`
   )
   win.document.write(yearContainer.outerHTML)
   win.document.write(
-    `<h1 style="text-align: center;">Data Tingkat Keramaian Bulan ${targetMonth.value}</h1>`
+    `<h1 style="text-align: center;">Data Tingkat Keramaian Bulan ${selectedMonthName.value}</h1>`
   )
   win.document.write(monthContainer.outerHTML)
   win.document.write('</body></html>')

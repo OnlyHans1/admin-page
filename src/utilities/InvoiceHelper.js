@@ -58,7 +58,6 @@ const formatDate = (dateTime) => {
   const date = new Date(dateTime)
   date.setHours(date.getHours() - 7)
 
-
   const monthNames = [
     'Januari',
     'Februari',
@@ -91,10 +90,12 @@ const formatDate = (dateTime) => {
 const showDetail = (item) => {
   selectedItem.value = {
     nama: item.transaction.user.name,
-    reservasi: item.order.name,
+    reservasi: `${item.order.name} (${item.order.category.name})`,
     jadwal: formatDate(item.transaction.plannedDate),
     ...(item.transaction.user.number != null && { 'no. telp': item.transaction.user.number }),
-    pembayaran: item.transaction.method
+    guide: item.guide.name,
+    pembayaran: capitalizeFirstLetter(item.transaction.method),
+    total: `Rp. ${Number(item.transaction.total).toLocaleString('id-ID')}`
   }
   showDetailPopup()
 }

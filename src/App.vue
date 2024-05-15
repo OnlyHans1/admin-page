@@ -1,5 +1,5 @@
 <script setup>
-import { RouterView, useRouter } from 'vue-router'
+import { RouterView } from 'vue-router'
 import { watchEffect } from 'vue'
 import Sidebar from './components/Sidebar.vue'
 import LoginHelper from './utilities/LoginHelper'
