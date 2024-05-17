@@ -256,7 +256,7 @@ onMounted(() => {
     <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
 
     <section
-      class="settings_modal-overlay overlay w-full h-full overlay flex align-items-center justify-content-center"
+      class="settings_modal-overla overlay w-full h-full"
       v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
     >
       <div class="settings_modal-container">
@@ -265,7 +265,7 @@ onMounted(() => {
           <ph-x :size="20" weight="bold" @click="toggleFeePage" />
         </div>
         <div class="settings__fees-content_modal pd-1">
-          <div class="settings__fees-content_modal_input-group">
+          <div class="settings__fees-content_modal_input-group flex fd-col gap-1">
             <div class="fee">
               <p>Biaya Layanan</p>
               <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
@@ -274,9 +274,9 @@ onMounted(() => {
               <p>Biaya Jasa Aplikasi</p>
               <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
             </div>
+            </div>
             <button class="save" @click="saveSettings">Simpan</button>
             <button class="reset" @click="resetSettings">Reset</button>
-          </div>
         </div>
       </div>
     </section>
@@ -323,6 +323,14 @@ onMounted(() => {
         >
           <ph-folders :size="48" color="var(--color-primary)" />
           <span>Sub Type</span>
+        </button>
+        <button
+          class="settings__menu-items"
+          v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
+          @click=" router.push({ name: 'databaseLogs' });"
+        >
+          <ph-database :size="48" color="var(--color-primary)" />
+          <span>Database Logs</span>
         </button>
       </div>
     </section>
@@ -385,7 +393,8 @@ onMounted(() => {
           <h5 class="fw-600">Guide</h5>
           <ph-x :size="20" weight="bold" @click="guideSelectPage" />
         </div>
-        <button
+        <div class="order-details__content-container">
+          <button
           class="addGuide flex justify-content-center align-items-center gap[0.5]"
           @click="showGuideModal('create')"
         >
@@ -416,6 +425,8 @@ onMounted(() => {
             </div>
           </div>
         </div>
+        </div>
+
       </div>
 
       <div
@@ -514,6 +525,7 @@ body {
   font-size: 1rem;
   border-radius: 5px;
   padding: 0.5rem;
+  border: 1px solid #000
 }
 
 input:hover,
@@ -609,8 +621,7 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   min-width: 514px;
-  min-height: 480px;
-  padding-bottom: 2rem;
+  min-height: 15rem;
   overflow: hidden;
   z-index: 100;
   position: relative;
@@ -627,11 +638,15 @@ input:focus {
   border-bottom: 1px solid black;
 }
 
+.order-details__content-container{
+  height: 20rem;
+  overflow-y: auto;
+}
+
 .order-detail__guide-select-content_modal-content.grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-gap: 1rem;
-  align-content: center;
 }
 
 .order-detail__guide-select-content_guide-selector {
@@ -675,9 +690,13 @@ input:focus {
   max-height: 80vh;
   max-width: 90vw;
   overflow: hidden;
-  position: fixed;
-  z-index: 10;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 900;
 }
+
 .settings__orders-content {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
@@ -688,23 +707,27 @@ input:focus {
   scrollbar-color: #ccc transparent;
 }
 
+.order-details__content-container::-webkit-scrollbar
 .settings__orders-content::-webkit-scrollbar {
   width: 20px; /* Width of the scrollbar */
   border-radius: 10px; /* Border radius to match card */
 }
 
 /* Track (the area where the scrollbar is) */
+.order-details__content-container::-webkit-scrollbar-track,
 .settings__orders-content::-webkit-scrollbar-track {
   background: transparent; /* Transparent background */
 }
 
 /* Handle (the draggable part of the scrollbar) */
+.order-details__content-container::-webkit-scrollbar-thumb,
 .settings__orders-content::-webkit-scrollbar-thumb {
   background-color: #ccc; /* Color of the scrollbar handle */
   border-radius: 10px; /* Border radius to match card */
 }
 
 /* Handle on hover */
+.order-details__content-container::-webkit-scrollbar-thumb:hover,
 .settings__orders-content::-webkit-scrollbar-thumb:hover {
   background-color: #aaa; /* Darker color when hovered */
 }

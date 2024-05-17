@@ -354,6 +354,53 @@
   padding-left: 15rem;
 }
 
+/* padding right */
+.pd-right-1 {
+  padding-right: 1rem;
+}
+.pd-right-2 {
+  padding-right: 2rem;
+}
+.pd-right-3 {
+  padding-right: 3rem;
+}
+.pd-right-4 {
+  padding-right: 4rem;
+}
+.pd-right-5 {
+  padding-right: 5rem;
+}
+.pd-right-6 {
+  padding-right: 6rem;
+}
+.pd-right-7 {
+  padding-right: 7rem;
+}
+.pd-right-8 {
+  padding-right: 8rem;
+}
+.pd-right-9 {
+  padding-right: 9rem;
+}
+.pd-right-10 {
+  padding-right: 10rem;
+}
+.pd-right-11 {
+  padding-right: 11rem;
+}
+.pd-right-12 {
+  padding-right: 12rem;
+}
+.pd-right-13 {
+  padding-right: 13rem;
+}
+.pd-right-14 {
+  padding-right: 14rem;
+}
+.pd-left-15 {
+  padding-right: 15rem;
+}
+
 /* section margin  */
 .section__margin {
   margin: 2rem;

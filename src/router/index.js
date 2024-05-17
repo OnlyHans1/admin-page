@@ -8,6 +8,7 @@ import ReportView from '@/views/ReportView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
 import LoginHelper from '@/utilities/LoginHelper'
+import DatabaseLogsView from '@/views/DatabaseLogsView.vue'
 
 const { isAuthenticated, userData } = LoginHelper
 
@@ -59,7 +60,8 @@ const router = createRouter({
       path: '/settings',
       name: 'settings',
       component: SettingsView,
-      meta: { protected: true }
+      meta: { protected: true },
+  
     },
     {
       path: '/after-checkout',
@@ -70,6 +72,11 @@ const router = createRouter({
       path: '/:pathMatch(.*)*',
       name: '404',
       redirect: { name: 'dashboard' }
+    },
+    {
+      path : '/settings/database-logs',
+      name : 'databaseLogs',
+      component : DatabaseLogsView,
     }
   ]
 })
