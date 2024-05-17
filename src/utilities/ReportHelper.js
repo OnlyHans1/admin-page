@@ -2,7 +2,8 @@ import { ref } from 'vue'
 import * as XLSX from 'xlsx'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, TRANSACTION_BASE_URL, ORDER_BASE_URL, DETAILTRANS_BASE_URL,showLoader } = GlobalHelper
+const { DB_BASE_URL, TRANSACTION_BASE_URL, ORDER_BASE_URL, DETAILTRANS_BASE_URL, showLoader } =
+  GlobalHelper
 
 const today = new Date()
 today.setHours(7, 0, 0, 0)
@@ -250,7 +251,9 @@ const monthlyData = ref([])
 
 const fetchTargetYears = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/target-revenue/year`)
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/target-revenue/year`
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -293,7 +296,9 @@ const fetchYearlyChartData = async () => {
 
 const fetchTargetMonths = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/target-revenue/month`)
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/target-revenue/month`
+    )
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
@@ -399,8 +404,8 @@ const fetchMonthlyChartData = async () => {
 const activityReportData = ref([])
 const category = ref('')
 
-const updateCategory = (selectedCategory) => {
-  category.value = selectedCategory
+const updateCategory = (value) => {
+  category.value = value[0].name
   fetchTableDataReport()
 }
 

@@ -249,8 +249,8 @@ const createTransaction = async () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          name: userData.value.name,
-          nationality: selectedNationality.value,
+          userId: userData.value.id,
+          nationalityId: selectedNationality.value,
           plannedDate: selectedDate.value,
           total: totalTagihan.value.toFixed(2),
           method: paymentSelection.value.toUpperCase(),

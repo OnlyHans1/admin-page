@@ -201,7 +201,7 @@ onMounted(() => {
     </div>
     <!-- Pop up untuk delete -->
     <div
-      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      class="popup-confirmation__overlay w-full flex justify-content-center align-items-center"
       :class="{ active: showDeleteConfirmationPopup }"
       @click="closeDeletePopup()"
     >

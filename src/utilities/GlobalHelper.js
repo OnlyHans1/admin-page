@@ -10,6 +10,7 @@ const TRANSACTION_BASE_URL = ref('keraton-pos/transaction')
 const DETAILTRANS_BASE_URL = ref('keraton-pos/detail-trans')
 const GUIDE_BASE_URL = ref('keraton-pos/guide')
 const NATIONALITY_BASE_URL = ref('keraton-pos/nationality')
+const LOGS_BASE_URL = ref('keraton-pos/logs')
 
 const showLoader = ref(false)
 
@@ -39,6 +40,7 @@ export default {
   DETAILTRANS_BASE_URL,
   GUIDE_BASE_URL,
   NATIONALITY_BASE_URL,
+  LOGS_BASE_URL,
   assignAlert,
   showLoader,
   showAlert,

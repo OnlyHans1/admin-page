@@ -72,6 +72,7 @@ const userLogin = async () => {
     if (!response.ok) {
       const error = await response.json()
       showLoader.value = false
+      removeCookie('token')
       assignAlert(true, 'Error', 'danger', `Login gagal! ${error.message}`)
       throw new Error(error.message)
     }
