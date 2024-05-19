@@ -1,15 +1,21 @@
 <script setup>
-import { RouterView } from 'vue-router'
-import { watchEffect } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
+import { watchEffect, computed } from 'vue'
 import Sidebar from './components/Sidebar.vue'
 import LoginHelper from './utilities/LoginHelper'
 import GlobalHelper from './utilities/GlobalHelper'
 import AlertCard from './components/AlertCard.vue'
 import WebLoader from './components/WebLoader.vue'
+
 const { loggedIn, isAuthenticated } = LoginHelper
 
+const route = useRoute()
+const showSidebar = computed(
+  () => route.name !== 'generateTickets' && route.name !== 'login'
+)
+
 watchEffect(() => {
-isAuthenticated()
+  isAuthenticated()
 })
 </script>
 
@@ -18,13 +24,8 @@ isAuthenticated()
     <WebLoader />
   </div>
   <AlertCard />
-  <div v-if="loggedIn">
-    <Sidebar />
-    <div class="pd-left-8 pd-top-2 pd-bottom-2">
-      <RouterView />
-    </div>
-  </div>
-  <div v-else>
+  <Sidebar v-if="loggedIn && showSidebar" />
+  <div :class="[loggedIn ? 'pd-block-2' : 'no-pd-block', showSidebar ? 'pd-left-8' : 'no-pd-left']">
     <RouterView />
   </div>
 </template>
@@ -42,5 +43,11 @@ isAuthenticated()
   justify-content: center;
   align-items: center;
   z-index: 9999;
+}
+.no-pd-block {
+  padding-block: 0 !important;
+}
+.no-pd-left {
+  padding: 0 !important;
 }
 </style>

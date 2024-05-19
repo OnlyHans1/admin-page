@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, watchEffect } from 'vue'
+import { ref, computed, onMounted, watchEffect, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
@@ -8,6 +8,19 @@ const router = useRouter()
 const logsData = ref([])
 const searchQuery = ref('')
 const rawSearch = ref('')
+const actionArray = ref([
+  {
+    action: 'CREATE'
+  },
+  {
+    action: 'UPDATE'
+  },
+  {
+    action: 'DELETE'
+  }
+])
+const selectedAction = ref('')
+const isOpen = ref(false)
 
 const searchLogs = () => {
   searchQuery.value = rawSearch.value
@@ -17,6 +30,27 @@ const resetSearch = () => {
   rawSearch.value = ''
   searchQuery.value = ''
   fetchLogsData()
+}
+const toggleDropdown = () => {
+  isOpen.value = !isOpen.value
+}
+const selectOption = (action) => {
+  isOpen.value = false
+  selectedAction.value = action
+  console.log(selectedAction.value)
+  fetchLogsData()
+}
+const resetFilter = () => {
+  selectedAction.value = ''
+  fetchLogsData()
+}
+const closeDropdownOnClickOutside = (event) => {
+  if (
+    !event.target.closest('.action-filter__input-dropdown') &&
+    !event.target.closest('.action-filter__input-dropdown_menu')
+  ) {
+    isOpen.value = false
+  }
 }
 
 const getDate = (dateTime) => {
@@ -35,8 +69,16 @@ const fetchLogsData = async () => {
   try {
     showLoader.value = true
     let url = `${DB_BASE_URL.value}/${LOGS_BASE_URL.value}/database-logs`
+    const queryParams = []
     if (searchQuery.value) {
-      url += `?search=${encodeURIComponent(searchQuery.value)}`
+      queryParams.push(`search=${encodeURIComponent(searchQuery.value)}`)
+    }
+    if (selectedAction.value) {
+      queryParams.push(`action=${encodeURIComponent(selectedAction.value)}`)
+    }
+
+    if (queryParams.length > 0) {
+      url += `?${queryParams.join('&')}`
     }
     const response = await fetch(url)
     if (!response.ok) {
@@ -50,6 +92,7 @@ const fetchLogsData = async () => {
   }
 }
 
+// Pagination Start
 const rowsPerPage = 10
 const currentPage = ref(1)
 
@@ -58,17 +101,14 @@ const paginatedData = computed(() => {
   const end = start + rowsPerPage
   return logsData.value.slice(start, end)
 })
-
 const totalPages = computed(() => {
   return Math.ceil(logsData.value.length / rowsPerPage)
 })
-
 const changePage = (page) => {
   if (page > 0 && page <= totalPages.value) {
     currentPage.value = page
   }
 }
-
 const visiblePages = computed(() => {
   const maxVisible = 3
   let startPage = Math.max(currentPage.value - Math.floor(maxVisible / 2), 1)
@@ -90,6 +130,10 @@ watchEffect(() => {
 })
 onMounted(() => {
   fetchLogsData()
+  window.addEventListener('click', closeDropdownOnClickOutside)
+})
+onUnmounted(() => {
+  window.removeEventListener('click', closeDropdownOnClickOutside)
 })
 </script>
 
@@ -104,23 +148,46 @@ onMounted(() => {
   <h5 class="fw-600 sm-top-1">Database Logs</h5>
 
   <div class="database-logs__content pd-right-1 sm-top-2">
-    <div class="flex gap[0.5] align-items-center">
-      <div class="database-logs-search flex align-items-center">
-        <i
-          class="ri-search-line database-logs-search__icon flex align-items-center justify-content-center"
-          :width="50"
-        ></i>
-        <input
-          type="text"
-          class="database-logs-search__input-field"
-          v-model="rawSearch"
-          placeholder="Search..."
-        />
-        <ph-x v-if="rawSearch" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
+    <div class="flex align-items-center justify-content-sb pd-sd-2">
+      <div class="flex gap align-items-center gap[0.5]">
+        <div class="database-logs-search flex align-items-center">
+          <i
+            class="ri-search-line database-logs-search__icon flex align-items-center justify-content-center"
+            :width="50"
+          ></i>
+          <input
+            type="text"
+            class="database-logs-search__input-field"
+            v-model="rawSearch"
+            placeholder="Search..."
+          />
+          <ph-x v-if="rawSearch" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
+        </div>
+        <button class="database-logs__content_cta-search" @click="searchLogs">
+          <ph-magnifying-glass size="18" weight="bold" />
+        </button>
       </div>
-      <button class="database-logs__content_cta-search" @click="searchLogs">
-        <ph-magnifying-glass size="18" weight="bold" />
-      </button>
+      <div class="flex gap align-items-center gap[0.5]">
+        <div class="action-filter__input-dropdown">
+          <input
+            readonly
+            @click="toggleDropdown"
+            :value="selectedAction"
+            placeholder="Pilih Filter"
+          />
+          <div class="select-icon" @click="toggleDropdown">
+            <div class="arrow-icon" :class="{ active: isOpen }">
+              <ph-caret-down :size="14" weight="bold" class="icon" />
+            </div>
+          </div>
+          <div class="action-filter__input-dropdown_menu" :class="{ active: isOpen }">
+            <p v-for="(list, index) in actionArray" :key="index" @click="selectOption(list.action)">
+              {{ list.action }}
+            </p>
+          </div>
+        </div>
+        <button class="action-filter__cta fw-600 pd-sd-1" @click="resetFilter">Reset</button>
+      </div>
     </div>
     <table>
       <thead>
@@ -203,14 +270,83 @@ onMounted(() => {
 .database-logs-search__input-field:focus {
   outline: none;
 }
-.database-logs__content_cta-search {
+.database-logs__content_cta-search,
+.action-filter__cta {
   background-color: var(--color-primary);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
+}
+.database-logs__content_cta-search {
+  width: 2rem;
+}
+.action-filter__input-dropdown {
+  position: relative;
+  height: 2rem;
+  width: 15rem;
+  border-radius: 0.5rem;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.action-filter__input-dropdown input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  cursor: pointer;
+}
+
+.select-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.arrow-icon {
+  transition: all 300ms ease;
+}
+
+.arrow-icon.active {
+  transform: rotate(180deg);
+}
+
+.action-filter__input-dropdown_menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  display: none;
+  overflow: hidden;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
+  z-index: 200;
+}
+
+.action-filter__input-dropdown_menu.active {
+  display: block;
+}
+
+.action-filter__input-dropdown_menu p {
+  padding: 0.3rem 0.6rem;
+}
+
+.action-filter__input-dropdown_menu p:hover {
+  background-color: rgb(233, 233, 233);
+}
+
+.action-filter__input-dropdown_menu p:hover:first-child {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.action-filter__input-dropdown_menu p:hover:last-child {
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 
 table {

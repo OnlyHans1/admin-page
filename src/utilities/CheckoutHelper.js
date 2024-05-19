@@ -227,6 +227,8 @@ const dateTime = () => {
 
 const checkoutStatus = ref('')
 const paymentStatus = ref('')
+const recentTransactionId = ref('')
+
 const createTransaction = async () => {
   const order = items.value
     .filter((item) => item.amount > 0)
@@ -269,6 +271,9 @@ const createTransaction = async () => {
       showLoader.value = false
       throw new Error('Failed to create transaction. Please try again.')
     }
+
+    const res = await response.json()
+    recentTransactionId.value = res.data
 
     checkoutStatus.value = 'boleh'
     showLoader.value = false
@@ -433,6 +438,7 @@ export default {
   totalTagihan,
   totalBiaya,
   totalTicketCount,
+  recentTransactionId,
   createTransaction,
   checkoutStatus,
   guideData,

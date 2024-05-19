@@ -213,6 +213,53 @@
   padding: 0 15rem;
 }
 
+/* Padding Block (top and bottom) */
+.pd-block-1 {
+  padding-block: 1rem;
+}
+.pd-block-2 {
+  padding-block: 2rem;
+}
+.pd-block-3 {
+  padding-block: 3rem;
+}
+.pd-block-4 {
+  padding-block: 4rem;
+}
+.pd-block-5 {
+  padding-block: 5rem;
+}
+.pd-block-6 {
+  padding-block: 6rem;
+}
+.pd-block-7 {
+  padding-block: 7rem;
+}
+.pd-block-8 {
+  padding-block: 8rem;
+}
+.pd-block-9 {
+  padding-block: 9rem;
+}
+.pd-block-10{
+  padding-block: 10em;
+}
+.pd-block-11 {
+  padding-block: 11rem;
+}
+.pd-block-12 {
+  padding-block: 12rem;
+}
+.pd-block-13 {
+  padding-block: 13rem;
+}
+.pd-block-14 {
+  padding-block: 14rem;
+}
+.pd-block-15 {
+  padding-block: 15rem;
+}
+
 /* Padding Top */
 .pd-top-1 {
   padding-top: 1rem;

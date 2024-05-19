@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, watchEffect } from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
@@ -29,6 +29,7 @@ const {
   totalTagihan,
   totalBiaya,
   totalTicketCount,
+  recentTransactionId,
   createTransaction,
   selectedNationality,
   checkoutStatus,
@@ -70,11 +71,11 @@ const checkoutTransaction = async () => {
   try {
     await createTransaction()
     if (checkoutStatus.value === 'boleh') {
-      route.push('/')
-      setTimeout(() => {
-        sessionStorage.clear()
-        location.reload()
-      }, 500)
+      showTransactionGenerate()
+      // setTimeout(() => {
+      //   sessionStorage.clear()
+      //   location.reload()
+      // }, 500)
       assignAlert(true, 'Sukses', 'success', 'Transaksi berhasil dibuat!')
     }
     checkoutStatus.value = ''
@@ -100,6 +101,15 @@ const checkValidTransaction = () => {
 
   // Pastikan semua input telah diisi sesuai dengan kondisi
   return invalid
+}
+
+// Pop up untuk generate tiket
+const isTransactionGenerate = ref(false)
+const showTransactionGenerate = () => {
+  isTransactionGenerate.value = true
+}
+const closeTransactionGenerate = () => {
+  isTransactionGenerate.value = false
 }
 
 onMounted(() => {
@@ -237,15 +247,24 @@ onMounted(() => {
                         </div>
                         <label :for="guide.name">{{ guide.name }}</label>
                       </span>
-                      <div v-if="!checkGuideAvailability(guide.id)"
+                      <div
+                        v-if="!checkGuideAvailability(guide.id)"
                         class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
                         @click="guideSelectPageBio(guide)"
                       >
                         <ph-caret-right :size="16" weight="bold" />
                       </div>
-                      <div v-else
+                      <div
+                        v-else
                         class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                        @click="assignAlert(true, 'Error', 'danger', `Guide ${guide.name} tidak tersedia!`)"
+                        @click="
+                          assignAlert(
+                            true,
+                            'Error',
+                            'danger',
+                            `Guide ${guide.name} tidak tersedia!`
+                          )
+                        "
                       >
                         <ph-caret-right :size="16" weight="bold" />
                       </div>
@@ -438,12 +457,29 @@ onMounted(() => {
           </form>
         </div>
         <div class="checkout-btn">
-          <button type="submit" class="checkout__btn-order" @click="checkoutTransaction()">
+          <button type="submit" class="checkout__btn-order" @click="checkoutTransaction">
             Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
         </div>
       </div>
+      <section>
+        <div
+          class="overview-transaction-success_modal w-full h-full flex align-items-center justify-content-center"
+          v-if="isTransactionGenerate"
+        >
+          <div class="overview-transaction-success_content">
+            <ph-check-circle :size="100" color="green" />
+            <p class="fw-700 fs-h6">Transaksi berhasil</p>
+            <button
+              class="generate__btn"
+              @click="route.push({ name: 'generateTickets', params: { id: recentTransactionId } })"
+            >
+              Generate Tickets
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </template>
@@ -824,5 +860,49 @@ main {
   line-height: 24px;
   font-weight: 500;
   text-decoration: line-through;
+}
+
+.overview-transaction-success_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.overview-transaction-success_content {
+  background: white;
+  border-radius: 10px;
+  width: 30rem;
+  font-family: 'Raleway';
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  max-height: 80vh;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.generate__btn {
+  width: 40%;
+  background-color: #ffdd8f;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  align-items: center;
+}
+
+.generate__btn:hover {
+  background-color: #e6be58;
 }
 </style>
