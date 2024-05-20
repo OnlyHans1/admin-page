@@ -33,7 +33,7 @@ const {
   selectSubtypeOption,
   isSubtypeDisabled,
   subTypeOptions,
-  fetchRelatedOrderSubType,
+  fetchOrderSubType,
   combinedOrderType,
   updateOrderType,
   closeDropdownOnClickOutside,
@@ -43,7 +43,7 @@ const { fetchTargetedOrder, fetchOrderType, fetchCategory } = SettingsHelper
 
 const router = useRouter()
 const route = useRoute()
-const currentPath = ref(route.path)
+const currentPath = ref(route.name)
 
 const createOrder = async () => {
   try {
@@ -122,7 +122,7 @@ const submitOrder = () => {
   createOrder()
 }
 const isEditPage = async () => {
-  if (currentPath.value !== '/add') {
+  if (currentPath.value === 'edit') {
     const id = route.params.id
     await fetchTargetedOrder(id)
     assignEditData()
@@ -131,7 +131,7 @@ const isEditPage = async () => {
 const checkData = async () => {
   try {
     await fetchOrderType()
-    await fetchRelatedOrderSubType(orderTypeId.value)
+    await fetchOrderSubType(orderTypeId.value)
     await fetchCategory()
     resetData()
     await isEditPage()
@@ -141,8 +141,8 @@ const checkData = async () => {
 }
 
 watchEffect(() => {
-  currentPath.value = route.path
-  fetchRelatedOrderSubType(orderTypeId.value)
+  currentPath.value = route.name
+  fetchOrderSubType(orderTypeId.value)
 })
 
 onMounted(() => {
@@ -266,7 +266,7 @@ onUnmounted(() => {
       </div>
       <div class="add__preview-cta_container">
         <button
-          v-if="currentPath === '/add'"
+          v-if="currentPath === 'add'"
           class="add__preview_button"
           type="submit"
           @click="confirmAdd()"

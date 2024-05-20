@@ -4,7 +4,7 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 import AddHelper from '@/utilities/AddHelper'
 
 const { DB_BASE_URL, ORDERTYPE_BASE_URL, showLoader } = GlobalHelper
-const { fetchRelatedOrderSubType } = AddHelper
+const { fetchOrderSubType } = AddHelper
 
 const emit = defineEmits(['option-selected'])
 const props = defineProps({
@@ -42,7 +42,7 @@ const selectOption = (id, name) => {
   selectedOrderType.value[0] = { id, name }
   isOpen.value = false
   orderType.value = name
-  fetchRelatedOrderSubType(id)
+  fetchOrderSubType(id)
   emit('option-selected', selectedOrderType.value)
 }
 

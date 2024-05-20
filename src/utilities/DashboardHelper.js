@@ -45,7 +45,11 @@ const navigateToAdd = () => {
 }
 
 const getImageURL = (imageName) => {
-  return `${DB_BASE_URL.value}/uploads/${imageName}`
+  if (imageName.startsWith('http')) {
+    return imageName;
+  } else {
+    return `${DB_BASE_URL.value}/uploads/${imageName}`;
+  }
 }
 
 const selectItem = (item) => {
