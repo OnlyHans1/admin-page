@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 
 const { targetDate, dataSeries, dataCategory } = defineProps([
   'targetDate',
@@ -12,7 +12,7 @@ const chartOptions = ref({
     toolbar: {
       show: true,
       tools: {
-        download: false,
+        download: true,
         selection: false,
         zoom: false,
         zoomin: false,
@@ -102,10 +102,14 @@ const chartOptions = ref({
     show: false
   }
 })
+
+watch(dataCategory, (newValue, oldValue) => {
+  chartOptions.value.xaxis.categories = newValue
+}, { immediate: true })
 </script>
 
 <template>
-  <div class="revenue-details flex fd-col align-items-center justify-content-sb">
+  <div class="revenue-details flex fd-col gap-1 align-items-center justify-content-sb">
     <div class="revenue-details__desc flex fd-row align-items-f-start justify-content-sb w-full">
       <div class="revenue-details__desc-text flex fd-col">
         <p class="revenue-details__desc-title">Tingkat Keramaian</p>
@@ -124,7 +128,7 @@ const chartOptions = ref({
     <div id="chart" class="revenue-details__chart-container">
       <apexchart
         type="line"
-        height="200"
+        height="240"
         width="460"
         :options="chartOptions"
         :series="dataSeries"
@@ -136,7 +140,6 @@ const chartOptions = ref({
 <style>
 .revenue-details {
   width: 531px;
-  height: 311px;
   padding: 1rem;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);

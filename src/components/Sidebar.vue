@@ -1,11 +1,13 @@
 <script setup>
-import { useRoute } from 'vue-router'
-import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { onMounted, ref, watch, watchEffect } from 'vue'
 import LoginHelper from '@/utilities/LoginHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
 
-const { userLogout } = LoginHelper
+const { userData, userLogout } = LoginHelper
 
 const activeLink = ref(0)
+const router = useRouter()
 const route = useRoute()
 
 const determineActiveLink = () => {
@@ -18,20 +20,41 @@ const determineActiveLink = () => {
     activeLink.value = 2 // Report link active
   } else if (path.includes('/checkout')) {
     activeLink.value = 3
+  } else if (path.includes('/settings')) {
+    activeLink.value = 4
   } else {
-    // Handle other routes accordingly
     activeLink.value = -1 // No specific link active
   }
 }
 
+const toSettings = () => {
+  if (userData.value.role === 'CASHIER') {
+    GlobalHelper.assignAlert(
+      true,
+      'Error',
+      'danger',
+      'Kamu tidak memiliki akses yang cukup untuk membuka fitur ini!'
+    )
+  } else router.push('/settings')
+}
 watch(
   () => route.path,
   () => {
     determineActiveLink()
   }
 )
-
-determineActiveLink()
+onMounted(() => {
+  if (!userData.value) {
+    userLogout()
+    router.replace('/login')
+  }
+})
+watchEffect(() => {
+  if (!userData.value) {
+    userLogout()
+    router.replace('/login')
+  }
+})
 </script>
 <template>
   <nav>
@@ -55,9 +78,11 @@ determineActiveLink()
         </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
-        <a href="#" name="Settings"><ph-gear :size="24" weight="bold" /></a>
-        <RouterLink to="/login" name="Logout"  @click="userLogout()">
-          ><ph-sign-out :size="24" weight="bold" mirrored="mirrored"
+        <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 4 }">
+          <ph-gear :size="24" weight="bold" :class="{ disabled: userData.role === 'CASHIER' }" />
+        </a>
+        <RouterLink to="/login" name="Logout" @click="userLogout(), router.replace('/login')">
+          <ph-sign-out :size="24" weight="bold" mirrored="mirrored"
         /></RouterLink>
       </div>
     </div>
@@ -144,5 +169,8 @@ a:hover::after {
 }
 .active:hover::after {
   transform: translateX(15%);
+}
+.disabled {
+  color: #545454;
 }
 </style>

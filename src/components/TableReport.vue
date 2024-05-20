@@ -1,34 +1,16 @@
 <script setup>
-import { ref, watch, onMounted } from 'vue'
+import { onMounted } from 'vue'
 import ReportHelper from '@/utilities/ReportHelper'
 
 const {
   activityReportData,
   fetchTableDataReport,
-  getFilteredCategory,
   capitalizeFirstLetter,
   formatDate,
   formatCurrency
 } = ReportHelper
 
-const props = defineProps({
-  filteredCategory: { default: '' }
-})
-const filteredCategory = ref(props.filteredCategory)
-// Memantau perubahan props.filteredCategory
-watch(
-  () => props.filteredCategory,
-  (newValue) => {
-    if (typeof newValue === 'string') {
-      filteredCategory.value = newValue.toUpperCase()
-      getFilteredCategory(filteredCategory.value)
-      fetchTableDataReport()
-    }
-  }
-)
-
 onMounted(() => {
-  getFilteredCategory(filteredCategory.value)
   fetchTableDataReport()
 })
 </script>
@@ -53,9 +35,9 @@ onMounted(() => {
           :key="index"
         >
           <td>{{ index + 1 }}</td>
-          <td>{{ item.order.name }}</td>
-          <td>{{ capitalizeFirstLetter(item.order.category) }}</td>
-          <td>{{ formatDate(item.transaction.date) }}</td>
+          <td class="to-ellipsis">{{ item.order.name }}</td>
+          <td>{{ item.order.category.name }}</td>
+          <td>{{ formatDate(item.transaction.createdDate) }}</td>
           <td>{{ item.amount }}</td>
           <td>{{ formatCurrency(item.total_price) }}</td>
         </tr>
@@ -107,8 +89,7 @@ onMounted(() => {
 }
 .report-activity__table-header th:nth-child(2),
 .report-activity__table-items td:nth-child(2) {
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  max-width: 24rem;
   text-align: start;
   padding-left: 2rem;
 }

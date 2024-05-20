@@ -1,187 +1,176 @@
 <script setup>
-import { ref, computed, onMounted, watchEffect } from 'vue'
+import { ref, onMounted, onUnmounted, watchEffect } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import InputFoto from '@/components/InputFoto.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
-import AlertCard from '@/components/AlertCard.vue'
-import DashboardHelper from '@/utilities/DashboardHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
+import AddHelper from '@/utilities/AddHelper'
+import SettingsHelper from '@/utilities/SettingsHelper'
+import OrderTypeDropdown from '@/components/OrderTypeDropdown.vue'
 
-const { selectedItemToEdit, getImageURL } = DashboardHelper
+const { DB_BASE_URL, ORDER_BASE_URL, showLoader, assignAlert } = GlobalHelper
+const {
+  title,
+  desc,
+  category,
+  categoryId,
+  price,
+  selectedImageURL,
+  defaultImageURL,
+  submitAlert,
+  confirmAlert,
+  resetData,
+  createFormData,
+  handleFileSelected,
+  formattedPrice,
+  updateCategory,
+  confirmAdd,
+  orderType,
+  orderTypeId,
+  orderSubType,
+  isSubtypeDropdownOpen,
+  toggleSubtypeDropdown,
+  selectSubtypeOption,
+  isSubtypeDisabled,
+  subTypeOptions,
+  fetchRelatedOrderSubType,
+  combinedOrderType,
+  updateOrderType,
+  closeDropdownOnClickOutside,
+  assignEditData
+} = AddHelper
+const { fetchTargetedOrder, fetchOrderType, fetchCategory } = SettingsHelper
 
 const router = useRouter()
 const route = useRoute()
-
-const editId = ref('')
-const title = ref('')
-const desc = ref('')
-const category = ref('') 
-const price = ref('')
-const imageName = ref('')
-const selectedImageURL = ref('') // State to hold the selected image URL
-const selectedImage = ref(null) // State to hold the selected image File
-const defaultImageURL = ref(
-  'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-)
-const submitAlert = ref(false)
-const confirmAlert = ref(false)
-
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
-
-const insertDatabase = async () => {
-  try {
-    const formData = new FormData()
-    formData.append('image', selectedImage.value)
-    formData.append('title', title.value)
-    formData.append('desc', desc.value)
-    formData.append('category', category.value.toUpperCase())
-    formData.append('price', parseFloat(price.value))
-
-    const response = await fetch('http://localhost:3000/add/order-details', {
-      method: 'POST',
-      body: formData
-    })
-
-    if (!response.ok) {
-      throw new Error('Gagal membuat pesanan. Silahkan coba lagi.')
-    } else {
-      submitAlert.value = !submitAlert.value
-      setTimeout(() => {
-        router.push('/')
-      }, 1200)
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const updateDatabase = async () => {
-  try {
-    const formData = new FormData()
-    formData.append('image', selectedImage.value)
-    formData.append('imgName', imageName.value)
-    formData.append('title', title.value)
-    formData.append('desc', desc.value)
-    formData.append('category', category.value.toUpperCase())
-    formData.append('price', parseFloat(price.value))
-
-    const response = await fetch(`http://localhost:3000/edit/order-details/${encodeURIComponent(editId.value)}`, {
-      method: 'PUT',
-      body: formData
-    })
-
-    if (!response.ok) {
-      throw new Error('Gagal mengubah pesanan. Silahkan coba lagi.')
-    } else {
-      submitAlert.value = !submitAlert.value
-      setTimeout(() => {
-        router.push('/')
-      }, 1200)
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const capitalizeFirstLetter = (str) => {
-  const lowercaseStr = str.toLowerCase()
-  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
-}
-
-const submit = () => {
-  confirmAlert.value = false
-  insertDatabase()
-}
-// Method to handle the selected file from InputFoto component
-const handleFileSelected = (file) => {
-  // Convert the selected file to URL
-  const imageURL = URL.createObjectURL(file)
-  // Update the state with the selected image URL
-  selectedImage.value = file
-  selectedImageURL.value = imageURL
-}
-
-const formattedPrice = computed(() => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(price.value)
-})
-
-const updateCategory = (selectedCategory) => {
-  category.value = selectedCategory
-}
-
-const getEmptyFields = () => {
-  const emptyFields = []
-  if (!title.value.trim()) {
-    emptyFields.push('Judul')
-  }
-  if (!desc.value.trim()) {
-    emptyFields.push('Desc')
-  }
-  if (!category.value.trim()) {
-    emptyFields.push('Kategori')
-  }
-  if (!String(price.value).trim()) {
-    emptyFields.push('Harga')
-  }
-  return emptyFields
-}
-
-const confirmAdd = () => {
-  const emptyFields = getEmptyFields()
-
-  if (emptyFields.length > 0) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger' // Set your alert type
-    message.value = `Isi kolom ${emptyFields.join(', ')} terlebih dahulu.` // Set your alert message
-    return // Prevent confirmation if there are empty fields
-  }
-
-  confirmAlert.value = true
-}
-
 const currentPath = ref(route.path)
-const isEditPage = () => {
-  editId.value = selectedItemToEdit.value.id
-  if (currentPath.value === `/edit/${encodeURIComponent(editId.value)}`) {
-    title.value = selectedItemToEdit.value.name
-    desc.value = selectedItemToEdit.value.desc
-    price.value = selectedItemToEdit.value.price
-    category.value = capitalizeFirstLetter(selectedItemToEdit.value.category)
-    imageName.value = selectedItemToEdit.value.image
-    selectedImageURL.value = getImageURL(selectedItemToEdit.value.image)
+
+const createOrder = async () => {
+  try {
+    showLoader.value = true
+
+    const data = createFormData('create')
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/create`,
+      {
+        method: 'POST',
+        body: data
+      }
+    )
+
+    if (!response.ok) {
+      showLoader.value = false
+      submitAlert.value = false
+      assignAlert(true, 'Error', 'danger', 'Gagal membuat pesanan! Silahkan coba lagi.')
+    } else {
+      showLoader.value = false
+      submitAlert.value = true
+      setTimeout(() => {
+        router.push('/')
+        assignAlert(
+          true,
+          'Sukses',
+          'success',
+          `Berhasil membuat pesanan ${title.value} (${category.value})`
+        )
+        submitAlert.value = false
+      }, 1200)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+const updateOrder = async () => {
+  try {
+    showLoader.value = true
+
+    const data = createFormData('update')
+
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/update/${encodeURIComponent(route.params.id)}`,
+      {
+        method: 'POST',
+        body: data
+      }
+    )
+
+    if (!response.ok) {
+      showLoader.value = false
+      submitAlert.value = false
+      assignAlert(true, 'Error', 'danger', 'Gagal mengubah pesanan! Silahkan coba lagi.')
+    } else {
+      showLoader.value = false
+      submitAlert.value = true
+      setTimeout(() => {
+        router.push('/')
+        assignAlert(
+          true,
+          'Sukses',
+          'success',
+          `Berhasil mengubah pesanan ke ${title.value} (${category.value})`
+        )
+        submitAlert.value = false
+      }, 1200)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+const submitOrder = () => {
+  confirmAlert.value = false
+  createOrder()
+}
+const isEditPage = async () => {
+  if (currentPath.value !== '/add') {
+    const id = route.params.id
+    await fetchTargetedOrder(id)
+    assignEditData()
+  }
+}
+const checkData = async () => {
+  try {
+    await fetchOrderType()
+    await fetchRelatedOrderSubType(orderTypeId.value)
+    await fetchCategory()
+    resetData()
+    await isEditPage()
+  } catch (err) {
+    console.error(err)
   }
 }
 
 watchEffect(() => {
   currentPath.value = route.path
+  fetchRelatedOrderSubType(orderTypeId.value)
 })
 
 onMounted(() => {
-  isEditPage()
+  checkData()
+  window.addEventListener('click', closeDropdownOnClickOutside)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeDropdownOnClickOutside)
 })
 </script>
 
 <template>
-  <AlertCard :showAlert="showAlert" :alertTitle="alertTitle" :alertType="alertType" :alertMessage="alertMessage"
-    @hideAlert="showAlert = false" />
   <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
     <div class="add__alert-confirmation">
       <h2>Kamu yakin mau menambahkan {{ title ? title : 'Tiket' }}?</h2>
       <div class="button-group">
         <button @click="confirmAlert = false">Cancel</button>
-        <button @click="submit()">Yes</button>
+        <button @click="submitOrder()">Yes</button>
       </div>
     </div>
   </div>
   <div class="bubble-alert_submit" v-if="submitAlert">
-    <p v-if="!currentPath === `/edit/${encodeURIComponent(editId)}`">Data berhasil ditambahkan</p>
+    <p v-if="currentPath === '/add'">Data berhasil ditambahkan</p>
     <p v-else>Data berhasil diubah</p>
   </div>
 
-  <main class="add">
+  <main class="add pd-bottom-2">
     <section class="add__input">
       <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
       <div class="add__input-card_title">
@@ -198,7 +187,51 @@ onMounted(() => {
       </div>
       <div class="add__input-category">
         <h6>Kategori</h6>
-        <CategoryDropdown @option-selected="updateCategory" :initial-category="category"/>
+        <CategoryDropdown
+          @option-selected="updateCategory"
+          :initial-category="{ category, categoryId }"
+        />
+      </div>
+      <div class="add__input-ticket_subtype">
+        <h6>Tipe Tiket</h6>
+        <div class="flex gap-1">
+          <!-- Ticket Type Dropdown -->
+
+          <OrderTypeDropdown
+            @option-selected="updateOrderType"
+            :initial-order-type="{ orderTypeId, orderType }"
+          />
+
+          <!-- Ticket SubType Dropdown -->
+
+          <div class="subtype__input-dropdown" :class="{ active: !isSubtypeDisabled }">
+            <input
+              readonly
+              @click="toggleSubtypeDropdown()"
+              :value="orderSubType"
+              :class="{ active: !isSubtypeDisabled }"
+              placeholder="Pilih Subtipe Tiket"
+              id="subtype"
+            />
+            <div class="select-icon">
+              <div class="arrow-icon" :class="{ active: isSubtypeDropdownOpen }">
+                <ph-caret-down :size="14" weight="bold" class="icon" />
+              </div>
+            </div>
+            <div
+              class="ticket-type__input-dropdown_menu"
+              :class="{ active: isSubtypeDropdownOpen }"
+            >
+              <p
+                v-for="option in subTypeOptions"
+                :key="option.id"
+                @click="selectSubtypeOption(option.id, option.name)"
+              >
+                {{ option.name }}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
       <div class="add__input-price">
         <h6>Harga</h6>
@@ -209,16 +242,21 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="add__preview w-full">
+    <section class="add__preview w-full sticky">
       <h5>Preview</h5>
       <div class="add__preview-card_container">
-        <h6 class="add__preview-category">{{ category ? category : 'Category' }}</h6>
+        <div class="flex gap[0.5]">
+          <h6 class="add__preview-category">{{ category ? category : 'Kategori' }}</h6>
+          <h6 class="add__preview-category">
+            {{ combinedOrderType ? combinedOrderType : 'Tipe Tiket' }}
+          </h6>
+        </div>
         <div class="add__preview-image_container">
           <img :src="selectedImageURL ? selectedImageURL : defaultImageURL" alt="" />
         </div>
         <div class="add__preview-card_details sm-top-1">
-          <h5 class="fw-600">{{ title ? title : 'Card Title' }}</h5>
-          <p>{{ desc ? desc : 'Card Description' }}</p>
+          <h5 class="fw-600">{{ title ? title : 'Judul' }}</h5>
+          <p>{{ desc ? desc : 'Deskripsi' }}</p>
           <div class="add__preview-card-details-price">
             <h5 class="fw-600 sm-top-1">
               <span class="fw-600">{{ formattedPrice }}</span>
@@ -227,14 +265,116 @@ onMounted(() => {
         </div>
       </div>
       <div class="add__preview-cta_container">
-        <button v-if="!currentPath === `/edit/${encodeURIComponent(editId)}`" class="add__preview_button" type="submit" @click="confirmAdd()">Tambahkan</button>
-        <button v-else class="add__preview_button" type="submit" @click="updateDatabase()">Edit</button>
+        <button
+          v-if="currentPath === '/add'"
+          class="add__preview_button"
+          type="submit"
+          @click="confirmAdd()"
+        >
+          Tambahkan
+        </button>
+        <button v-else class="add__preview_button" type="submit" @click="updateOrder()">
+          Edit
+        </button>
       </div>
     </section>
   </main>
 </template>
 
 <style scoped>
+.subtype__input-dropdown {
+  position: relative;
+  height: 2rem;
+  width: 15rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(126, 126, 126);
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.subtype__input-dropdown.active {
+  position: relative;
+  height: 2rem;
+  width: 15rem;
+  border-radius: 0.5rem;
+  border: 1px solid black;
+  opacity: 1;
+  cursor: pointer;
+}
+
+.subtype__input-dropdown input.active,
+.ticket-type__input-dropdown input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  cursor: pointer;
+}
+.subtype__input-dropdown input {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  background-color: transparent;
+  cursor: not-allowed;
+}
+
+.select-icon {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+.arrow-icon {
+  transition: all 300ms ease;
+}
+
+.arrow-icon.active {
+  transform: rotate(180deg);
+}
+.subtype__input-dropdown_menu,
+.ticket-type__input-dropdown_menu {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 0;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  display: none;
+  overflow: hidden;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
+  z-index: 200;
+}
+
+.subtype__input-dropdown_menu.active,
+.ticket-type__input-dropdown_menu.active {
+  display: block;
+}
+
+.subtype__input-dropdown_menu p,
+.ticket-type__input-dropdown_menu p {
+  padding: 0.3rem 0.6rem;
+}
+
+.subtype__input-dropdown_menu p:hover,
+.ticket-type__input-dropdown_menu p:hover {
+  background-color: rgb(233, 233, 233);
+}
+
+.subtype__input-dropdown_menu p:hover:first-child,
+.ticket-type__input-dropdown_menu p:hover:first-child {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.subtype__input-dropdown_menu p:hover:last-child,
+.ticket-type__input-dropdown_menu p:hover:last-child {
+  border-radius: 0 0 0.5rem 0.5rem;
+}
+
 .add {
   display: flex;
   width: 100%;
@@ -273,7 +413,7 @@ onMounted(() => {
 
 /* input harga */
 input[type='number'] {
-  width: 20rem;
+  width: 15rem;
   height: 2rem;
   border-radius: 0.5rem;
   appearance: none;
@@ -446,6 +586,7 @@ textarea:focus {
 /* bubble alert */
 .bubble-alert_submit {
   position: fixed;
+  z-index: 2;
   top: 1rem;
   right: 1%;
   background-color: #d9d9d9;

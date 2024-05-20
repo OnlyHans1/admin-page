@@ -1,8 +1,12 @@
 import { ref, computed } from 'vue'
+import GlobalHelper from './GlobalHelper'
+import SettingsHelper from './SettingsHelper'
+
+const { DB_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
+const { targetedData, fetchTargetedOrder } = SettingsHelper
 
 const selectedItems = ref([])
-const selectedItemToDelete = ref([])
-const selectedItemToEdit = ref([])
+const selectedItemToDelete = ref('')
 
 const showConfirmationPopup = ref(false)
 const showDeleteConfirmationPopup = ref(false)
@@ -10,20 +14,17 @@ const showDeleteConfirmationPopup = ref(false)
 const dataDashboard = ref([])
 const isMancanegara = ref(false)
 
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
-
 const fetchOrderList = async () => {
   try {
-    const response = await fetch('http://localhost:3000/order-list')
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details`)
     if (!response.ok) {
+      showLoader.value = false
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    dataDashboard.value = data
+    dataDashboard.value = data.data
     sortDataByCreatedAt()
+    showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -35,11 +36,6 @@ const sortDataByCreatedAt = () => {
   })
 }
 
-const capitalizeFirstLetter = (str) => {
-  const lowercaseStr = str.toLowerCase()
-  return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
-}
-
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
 }
@@ -49,7 +45,7 @@ const navigateToAdd = () => {
 }
 
 const getImageURL = (imageName) => {
-  return `http://localhost:3000/uploads/${imageName}`
+  return `${DB_BASE_URL.value}/uploads/${imageName}`
 }
 
 const selectItem = (item) => {
@@ -120,12 +116,12 @@ const checkSessionStorage = () => {
   // Memeriksa apakah sessionStorageData memiliki nilai
   if (sessionStorageData && sessionStorageData.length > 0) {
     for (const item of sessionStorageData) {
-      if (item && item.category === 'MANCANEGARA') {
+      if (item && item.category.name === 'Mancanegara') {
         isMancanegara.value = true
-        return 'MANCANEGARA'
-      } else if (item && item.category !== 'MANCANEGARA') {
+        return 'Mancanegara'
+      } else if (item && item.category.name !== 'Mancanegara') {
         isMancanegara.value = false
-        return 'NOT_MANCANEGARA'
+        return 'Not_Mancanegara'
       }
     }
     return ''
@@ -135,17 +131,17 @@ const checkSessionStorage = () => {
 // Fungsi untuk menangani pemilihan kategori
 const handleCategorySelection = (filterCategory) => {
   // Jika kategori Mancanegara dipilih dan tidak ada item dengan kategori MANCANEGARA di sessionStorage, nonaktifkan kategori lainnya
-  if (filterCategory === 'MANCANEGARA') {
+  if (filterCategory === 'Mancanegara') {
     // Nonaktifkan item dengan kategori UMUM dan PELAJAR
     dataDashboard.value.forEach((item) => {
-      if (item.category !== 'MANCANEGARA') {
+      if (item.category.name !== 'Mancanegara') {
         item.disabled = true
       }
     })
-  } else if (filterCategory === 'NOT_MANCANEGARA') {
+  } else if (filterCategory === 'Not_Mancanegara') {
     // Nonaktifkan item dengan kategori MANCANEGARA
     dataDashboard.value.forEach((item) => {
-      if (item.category === 'MANCANEGARA') {
+      if (item.category.name === 'Mancanegara') {
         item.disabled = true
       }
     })
@@ -162,50 +158,62 @@ const handleItemClick = (item) => {
   const filterCategory = ref(checkSessionStorage())
   handleCategorySelection(filterCategory.value)
   if (item.disabled) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger'
-
-    if (filterCategory.value === 'MANCANEGARA') {
-      // Set your alert type
-      alertMessage.value = 'Kamu tidak bisa memilih paket selain kategori mancanegara!' // Set your alert message
+    if (filterCategory.value === 'Mancanegara') {
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        'Kamu tidak bisa memilih paket selain kategori mancanegara!'
+      )
     } else {
-      alertMessage.value = 'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!' // Set your alert message
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!'
+      )
     }
   } else {
     selectItem(item)
   }
 }
 
-const showDeleteConfirmation = () => {
+const showDeleteConfirmation = (id) => {
   showDeleteConfirmationPopup.value = true
-  // Menampilkan konfirmasi delete
-  selectedItemToDelete.value = selectedItems.value[0]
+  selectedItemToDelete.value = id
 }
 
 const closeDeletePopup = () => {
   showDeleteConfirmationPopup.value = false
-  selectedItemToDelete.value = []
+  selectedItemToDelete.value = ''
 }
 
 const groupedItems = computed(() => {
   const grouped = {}
   dataDashboard.value.forEach((item) => {
-    const category = item.category
+    const category = item.category.name
     if (!grouped[category]) {
       grouped[category] = []
     }
     grouped[category].push(item)
   })
-  return grouped
-})
 
-const confirmDelete = async () => {
+  const sortedGrouped = {}
+  Object.keys(grouped)
+    .sort((a, b) => b.localeCompare(a))
+    .forEach((key) => {
+      sortedGrouped[key] = grouped[key]
+    })
+
+  return sortedGrouped
+})
+const deleteOrder = async () => {
   try {
+    showLoader.value = true
     const response = await fetch(
-      `http://localhost:3000/delete-order/${encodeURIComponent(selectedItemToDelete.value.id)}`,
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/delete/${encodeURIComponent(selectedItemToDelete.value)}`,
       {
-        method: 'DELETE',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         }
@@ -213,14 +221,35 @@ const confirmDelete = async () => {
     )
 
     if (response.ok) {
+      showLoader.value = false
       sessionStorage.clear()
-      console.log('Pesanan berhasil dihapus.')
+      closePopup()
+      closeDeletePopup()
+      assignAlert(
+        true,
+        'Sukses',
+        'success',
+        `Pesanan ${targetedData.value.name} (${targetedData.value.category.name}) berhasil dihapus!`
+      )
       setTimeout(() => {
         location.reload()
-      }, 1000)
+      }, 3000)
     } else {
-      throw new Error('Gagal menghapus pesanan!')
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        `Gagal menghapus pesanan ${targetedData.value.name} (${targetedData.value.category.name})!`
+      )
     }
+  } catch (error) {
+    console.error(error)
+  }
+}
+const confirmDelete = async () => {
+  try {
+    await fetchTargetedOrder(selectedItemToDelete.value)
+    await deleteOrder()
   } catch (error) {
     console.error(error)
   }
@@ -228,7 +257,6 @@ const confirmDelete = async () => {
 
 export default {
   selectedItems,
-  selectedItemToEdit,
   showConfirmationPopup,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
@@ -237,7 +265,6 @@ export default {
   isMancanegara,
   fetchOrderList,
   getImageURL,
-  capitalizeFirstLetter,
   formatCurrency,
   navigateToAdd,
   closePopup,
@@ -247,9 +274,5 @@ export default {
   saveToSessionStorage,
   handleItemClick,
   checkSessionStorage,
-  groupedItems,
-  showAlert,
-  alertTitle,
-  alertType,
-  alertMessage
+  groupedItems
 }

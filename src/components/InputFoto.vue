@@ -1,6 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 
+import GlobalHelper from '@/utilities/GlobalHelper';
+
+const {assignAlert } = GlobalHelper
+
 const fileInput = ref(null);
 const isDragOver = ref(false);
 const dragText = ref("Tambahkan Foto");
@@ -42,7 +46,7 @@ const uploadFile = (event) => {
 
   // Simulate uploading process
   setTimeout(() => {
-    alert("File uploaded successfully!");
+    assignAlert(true, 'Sukses', 'success', 'File Berhasil Diupload')
   }, 1000);
 };
 </script>

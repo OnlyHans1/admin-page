@@ -2,12 +2,10 @@
 import { onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import AlertCard from '@/components/AlertCard.vue'
-import CheckoutHelper from '@/utilities/CheckoutHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
 
 const {
   selectedItems,
-  selectedItemToEdit,
   showConfirmationPopup,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
@@ -15,7 +13,6 @@ const {
   dataDashboard,
   fetchOrderList,
   getImageURL,
-  capitalizeFirstLetter,
   formatCurrency,
   navigateToAdd,
   closePopup,
@@ -24,23 +21,16 @@ const {
   decreaseAmount,
   saveToSessionStorage,
   handleItemClick,
-  groupedItems,
-  showAlert,
-  alertTitle,
-  alertType,
-  alertMessage
+  groupedItems
 } = DashboardHelper
-
-const { checkoutStatus } = CheckoutHelper
 
 const router = useRouter()
 
 const editOrder = () => {
-  selectedItemToEdit.value = selectedItems.value[0]
+  const id = selectedItems.value[0].id
   closePopup()
-  router.push({ name: 'edit', params: { id: selectedItemToEdit.value.id } })
+  router.push({ name: 'edit', params: { id: id } })
 }
-
 
 watch(
   selectedItems.value,
@@ -50,30 +40,21 @@ watch(
   { deep: true }
 )
 
-const handleCheckoutStatus = () => {
-  if (checkoutStatus.value === 'boleh') {
-    showAlert.value = true
-    alertTitle.value = 'Sukses'
-    alertType.value = 'success'
-    alertMessage.value = 'Berhasil'
-    checkoutStatus.value = ''
+const checkData = async () => {
+  try {
+    GlobalHelper.showLoader.value = true
+    await fetchOrderList()
+  } catch (error) {
+    console.error(error)
   }
 }
 
 onMounted(() => {
-  fetchOrderList()
-  handleCheckoutStatus()
+  checkData()
 })
 </script>
 
 <template>
-  <AlertCard
-    :showAlert="showAlert"
-    :alertTitle="alertTitle"
-    :alertType="alertType"
-    :alertMessage="alertMessage"
-    @hideAlert="showAlert = false"
-  />
   <div class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2">
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
@@ -103,7 +84,7 @@ onMounted(() => {
             />
             <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
               <p class="to-ellipsis">{{ item.name }}</p>
-              <p>{{ capitalizeFirstLetter(item.category) }}</p>
+              <p>{{ item.category.name }}</p>
               <p>Rp. {{ formatCurrency(item.price) }}</p>
             </div>
           </div>
@@ -116,7 +97,7 @@ onMounted(() => {
       :key="category"
       :class="`dashboard-${category.toLowerCase()}__container w-full`"
     >
-      <h4>{{ capitalizeFirstLetter(category) }}</h4>
+      <h4>{{ category }}</h4>
       <div class="dashboard__card-container flex fd-row w-full pd-top-1 pd-sd-2">
         <div
           v-for="(item, index) in items"
@@ -134,7 +115,7 @@ onMounted(() => {
           />
           <div class="dashboard__card-content flex fd-col align-items-f-start pd[0.5]">
             <p class="to-ellipsis">{{ item.name }}</p>
-            <p>{{ capitalizeFirstLetter(item.category) }}</p>
+            <p>{{ item.category.name }}</p>
             <p>Rp. {{ formatCurrency(item.price) }}</p>
           </div>
         </div>
@@ -142,7 +123,7 @@ onMounted(() => {
     </div>
 
     <div
-      class="overlay popup-order__overlay w-full h-full pd-sd-10 pd-top-5 pd-bottom-5"
+      class="overlay popup-order__overlay flex align-items-center justify-content-center w-full h-full"
       :class="{ active: selectedItems.length > 0 }"
       @click="closePopup"
     >
@@ -163,7 +144,7 @@ onMounted(() => {
             <div class="flex fd-col sm-sd-2">
               <div>
                 <h4 class="fw-600">{{ selectedItems[0].name }}</h4>
-                <h6>{{ capitalizeFirstLetter(selectedItems[0].category) }}</h6>
+                <h6>{{ selectedItems[0].category.name }}</h6>
                 <h5 class="sm-top-1">Rp. {{ selectedItems[0].price }} / tiket</h5>
               </div>
               <div
@@ -183,7 +164,8 @@ onMounted(() => {
             <p>{{ selectedItems[0].desc }}</p>
             <div class="flex fd-row justify-content-start">
               <button
-                class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]" @click="showDeleteConfirmation()"
+                class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]"
+                @click="showDeleteConfirmation(selectedItems[0].id)"
               >
                 <ph-trash :size="16" weight="bold" />
                 <span class="fw-600">Delete</span>
@@ -202,13 +184,16 @@ onMounted(() => {
     </div>
 
     <div
-      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      class="popup-confirmation__overlay w-full flex justify-content-center align-items-center"
       :class="{ active: showConfirmationPopup }"
       @click="closePopup()"
     >
-      <div class="popup-confirmation__container" @click.stop>
+      <div
+        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
+        @click.stop
+      >
         <h5 class="text-align-center">Pindah ke Halaman Tambah?</h5>
-        <div class="popup-confimation__button-confirmation flex justify-content-sa">
+        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
           <button @click="router.push({ name: 'add' }), closePopup()">Ya</button>
           <button @click="closePopup()">Batal</button>
         </div>
@@ -216,15 +201,16 @@ onMounted(() => {
     </div>
     <!-- Pop up untuk delete -->
     <div
-      class="overlay popup-confirmation__overlay w-full flex justify-content-center align-items-center"
+      class="popup-confirmation__overlay w-full flex justify-content-center align-items-center"
       :class="{ active: showDeleteConfirmationPopup }"
       @click="closeDeletePopup()"
     >
-      <div class="popup-confirmation__container" @click.stop>
+      <div
+        class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
+        @click.stop
+      >
         <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
-        <div
-          class="popup-confimation__button-confirmation flex justify-content-sa align-items-center"
-        >
+        <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
           <button @click="confirmDelete()">Hapus</button>
           <button @click="closeDeletePopup()">Batal</button>
         </div>
@@ -318,11 +304,16 @@ onMounted(() => {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 514px;
+  width: 80vw;
+  max-height: 80vh;
   overflow: hidden;
 }
 
 .popup-confirmation__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999;
   opacity: 0;
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
@@ -341,12 +332,12 @@ onMounted(() => {
   width: 345px;
   overflow: hidden;
   margin-top: auto;
-  transform: translateY(-50%);
+  transform: translateY(0);
   transition: transform 0.3s ease;
 }
 
-.popup-confirmation__overlay.active .popup-confirmation__container {
-  transform: translateY(0);
+.popup-confirmation_overlay.active .popup-confirmation_container {
+  transform: translateY(50%);
 }
 
 .popup-confimation__button-confirmation button {
@@ -356,8 +347,7 @@ onMounted(() => {
 }
 
 .popup-order__image {
-  height: auto;
-  width: 40%;
+  max-height: 32vh;
   object-fit: cover;
   border-radius: 0.5rem;
 }
@@ -383,21 +373,17 @@ onMounted(() => {
 
 .popup-confimation__button-confirmation button:first-child {
   background: #28a745;
-  /* Green color for "Ya" button */
 }
 
 .popup-confimation__button-confirmation button:first-child:hover {
   background: #17b53caa;
-  /* Green color for "Ya" button */
 }
 
 .popup-confimation__button-confirmation button:last-child {
   background: #dc3545;
-  /* Red color for "Batal" button */
 }
 
 .popup-confimation__button-confirmation button:last-child:hover {
   background: #cd23349b;
-  /* Red color for "Batal" button */
 }
 </style>

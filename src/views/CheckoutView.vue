@@ -1,11 +1,12 @@
 <script setup>
-import { onMounted, ref, defineProps} from 'vue'
+import { ref, onMounted, watchEffect } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
-import AlertCard from '@/components/AlertCard.vue'
+import LoginHelper from '@/utilities/LoginHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
 const route = useRouter()
 
 const {
@@ -22,66 +23,66 @@ const {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  fetchFeeSettings,
   formatCurrency,
   totalHarga,
   totalTagihan,
   totalBiaya,
   totalTicketCount,
+  recentTransactionId,
   createTransaction,
   selectedNationality,
-  
+  checkoutStatus,
+  guideData,
+  guideSelect,
+  guideSelection,
+  guideSelectPageBio,
+  guideSelectBio,
+  guideSelectPage,
+  guideSelectors,
+  selectedGuide,
+  guideSelectTicket,
+  guideSelectPageTicket,
+  addGuide,
+  isGuideChecked,
+  formattedGuideSelection,
+  fetchGuideData,
+  determineAge,
+  formatGender,
+  fetchUnavailableGuide,
+  checkGuideAvailability
 } = CheckoutHelper
 
-const { checkSessionStorage, isMancanegara } = DashboardHelper
-const { cashierData } = LoginHelper
-
-const showAlert = ref(false)
-const alertType = ref('')
-const alertTitle = ref('')
-const alertMessage = ref('')
-
-
+const { assignAlert } = GlobalHelper
+const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
+const { userData } = LoginHelper
 
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
-  console.log(totalTicketCount.value)
-  if(totalTicketCount.value < 1){
-    console.log('Nyobain ererror')
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger' // Set your alert type
-    alertMessage.value = `Pilih tipe tiket terlebih dahulu`
-
-    setTimeout(() => {
-    showAlert.value = false
-    }, 1200)
+  if (totalTicketCount.value < 1) {
+    assignAlert(true, 'Error', 'danger', 'Pilih tipe tiket terlebih dahulu')
     return
   }
   if (invalid.length > 0) {
-    showAlert.value = true
-    alertTitle.value = 'Error'
-    alertType.value = 'danger' // Set your alert type
-    alertMessage.value = `Isi kolom ${invalid.join(', ')} terlebih dahulu.` // Set your alert message
-    
-    setTimeout(() => {
-    showAlert.value = false
-    }, 1200)
+    assignAlert(true, 'Error', 'danger', `Isi kolom ${invalid.join(', ')} terlebih dahulu.`)
     return
   }
-  
+
   try {
     await createTransaction()
-    sessionStorage.clear()
-    setTimeout(() => {
-      route.push('/')
-    }, 3000)
+    if (checkoutStatus.value === 'boleh') {
+      showTransactionGenerate()
+      // setTimeout(() => {
+      //   sessionStorage.clear()
+      //   location.reload()
+      // }, 500)
+      assignAlert(true, 'Sukses', 'success', 'Transaksi berhasil dibuat!')
+    }
+    checkoutStatus.value = ''
   } catch (error) {
-    console.error('Gagal melakukan transaksi:', error)
-    // Tampilkan pesan kesalahan atau lakukan tindakan yang sesuai jika transaksi gagal
+    assignAlert(true, 'Error', 'danger', 'Transaksi gagal!')
   }
 }
-
-
 const checkValidTransaction = () => {
   const invalid = []
 
@@ -102,22 +103,25 @@ const checkValidTransaction = () => {
   return invalid
 }
 
+// Pop up untuk generate tiket
+const isTransactionGenerate = ref(false)
+const showTransactionGenerate = () => {
+  isTransactionGenerate.value = true
+}
+const closeTransactionGenerate = () => {
+  isTransactionGenerate.value = false
+}
+
 onMounted(() => {
+  fetchGuideData()
   getItemsFromSessionStorage()
   checkSessionStorage()
+  fetchFeeSettings()
 })
-
-
 </script>
 
 <template>
   <main>
-    <AlertCard
-      :showAlert="showAlert"
-      :alertTitle="alertTitle"
-      :alertType="alertType"
-      :alertMessage="alertMessage"
-    />
     <div class="checkout__container sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
@@ -130,8 +134,8 @@ onMounted(() => {
                   <p>Detail Pemesan</p>
                 </div>
                 <div class="order-details__content w-full">
-                  <p class="fs-h5 fw-700">{{ cashierData.name }}</p>
-                  <p>- ({{ cashierData.email }})</p>
+                  <p class="fs-h5 fw-700">{{ userData.name }}</p>
+                  <p>- ({{ userData.email }})</p>
                 </div>
                 <div class="order-details__dropdown" v-if="isMancanegara">
                   <NationalityDropdown />
@@ -148,6 +152,7 @@ onMounted(() => {
                       type="datetime-local"
                       class="ticket__input-date"
                       v-model="selectedDate"
+                      @input="fetchUnavailableGuide()"
                     />
                     <label>Tanggal Pemesanan</label>
                   </div>
@@ -156,8 +161,8 @@ onMounted(() => {
                 <div v-for="(item, index) in items" :key="index">
                   <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
-                      <p>{{ item.name }} ({{ item.category }})</p>
-                      <span>{{ formatCurrency(item.price) }},00</span>
+                      <p>{{ item.name }} ({{ item.category.name }})</p>
+                      <span>{{ formatCurrency(item.price) }}</span>
                     </div>
                     <div class="order-details__ticket-value">
                       <button @click="reduceTicket(index)" type="button">
@@ -200,26 +205,183 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <section
-                class="order-details__payment-select-content_modal-overlay"
-                v-if="paymentSelect"
-              >
+              <div class="order-details__content sm-top-1">
+                <ph-binoculars :size="24" weight="bold" class="header-icons" />
+                <p>Pilih Guide</p>
+              </div>
+              <div class="order-details__guide-select" @click="guideSelectPage">
+                <div
+                  v-if="guideSelection.length > 0"
+                  class="order-details__guide-select-content if"
+                >
+                  <div class="flex align-items-center gap[0.5]">
+                    {{ formattedGuideSelection }}
+                  </div>
+                </div>
+                <div v-else class="order-details__guide-select-content else">
+                  <ph-warning-octagon :size="16" weight="fill" color="red" />
+                  <p>Anda belum memilih guide</p>
+                </div>
+                <ph-caret-right :size="16" weight="bold" />
+              </div>
+
+              <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
+                <div class="order-details__guide-select-content_modal sm-4">
+                  <div class="order-details__guide-select-content_modal-header">
+                    <h5 class="fw-600">Guide</h5>
+                    <ph-x :size="20" weight="bold" @click="guideSelectPage" />
+                  </div>
+                  <div
+                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+                    :class="{ grid: guideSelectors }"
+                  >
+                    <div
+                      v-if="guideSelectors"
+                      v-for="(guide, index) in guideData"
+                      :key="index"
+                      class="order-detail__guide-select-content_guide-selector flex"
+                    >
+                      <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
+                        <div class="order-detail__guide-select-content_guide-selector_radio">
+                          <div v-if="isGuideChecked(guide.id)" class="selected"></div>
+                        </div>
+                        <label :for="guide.name">{{ guide.name }}</label>
+                      </span>
+                      <div
+                        v-if="!checkGuideAvailability(guide.id)"
+                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                        @click="guideSelectPageBio(guide)"
+                      >
+                        <ph-caret-right :size="16" weight="bold" />
+                      </div>
+                      <div
+                        v-else
+                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                        @click="
+                          assignAlert(
+                            true,
+                            'Error',
+                            'danger',
+                            `Guide ${guide.name} tidak tersedia!`
+                          )
+                        "
+                      >
+                        <ph-caret-right :size="16" weight="bold" />
+                      </div>
+                    </div>
+
+                    <div class="order-details__guide-select_biodata relative" v-if="guideSelectBio">
+                      <div
+                        class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
+                        @click="guideSelectPageBio"
+                      >
+                        <ph-caret-left :size="16" weight="bold" />
+                        <h6>Kembali</h6>
+                      </div>
+
+                      <div class="guide-select_biodata-content flex gap-2">
+                        <div class="">
+                          <img
+                            :src="
+                              selectedGuide.image
+                                ? getImageURL(selectedGuide.image)
+                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
+                            class="guide-select_biodata-image"
+                          />
+                          <div class="flex justify-content-sb">
+                            <div
+                              class="guide-select_biodata_add-ticket w-full"
+                              @click="guideSelectPageTicket"
+                            >
+                              Tambahkan Tiket<ph-caret-right :size="16" weight="bold" />
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="guide-select_biodata-information">
+                          <h6>
+                            {{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})
+                          </h6>
+                          <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
+                          <p>{{ selectedGuide.email }}</p>
+                          <p>
+                            {{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div
+                      class="order-details__guide-select_ticket relative"
+                      v-if="guideSelectTicket"
+                    >
+                      <div
+                        class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
+                        @click="guideSelectPageTicket"
+                      >
+                        <ph-caret-left :size="16" weight="bold" />
+                        <h6>Kembali</h6>
+                      </div>
+
+                      <div
+                        v-for="(item, index) in items"
+                        :key="index"
+                        class="guide-select_ticket flex justify-content-sb sm-bottom-1"
+                      >
+                        <div class="flex gap-1">
+                          <img
+                            :src="
+                              item.image
+                                ? getImageURL(item.image)
+                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
+                            class="guide-select_ticket-image"
+                          />
+                          <div class="flex fd-col">
+                            <p class="fw-600">{{ item.name }}</p>
+                            <p>{{ formatCurrency(item.price) }}</p>
+                            <p>{{ `${item.amount} Tiket` }}</p>
+                          </div>
+                        </div>
+                        <div class="guide-select_ticket-cta flex align-items-center">
+                          <button
+                            class="guide-select_ticket-btn flex align-items-center"
+                            @click.prevent="addGuide(index)"
+                            @click="guideSelectPageTicket"
+                          >
+                            <ph-plus :size="16" weight="bold" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="order-details__select-content_modal-overlay" v-if="paymentSelect">
                 <div class="order-details__payment-select-content_modal">
                   <div
                     class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
                   >
-                    <h3 class="fw-600">Pilih Metode Pembayaran</h3>
+                    <h5 class="fw-600">Pilih Metode Pembayaran</h5>
                     <ph-x :size="20" weight="bold" @click="showPaymentSelect" />
                   </div>
                   <div
                     class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1"
                   >
                     <button @click="selectPayment('Cash')">
-                      <span><ph-money :size="16" weight="bold" />Cash</span>
+                      <span
+                        ><ph-money :size="16" weight="bold" />
+                        <h6>Cash</h6>
+                      </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                     <button @click="selectPayment('Kartu Kredit/Debit')">
-                      <span><ph-credit-card :size="16" weight="bold" />Kartu Kredit/Debit</span>
+                      <span
+                        ><ph-credit-card :size="16" weight="bold" />
+                        <h6>Kartu Kredit/Debit</h6></span
+                      >
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                   </div>
@@ -237,7 +399,7 @@ onMounted(() => {
               <p class="fw-700 fs-h6">Total Pemesanan</p>
               <div v-if="items.length > 1" v-for="(item, index) in items" :key="index">
                 <div class="checkout__details-pricing" v-if="item.amount > 0">
-                  <p>{{ item.name }} ({{ item.category }}) x {{ item.amount }}</p>
+                  <p>{{ item.name }} ({{ item.category.name }}) x {{ item.amount }}</p>
                   <p>{{ formatCurrency(item.price * item.amount) }}</p>
                 </div>
               </div>
@@ -272,7 +434,7 @@ onMounted(() => {
               <div class="checkout__details-pricing" v-if="cashbackValue > 0">
                 <p>Cashback</p>
                 <p>
-                  {{ formatCurrency((totalHarga * cashbackValue) / 100) }} ({{ cashbackValue }})%
+                  {{ formatCurrency((totalTagihan * cashbackValue) / 100) }} ({{ cashbackValue }})%
                 </p>
               </div>
             </div>
@@ -282,12 +444,12 @@ onMounted(() => {
                 <p
                   class="fw-700 fs-h6"
                   :class="{
-                    'checkout__details-total--strikethrough': discountValue > 0 || cashbackValue > 0
+                    'checkout__details-total--strikethrough': discountValue > 0
                   }"
                 >
                   {{ formatCurrency(totalBiaya) }}
                 </p>
-                <p class="fw-700 fs-h6" v-if="discountValue > 0 || cashbackValue > 0">
+                <p class="fw-700 fs-h6" v-if="discountValue > 0">
                   {{ formatCurrency(totalTagihan) }}
                 </p>
               </div>
@@ -295,12 +457,29 @@ onMounted(() => {
           </form>
         </div>
         <div class="checkout-btn">
-          <button type="submit" class="checkout__btn-order" @click="checkoutTransaction()">
+          <button type="submit" class="checkout__btn-order" @click="checkoutTransaction">
             Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
         </div>
       </div>
+      <section>
+        <div
+          class="overview-transaction-success_modal w-full h-full flex align-items-center justify-content-center"
+          v-if="isTransactionGenerate"
+        >
+          <div class="overview-transaction-success_content">
+            <ph-check-circle :size="100" color="green" />
+            <p class="fw-700 fs-h6">Transaksi berhasil</p>
+            <button
+              class="generate__btn"
+              @click="route.push({ name: 'generateTickets', params: { id: recentTransactionId } })"
+            >
+              Generate Tickets
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </template>
@@ -336,7 +515,6 @@ main {
   display: flex;
   flex-direction: column;
 }
-
 .order-details__content {
   display: flex;
   flex-direction: row;
@@ -435,7 +613,7 @@ main {
 .pricings-slider__container {
   font-family: 'Poppins';
 }
-
+.order-details__guide-select,
 .order-details__payment-select {
   width: 522px;
   height: 50px;
@@ -449,6 +627,7 @@ main {
   cursor: pointer;
 }
 
+.order-details__guide-select-content,
 .order-details__payment-select-content {
   display: flex;
   align-items: center;
@@ -457,7 +636,7 @@ main {
   line-height: 22px;
 }
 
-.order-details__payment-select-content_modal-overlay {
+.order-details__select-content_modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
@@ -472,7 +651,7 @@ main {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 30%;
+  width: 60%;
   z-index: 100;
   background-color: rgb(245, 245, 245);
   border-radius: 0.5rem;
@@ -510,6 +689,96 @@ main {
 .order-details__payment-select-content.else i {
   font-size: 16px;
   color: rgba(227, 38, 38, 1);
+}
+
+.order-details__guide-select-content_modal {
+  background: #ffffff;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  min-width: 514px;
+  height: 80%;
+  overflow: hidden;
+  z-index: 100;
+  position: relative;
+}
+
+.order-details__guide-select-content_modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  padding: 1rem;
+  border-bottom: 1px solid black;
+}
+
+.order-detail__guide-select-content_modal-content.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-gap: 1rem;
+  align-content: center;
+}
+
+.order-detail__guide-select-content_guide-selector {
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 0.5rem;
+}
+.order-detail__guide-select-content_guide-selector .bg-yellow {
+  background-color: #e6be58;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.order-detail__guide-select-content_guide-selector_radio {
+  background-color: transparent;
+  border: 0.5px solid black;
+  border-radius: 100%;
+  width: 0.8rem;
+  height: 0.8rem;
+  padding: 0.1rem;
+}
+
+.order-detail__guide-select-content_guide-selector_radio > .selected {
+  background-color: #e6be58;
+  filter: blur(1px);
+  border-radius: 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.guide-select_biodata-image {
+  width: 300px;
+  max-width: 300px;
+  height: 300px;
+  max-height: 300px;
+  object-fit: cover;
+}
+
+.guide-select_biodata_add-ticket {
+  border-radius: 0.25rem;
+  background-color: var(--color-primary);
+  display: flex;
+  padding: 0.5rem;
+  gap: 1rem;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.guide-select_ticket {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.guide-select_ticket-image {
+  max-height: 70px;
+  max-width: 100px;
+}
+
+.guide-select_ticket-btn {
+  padding: 0.5rem;
+  background-color: var(--color-primary);
+  border-radius: 0.25rem;
 }
 
 .checkout__details-container {
@@ -591,5 +860,49 @@ main {
   line-height: 24px;
   font-weight: 500;
   text-decoration: line-through;
+}
+
+.overview-transaction-success_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.overview-transaction-success_content {
+  background: white;
+  border-radius: 10px;
+  width: 30rem;
+  font-family: 'Raleway';
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  max-height: 80vh;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.generate__btn {
+  width: 40%;
+  background-color: #ffdd8f;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  align-items: center;
+}
+
+.generate__btn:hover {
+  background-color: #e6be58;
 }
 </style>

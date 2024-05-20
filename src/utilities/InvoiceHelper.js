@@ -1,4 +1,7 @@
 import { ref } from 'vue'
+import GlobalHelper from './GlobalHelper'
+
+const { DB_BASE_URL, DETAILTRANS_BASE_URL, showLoader } = GlobalHelper
 
 /* InvoiceView Helper */
 const dataInvoice = ref([])
@@ -9,7 +12,7 @@ const getSearchQuery = (query) => {
 
 const fetchTransactionList = async () => {
   try {
-    let url = 'http://localhost:3000/invoice/transaction-list'
+    let url = `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/transaction-invoice`
     if (searchQuery.value) {
       url += `?search=${encodeURIComponent(searchQuery.value)}`
     }
@@ -18,13 +21,18 @@ const fetchTransactionList = async () => {
       throw new Error('Failed to fetch data')
     }
     const data = await response.json()
-    dataInvoice.value = data
+    dataInvoice.value = data.data
+    showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
   }
 }
 
 const searchQuery = ref(null)
+const resetSearch = () => {
+  searchQuery.value = ''
+}
+
 const selectedItem = ref(null)
 
 const splitDate = (dateTime) => {
@@ -49,7 +57,6 @@ const splitDate = (dateTime) => {
 const formatDate = (dateTime) => {
   const date = new Date(dateTime)
   date.setHours(date.getHours() - 7)
-
 
   const monthNames = [
     'Januari',
@@ -82,11 +89,13 @@ const formatDate = (dateTime) => {
 
 const showDetail = (item) => {
   selectedItem.value = {
-    nama: item.transaction.cashier.name,
-    reservasi: item.order.name,
-    jadwal: formatDate(item.transaction.date),
-    ...(item.transaction.cashier.number != null && { 'no. telp': item.transaction.cashier.number }),
-    pembayaran: item.transaction.method
+    nama: item.transaction.user.name,
+    reservasi: `${item.order.name} (${item.order.category.name})`,
+    jadwal: formatDate(item.transaction.plannedDate),
+    ...(item.transaction.user.number != null && { 'no. telp': item.transaction.user.number }),
+    guide: item.guide.name,
+    pembayaran: capitalizeFirstLetter(item.transaction.method),
+    total: `Rp. ${Number(item.transaction.total).toLocaleString('id-ID')}`
   }
   showDetailPopup()
 }
@@ -111,6 +120,7 @@ export default {
   getSearchQuery,
   fetchTransactionList,
   searchQuery,
+  resetSearch,
   selectedItem,
   splitDate,
   showDetail,

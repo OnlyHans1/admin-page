@@ -1,35 +1,53 @@
 <script setup>
-import { useRouter, RouterView } from 'vue-router'
-import { ref, watchEffect } from 'vue'
+import { RouterView, useRoute } from 'vue-router'
+import { watchEffect, computed } from 'vue'
 import Sidebar from './components/Sidebar.vue'
 import LoginHelper from './utilities/LoginHelper'
+import GlobalHelper from './utilities/GlobalHelper'
+import AlertCard from './components/AlertCard.vue'
+import WebLoader from './components/WebLoader.vue'
 
-const { loggedIn } = LoginHelper
+const { loggedIn, isAuthenticated } = LoginHelper
 
-const router = useRouter()
-const currentPath = ref(router.path)
-const isLoginPage = ref(currentPath.value === '/login')
+const route = useRoute()
+const showSidebar = computed(
+  () => route.name !== 'generateTickets' && route.name !== 'login'
+)
 
-// Watch for route changes and update reactive variables
 watchEffect(() => {
-  currentPath.value = router.path
-  isLoginPage.value = currentPath.value === '/login'
-  if(!loggedIn.value) {
-    router.push('/login')
-  }
+  isAuthenticated()
 })
 </script>
 
 <template>
-  <div v-if="!isLoginPage && loggedIn">
-    <Sidebar/>
-    <div class="pd-left-8 pd-top-2 pd-bottom-2">
-      <RouterView />
-    </div>
+  <div class="web-loader__overlay" v-if="GlobalHelper.showLoader.value">
+    <WebLoader />
   </div>
-  <div v-else>
+  <AlertCard />
+  <Sidebar v-if="loggedIn && showSidebar" />
+  <div :class="[loggedIn ? 'pd-block-2' : 'no-pd-block', showSidebar ? 'pd-left-8' : 'no-pd-left']">
     <RouterView />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.web-loader__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 1);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+.no-pd-block {
+  padding-block: 0 !important;
+}
+.no-pd-left {
+  padding: 0 !important;
+}
+</style>

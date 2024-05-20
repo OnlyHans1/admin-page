@@ -1,93 +1,233 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
 import CategoryDropdown from '@/components/CategoryDropdown.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
 import ReportHelper from '@/utilities/ReportHelper'
+import html2canvas from 'html2canvas'
 
 const {
   incomeRevenue,
   fetchIncomeRevenue,
   formatCurrency,
-  targetYear,
+  currentYear,
+  selectedYear,
+  targetYears,
   yearlyCategory,
   yearlyData,
+  fetchTargetYears,
+  changeSelectedYear,
   fetchYearlyChartData,
-  targetMonth,
+  currentMonth,
+  selectedMonth,
+  selectedMonthName,
+  targetMonths,
   monthlyCategory,
   monthlyData,
+  fetchTargetMonths,
+  setMonthLocaleString,
+  changeSelectedMonth,
   fetchMonthlyChartData,
   generateExcel,
-  printData
+  printData,
+  updateCategory
 } = ReportHelper
 
-const category = ref('')
-const updateCategory = (selectedCategory) => {
-  category.value = selectedCategory
+const checkData = async () => {
+  try {
+    isShowChart.value = false
+    GlobalHelper.showLoader.value = true
+    await fetchIncomeRevenue()
+    await fetchTargetYears()
+    await fetchTargetMonths()
+    selectedYear.value = currentYear
+    selectedMonth.value = currentMonth
+    setMonthLocaleString()
+    await fetchYearlyChartData()
+    await fetchMonthlyChartData()
+    isShowChart.value = true
+  } catch (error) {
+    console.error(error)
+  }
 }
 
+const isShowChart = ref(false)
+const yearDropdownOpen = ref(false)
+const monthDropdownOpen = ref(false)
+
+const toggleYearDropdown = () => {
+  yearDropdownOpen.value = !yearDropdownOpen.value
+}
+const toggleMonthDropdown = () => {
+  monthDropdownOpen.value = !monthDropdownOpen.value
+}
+
+const closeDropdownOnClickOutside = (event) => {
+  if (
+    !event.target.closest('.filter__input-dropdown') &&
+    !event.target.closest('.filter__input-dropdown_menu')
+  ) {
+    yearDropdownOpen.value = false
+    monthDropdownOpen.value = false
+  }
+}
+
+const selectYearOption = (year) => {
+  changeSelectedYear(year)
+  yearDropdownOpen.value = false
+}
+const selectMonthOption = (month) => {
+  selectedMonthName.value = month
+  changeSelectedMonth(month)
+  monthDropdownOpen.value = false
+}
+
+const takeScreenshot = async (elementId) => {
+  const element = document.getElementById(elementId)
+
+  try {
+    const canvas = await html2canvas(element);
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `Report Tahun ${selectedYear.value} Bulan ${selectedMonthName.value}.png`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      console.log('Screenshot saved as image file!');
+    }, 'image/png');
+  } catch (error) {
+    console.error('Error saving screenshot as image file:', error);
+  }
+}
+
+onUnmounted(() => {
+  window.removeEventListener('click', closeDropdownOnClickOutside)
+})
+
 onMounted(() => {
-  fetchIncomeRevenue()
-  fetchYearlyChartData()
-  fetchMonthlyChartData()
+  checkData()
+  window.addEventListener('click', closeDropdownOnClickOutside)
+  setMonthLocaleString()
 })
 </script>
 
 <template>
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
-    <div class="report-information__container flex fd-row justify-content-sb pd-2">
-      <div class="report-information__income-container flex fd-col gap-1">
-        <p class="fs-h5">Pendapatan hari ini</p>
-        <div class="report-information__income-text flex fd-row">
-          <span class="report-information__income-desc">Rp </span>
-          <span class="report-information__income-details">{{
-            formatCurrency(incomeRevenue.total)
-          }}</span>
+      <div class="report-information__container flex fd-row justify-content-sb pd-2">
+        <div class="report-information__income-container flex fd-col">
+          <p class="fs-h5">Pendapatan hari ini</p>
+          <div class="report-information__income-text flex fd-row">
+            <span class="report-information__income-desc">Rp </span>
+            <span class="report-information__income-details">{{
+              formatCurrency(incomeRevenue)
+            }}</span>
+          </div>
+        </div>
+        <div class="report-information__ticketing-container flex fd-col gap[0.5]">
+          <p class="fs-h5">Tiket terjual</p>
+          <div class="report-information__ticketing-card flex fd-row gap[1.5] pd-left-1">
+            <TicketInfoCard />
+          </div>
         </div>
       </div>
-      <div class="report-information__ticketing-container flex fd-col gap[0.5]">
-        <p class="fs-h5">Tiket terjual</p>
-        <div class="report-information__ticketing-card flex fd-row gap[1.5] pd-left-1">
-          <TicketInfoCard />
+      <div class="report-revenue__container flex fd-col">
+        <div id="report__screenshot-target"  v-if="isShowChart"
+          class="report-revenue__chart-container flex fd-row align-items-center justify-content-center gap[1.5]"
+        >
+          <div
+            class="report-revenue__chart flex fd-col align-items-center justify-content-center gap-1"
+          >
+            <Chart
+              :targetDate="selectedYear"
+              :dataSeries="yearlyData"
+              :dataCategory="yearlyCategory"
+            />
+            <div class="filter__input-dropdown">
+              <input
+                readonly
+                @click="toggleYearDropdown()"
+                :value="selectedYear"
+                placeholder="Pilih Tahun"
+                id="filter-year"
+              />
+              <div class="select-icon">
+                <div class="arrow-icon" :class="{ active: yearDropdownOpen }">
+                  <ph-caret-down :size="14" weight="bold" class="icon" />
+                </div>
+              </div>
+              <div class="filter__input-dropdown_menu" :class="{ active: yearDropdownOpen }">
+                <p
+                  v-for="(year, index) in targetYears"
+                  :key="index"
+                  :value="year"
+                  @click="selectYearOption(year)"
+                >
+                  {{ year }}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div
+            class="report-revenue__chart flex fd-col align-items-center justify-content-center gap-1"
+          >
+            <Chart
+              :targetDate="selectedMonthName"
+              :dataSeries="monthlyData"
+              :dataCategory="monthlyCategory"
+            />
+            <div class="filter__input-dropdown">
+              <input
+                readonly
+                @click="toggleMonthDropdown()"
+                :value="selectedMonthName"
+                placeholder="Pilih Bulan"
+                id="filter-month"
+              />
+              <div class="select-icon">
+                <div class="arrow-icon" :class="{ active: monthDropdownOpen }">
+                  <ph-caret-down :size="14" weight="bold" class="icon" />
+                </div>
+              </div>
+              <div class="filter__input-dropdown_menu" :class="{ active: monthDropdownOpen }">
+                <p
+                  v-for="(month, index) in targetMonths"
+                  :key="index"
+                  :value="month"
+                  @click="selectMonthOption(month)"
+                >
+                  {{ month }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="report-revenue__container flex fd-col">
-      <div
-        class="report-revenue__chart-container flex fd-row align-items-center justify-content-center gap[1.5]"
-      >
-        <Chart :targetDate="targetYear" :dataSeries="yearlyData" :dataCategory="yearlyCategory" />
-        <Chart
-          :targetDate="targetMonth"
-          :dataSeries="monthlyData"
-          :dataCategory="monthlyCategory"
-        />
-      </div>
-      <div
-        class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center"
-      >
-        <span class="icons" name="Print Data" @click="printData"
-          ><ph-printer :size="32" weight="bold"
-        /></span>
-        <span class="icons" name="Report to Excel" @click="generateExcel">
-          <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
+        <div
+          class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center"
+        >
+        <span class="icons" name="Take a Screenshot" @click="takeScreenshot('report__screenshot-target')">
+          <ph-camera :size="32" weight="bold"/>
         </span>
+          <span class="icons" name="Print Data" @click="printData"
+            ><ph-printer :size="32" weight="bold"
+          /></span>
+          <span class="icons" name="Report to Excel" @click="generateExcel">
+            <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
+          </span>
+        </div>
       </div>
-    </div>
     <div class="report-activity__container flex fd-col gap-1">
       <div class="report-activity__head flex fd-row gap[1.5] align-items-center">
         <p class="report-activity__head-text">Aktivitas Terbaru</p>
         <div class="report-activity__head-dropdown-container">
-          <CategoryDropdown
-            :categoryWidth="'136px'"
-            ref="category"
-            @option-selected="updateCategory"
-          />
+          <CategoryDropdown :categoryWidth="'136px'" @option-selected="updateCategory" />
         </div>
       </div>
       <div class="report-activity__table-container">
-        <TableReport :filteredCategory="category" />
+        <TableReport />
       </div>
     </div>
   </div>
@@ -145,5 +285,85 @@ onMounted(() => {
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
   padding: 1rem;
+}
+.filter__input-dropdown {
+  height: 2rem;
+  width: 15rem;
+  border-radius: 0.5rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: transparent;
+  position: relative;
+  border: 1px solid black;
+}
+
+input {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+}
+.filter__input-dropdown input:focus {
+  border-color: var(--color-primary); /* Change the border color to green */
+  outline: none; /* Remove the default focus outline */
+  box-shadow: 0 0 0 2px var(--color-primary); /* Add a green box-shadow to indicate focus */
+}
+
+.filter__input-dropdown .select-icon {
+  position: absolute;
+  right: 10px; /* Adjust as needed based on select padding */
+  top: 50%;
+  transform: translateY(-50%);
+}
+.arrow-icon {
+  transition: all 300ms ease;
+}
+/* Rotate arrow icon when the card is expanded */
+.arrow-icon.active {
+  transform: rotate(180deg);
+}
+.filter__input-dropdown .select-icon i {
+  font-size: 18px; /* Adjust icon size as needed */
+}
+
+.filter__input-dropdown_menu {
+  position: absolute;
+  top: 2.6rem;
+  background-color: white;
+  width: 100%;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  border-radius: 0.5rem;
+  max-height: 0;
+  overflow: hidden;
+  transition:
+    max-height 0.3s ease,
+    box-shadow 0.2s ease;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0);
+}
+
+.filter__input-dropdown_menu.active {
+  max-height: 200px;
+  box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
+}
+
+.filter__input-dropdown_menu p {
+  padding: 0.3rem 0.6rem;
+}
+.filter__input-dropdown_menu p:hover {
+  background-color: rgb(233, 233, 233);
+}
+.filter__input-dropdown_menu p:hover:first-child {
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+.filter__input-dropdown_menu p:hover:last-child {
+  border-radius: 0 0 0.5rem 0.5rem;
 }
 </style>
