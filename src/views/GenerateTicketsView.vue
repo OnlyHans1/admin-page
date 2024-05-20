@@ -22,9 +22,11 @@ const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
 }
 const calculateTotal = (price, amount) => {
-    return formatCurrency(price * amount)
+  return formatCurrency(price * amount)
 }
-
+const getImageURL = (imageName) => {
+  return `${DB_BASE_URL.value}/uploads/${imageName}`
+}
 const fetchTickets = async (id) => {
   try {
     showLoader.value = true
