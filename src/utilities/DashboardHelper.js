@@ -197,7 +197,15 @@ const groupedItems = computed(() => {
     }
     grouped[category].push(item)
   })
-  return grouped
+
+  const sortedGrouped = {}
+  Object.keys(grouped)
+    .sort((a, b) => b.localeCompare(a))
+    .forEach((key) => {
+      sortedGrouped[key] = grouped[key]
+    })
+
+  return sortedGrouped
 })
 const deleteOrder = async () => {
   try {
