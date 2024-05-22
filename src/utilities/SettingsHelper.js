@@ -46,8 +46,8 @@ const fetchTargetedOrder = async (id) => {
       showLoader.value = false
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    targetedData.value = data.data
+    const res = await response.json()
+    targetedData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -64,8 +64,8 @@ const fetchTargetedGuide = async (id) => {
       showLoader.value = false
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    targetedData.value = data.data
+    const res = await response.json()
+    targetedData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -80,8 +80,8 @@ const fetchOrderType = async () => {
       showLoader.value = false
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    popupData.value = data.data
+    const res = await response.json()
+    popupData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -98,8 +98,8 @@ const fetchOrderSubType = async () => {
       showLoader.value = false
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    popupData.value = data.data
+    const res = await response.json()
+    popupData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -114,8 +114,8 @@ const fetchCategory = async () => {
       showLoader.value = false
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    popupData.value = data.data
+    const res = await response.json()
+    popupData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)

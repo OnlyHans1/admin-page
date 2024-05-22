@@ -84,8 +84,8 @@ const fetchLogsData = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    logsData.value = data.data
+    const res = await response.json()
+    logsData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)

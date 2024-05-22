@@ -166,7 +166,7 @@ onUnmounted(() => {
     </div>
   </div>
   <div class="bubble-alert_submit" v-if="submitAlert">
-    <p v-if="currentPath === '/add'">Data berhasil ditambahkan</p>
+    <p v-if="currentPath === 'add'">Data berhasil ditambahkan</p>
     <p v-else>Data berhasil diubah</p>
   </div>
 

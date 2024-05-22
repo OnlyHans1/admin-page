@@ -1,5 +1,8 @@
 <script setup>
+import 'swiper/swiper-bundle.css'
 import { onMounted } from 'vue'
+import { Virtual, Navigation, Pagination } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/vue'
 import ReportHelper from '@/utilities/ReportHelper'
 
 const { orderInfoCardData, fetchOrderInfoCardData } = ReportHelper
@@ -10,23 +13,24 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    class="ticket-info-card__container flex fd-col pd-1"
-    v-for="(item, index) in orderInfoCardData"
-    :key="index"
-  >
-    <p class="ticket-info-card__title">{{ item.category }}</p>
-    <span class="ticket-info-card__details align-self-center">{{ item.sum }}</span>
-    <p class="ticket-info-card__desc align-self-f-end">/ tiket</p>
-  </div>
+  <Swiper :modules="[Virtual, Pagination, Navigation]" :slides-per-view="3" :space-between="10" pagination navigation virtual>
+    <SwiperSlide
+      v-for="(item, index) in orderInfoCardData"
+      :key="index"
+    >
+      <div class="ticket-info-card__container flex fd-col pd-1">
+        <p class="ticket-info-card__title">{{ item.category }}</p>
+        <span class="ticket-info-card__details align-self-center">{{ item.sum }}</span>
+        <p class="ticket-info-card__desc align-self-f-end">/ tiket</p>
+      </div>
+    </SwiperSlide>
+  </Swiper>
 </template>
 
 <style scoped>
 .ticket-info-card__container {
-  width: 162px;
   height: 186px;
   background: linear-gradient(to bottom, rgba(255, 226, 154, 0.9), rgba(254, 209, 96, 0.9));
-  box-shadow: 0 4px 10px 0 rgba(0, 0, 0, 0.25);
   border-radius: 15px;
 }
 .ticket-info-card__title {

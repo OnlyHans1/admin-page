@@ -17,8 +17,8 @@ const orderSubType = ref('')
 const orderSubTypeId = ref(null)
 const price = ref('')
 const imageName = ref('')
-const selectedImageURL = ref('') // State to hold the selected image URL
-const selectedImage = ref(null) // State to hold the selected image File
+const selectedImageURL = ref('')
+const selectedImage = ref(null)
 const defaultImageURL = ref(
   'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
 )
@@ -123,7 +123,7 @@ const selectSubtypeOption = (id, name) => {
 }
 
 const isSubtypeDisabled = computed(() => {
-  return !orderType.value // Disable if orderType is empty
+  return !orderType.value
 })
 
 const subTypeOptions = ref([])
@@ -175,7 +175,7 @@ const assignEditData = () => {
   orderType.value = data.orderSubType ? data.orderSubType.orderType.name : ''
   orderSubTypeId.value = data.orderSubType ? data.orderSubType.id : 0
   orderSubType.value = data.orderSubType ? data.orderSubType.name : ''
-  imageName.value = data.image !== '' ? data.image : ''
+  imageName.value = data.image ? data.image : ''
   selectedImageURL.value = data.image ? getImageURL(data.image) : ''
 }
 

@@ -14,6 +14,7 @@ const isAuthenticated = async () => {
   if (token) {
     try {
       const success = await authLogin(token)
+    
       if (success) {
         loggedIn.value = true
         return true
@@ -44,8 +45,8 @@ const authLogin = async (token) => {
       throw new Error(error.message)
     }
 
-    const data = await response.json()
-    userData.value = data.data
+    const res = await response.json()
+    userData.value = res.data
     showLoader.value = false
     return true
   } catch (error) {
@@ -77,8 +78,8 @@ const userLogin = async () => {
       throw new Error(error.message)
     }
 
-    const data = await response.json()
-    setCookie('token', data.data, 1)
+    const res = await response.json()
+    setCookie('token', res.data, 1)
     isAuthenticated()
   } catch (error) {
     console.error(error)
@@ -88,7 +89,7 @@ const userLogin = async () => {
 const userLogout = () => {
   removeCookie('token')
   loggedIn.value = false
-  assignAlert(true, 'Sukses', 'success', `${userData.value.name} berhasil logout!`)
+  userData.value ? assignAlert(true, 'Sukses', 'success', `${userData.value.name} berhasil logout!`) : null
   userData.value = []
 }
 const getCookie = (name) => {

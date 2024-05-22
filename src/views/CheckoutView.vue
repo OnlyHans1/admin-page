@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
@@ -18,6 +18,8 @@ const {
   selectPayment,
   addTicket,
   reduceTicket,
+  custName,
+  custEmail,
   selectedDate,
   discountValue,
   cashbackValue,
@@ -83,20 +85,15 @@ const checkoutTransaction = async () => {
 const checkValidTransaction = () => {
   const invalid = []
 
+  if (!custName.value) invalid.push('Nama Pelanggan')
+  if (!custEmail.value) invalid.push('Email Pelanggan')
   if (isMancanegara.value) {
     if (!selectedNationality.value) {
       invalid.push('Kewarganegaraan')
     }
   }
-  if (!selectedDate.value) {
-    invalid.push(' Tanggal Pemesanan')
-  }
-
-  if (!paymentSelection.value) {
-    invalid.push(' Metode Pembayaran')
-  }
-
-  // Pastikan semua input telah diisi sesuai dengan kondisi
+  if (!selectedDate.value) invalid.push('Tanggal Pemesanan')
+  if (!paymentSelection.value) invalid.push('Metode Pembayaran')
   return invalid
 }
 
@@ -104,9 +101,6 @@ const checkValidTransaction = () => {
 const isTransactionGenerate = ref(false)
 const showTransactionGenerate = () => {
   isTransactionGenerate.value = true
-}
-const closeTransactionGenerate = () => {
-  isTransactionGenerate.value = false
 }
 
 onMounted(() => {
@@ -119,44 +113,54 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="checkout__container sm-sd-2">
+    <div class="checkout__container w-full flex align-items-f-start gap-4 sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
           <form>
-            <div class="order-details__checkout">
+            <div class="order-details__checkout flex fd-col gap[0.5]">
               <h4>Pemesanan Langsung</h4>
-              <div class="order-details__cashier">
-                <div class="order-details__content">
+              <div class="order-details__cashier flex fd-col">
+                <div class="order-details__content w-full flex gap[0.5]">
                   <ph-devices :size="24" weight="bold" class="header-icons" />
                   <p>Detail Kasir</p>
                 </div>
-                <div class="order-details__content w-full">
+                <div class="order-details__content w-full flex gap[0.5] align-items-center">
                   <p class="fs-h5 fw-700">{{ userData.name }}</p>
                   <p>- ({{ userData.email }})</p>
                 </div>
-                <div class="order-details__dropdown" v-if="isMancanegara">
-                  <NationalityDropdown />
-                </div>
-                <div class="order-details__customer">
-                  <div class="order-details__content">
-                    <ph-user :size="24" weight="bold" class="header-icons" />
-                    <p>Detail Pelanggan</p>
-                  </div>
-                  <div class="input_wrapper">
-                    <input class="title-input" type="text" rows="1" v-model="title" placeholder="Nama" />
-                    <input class="title-input" type="text" rows="1" v-model="title" placeholder="Email" />
-                  </div>
-                </div>
               </div>
-              <div class="order-details__ticket">
-                <div class="order-details__content">
+              <div class="order-details__dropdown" v-if="isMancanegara">
+                <NationalityDropdown />
+              </div>
+              <div class="order-details__customer">
+                <div class="order-details__content w-full flex gap[0.5]">
+                  <ph-user :size="24" weight="bold" class="header-icons" />
+                  <p>Detail Pelanggan</p>
+                </div>
+                  <div class="order-details__customer-input flex gap-1">
+                    <div class="customer-details__input-placeholder">
+                      <input type="text" rows="1" v-model="custName" />
+                      <label>Nama Pelanggan</label>
+                    </div>
+                    <div class="customer-details__input-placeholder">
+                      <input type="text" rows="1" v-model="custEmail" />
+                      <label>Email Pelanggan</label>
+                    </div>
+                  </div>
+              </div>
+              <div class="order-details__ticket flex fd-col gap[0.5]">
+                <div class="order-details__content w-full flex gap[0.5]">
                   <ph-ticket :size="24" weight="bold" class="header-icons" />
                   <p>Detail Tiket</p>
                 </div>
                 <div class="order-details__ticket-date">
                   <div class="ticket__input-placeholder">
-                    <input type="datetime-local" class="ticket__input-date" v-model="selectedDate"
-                      @input="fetchUnavailableGuide()" />
+                    <input
+                      type="datetime-local"
+                      class="ticket__input-date"
+                      v-model="selectedDate"
+                      @input="fetchUnavailableGuide()"
+                    />
                     <label>Tanggal Pemesanan</label>
                   </div>
                   <p>MM/DD/YYYY</p>
@@ -189,7 +193,7 @@ onMounted(() => {
                   <Slider v-model:targetValue="cashbackValue" />
                 </div>
               </div>
-              <div class="order-details__content">
+              <div class="order-details__content flex gap[0.5]">
                 <ph-wallet :size="24" weight="bold" class="header-icons" />
                 <p>Pilih Pembayaran</p>
               </div>
@@ -208,12 +212,15 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <div class="order-details__content sm-top-1">
+              <div class="order-details__content flex gap[0.5] sm-top-1">
                 <ph-binoculars :size="24" weight="bold" class="header-icons" />
                 <p>Pilih Guide</p>
               </div>
               <div class="order-details__guide-select" @click="guideSelectPage">
-                <div v-if="guideSelection.length > 0" class="order-details__guide-select-content if">
+                <div
+                  v-if="guideSelection.length > 0"
+                  class="order-details__guide-select-content if"
+                >
                   <div class="flex align-items-center gap[0.5]">
                     {{ formattedGuideSelection }}
                   </div>
@@ -231,29 +238,41 @@ onMounted(() => {
                     <h5 class="fw-600">Guide</h5>
                     <ph-x :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
-                  <div class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
-                    :class="{ grid: guideSelectors }">
-                    <div v-if="guideSelectors" v-for="(guide, index) in guideData" :key="index"
-                      class="order-detail__guide-select-content_guide-selector flex">
+                  <div
+                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+                    :class="{ grid: guideSelectors }"
+                  >
+                    <div
+                      v-if="guideSelectors"
+                      v-for="(guide, index) in guideData"
+                      :key="index"
+                      class="order-detail__guide-select-content_guide-selector flex"
+                    >
                       <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
                         <div class="order-detail__guide-select-content_guide-selector_radio">
                           <div v-if="isGuideChecked(guide.id)" class="selected"></div>
                         </div>
                         <label :for="guide.name">{{ guide.name }}</label>
                       </span>
-                      <div v-if="!checkGuideAvailability(guide.id)"
+                      <div
+                        v-if="!checkGuideAvailability(guide.id)"
                         class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                        @click="guideSelectPageBio(guide)">
+                        @click="guideSelectPageBio(guide)"
+                      >
                         <ph-caret-right :size="16" weight="bold" />
                       </div>
-                      <div v-else class="bg-yellow flex align-items-center pd[0.5] cursor-pointer" @click="
-                    assignAlert(
-                      true,
-                      'Error',
-                      'danger',
-                      `Guide ${guide.name} tidak tersedia!`
-                    )
-                    ">
+                      <div
+                        v-else
+                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                        @click="
+                          assignAlert(
+                            true,
+                            'Error',
+                            'danger',
+                            `Guide ${guide.name} tidak tersedia!`
+                          )
+                        "
+                      >
                         <ph-caret-right :size="16" weight="bold" />
                       </div>
                     </div>
@@ -261,19 +280,27 @@ onMounted(() => {
                     <div class="order-details__guide-select_biodata relative" v-if="guideSelectBio">
                       <div
                         class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-                        @click="guideSelectPageBio">
+                        @click="guideSelectPageBio"
+                      >
                         <ph-caret-left :size="16" weight="bold" />
                         <h6>Kembali</h6>
                       </div>
 
                       <div class="guide-select_biodata-content flex gap-2">
                         <div class="">
-                          <img :src="selectedGuide.image
-                      ? getImageURL(selectedGuide.image)
-                      : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                    " class="guide-select_biodata-image" />
+                          <img
+                            :src="
+                              selectedGuide.image
+                                ? getImageURL(selectedGuide.image)
+                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
+                            class="guide-select_biodata-image"
+                          />
                           <div class="flex justify-content-sb">
-                            <div class="guide-select_biodata_add-ticket w-full" @click="guideSelectPageTicket">
+                            <div
+                              class="guide-select_biodata_add-ticket w-full"
+                              @click="guideSelectPageTicket"
+                            >
                               Tambahkan Tiket<ph-caret-right :size="16" weight="bold" />
                             </div>
                           </div>
@@ -292,21 +319,32 @@ onMounted(() => {
                       </div>
                     </div>
 
-                    <div class="order-details__guide-select_ticket relative" v-if="guideSelectTicket">
+                    <div
+                      class="order-details__guide-select_ticket relative"
+                      v-if="guideSelectTicket"
+                    >
                       <div
                         class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-                        @click="guideSelectPageTicket">
+                        @click="guideSelectPageTicket"
+                      >
                         <ph-caret-left :size="16" weight="bold" />
                         <h6>Kembali</h6>
                       </div>
 
-                      <div v-for="(item, index) in items" :key="index"
-                        class="guide-select_ticket flex justify-content-sb sm-bottom-1">
+                      <div
+                        v-for="(item, index) in items"
+                        :key="index"
+                        class="guide-select_ticket flex justify-content-sb sm-bottom-1"
+                      >
                         <div class="flex gap-1">
-                          <img :src="item.image
-                      ? getImageURL(item.image)
-                      : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                    " class="guide-select_ticket-image" />
+                          <img
+                            :src="
+                              item.image
+                                ? getImageURL(item.image)
+                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                            "
+                            class="guide-select_ticket-image"
+                          />
                           <div class="flex fd-col">
                             <p class="fw-600">{{ item.name }}</p>
                             <p>{{ formatCurrency(item.price) }}</p>
@@ -314,8 +352,11 @@ onMounted(() => {
                           </div>
                         </div>
                         <div class="guide-select_ticket-cta flex align-items-center">
-                          <button class="guide-select_ticket-btn flex align-items-center"
-                            @click.prevent="addGuide(index)" @click="guideSelectPageTicket">
+                          <button
+                            class="guide-select_ticket-btn flex align-items-center"
+                            @click.prevent="addGuide(index)"
+                            @click="guideSelectPageTicket"
+                          >
                             <ph-plus :size="16" weight="bold" />
                           </button>
                         </div>
@@ -328,19 +369,24 @@ onMounted(() => {
               <section class="order-details__select-content_modal-overlay" v-if="paymentSelect">
                 <div class="order-details__payment-select-content_modal">
                   <div
-                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center">
+                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
+                  >
                     <h5 class="fw-600">Pilih Metode Pembayaran</h5>
                     <ph-x :size="20" weight="bold" @click="showPaymentSelect" />
                   </div>
-                  <div class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1">
+                  <div
+                    class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1"
+                  >
                     <button @click="selectPayment('Cash')">
-                      <span><ph-money :size="16" weight="bold" />
+                      <span
+                        ><ph-money :size="16" weight="bold" />
                         <h6>Cash</h6>
                       </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                     <button @click="selectPayment('Kartu Kredit/Debit')">
-                      <span><ph-credit-card :size="16" weight="bold" />
+                      <span
+                        ><ph-credit-card :size="16" weight="bold" />
                         <h6>Kartu Kredit/Debit</h6>
                       </span>
                       <ph-caret-right :size="16" weight="bold" />
@@ -381,7 +427,10 @@ onMounted(() => {
                 <p>{{ formatCurrency(biayaJasa) }}</p>
               </div>
             </div>
-            <div class="checkout__details-pricing-container" v-if="discountValue > 0 || cashbackValue > 0">
+            <div
+              class="checkout__details-pricing-container"
+              v-if="discountValue > 0 || cashbackValue > 0"
+            >
               <p class="fw-700 fs-h6">Potongan Harga</p>
               <div class="checkout__details-pricing" v-if="discountValue > 0">
                 <p>Diskon</p>
@@ -399,9 +448,12 @@ onMounted(() => {
             <div class="checkout__details-total flex fd-row align-items-center justify-content-sb">
               <p class="fw-700 fs-h5">Total Tagihan</p>
               <div class="checkout__details-total--final flex fd-col align-items-f-end">
-                <p class="fw-700 fs-h6" :class="{
+                <p
+                  class="fw-700 fs-h6"
+                  :class="{
                     'checkout__details-total--strikethrough': discountValue > 0
-                  }">
+                  }"
+                >
                   {{ formatCurrency(totalBiaya) }}
                 </p>
                 <p class="fw-700 fs-h6" v-if="discountValue > 0">
@@ -419,13 +471,17 @@ onMounted(() => {
         </div>
       </div>
       <section>
-        <div class="overview-transaction-success_modal w-full h-full flex align-items-center justify-content-center"
-          v-if="isTransactionGenerate">
+        <div
+          class="overview-transaction-success_modal w-full h-full flex align-items-center justify-content-center"
+          v-if="isTransactionGenerate"
+        >
           <div class="overview-transaction-success_content">
             <ph-check-circle :size="100" color="green" />
             <p class="fw-700 fs-h6">Transaksi berhasil</p>
-            <button class="generate__btn"
-              @click="route.push({ name: 'generateTickets', params: { id: recentTransactionId } })">
+            <button
+              class="generate__btn"
+              @click="route.push({ name: 'generateTickets', params: { id: recentTransactionId } })"
+            >
               Generate Tickets
             </button>
           </div>
@@ -440,62 +496,25 @@ main {
   font-family: 'Raleway';
 }
 
-.checkout__container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 3rem;
-}
-
-.checkout__form-container {
-  width: 100%;
-}
-
 .header-icons {
   color: #e6be58;
   font-size: 24px;
-}
-
-.order-details__checkout {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.order-details__cashier {
-  display: flex;
-  flex-direction: column;
-}
-
-.order-details_customer {}
-
-.order-details__content {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 .order-details__dropdown {
   margin-top: 0.25rem;
 }
 
-.order-details__ticket {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .ticket__input-date {
   font-family: Roboto;
 }
 
-.order-details__ticket-date input {
+.order-details__ticket-date input,
+.order-details__customer-input input {
   padding: 10px;
-  border: 3px solid rgba(0, 0, 0, 1) s;
+  border: 2px solid rgba(0, 0, 0, 1);
   outline: none;
   border-radius: 4px;
-  width: 50%;
 }
 
 .order-details__ticket-date p {
@@ -504,7 +523,8 @@ main {
   line-height: 16px;
 }
 
-.order-details__ticket-date label {
+.order-details__ticket-date label,
+.order-details__customer-input label {
   position: absolute;
   top: 1%;
   left: 8px;
@@ -515,15 +535,18 @@ main {
   font-size: 12px;
 }
 
-.order-details__ticket-date input:focus {
-  border: 3px solid rgba(218, 165, 32, 1);
+.order-details__ticket-date input:focus,
+.order-details__customer-input input:focus {
+  border: 2px solid rgba(218, 165, 32, 1);
 }
 
-.order-details__ticket-date input:focus+label {
+.order-details__ticket-date input:focus + label,
+.order-details__customer-input input:focus + label {
   color: rgba(218, 165, 32, 1);
 }
 
-.ticket__input-placeholder {
+.ticket__input-placeholder,
+.customer-details__input-placeholder {
   position: relative;
 }
 
@@ -693,7 +716,7 @@ main {
   padding: 0.1rem;
 }
 
-.order-detail__guide-select-content_guide-selector_radio>.selected {
+.order-detail__guide-select-content_guide-selector_radio > .selected {
   background-color: #e6be58;
   filter: blur(1px);
   border-radius: 100%;
@@ -856,31 +879,10 @@ main {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   font-weight: 700;
   align-items: center;
-
 }
 
 .generate__btn:hover {
   background-color: #e6be58;
-}
-
-.title-input {
-  min-width: 30px;
-  width: 50%;
-  resize: none;
-  border: none;
-  padding: 0.5rem;
-  box-sizing: border-box;
-  font-size: inherit;
-  font-family: inherit;
-  border: 2px solid black;
-  line-height: inherit;
-  border-radius: 0.25rem;
-}
-
-.input_wrapper {
-  display: flex;
-  flex-direction: row;
-  gap: 1rem;
 }
 
 @media (max-width: 1024px) {

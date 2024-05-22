@@ -16,7 +16,6 @@ const capitalizeFirstLetter = (str) => {
   const lowercaseStr = str.toLowerCase()
   return lowercaseStr.charAt(0).toUpperCase() + lowercaseStr.slice(1)
 }
-// Fungsi untuk mengubah format tanggal menjadi dd/mm/yyyy
 const formatDate = (dateStr) => {
   const date = new Date(dateStr)
   const day = date.getDate().toString().padStart(2, '0')
@@ -39,8 +38,8 @@ const fetchIncomeRevenue = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    incomeRevenue.value = data.data
+    const res = await response.json()
+    incomeRevenue.value = res.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -60,65 +59,72 @@ const generateExcel = () => {
 
   const wb = XLSX.utils.book_new()
 
-  // Buat sheet untuk data tahunan
+  const yearlyCategories = yearlyCategory.value.slice(1)
   const yearlySheetData = [
-    // Baris untuk header primary
     [`Tabel Tingkat Keramaian ${selectedYear.value}`],
-    // Baris untuk header kategori dan nama kategori
-    ['Bulan', 'Umum', 'Pelajar', 'Mancanegara'],
-    // Baris untuk bulan
-    ...yearlyCategory.value.slice(1).map((month, index) => {
-      const rowData = [month]
-      // Data untuk tiap kategori
-      yearlyTempData.forEach((item) => {
-        rowData.push(item.data[index])
-      })
-      return rowData
-    })
+    ['Bulan', ...yearlyCategories, 'Total']
   ]
+
+  const yearlyTotals = new Array(yearlyCategories.length).fill(0)
+
+  yearlyTempData.forEach((item) => {
+    const rowData = [item.name]
+    let total = 0
+    item.data.forEach((value, colIndex) => {
+      rowData.push(value)
+      total += value
+      yearlyTotals[colIndex] += value
+    })
+    rowData.push(total)
+    yearlySheetData.push(rowData)
+  })
+
+  yearlySheetData.push(['Total', ...yearlyTotals, yearlyTotals.reduce((a, b) => a + b, 0)])
+
   const yearlySheet = XLSX.utils.aoa_to_sheet(yearlySheetData)
-  yearlySheet['!cols'] = [{ wpx: 80 }, { wpx: 120 }, { wpx: 120 }, { wpx: 120 }]
-  // Lebar kolom header 2 menjadi 12
-  yearlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }]
+  yearlySheet['!cols'] = [{ wpx: 80 }]
+  yearlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 13 } }]
   XLSX.utils.book_append_sheet(wb, yearlySheet, 'Yearly Data')
 
-  // Buat sheet untuk data bulanan
+  const monthlyCategories = monthlyCategory.value.slice(1)
   const monthlySheetData = [
-    // Baris untuk header primary
     [`Tabel Tingkat Keramaian Bulan ${selectedMonthName.value}`],
-    // Baris untuk header kategori dan nama kategori
-    ['Tanggal', 'Umum', 'Pelajar', 'Mancanegara'],
-    // Baris untuk hari
-    ...monthlyCategory.value.slice(1).map((day, index) => {
-      const rowData = [day]
-      // Data untuk tiap kategori
-      monthlyTempData.forEach((item) => {
-        rowData.push(item.data[index])
-      })
-      return rowData
-    })
+    ['Tanggal', ...monthlyCategories, 'Total']
   ]
+
+  const monthlyTotals = new Array(monthlyCategories.length).fill(0)
+
+  monthlyTempData.forEach((item) => {
+    const rowData = [item.name]
+    let total = 0
+    item.data.forEach((value, colIndex) => {
+      rowData.push(value)
+      total += value
+      monthlyTotals[colIndex] += value
+    })
+    rowData.push(total)
+    monthlySheetData.push(rowData)
+  })
+
+  monthlySheetData.push(['Total', ...monthlyTotals, monthlyTotals.reduce((a, b) => a + b, 0)])
+
   const monthlySheet = XLSX.utils.aoa_to_sheet(monthlySheetData)
-  monthlySheet['!cols'] = [{ wpx: 80 }, { wpx: 120 }, { wpx: 120 }, { wpx: 120 }] // Lebar kolom header 2 menjadi 12
-  monthlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 3 } }]
+  monthlySheet['!cols'] = [{ wpx: 80 }]
+  monthlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 32 } }]
   XLSX.utils.book_append_sheet(wb, monthlySheet, 'Monthly Data')
 
-  // Simpan file Excel
   XLSX.writeFile(wb, 'chart_report.xlsx')
 }
 
 const printData = () => {
   const data = []
 
-  // Batasi jumlah kolom untuk data bulanan
   const maxYearColumns = yearlyCategory.value.length
   const maxMonthColumns = monthlyCategory.value.length
 
-  // Buat salinan data tahunan dan bulanan
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
   const monthlyTempData = JSON.parse(JSON.stringify(monthlyData.value))
 
-  // Hapus data index 0
   yearlyTempData.forEach((item) => {
     item.data = item.data.slice(1)
   })
@@ -127,79 +133,76 @@ const printData = () => {
     item.data = item.data.slice(1)
   })
 
-  const yearlyCategories = yearlyCategory.value.slice(1) // Mengambil bulan saja
-  const yearlyTableData = [['Bulan', ...yearlyCategories, 'Total']] // Tambahkan judul "Bulan" di awal
-  data.push([]) // Tambahkan baris kosong
+  const yearlyCategories = yearlyCategory.value.slice(1)
+  const yearlyTableData = [['Bulan', ...yearlyCategories, 'Total']]
+  const yearlyTotals = new Array(maxYearColumns - 1).fill(0)
+  data.push([])
 
-  // Tambahkan data tahunan
-  yearlyTempData.forEach((item, index) => {
-    const rowData = [`${item.name}`] // Tambahkan kategori pada awal baris
+  yearlyTempData.forEach((item) => {
+    const rowData = [`${item.name}`]
     let total = 0
-    item.data.slice(0, maxYearColumns - 1).forEach((value) => {
-      // Batasi jumlah kolom
-      rowData.push(`${value} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
+    item.data.forEach((value, colIndex) => {
+      rowData.push(`${value}`)
       total += value
+      yearlyTotals[colIndex] += value
     })
-    rowData.push(`${total} Tiket`)
+    rowData.push(`${total}`)
     yearlyTableData.push(rowData)
   })
 
-  // Buat tabel tahunan
+  yearlyTableData.push(['Total', ...yearlyTotals, yearlyTotals.reduce((a, b) => a + b, 0)])
+
   const yearlyTable = document.createElement('table')
   yearlyTable.border = '1'
   yearlyTable.style.width = '100%'
 
-  // Tambahkan data tahunan ke dalam tabel tahunan
   yearlyTableData.forEach((rowData) => {
     const row = yearlyTable.insertRow()
     rowData.forEach((cellData, index) => {
       const cell = row.insertCell()
       cell.innerHTML = cellData.content || cellData
-      cell.style.cssText = cellData.style || '' // Atur gaya sel jika ada, jika tidak, gunakan yang default
-      // Set text-align center untuk kolom umum, pelajar, dan mancanegara
+      cell.style.cssText = cellData.style || ''
       if (index > 0) {
         cell.style.textAlign = 'center'
       }
     })
   })
 
-  // Buat tabel bulanan
   const monthlyTable = document.createElement('table')
   monthlyTable.border = '1'
   monthlyTable.style.width = '100%'
 
-  const monthlyCategories = monthlyCategory.value.slice(1) // Mengambil tanggal saja
-  const monthlyTableData = [['Tanggal', ...monthlyCategories, 'Total']] // Tambahkan judul "Tanggal" di awal
-  data.push([]) // Tambahkan baris kosong
+  const monthlyCategories = monthlyCategory.value.slice(1)
+  const monthlyTableData = [['Tanggal', ...monthlyCategories, 'Total']]
+  const monthlyTotals = new Array(maxMonthColumns - 1).fill(0)
+  data.push([])
 
-  // Tambahkan data bulanan
-  monthlyTempData.forEach((item, index) => {
-    const rowData = [`${item.name}`] // Tambahkan kategori pada awal baris
+  monthlyTempData.forEach((item) => {
+    const rowData = [`${item.name}`]
     let total = 0
-    item.data.slice(0, maxMonthColumns - 1).forEach((value) => {
-      // Batasi jumlah kolom
-      rowData.push(`${value} Tiket`) // Menambahkan string "Tiket" sebelum nilai tiket
+    item.data.forEach((value, colIndex) => {
+      rowData.push(`${value}`)
       total += value
+      monthlyTotals[colIndex] += value 
     })
-    rowData.push(`${total} Tiket`)
+    rowData.push(`${total}`)
     monthlyTableData.push(rowData)
   })
 
-  // Tambahkan data bulanan ke dalam tabel bulanan
+  monthlyTableData.push(['Total', ...monthlyTotals, monthlyTotals.reduce((a, b) => a + b, 0)])
+
   monthlyTableData.forEach((rowData) => {
     const row = monthlyTable.insertRow()
     rowData.forEach((cellData, index) => {
       const cell = row.insertCell()
       cell.innerHTML = cellData.content || cellData
-      cell.style.cssText = cellData.style || '' // Atur gaya sel jika ada, jika tidak, gunakan yang default
-      // Set text-align center untuk kolom umum, pelajar, dan mancanegara
+      cell.style.cssText = cellData.style || ''
       if (index > 0) {
         cell.style.textAlign = 'center'
       }
     })
   })
 
-  // Buat container display flex
   const yearContainer = document.createElement('div')
   yearContainer.style.display = 'flex'
   yearContainer.style.justifyContent = 'center'
@@ -214,10 +217,8 @@ const printData = () => {
   monthContainer.style.padding = '2.5rem'
   monthContainer.style.gap = '3rem'
 
-  // Tambahkan tabel tahunan dan bulanan ke dalam container
   yearContainer.appendChild(yearlyTable)
   monthContainer.appendChild(monthlyTable)
-  // Cetak container
   const win = window.open('', '', 'fullscreen=yes')
   win.document.write('<html><head><title>Data Tingkat Keramaian</title></head><body>')
   win.document.write(
@@ -231,11 +232,11 @@ const printData = () => {
   win.document.write('</body></html>')
   win.document.close()
 
-  // Setelah menampilkan data, panggil fungsi window.print() untuk mencetak data tersebut
   win.onload = function () {
     win.print()
   }
 }
+
 
 /* ChartReport Helper*/
 const selectedYear = ref(0)
@@ -257,11 +258,11 @@ const fetchTargetYears = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
+    const res = await response.json()
     if (!targetYears.value.includes(currentYear)) {
       targetYears.value.push(currentYear)
     }
-    targetYears.value = data.data
+    targetYears.value = res.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -286,9 +287,9 @@ const fetchYearlyChartData = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    yearlyCategory.value = data.data.yearlyCategory
-    yearlyData.value = data.data.yearlyData
+    const res = await response.json()
+    yearlyCategory.value = res.data.yearlyCategory
+    yearlyData.value = res.data.yearlyData
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -302,7 +303,7 @@ const fetchTargetMonths = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
+    const res = await response.json()
     const monthNames = [
       'Januari',
       'Februari',
@@ -318,7 +319,7 @@ const fetchTargetMonths = async () => {
       'Desember'
     ]
 
-    const formattedMonths = data.data.map((month) => {
+    const formattedMonths = res.data.map((month) => {
       return monthNames[parseInt(month) - 1]
     })
     const currentMonthName = monthNames[new Date().getMonth()]
@@ -347,12 +348,10 @@ const changeSelectedMonth = async (monthName) => {
       'Desember'
     ]
 
-    // Mendapatkan indeks dari nama bulan yang diberikan
     const monthIndex = monthNames.indexOf(monthName)
 
-    // Jika nama bulan ditemukan dalam array, mengatur nilai selectedMonth menjadi indeks bulan tersebut
     if (monthIndex !== -1) {
-      selectedMonth.value = monthIndex + 1 // Menambah 1 karena indeks bulan dimulai dari 0
+      selectedMonth.value = monthIndex + 1
     } else {
       console.error('Invalid month name:', monthName)
       return
@@ -366,7 +365,6 @@ const changeSelectedMonth = async (monthName) => {
   }
 }
 const setMonthLocaleString = () => {
-  // Mendapatkan nama bulan untuk selectedMonth
   const monthNames = [
     'Januari',
     'Februari',
@@ -391,9 +389,9 @@ const fetchMonthlyChartData = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    monthlyCategory.value = data.data.monthlyCategory
-    monthlyData.value = data.data.monthlyData
+    const res = await response.json()
+    monthlyCategory.value = res.data.monthlyCategory
+    monthlyData.value = res.data.monthlyData
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -419,8 +417,8 @@ const fetchTableDataReport = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data Report')
     }
-    const data = await response.json()
-    activityReportData.value = data.data
+    const res = await response.json()
+    activityReportData.value = res.data
   } catch (error) {
     console.error('Error fetching data Report:', error)
   }
@@ -428,6 +426,11 @@ const fetchTableDataReport = async () => {
 
 /* TicketInfoCard Helper */
 const orderInfoCardData = ref([])
+const totalSum = () => {
+  return orderInfoCardData.value.reduce((total, item) => {
+    return total + item.sum
+  }, 0)
+}
 
 const fetchOrderInfoCardData = async () => {
   try {
@@ -435,8 +438,8 @@ const fetchOrderInfoCardData = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    orderInfoCardData.value = data.data
+    const res = await response.json()
+    orderInfoCardData.value = res.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -474,5 +477,6 @@ export default {
   formatDate,
   formatCurrency,
   orderInfoCardData,
+  totalSum,
   fetchOrderInfoCardData
 }

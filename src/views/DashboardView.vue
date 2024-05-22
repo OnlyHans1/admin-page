@@ -348,6 +348,7 @@ onMounted(() => {
 
 .popup-order__image {
   max-height: 32vh;
+  width: 24vw;
   object-fit: cover;
   border-radius: 0.5rem;
 }

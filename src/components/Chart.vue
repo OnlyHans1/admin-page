@@ -31,7 +31,7 @@ const chartOptions = ref({
       beforeResetZoom: (chartContext, opts) => {
         return {
           xaxis: {
-            min: dataCategory.length - 7,
+            min: dataCategory.length - 13,
             max: dataCategory.length
           }
         };
@@ -74,7 +74,7 @@ const chartOptions = ref({
       enabled: false
     },
     min: 1,
-    max: 7
+    max: 13
   },
   yaxis: {
     axisBorder: {

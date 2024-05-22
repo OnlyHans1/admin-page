@@ -27,8 +27,11 @@ const fetchNationalityData = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    nationalityData.value = data.data
+    const res = await response.json()
+    nationalityData.value = res.data
+    nationalityData.value.sort((a,b) => {
+      return a.name.localeCompare(b.name)
+    })
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -78,10 +81,8 @@ const getNationality = (nationalityId, nationalityName, countryCode) => {
   isNationalityDropdownOpen.value = false
   showFlag.value = true
 
-  // Dapatkan URL gambar bendera menggunakan kode negara
   const flagImageUrl = getFlagImageUrl(countryCode)
 
-  // Setel URL gambar bendera ke dalam selectedFlagImageUrl
   selectedFlagImageUrl.value = flagImageUrl
   selectedNationality.value = nationalityId
 }
@@ -93,7 +94,6 @@ const closeDropdownOutside = (event) => {
 }
 
 /* CheckoutView Helper */
-
 const items = ref([])
 const getItemsFromSessionStorage = () => {
   const savedItems = sessionStorage.getItem('selectedItems')
@@ -110,30 +110,23 @@ const getItemsFromSessionStorage = () => {
 }
 
 const saveToSessionStorage = () => {
-  // Ambil data yang telah disimpan sebelumnya dari sessionStorage
   let storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
 
-  // Iterasi melalui selectedItems untuk memeriksa apakah item sudah ada di storedItems
   items.value.forEach((item) => {
     const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
 
     if (item.amount === 0) {
-      // Jika amount dari item adalah 0, hapus item tersebut dari storedItems
       if (existingItemIndex !== -1) {
         storedItems.splice(existingItemIndex, 1)
       }
     } else {
       if (existingItemIndex !== -1) {
-        // Jika item sudah ada di storedItems, tambahkan jumlahnya
         storedItems[existingItemIndex].amount = item.amount
       } else {
-        // Jika item belum ada, tambahkan item baru
         storedItems.push(item)
       }
     }
   })
-
-  // Simpan data yang telah digabung kembali ke sessionStorage
   sessionStorage.setItem('selectedItems', JSON.stringify(storedItems))
   isMancanegara.value = false
   checkSessionStorage()
@@ -151,6 +144,8 @@ function reduceTicket(index) {
   }
 }
 
+const custName = ref('')
+const custEmail = ref('')
 const selectedDate = ref(null)
 const discountValue = ref(0)
 const cashbackValue = ref(0)
@@ -251,6 +246,8 @@ const createTransaction = async () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          custName: custName.value,
+          custEmail: custEmail.value,
           userId: userData.value.id,
           nationalityId: selectedNationality.value,
           plannedDate: selectedDate.value,
@@ -395,15 +392,15 @@ const fetchUnavailableGuide = async () => {
       showLoader.value = false
       throw new Error('Failed to fetch unavailable guide. Please try again.')
     }
-    const data = await response.json()
-    unavailableGuideData.value = data.data
+    const res = await response.json()
+    unavailableGuideData.value = res.data
     showLoader.value = false
   } catch (error) {
     console.log(error)
   }
 }
 const checkGuideAvailability = (id) => {
-  return unavailableGuideData.value.some((data) => data.guide.id === id)
+  return unavailableGuideData.value.some((data) => data.guide ? data.guide.id === id : false)
 }
 
 export default {
@@ -427,6 +424,8 @@ export default {
   selectPayment,
   addTicket,
   reduceTicket,
+  custName,
+  custEmail,
   selectedDate,
   discountValue,
   cashbackValue,
