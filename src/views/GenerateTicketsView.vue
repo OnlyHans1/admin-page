@@ -1,19 +1,15 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
+import CheckoutHelper from '@/utilities/CheckoutHelper'
 
-const { DB_BASE_URL, DETAILTRANS_BASE_URL, showLoader } = GlobalHelper
+const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader, getImageURL } = GlobalHelper
+const { ticketsData, sendEmailToUser } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
 
-const sendEmail = ref(false)
-const ticketsData = ref([])
-
-const showPopupEmail = () => {
-  sendEmail.value = true
-}
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
 }
@@ -24,18 +20,12 @@ const toHomepage = async () => {
   await router.replace('/')
   location.reload()
 }
-const getImageURL = (imageName) => {
-  if (imageName.startsWith('http')) {
-    return imageName
-  } else {
-    return `${DB_BASE_URL.value}/uploads/${imageName}`
-  }
-}
+
 const fetchTickets = async (id) => {
   try {
     showLoader.value = true
     const response = await fetch(
-      `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/generate-tickets/${encodeURIComponent(id)}`
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/generate-tickets/${encodeURIComponent(id)}`
     )
     if (!response.ok) {
       showLoader.value = false
@@ -43,6 +33,7 @@ const fetchTickets = async (id) => {
     }
     const res = await response.json()
     ticketsData.value = res.data
+    console.log(ticketsData.value)
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -62,7 +53,7 @@ onMounted(() => {
       <div class="preview flex fd-col gap-1 pd-1">
         <h5>Preview</h5>
         <div
-          v-for="(ticket, index) in ticketsData"
+          v-for="(ticket, index) in ticketsData.detailTrans"
           :key="index"
           class="generate-tickets__detail-transaction flex justify-content-sb sm-bottom-1"
         >
@@ -96,7 +87,7 @@ onMounted(() => {
         Print Tickets
         <ph-printer :size="32" />
       </button>
-      <button class="generate-tickets__btn-email" @click="showPopupEmail">
+      <button class="generate-tickets__btn-email" @click="sendEmailToUser">
         Send to Email
         <ph-paper-plane-tilt :size="32" />
       </button>
@@ -130,8 +121,8 @@ onMounted(() => {
 }
 
 .generate-tickets__detail-transaction-image {
-  max-height: 70px;
-  max-width: 100px;
+  height: 70px;
+  width: 100px;
 }
 
 .generate-tickets__detail-transaction-btn {

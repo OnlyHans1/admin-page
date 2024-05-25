@@ -28,7 +28,7 @@ const fetchTransactionList = async () => {
   }
 }
 
-const mapOrderDetails = (data) => {
+const mapInvoiceOrders = (data) => {
   if (data.detailTrans.length > 0) {
     return data.detailTrans
       .map((item) => {
@@ -41,16 +41,26 @@ const mapOrderDetails = (data) => {
   }
   return ''
 }
-const mapGuideDetails = (data) => {
+const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
-    return data.detailTrans
-      .map((item) => {
-        const guideName = item.guide ? item.guide.name : ''
-        return `${guideName}`
-      })
-      .join(', ')
+    return data.detailTrans.map((item) => {
+      const orderName = item.order.name
+      const orderCategoryName = item.order.category.name
+      const guideName = item.guide ? item.guide.name : ''
+      const orderPrice = Number(item.order.price)  
+      const orderAmount = Number(item.amount)  
+      const totalPrice = Number(item.amount * item.order.price)  
+
+      return {
+        order: `${orderName} (${orderCategoryName}) : ${item.amount} Tiket`,
+        guide: guideName,
+        price: orderPrice,
+        amount: orderAmount,
+        totalPrice: totalPrice
+      }
+    })
   }
-  return null
+  return []
 }
 
 const searchQuery = ref(null)
@@ -114,12 +124,13 @@ const formatDate = (dateTime) => {
 
 const showDetail = (item) => {
   selectedItem.value = {
-    nama: item.user.name,
-    reservasi: `${mapOrderDetails(item)}`,
-    jadwal: formatDate(item.plannedDate),
+    cashier: `${item.user.name} (${item.user.email})`,
+    customer: `${item.custName} (${item.custEmail})`,
+    reservation: mapInvoiceDetails(item),
+    appointment: formatDate(item.plannedDate),
     ...(item.user.number != null && { 'no. telp': item.user.number }),
-    ...(mapGuideDetails(item) && { guide: mapGuideDetails(item) }),
-    pembayaran: capitalizeFirstLetter(item.method),
+    qr: item.qr[0],
+    payment: capitalizeFirstLetter(item.method),
     total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
   }
   showDetailPopup()
@@ -146,7 +157,8 @@ export default {
   fetchTransactionList,
   searchQuery,
   resetSearch,
-  mapOrderDetails,
+  mapInvoiceOrders,
+  mapInvoiceDetails,
   selectedItem,
   splitDate,
   showDetail,

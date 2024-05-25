@@ -10,7 +10,7 @@ const {
   fetchTransactionList,
   searchQuery,
   resetSearch,
-  mapOrderDetails,
+  mapInvoiceOrders,
   selectedItem,
   splitDate,
   detailPopup,
@@ -69,12 +69,12 @@ onMounted(() => {
             class="invoice-table__row-data"
           >
             <td class="invoice-table__data">{{ index + 1 }}</td>
-            <td class="invoice-table__data">{{ item.user.name }}</td>
-            <td class="invoice-table__data">{{ mapOrderDetails(item) }}</td>
+            <td class="invoice-table__data">{{ item.custName ? item.custName : item.user.name }}</td>
+            <td class="invoice-table__data">{{ mapInvoiceOrders(item) }}</td>
             <td class="invoice-table__data">{{ splitDate(item.plannedDate)[0] }}</td>
             <td class="invoice-table__data">{{ splitDate(item.plannedDate)[1] }}</td>
             <td class="invoice-table__data">
-              {{ item.user.email }} <br />
+              {{ item.custEmail ? item.custEmail : item.user.email }} <br />
               <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                 detail
               </button>

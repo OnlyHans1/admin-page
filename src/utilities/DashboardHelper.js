@@ -23,9 +23,6 @@ const fetchOrderList = async () => {
     }
     const res = await response.json()
     dataDashboard.value = res.data
-    dataDashboard.value.sort((a, b) => {
-      return new Date(b.createdAt) - new Date(a.createdAt)
-    })
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -38,14 +35,6 @@ const formatCurrency = (amount) => {
 
 const navigateToAdd = () => {
   showConfirmationPopup.value = true
-}
-
-const getImageURL = (imageName) => {
-  if (imageName.startsWith('http')) {
-    return imageName;
-  } else {
-    return `${DB_BASE_URL.value}/uploads/${imageName}`;
-  }
 }
 
 const selectItem = (item) => {
@@ -245,7 +234,6 @@ export default {
   dataDashboard,
   isMancanegara,
   fetchOrderList,
-  getImageURL,
   formatCurrency,
   navigateToAdd,
   closePopup,

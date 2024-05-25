@@ -139,11 +139,11 @@ onMounted(() => {
                 </div>
                   <div class="order-details__customer-input flex gap-1">
                     <div class="customer-details__input-placeholder">
-                      <input type="text" rows="1" v-model="custName" />
+                      <input type="text" required rows="1" v-model="custName" />
                       <label>Nama Pelanggan</label>
                     </div>
                     <div class="customer-details__input-placeholder">
-                      <input type="text" rows="1" v-model="custEmail" />
+                      <input type="email" required rows="1" v-model="custEmail" />
                       <label>Email Pelanggan</label>
                     </div>
                   </div>

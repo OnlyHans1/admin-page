@@ -29,9 +29,6 @@ const fetchNationalityData = async () => {
     }
     const res = await response.json()
     nationalityData.value = res.data
-    nationalityData.value.sort((a,b) => {
-      return a.name.localeCompare(b.name)
-    })
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -403,6 +400,33 @@ const checkGuideAvailability = (id) => {
   return unavailableGuideData.value.some((data) => data.guide ? data.guide.id === id : false)
 }
 
+const sendEmailToUser = async () => {
+  try {
+    let response = await fetch  (`${DB_BASE_URL.value}/${EMAIL_BASE_URL.value}/email-transaction`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            userEmail: 'custEmail@tes',
+            ticketData: ticketsData.value
+        })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Failed to send email: ${response.status} ${response.statusText} - ${errorText}`);
+    }
+
+    const res = await response.json();
+    console.log('Email sent successfully:', res.message);
+  } catch (error) {
+    console.error('Error sending email:', error);
+  }
+}
+
+const ticketsData = ref([]);
+
 export default {
   selectedNationality,
   fetchNationalityData,
@@ -458,5 +482,7 @@ export default {
   formatGender,
   fetchUnavailableGuide,
   unavailableGuideData,
-  checkGuideAvailability
+  checkGuideAvailability,
+  sendEmailToUser,
+  ticketsData
 }
