@@ -9,6 +9,7 @@ const {
   NATIONALITY_BASE_URL,
   TRANSACTION_BASE_URL,
   DETAILTRANS_BASE_URL,
+  EMAIL_BASE_URL,
   showLoader
 } = GlobalHelper
 const { checkSessionStorage, isMancanegara } = DashboardHelper
@@ -397,35 +398,33 @@ const fetchUnavailableGuide = async () => {
   }
 }
 const checkGuideAvailability = (id) => {
-  return unavailableGuideData.value.some((data) => data.guide ? data.guide.id === id : false)
+  return unavailableGuideData.value.some((data) => (data.guide ? data.guide.id === id : false))
 }
 
 const sendEmailToUser = async () => {
   try {
-    let response = await fetch  (`${DB_BASE_URL.value}/${EMAIL_BASE_URL.value}/email-transaction`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            userEmail: 'custEmail@tes',
-            ticketData: ticketsData.value
-        })
-    });
+    let response = await fetch(`${DB_BASE_URL.value}/${EMAIL_BASE_URL.value}/email-transaction`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...ticketsData.value
+      })
+    })
 
     if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Failed to send email: ${response.status} ${response.statusText} - ${errorText}`);
+      throw new Error('Failed to send email!')
     }
 
-    const res = await response.json();
-    console.log('Email sent successfully:', res.message);
+    const res = await response.json()
+    console.log('Email sent successfully:', res.message)
   } catch (error) {
-    console.error('Error sending email:', error);
+    console.error('Error sending email:', error)
   }
 }
 
-const ticketsData = ref([]);
+const ticketsData = ref([])
 
 export default {
   selectedNationality,

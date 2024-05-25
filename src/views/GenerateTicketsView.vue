@@ -33,7 +33,6 @@ const fetchTickets = async (id) => {
     }
     const res = await response.json()
     ticketsData.value = res.data
-    console.log(ticketsData.value)
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
