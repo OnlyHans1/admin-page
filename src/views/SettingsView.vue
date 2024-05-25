@@ -24,7 +24,6 @@ const {
 
 const {
   fetchOrderList,
-  getImageURL,
   formatCurrency,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
@@ -56,7 +55,7 @@ const {
   guideSelectedImage
 } = SettingsHelper
 
-const { assignAlert } = GlobalHelper
+const { assignAlert, getImageURL } = GlobalHelper
 
 const router = useRouter()
 

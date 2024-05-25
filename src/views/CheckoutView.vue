@@ -55,8 +55,8 @@ const {
   checkGuideAvailability
 } = CheckoutHelper
 
-const { assignAlert } = GlobalHelper
-const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
+const { assignAlert, getImageURL } = GlobalHelper
+const { checkSessionStorage, isMancanegara } = DashboardHelper
 const { userData } = LoginHelper
 
 const checkoutTransaction = async () => {
@@ -751,7 +751,7 @@ main {
 
 .guide-select_ticket-image {
   max-height: 70px;
-  max-width: 100px;
+  width: 100px;
 }
 
 .guide-select_ticket-btn {

@@ -134,7 +134,7 @@ const createOrderType = async (data) => {
     )
     if (!response.ok) {
       showLoader.value = false
-      throw new Error('Failed to fetch data')
+      throw new Error('Failed to create data')
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Tipe!')
@@ -142,7 +142,7 @@ const createOrderType = async (data) => {
       location.reload()
     }, 1500)
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error creating data:', error)
   }
 }
 const createOrderSubType = async (data) => {
@@ -158,7 +158,7 @@ const createOrderSubType = async (data) => {
     )
     if (!response.ok) {
       showLoader.value = false
-      throw new Error('Failed to fetch data')
+      throw new Error('Failed to create data')
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Sub Tipe!')
@@ -166,7 +166,7 @@ const createOrderSubType = async (data) => {
       location.reload()
     }, 1500)
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error creating data:', error)
   }
 }
 const createCategory = async (data) => {
@@ -182,7 +182,7 @@ const createCategory = async (data) => {
     )
     if (!response.ok) {
       showLoader.value = false
-      throw new Error('Failed to fetch data')
+      throw new Error('Failed to create data')
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Kategori!')
@@ -190,7 +190,7 @@ const createCategory = async (data) => {
       location.reload()
     }, 1500)
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error creating data:', error)
   }
 }
 const createGuide = async (data) => {
@@ -206,7 +206,7 @@ const createGuide = async (data) => {
     )
     if (!response.ok) {
       showLoader.value = false
-      throw new Error('Failed to fetch data')
+      throw new Error('Failed to create data')
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Guide!')
@@ -214,7 +214,7 @@ const createGuide = async (data) => {
       location.reload()
     }, 1500)
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error creating data:', error)
   }
 }
 const updateOrderType = async (data, id) => {

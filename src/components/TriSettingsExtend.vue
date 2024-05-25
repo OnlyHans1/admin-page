@@ -76,6 +76,7 @@ const checkFormData = () => {
   if (name.value) formData.append('name', name.value)
   if (orderTypeId.value) formData.append('orderTypeId', orderTypeId.value)
   if (color.value) formData.append('color', color.value)
+
   return formData
 }
 const updateOrderTypeDropdown = (value) => {
