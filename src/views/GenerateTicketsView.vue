@@ -5,7 +5,7 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 
 const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader, getImageURL } = GlobalHelper
-const { ticketsData, sendEmailToUser } = CheckoutHelper
+const { ticketsData, sendEmailToUser, printTickets } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -82,7 +82,7 @@ onMounted(() => {
     <div
       class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
     >
-      <button class="generate-tickets__btn-print">
+      <button class="generate-tickets__btn-print" @click="printTickets">
         Print Tickets
         <ph-printer :size="32" />
       </button>

@@ -107,6 +107,7 @@ input {
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
+  cursor: pointer;
   border: 0;
   width: 100%;
   height: 100%;

@@ -47,9 +47,9 @@ const mapInvoiceDetails = (data) => {
       const orderName = item.order.name
       const orderCategoryName = item.order.category.name
       const guideName = item.guide ? item.guide.name : ''
-      const orderPrice = Number(item.order.price)  
-      const orderAmount = Number(item.amount)  
-      const totalPrice = Number(item.amount * item.order.price)  
+      const orderPrice = Number(item.order.price)
+      const orderAmount = Number(item.amount)
+      const totalPrice = Number(item.amount * item.order.price)
 
       return {
         order: `${orderName} (${orderCategoryName}) : ${item.amount} Tiket`,
@@ -125,10 +125,10 @@ const formatDate = (dateTime) => {
 const showDetail = (item) => {
   selectedItem.value = {
     cashier: `${item.user.name} (${item.user.email})`,
-    customer: `${item.custName} (${item.custEmail})`,
+    customer: `${item.customer.name} (${item.customer.email})`,
     reservation: mapInvoiceDetails(item),
     appointment: formatDate(item.plannedDate),
-    ...(item.user.number != null && { 'no. telp': item.user.number }),
+    number: item.customer.number ? item.customer.number : item.user.number ? item.user.number : null,
     qr: item.qr[0],
     payment: capitalizeFirstLetter(item.method),
     total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`

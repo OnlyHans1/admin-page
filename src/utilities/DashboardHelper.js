@@ -1,13 +1,16 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 import SettingsHelper from './SettingsHelper'
+import LoginHelper from './LoginHelper'
 
-const { DB_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
+const { DB_BASE_URL, USER_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
 const { targetedData, fetchTargetedOrder } = SettingsHelper
+const { userData, userCarts } = LoginHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref('')
 
+const showCartPopup = ref(false)
 const showConfirmationPopup = ref(false)
 const showDeleteConfirmationPopup = ref(false)
 
@@ -37,8 +40,30 @@ const navigateToAdd = () => {
   showConfirmationPopup.value = true
 }
 
+const closePopup = () => {
+  showConfirmationPopup.value = false
+  selectedItems.value = []
+}
+
+const increaseAmount = (item) => {
+  if (item.amount >= 80) {
+    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
+    item.amount = 80
+  } else {
+    item.amount++
+  }
+  saveToUserCarts()
+}
+
+const decreaseAmount = (item) => {
+  if (item.amount > 0) {
+    item.amount--
+    saveToUserCarts()
+  }
+}
+
 const selectItem = (item) => {
-  const storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
+  const storedItems = userCarts.value || []
   const existingItem = storedItems.find((i) => i.id === item.id)
 
   if (existingItem) {
@@ -49,28 +74,11 @@ const selectItem = (item) => {
 
   item.selected = true
   selectedItems.value.push(item)
-  saveToSessionStorage()
+  saveToUserCarts()
 }
 
-const closePopup = () => {
-  showConfirmationPopup.value = false
-  selectedItems.value = []
-}
-
-const increaseAmount = (item) => {
-  item.amount++
-  saveToSessionStorage()
-}
-
-const decreaseAmount = (item) => {
-  if (item.amount > 0) {
-    item.amount--
-    saveToSessionStorage()
-  }
-}
-
-const saveToSessionStorage = () => {
-  let storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
+const saveToUserCarts = async () => {
+  const storedItems = userCarts.value || []
   selectedItems.value.forEach((item) => {
     const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
     if (item.amount === 0) {
@@ -85,15 +93,36 @@ const saveToSessionStorage = () => {
       }
     }
   })
-  sessionStorage.setItem('selectedItems', JSON.stringify(storedItems))
+  if (storedItems.length > 0) await updateUserCarts(storedItems)
   isMancanegara.value = false
-  checkSessionStorage()
+  checkUserCarts()
 }
 
-const checkSessionStorage = () => {
-  const sessionStorageData = JSON.parse(sessionStorage.getItem('selectedItems'))
-  if (sessionStorageData && sessionStorageData.length > 0) {
-    for (const item of sessionStorageData) {
+const updateUserCarts = async (storedItems) => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/${USER_BASE_URL.value}/update-carts`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        carts: storedItems,
+        user: userData.value
+      })
+    })
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to update carts data')
+    }
+    showLoader.value = false
+  } catch (error) {
+    console.error('Error updating carts data:', error)
+  }
+}
+
+const checkUserCarts = () => {
+  if (userCarts.value && userCarts.value.length > 0) {
+    for (const item of userCarts.value) {
       if (item && item.category.name === 'Mancanegara') {
         isMancanegara.value = true
         return 'Mancanegara'
@@ -127,7 +156,7 @@ const handleCategorySelection = (filterCategory) => {
 }
 
 const handleItemClick = (item) => {
-  const filterCategory = ref(checkSessionStorage())
+  const filterCategory = ref(checkUserCarts())
   handleCategorySelection(filterCategory.value)
   if (item.disabled) {
     if (filterCategory.value === 'Mancanegara') {
@@ -150,11 +179,13 @@ const handleItemClick = (item) => {
   }
 }
 
+const showCart = () => {
+  showCartPopup.value = !showCartPopup.value
+}
 const showDeleteConfirmation = (id) => {
   showDeleteConfirmationPopup.value = true
   selectedItemToDelete.value = id
 }
-
 const closeDeletePopup = () => {
   showDeleteConfirmationPopup.value = false
   selectedItemToDelete.value = ''
@@ -194,7 +225,7 @@ const deleteOrder = async () => {
 
     if (response.ok) {
       showLoader.value = false
-      sessionStorage.clear()
+      userCarts.value = {}
       closePopup()
       closeDeletePopup()
       await location.reload()
@@ -227,7 +258,10 @@ const confirmDelete = async () => {
 
 export default {
   selectedItems,
+  selectItem,
   showConfirmationPopup,
+  showCartPopup,
+  showCart,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
   confirmDelete,
@@ -240,8 +274,9 @@ export default {
   closeDeletePopup,
   increaseAmount,
   decreaseAmount,
-  saveToSessionStorage,
+  saveToUserCarts,
   handleItemClick,
-  checkSessionStorage,
+  checkUserCarts,
+  updateUserCarts,
   groupedItems
 }

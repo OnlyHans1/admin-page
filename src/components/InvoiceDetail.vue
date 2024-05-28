@@ -76,6 +76,10 @@ const invoiceData = computed(() => selectedItem.value || {})
 </template>
 
 <style scoped>
+h6, p {
+  cursor: default;  
+}
+
 .invoice-detail__container-content {
   background-color: white;
   border-radius: 10px;

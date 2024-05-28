@@ -47,6 +47,10 @@ onMounted(() => {
 </template>
 
 <style scoped>
+th, td {
+  cursor: pointer;
+}
+
 .report-activity__table {
   max-height: calc(374px - 2rem);
   overflow-y: overlay;

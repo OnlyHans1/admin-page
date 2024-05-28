@@ -10,10 +10,11 @@ const {
   TRANSACTION_BASE_URL,
   DETAILTRANS_BASE_URL,
   EMAIL_BASE_URL,
-  showLoader
+  showLoader,
+  assignAlert
 } = GlobalHelper
-const { checkSessionStorage, isMancanegara } = DashboardHelper
-const { userData } = LoginHelper
+const { saveToUserCarts, updateUserCarts } = DashboardHelper
+const { userData, userCarts } = LoginHelper
 
 /* NationalityDropdown Helper */
 const nationalityData = ref([])
@@ -92,58 +93,37 @@ const closeDropdownOutside = (event) => {
 }
 
 /* CheckoutView Helper */
-const items = ref([])
-const getItemsFromSessionStorage = () => {
-  const savedItems = sessionStorage.getItem('selectedItems')
-  if (savedItems) {
-    const parsedItems = JSON.parse(savedItems)
-    for (let item of parsedItems) {
+const getUserCarts = () => {
+  if (userCarts.value) {
+    for (let item of userCarts.value) {
       item.guideId = item.guideId || ''
       item.guideName = item.guideName || ''
     }
-    items.value = parsedItems
-    return parsedItems
+    return userCarts.value
   }
   return []
 }
 
-const saveToSessionStorage = () => {
-  let storedItems = JSON.parse(sessionStorage.getItem('selectedItems')) || []
-
-  items.value.forEach((item) => {
-    const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
-
-    if (item.amount === 0) {
-      if (existingItemIndex !== -1) {
-        storedItems.splice(existingItemIndex, 1)
-      }
-    } else {
-      if (existingItemIndex !== -1) {
-        storedItems[existingItemIndex].amount = item.amount
-      } else {
-        storedItems.push(item)
-      }
-    }
-  })
-  sessionStorage.setItem('selectedItems', JSON.stringify(storedItems))
-  isMancanegara.value = false
-  checkSessionStorage()
-}
-
 function addTicket(index) {
-  items.value[index].amount++
-  saveToSessionStorage()
+  if (userCarts.value[index].amount >= 80) {
+    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
+    userCarts.value[index].amount = 80
+  } else {
+    userCarts.value[index].amount++
+  }
+  saveToUserCarts()
 }
 
 function reduceTicket(index) {
-  if (items.value[index].amount > 0) {
-    items.value[index].amount--
-    saveToSessionStorage()
+  if (userCarts.value[index].amount > 0) {
+    userCarts.value[index].amount--
+    saveToUserCarts()
   }
 }
 
 const custName = ref('')
 const custEmail = ref('')
+const custNumber = ref('')
 const selectedDate = ref(null)
 const discountValue = ref(0)
 const cashbackValue = ref(0)
@@ -173,7 +153,7 @@ const formatCurrency = (amount) => {
 
 const totalHarga = computed(() => {
   let total = 0
-  for (const ticket of items.value) {
+  for (const ticket of userCarts.value) {
     total += ticket.price * ticket.amount
   }
   return total
@@ -194,7 +174,7 @@ const totalTagihan = computed(() => {
 
 const totalTicketCount = computed(() => {
   let totalCount = 0
-  for (const ticket of items.value) {
+  for (const ticket of userCarts.value) {
     totalCount += ticket.amount
   }
   return totalCount
@@ -223,7 +203,7 @@ const paymentStatus = ref('')
 const recentTransactionId = ref('')
 
 const createTransaction = async () => {
-  const order = items.value
+  const order = userCarts.value
     .filter((item) => item.amount > 0)
     .map((item) => ({
       id: item.id,
@@ -244,18 +224,26 @@ const createTransaction = async () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          custName: custName.value,
-          custEmail: custEmail.value,
+          customer: {
+            name: custName.value,
+            email: custEmail.value,
+            number: custNumber.value
+          },
           userId: userData.value.id,
           nationalityId: selectedNationality.value,
           plannedDate: selectedDate.value,
+          additionalFee: Number(biayaJasa.value + biayaLayanan.value),
           total: totalTagihan.value.toFixed(2),
           method: paymentSelection.value.toUpperCase(),
           status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
           discount:
-            discountValue.value > 0 ? `${(totalHarga.value * discountValue.value) / 100}` : '0',
+            discountValue.value > 0
+              ? `${(totalHarga.value * discountValue.value) / 100} | ${discountValue.value}`
+              : '0 | 0%',
           cashback:
-            cashbackValue.value > 0 ? `${(totalTagihan.value * cashbackValue.value) / 100}` : '0',
+            cashbackValue.value > 0
+              ? `${(totalTagihan.value * cashbackValue.value) / 100} | ${cashbackValue.value}`
+              : '0 | 0%',
           order: order
         })
       }
@@ -272,7 +260,8 @@ const createTransaction = async () => {
 
     checkoutStatus.value = 'boleh'
     showLoader.value = false
-    sessionStorage.clear()
+    userCarts.value = []
+    updateUserCarts(userCarts.value)
   } catch (error) {
     console.log(error)
   }
@@ -324,14 +313,14 @@ const isGuideChecked = computed(() => {
 })
 
 const updateItems = (props) => {
-  items.value[props].guideId = selectedGuide.value.id
-  items.value[props].guideName = selectedGuide.value.name
+  userCarts.value[props].guideId = selectedGuide.value.id
+  userCarts.value[props].guideName = selectedGuide.value.name
 }
 
 const addGuide = (index) => {
-  const existingIndex = items.value.findIndex((item) => item.guideId === selectedGuide.value.id)
+  const existingIndex = userCarts.value.findIndex((item) => item.guideId === selectedGuide.value.id)
   const previousSelectionIndex = guideSelection.value.findIndex(
-    (guide) => guide.id === items.value[index].guideId
+    (guide) => guide.id === userCarts.value[index].guideId
   )
   if (existingIndex === -1) {
     updateItems(index)
@@ -342,7 +331,6 @@ const addGuide = (index) => {
     guideSelection.value.splice(previousSelectionIndex, 1)
   }
   guideSelection.value.push({ ...selectedGuide.value })
-  sessionStorage.setItem('selectedItems', JSON.stringify(items.value))
 }
 
 const formattedGuideSelection = computed(() => {
@@ -401,8 +389,10 @@ const checkGuideAvailability = (id) => {
   return unavailableGuideData.value.some((data) => (data.guide ? data.guide.id === id : false))
 }
 
+const ticketsData = ref([])
 const sendEmailToUser = async () => {
   try {
+    showLoader.value = true
     let response = await fetch(`${DB_BASE_URL.value}/${EMAIL_BASE_URL.value}/email-transaction`, {
       method: 'POST',
       headers: {
@@ -414,17 +404,41 @@ const sendEmailToUser = async () => {
     })
 
     if (!response.ok) {
+      showLoader.value = false
       throw new Error('Failed to send email!')
     }
 
     const res = await response.json()
+    showLoader.value = false
+    assignAlert(true, 'Success', 'success', `Berhasil mengirim email ke ${ticketsData.value.customer.email}!`)
     console.log('Email sent successfully:', res.message)
   } catch (error) {
     console.error('Error sending email:', error)
   }
 }
+const printTickets = async () => {
+  try {
+    let response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/print-transaction`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        ...ticketsData.value
+      })
+    })
 
-const ticketsData = ref([])
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to print data!')
+    }
+
+    const res = await response.json()
+  } catch (error) {
+    console.error('Error fetch data:', error)
+  }
+}
+
 
 export default {
   selectedNationality,
@@ -439,8 +453,7 @@ export default {
   getFlagImageUrl,
   getNationality,
   closeDropdownOutside,
-  getItemsFromSessionStorage,
-  items,
+  getUserCarts,
   paymentSelection,
   paymentSelect,
   showPaymentSelect,
@@ -482,6 +495,7 @@ export default {
   fetchUnavailableGuide,
   unavailableGuideData,
   checkGuideAvailability,
+  ticketsData,
   sendEmailToUser,
-  ticketsData
+  printTickets
 }

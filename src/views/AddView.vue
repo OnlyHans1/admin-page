@@ -8,7 +8,7 @@ import AddHelper from '@/utilities/AddHelper'
 import SettingsHelper from '@/utilities/SettingsHelper'
 import OrderTypeDropdown from '@/components/OrderTypeDropdown.vue'
 
-const { DB_BASE_URL, ORDER_BASE_URL, showLoader, assignAlert } = GlobalHelper
+const { DB_BASE_URL, ORDER_BASE_URL, showLoader, assignAlert, getImageURL } = GlobalHelper
 const {
   title,
   desc,

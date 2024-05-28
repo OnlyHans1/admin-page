@@ -445,9 +445,7 @@ onMounted(() => {
             <h6 weight="light">Kembali</h6>
           </div>
           <div class="flex gap-2 w-full">
-            <div
-              class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1"
-            >
+            <div class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1">
               <div class="input-image-preview">
                 <div class="image-preview flex fd-col gap-1">
                   <h6 class="image-preview-label">Preview</h6>
@@ -567,7 +565,7 @@ input:focus {
 
 .settings__menu {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 180px));
   grid-gap: 1rem;
 }
 
@@ -703,7 +701,7 @@ input:focus {
 
 .settings__orders-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   grid-gap: 1rem;
   overflow: auto;
   height: 40rem;
