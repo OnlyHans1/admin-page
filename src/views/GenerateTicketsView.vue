@@ -1,35 +1,31 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
+import CheckoutHelper from '@/utilities/CheckoutHelper'
 
-const { DB_BASE_URL, DETAILTRANS_BASE_URL, showLoader } = GlobalHelper
+const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader, getImageURL } = GlobalHelper
+const { ticketsData, sendEmailToUser } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
 
-const sendEmail = ref(false)
-const targetEmail = ref('')
-const ticketsData = ref([])
-
-const showPopupEmail = () => {
-  sendEmail.value = true
-}
-const closePopupEmail = () => {
-  sendEmail.value = false
-}
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
 }
 const calculateTotal = (price, amount) => {
-    return formatCurrency(price * amount)
+  return formatCurrency(price * amount)
+}
+const toHomepage = async () => {
+  await router.replace('/')
+  location.reload()
 }
 
 const fetchTickets = async (id) => {
   try {
     showLoader.value = true
     const response = await fetch(
-      `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/generate-tickets/${encodeURIComponent(id)}`
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/generate-tickets/${encodeURIComponent(id)}`
     )
     if (!response.ok) {
       showLoader.value = false
@@ -37,7 +33,6 @@ const fetchTickets = async (id) => {
     }
     const res = await response.json()
     ticketsData.value = res.data
-    console.log(ticketsData.value)
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -57,7 +52,7 @@ onMounted(() => {
       <div class="preview flex fd-col gap-1 pd-1">
         <h5>Preview</h5>
         <div
-          v-for="(ticket, index) in ticketsData"
+          v-for="(ticket, index) in ticketsData.detailTrans"
           :key="index"
           class="generate-tickets__detail-transaction flex justify-content-sb sm-bottom-1"
         >
@@ -91,41 +86,18 @@ onMounted(() => {
         Print Tickets
         <ph-printer :size="32" />
       </button>
-      <button class="generate-tickets__btn-email" @click="showPopupEmail">
+      <button class="generate-tickets__btn-email" @click="sendEmailToUser">
         Send to Email
         <ph-paper-plane-tilt :size="32" />
       </button>
     </div>
     <button
       class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-4"
-      @click="router.replace('/')"
+      @click="toHomepage"
     >
       <ph-caret-left :size="16" weight="bold" />
       <p>Return to Homepage</p>
     </button>
-
-    <section>
-      <div
-        class="send-email-overview__modal w-full h-full flex align-items-center justify-content-center"
-        v-if="sendEmail"
-      >
-        <div class="send-email-overview__container">
-          <div class="send-email-overview__header">
-            <p class="fw-700 fs-h6">Send Email</p>
-            <ph-x :size="20" weight="bold" @click="closePopupEmail" />
-          </div>
-          <div class="send-email-overview__content flex fd-col gap-1 sm-top-1">
-            <input
-              class="send-email-overview__input"
-              type="email"
-              v-model="targetEmail"
-              placeholder="Masukkan alamat email"
-            />
-            <button class="send-email-overview__send-btn">Kirim</button>
-          </div>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -148,8 +120,8 @@ onMounted(() => {
 }
 
 .generate-tickets__detail-transaction-image {
-  max-height: 70px;
-  max-width: 100px;
+  height: 70px;
+  width: 100px;
 }
 
 .generate-tickets__detail-transaction-btn {
@@ -204,57 +176,5 @@ onMounted(() => {
   height: 100%;
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
-}
-
-.send-email-overview__container {
-  background: white;
-  border-radius: 10px;
-  width: 30rem;
-  font-family: 'Raleway';
-  display: flex;
-  flex-direction: column;
-  height: 250px;
-  max-height: 80vh;
-  align-items: center;
-  gap: 1rem;
-  padding: 1rem;
-}
-
-.send-email-overview__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 0 0.5rem 1rem;
-  border-bottom: 1px solid;
-}
-
-.send-email-overview__content {
-  width: 80%;
-}
-
-.send-email-overview__input {
-  height: 50px;
-  padding: 0.5rem;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-}
-
-.send-email-overview__send-btn {
-  width: 40%;
-  padding: 0.5rem 1rem;
-  font-size: 1rem;
-  border: none;
-  background-color: #ddab2e;
-  color: white;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  align-self: center;
-}
-
-.send-email-overview__send-btn:hover {
-  background-color: #c48f13;
 }
 </style>

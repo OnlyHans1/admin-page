@@ -24,7 +24,6 @@ const {
 
 const {
   fetchOrderList,
-  getImageURL,
   formatCurrency,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
@@ -56,7 +55,7 @@ const {
   guideSelectedImage
 } = SettingsHelper
 
-const { assignAlert } = GlobalHelper
+const { assignAlert, getImageURL } = GlobalHelper
 
 const router = useRouter()
 
@@ -171,7 +170,6 @@ const saveSettings = () => {
 }
 
 const resetSettings = () => {
-  // Reset biaya layanan dan biaya jasa ke nilai default
   biayaLayanan.value = 2500
   biayaJasa.value = 1000
   newBiayaLayanan.value = biayaLayanan.value
@@ -274,9 +272,9 @@ onMounted(() => {
               <p>Biaya Jasa Aplikasi</p>
               <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
             </div>
-            </div>
-            <button class="save" @click="saveSettings">Simpan</button>
-            <button class="reset" @click="resetSettings">Reset</button>
+          </div>
+          <button class="save" @click="saveSettings">Simpan</button>
+          <button class="reset" @click="resetSettings">Reset</button>
         </div>
       </div>
     </section>
@@ -327,7 +325,7 @@ onMounted(() => {
         <button
           class="settings__menu-items"
           v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
-          @click=" router.push({ name: 'databaseLogs' });"
+          @click="router.push({ name: 'databaseLogs' })"
         >
           <ph-database :size="48" color="var(--color-primary)" />
           <span>Database Logs</span>
@@ -395,38 +393,37 @@ onMounted(() => {
         </div>
         <div class="order-details__content-container">
           <button
-          class="addGuide flex justify-content-center align-items-center gap[0.5]"
-          @click="showGuideModal('create')"
-        >
-          <p>Tambah Guide</p>
-          <ph-plus :size="16" weight="bold"></ph-plus>
-        </button>
-        <div
-          class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
-          :class="{ grid: guideSelectors }"
-        >
-          <div
-            v-if="guideSelectors"
-            v-for="(guide, index) in guideData"
-            :key="index"
-            class="order-detail__guide-select-content_guide-selector flex"
+            class="addGuide flex justify-content-center align-items-center gap[0.5]"
+            @click="showGuideModal('create')"
           >
-            <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
-              <div class="order-detail__guide-select-content_guide-selector_radio">
-                <div v-if="isGuideChecked(guide.id)" class="selected"></div>
-              </div>
-              <p>{{ guide.name }}</p>
-            </span>
+            <p>Tambah Guide</p>
+            <ph-plus :size="16" weight="bold"></ph-plus>
+          </button>
+          <div
+            class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+            :class="{ grid: guideSelectors }"
+          >
             <div
-              class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-              @click="showGuideModal('edit', guide.id)"
+              v-if="guideSelectors"
+              v-for="(guide, index) in guideData"
+              :key="index"
+              class="order-detail__guide-select-content_guide-selector flex"
             >
-              <ph-caret-right :size="16" weight="bold" />
+              <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
+                <div class="order-detail__guide-select-content_guide-selector_radio">
+                  <div v-if="isGuideChecked(guide.id)" class="selected"></div>
+                </div>
+                <p>{{ guide.name }}</p>
+              </span>
+              <div
+                class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                @click="showGuideModal('edit', guide.id)"
+              >
+                <ph-caret-right :size="16" weight="bold" />
+              </div>
             </div>
           </div>
         </div>
-        </div>
-
       </div>
 
       <div
@@ -449,12 +446,20 @@ onMounted(() => {
           </div>
           <div class="flex gap-2 w-full">
             <div
-              class="guide-select_ticket flex fd-col justify-content-center align-items-center gap-1"
+              class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1"
             >
               <div class="input-image-preview">
-                <div class="image-preview" v-if="guideSelectedImageURL">
+                <div class="image-preview flex fd-col gap-1">
                   <h6 class="image-preview-label">Preview</h6>
-                  <img :src="guideSelectedImageURL" alt="Image" class="preview-image" />
+                  <img
+                    :src="
+                      guideSelectedImageURL
+                        ? guideSelectedImageURL
+                        : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                    "
+                    alt="Image"
+                    class="preview-image"
+                  />
                 </div>
               </div>
               <InputFoto
@@ -493,7 +498,7 @@ onMounted(() => {
               </div>
               <textarea rows="1" v-model="guideDesc"></textarea>
               <button
-                class="sv-guide"
+                class="sv-guide sm-1"
                 @click="callAction('create')"
                 v-if="isAddingGuideModalVisible"
               >
@@ -525,7 +530,7 @@ body {
   font-size: 1rem;
   border-radius: 5px;
   padding: 0.5rem;
-  border: 1px solid #000
+  border: 1px solid #000;
 }
 
 input:hover,
@@ -562,7 +567,7 @@ input:focus {
 
 .settings__menu {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   grid-gap: 1rem;
 }
 
@@ -638,7 +643,7 @@ input:focus {
   border-bottom: 1px solid black;
 }
 
-.order-details__content-container{
+.order-details__content-container {
   height: 20rem;
   overflow-y: auto;
 }
@@ -653,7 +658,6 @@ input:focus {
   justify-content: space-between;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
-
 }
 
 .order-detail__guide-select-content_guide-selector .bg-yellow {
@@ -688,7 +692,7 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   max-height: 80vh;
-  max-width: 90vw;
+  width: 90vw;
   overflow: hidden;
   position: absolute;
   top: 50%;
@@ -699,7 +703,7 @@ input:focus {
 
 .settings__orders-content {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(450px,1fr));
   grid-gap: 1rem;
   overflow: auto;
   height: 40rem;
@@ -707,8 +711,11 @@ input:focus {
   scrollbar-color: #ccc transparent;
 }
 
-.order-details__content-container::-webkit-scrollbar
-.settings__orders-content::-webkit-scrollbar {
+.settings__orders-group-content {
+  width: 80%;
+}
+
+.order-details__content-container::-webkit-scrollbar .settings__orders-content::-webkit-scrollbar {
   width: 20px; /* Width of the scrollbar */
   border-radius: 10px; /* Border radius to match card */
 }
@@ -738,10 +745,8 @@ input:focus {
   border-radius: 0.5rem;
 }
 .settings__orders-content_item img {
-  height: 100px;
   max-height: 100px;
-  width: auto;
-  max-width: 150px;
+  width: 200px;
   object-fit: cover;
 }
 .settings__orders-content_item-head h6 {
@@ -840,8 +845,8 @@ input:focus {
 }
 
 .guide-select_ticket {
-  padding-inline: 1rem;
   margin-left: 2rem;
+  margin-bottom: 1rem;
   width: 350px;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -945,7 +950,6 @@ input:focus {
 .sv-guide {
   width: 5.5rem;
   height: 2rem;
-  margin-top: 1rem;
   color: white;
   border-radius: 20px;
   background-color: #e6be58;
@@ -985,10 +989,6 @@ input:focus {
   position: relative;
 }
 
-.image-preview {
-  margin-bottom: 1rem;
-}
-
 .image-preview-label {
   margin-bottom: 0.5rem;
 }
@@ -998,27 +998,5 @@ input:focus {
   max-height: 200px;
   border-radius: 0.5rem;
   box-shadow: 0px 0px 10px 2px rgba(0, 0, 0, 0.2);
-}
-
-@media (max-width: 768px) {
-  .settings__menu {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .settings__menu-items {
-    width: 8rem;
-    height: 8rem;
-  }
-}
-
-@media (max-width: 500px) {
-  .settings__menu {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .settings__menu-items {
-    width: 7rem;
-    height: 7rem;
-  }
 }
 </style>

@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
 
+const { showLoader, getImageURL } = GlobalHelper
 const {
   selectedItems,
   showConfirmationPopup,
@@ -12,7 +13,6 @@ const {
   confirmDelete,
   dataDashboard,
   fetchOrderList,
-  getImageURL,
   formatCurrency,
   navigateToAdd,
   closePopup,
@@ -42,7 +42,7 @@ watch(
 
 const checkData = async () => {
   try {
-    GlobalHelper.showLoader.value = true
+    showLoader.value = true
     await fetchOrderList()
   } catch (error) {
     console.error(error)
@@ -348,6 +348,7 @@ onMounted(() => {
 
 .popup-order__image {
   max-height: 32vh;
+  width: 24vw;
   object-fit: cover;
   border-radius: 0.5rem;
 }

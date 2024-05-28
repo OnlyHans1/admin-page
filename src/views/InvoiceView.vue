@@ -10,6 +10,7 @@ const {
   fetchTransactionList,
   searchQuery,
   resetSearch,
+  mapInvoiceOrders,
   selectedItem,
   splitDate,
   detailPopup,
@@ -68,12 +69,12 @@ onMounted(() => {
             class="invoice-table__row-data"
           >
             <td class="invoice-table__data">{{ index + 1 }}</td>
-            <td class="invoice-table__data">{{ item.transaction.user.name }}</td>
-            <td class="invoice-table__data">{{ item.order.name }} ({{ item.order.category.name }})</td>
-            <td class="invoice-table__data">{{ splitDate(item.transaction.plannedDate)[0] }}</td>
-            <td class="invoice-table__data">{{ splitDate(item.transaction.plannedDate)[1] }}</td>
+            <td class="invoice-table__data">{{ item.custName ? item.custName : item.user.name }}</td>
+            <td class="invoice-table__data">{{ mapInvoiceOrders(item) }}</td>
+            <td class="invoice-table__data">{{ splitDate(item.plannedDate)[0] }}</td>
+            <td class="invoice-table__data">{{ splitDate(item.plannedDate)[1] }}</td>
             <td class="invoice-table__data">
-              {{ item.transaction.user.email }} <br />
+              {{ item.custEmail ? item.custEmail : item.user.email }} <br />
               <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                 detail
               </button>
@@ -136,8 +137,7 @@ onMounted(() => {
 .invoice-table__header {
   padding: 7px;
   text-align: center;
-  font-weight: 600;
-  font-size: 26px;
+  font-size: 24px;
 }
 .invoice-table__data:first-child,
 .invoice-table__header:first-child {
@@ -157,8 +157,7 @@ onMounted(() => {
 .invoice-table__data {
   padding: 7px;
   text-align: center;
-  font-weight: 400;
-  font-size: 22px;
+  font-size: 20px;
   vertical-align: top;
   max-width: 200px;
   white-space: wrap;

@@ -32,7 +32,8 @@ const {
   fetchMonthlyChartData,
   generateExcel,
   printData,
-  updateCategory
+  updateCategory,
+  totalSum
 } = ReportHelper
 
 const checkData = async () => {
@@ -88,19 +89,19 @@ const takeScreenshot = async (elementId) => {
   const element = document.getElementById(elementId)
 
   try {
-    const canvas = await html2canvas(element);
+    const canvas = await html2canvas(element)
     canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `Report Tahun ${selectedYear.value} Bulan ${selectedMonthName.value}.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      console.log('Screenshot saved as image file!');
-    }, 'image/png');
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `Report Tahun ${selectedYear.value} Bulan ${selectedMonthName.value}.png`
+      document.body.appendChild(a)
+      a.click()
+      window.URL.revokeObjectURL(url)
+      console.log('Screenshot saved as image file!')
+    }, 'image/png')
   } catch (error) {
-    console.error('Error saving screenshot as image file:', error);
+    console.error('Error saving screenshot as image file:', error)
   }
 }
 
@@ -117,108 +118,118 @@ onMounted(() => {
 
 <template>
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
-      <div class="report-information__container flex fd-row justify-content-sb pd-2">
-        <div class="report-information__income-container flex fd-col">
-          <p class="fs-h5">Pendapatan hari ini</p>
+    <div class="report-information__container flex fd-row gap-2 justify-content-sb">
+      <div class="report-information__income-container w-half flex fd-col gap-1">
+        <div class="report-information__income-revenue flex fd-col pd-2">
+          <h5>Pendapatan hari ini</h5>
           <div class="report-information__income-text flex fd-row">
-            <span class="report-information__income-desc">Rp </span>
-            <span class="report-information__income-details">{{
-              formatCurrency(incomeRevenue)
-            }}</span>
+            <h5 class="fw-600">Rp</h5>
+            <span class="fs-display fw-600">{{ formatCurrency(incomeRevenue) }}</span>
           </div>
         </div>
-        <div class="report-information__ticketing-container flex fd-col gap[0.5]">
-          <p class="fs-h5">Tiket terjual</p>
-          <div class="report-information__ticketing-card flex fd-row gap[1.5] pd-left-1">
-            <TicketInfoCard />
-          </div>
+        <div class="report-information__ticket-sold flex fd-col pd-2">
+          <h5>Total tiket terjual</h5>
+          <h4 class="fw-600">{{ totalSum() }} Tiket</h4>
         </div>
       </div>
-      <div class="report-revenue__container flex fd-col">
-        <div id="report__screenshot-target"  v-if="isShowChart"
-          class="report-revenue__chart-container flex fd-row align-items-center justify-content-center gap[1.5]"
+      <div class="report-information__ticketing-container w-half flex fd-col gap[0.5] pd-2">
+        <h5>Tiket terjual</h5>
+        <div class="report-information__ticketing-card flex fd-row gap[1.5] pd-left-1">
+          <TicketInfoCard />
+        </div>
+      </div>
+    </div>
+    <div class="report-revenue__container flex fd-col">
+      <div
+        id="report__screenshot-target"
+        v-if="isShowChart"
+        class="report-revenue__chart-container flex fd-row align-items-center justify-content-center gap[1.5]"
+      >
+        <div
+          class="report-revenue__chart flex fd-col align-items-center justify-content-center gap-1"
         >
-          <div
-            class="report-revenue__chart flex fd-col align-items-center justify-content-center gap-1"
-          >
-            <Chart
-              :targetDate="selectedYear"
-              :dataSeries="yearlyData"
-              :dataCategory="yearlyCategory"
+          <Chart
+            :targetDate="selectedYear"
+            :dataSeries="yearlyData"
+            :dataCategory="yearlyCategory"
+          />
+          <div class="filter__input-dropdown">
+            <input
+              readonly
+              @click="toggleYearDropdown()"
+              :value="selectedYear"
+              placeholder="Pilih Tahun"
+              id="filter-year"
             />
-            <div class="filter__input-dropdown">
-              <input
-                readonly
-                @click="toggleYearDropdown()"
-                :value="selectedYear"
-                placeholder="Pilih Tahun"
-                id="filter-year"
-              />
-              <div class="select-icon">
-                <div class="arrow-icon" :class="{ active: yearDropdownOpen }">
-                  <ph-caret-down :size="14" weight="bold" class="icon" />
-                </div>
-              </div>
-              <div class="filter__input-dropdown_menu" :class="{ active: yearDropdownOpen }">
-                <p
-                  v-for="(year, index) in targetYears"
-                  :key="index"
-                  :value="year"
-                  @click="selectYearOption(year)"
-                >
-                  {{ year }}
-                </p>
+            <div class="select-icon">
+              <div class="arrow-icon" :class="{ active: yearDropdownOpen }">
+                <ph-caret-down :size="14" weight="bold" class="icon" />
               </div>
             </div>
-          </div>
-          <div
-            class="report-revenue__chart flex fd-col align-items-center justify-content-center gap-1"
-          >
-            <Chart
-              :targetDate="selectedMonthName"
-              :dataSeries="monthlyData"
-              :dataCategory="monthlyCategory"
-            />
-            <div class="filter__input-dropdown">
-              <input
-                readonly
-                @click="toggleMonthDropdown()"
-                :value="selectedMonthName"
-                placeholder="Pilih Bulan"
-                id="filter-month"
-              />
-              <div class="select-icon">
-                <div class="arrow-icon" :class="{ active: monthDropdownOpen }">
-                  <ph-caret-down :size="14" weight="bold" class="icon" />
-                </div>
-              </div>
-              <div class="filter__input-dropdown_menu" :class="{ active: monthDropdownOpen }">
-                <p
-                  v-for="(month, index) in targetMonths"
-                  :key="index"
-                  :value="month"
-                  @click="selectMonthOption(month)"
-                >
-                  {{ month }}
-                </p>
-              </div>
+            <div class="filter__input-dropdown_menu" :class="{ active: yearDropdownOpen }">
+              <p
+                v-for="(year, index) in targetYears"
+                :key="index"
+                :value="year"
+                @click="selectYearOption(year)"
+              >
+                {{ year }}
+              </p>
             </div>
           </div>
         </div>
         <div
-          class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center"
+          class="report-revenue__chart flex fd-col align-items-center justify-content-center gap-1"
         >
-        <span class="icons" name="Take a Screenshot" @click="takeScreenshot('report__screenshot-target')">
-          <ph-camera :size="32" weight="bold"/>
-        </span>
-          <span class="icons" name="Print Data" @click="printData"
-            ><ph-printer :size="32" weight="bold"
-          /></span>
-          <span class="icons" name="Report to Excel" @click="generateExcel">
-            <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
-          </span>
+          <Chart
+            :targetDate="selectedMonthName"
+            :dataSeries="monthlyData"
+            :dataCategory="monthlyCategory"
+          />
+          <div class="filter__input-dropdown">
+            <input
+              readonly
+              @click="toggleMonthDropdown()"
+              :value="selectedMonthName"
+              placeholder="Pilih Bulan"
+              id="filter-month"
+            />
+            <div class="select-icon">
+              <div class="arrow-icon" :class="{ active: monthDropdownOpen }">
+                <ph-caret-down :size="14" weight="bold" class="icon" />
+              </div>
+            </div>
+            <div class="filter__input-dropdown_menu" :class="{ active: monthDropdownOpen }">
+              <p
+                v-for="(month, index) in targetMonths"
+                :key="index"
+                :value="month"
+                @click="selectMonthOption(month)"
+              >
+                {{ month }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
+      <div
+        class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center"
+      >
+        <span
+          class="icons"
+          name="Take a Screenshot"
+          @click="takeScreenshot('report__screenshot-target')"
+        >
+          <ph-camera :size="32" weight="bold" />
+        </span>
+        <span class="icons" name="Print Data" @click="printData"
+          ><ph-printer :size="32" weight="bold"
+        /></span>
+        <span class="icons" name="Report to Excel" @click="generateExcel">
+          <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
+        </span>
+      </div>
+    </div>
     <div class="report-activity__container flex fd-col gap-1">
       <div class="report-activity__head flex fd-row gap[1.5] align-items-center">
         <p class="report-activity__head-text">Aktivitas Terbaru</p>
@@ -236,18 +247,12 @@ onMounted(() => {
 <style scoped>
 .report-information__container {
   width: 1085px;
+}
+.report-information__income-revenue,
+.report-information__ticket-sold,
+.report-information__ticketing-container {
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
-}
-.report-information__income-desc {
-  font-size: 24px;
-  font-weight: 600;
-  line-height: 36px;
-}
-.report-information__income-details {
-  font-size: 64px;
-  font-weight: 600;
-  line-height: 96px;
 }
 .report-revenue__icons .icons {
   font-size: 32px;

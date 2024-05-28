@@ -17,8 +17,8 @@ const orderSubType = ref('')
 const orderSubTypeId = ref(null)
 const price = ref('')
 const imageName = ref('')
-const selectedImageURL = ref('') // State to hold the selected image URL
-const selectedImage = ref(null) // State to hold the selected image File
+const selectedImageURL = ref('')
+const selectedImage = ref(null)
 const defaultImageURL = ref(
   'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
 )
@@ -49,7 +49,6 @@ const createFormData = (action) => {
   formData.append('name', title.value)
   formData.append('desc', desc.value ? desc.value : '')
   formData.append('categoryId', categoryId.value)
-  formData.append('orderTypeId', orderTypeId.value)
   formData.append('orderSubTypeId', orderSubTypeId.value)
   formData.append('price', parseFloat(price.value))
   return formData
@@ -124,12 +123,12 @@ const selectSubtypeOption = (id, name) => {
 }
 
 const isSubtypeDisabled = computed(() => {
-  return !orderType.value // Disable if orderType is empty
+  return !orderType.value
 })
 
 const subTypeOptions = ref([])
 
-const fetchRelatedOrderSubType = async (id) => {
+const fetchOrderSubType = async (id) => {
   try {
     const response = await fetch(
       `${DB_BASE_URL.value}/${ORDERSUBTYPE_BASE_URL.value}/sub-type-details/${encodeURIComponent(id)}`
@@ -138,8 +137,8 @@ const fetchRelatedOrderSubType = async (id) => {
       showLoader.value = false
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    subTypeOptions.value = data.data
+    const res = await response.json()
+    subTypeOptions.value = res.data
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -172,11 +171,11 @@ const assignEditData = () => {
   price.value = data.price
   categoryId.value = data.category ? data.category.id : 0
   category.value = data.category ? data.category.name : ''
-  orderTypeId.value = data.orderType ? data.orderType.id : 0
-  orderType.value = data.orderType ? data.orderType.name : ''
+  orderTypeId.value = data.orderSubType ? data.orderSubType.orderType.id : 0
+  orderType.value = data.orderSubType ? data.orderSubType.orderType.name : ''
   orderSubTypeId.value = data.orderSubType ? data.orderSubType.id : 0
   orderSubType.value = data.orderSubType ? data.orderSubType.name : ''
-  imageName.value = data.image !== '' ? data.image : ''
+  imageName.value = data.image ? data.image : ''
   selectedImageURL.value = data.image ? getImageURL(data.image) : ''
 }
 
@@ -208,7 +207,7 @@ export default {
   selectSubtypeOption,
   isSubtypeDisabled,
   subTypeOptions,
-  fetchRelatedOrderSubType,
+  fetchOrderSubType,
   combinedOrderType,
   updateOrderType,
   closeDropdownOnClickOutside,

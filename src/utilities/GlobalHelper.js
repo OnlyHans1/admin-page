@@ -11,6 +11,7 @@ const DETAILTRANS_BASE_URL = ref('keraton-pos/detail-trans')
 const GUIDE_BASE_URL = ref('keraton-pos/guide')
 const NATIONALITY_BASE_URL = ref('keraton-pos/nationality')
 const LOGS_BASE_URL = ref('keraton-pos/logs')
+const EMAIL_BASE_URL = ref('keraton-pos/email')
 
 const showLoader = ref(false)
 
@@ -28,6 +29,16 @@ const assignAlert = (show, title, type, message) => {
     showAlert.value = false
   }, 3000)
 }
+const getImageURL = (imageName) => {
+  if (imageName.startsWith('http')) {
+    return imageName
+  } else if (imageName.startsWith('./public')) {
+    const formattedImageName = imageName.substring(8)
+    return `${DB_BASE_URL.value}/${formattedImageName}`
+  } else {
+    return `${DB_BASE_URL.value}/uploads/${imageName}`
+  }
+}
 
 export default {
   DB_BASE_URL,
@@ -41,10 +52,12 @@ export default {
   GUIDE_BASE_URL,
   NATIONALITY_BASE_URL,
   LOGS_BASE_URL,
+  EMAIL_BASE_URL,
   assignAlert,
   showLoader,
   showAlert,
   alertTitle,
   alertType,
-  alertMessage
+  alertMessage,
+  getImageURL
 }

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watchEffect } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
@@ -18,6 +18,8 @@ const {
   selectPayment,
   addTicket,
   reduceTicket,
+  custName,
+  custEmail,
   selectedDate,
   discountValue,
   cashbackValue,
@@ -53,8 +55,8 @@ const {
   checkGuideAvailability
 } = CheckoutHelper
 
-const { assignAlert } = GlobalHelper
-const { checkSessionStorage, isMancanegara, getImageURL } = DashboardHelper
+const { assignAlert, getImageURL } = GlobalHelper
+const { checkSessionStorage, isMancanegara } = DashboardHelper
 const { userData } = LoginHelper
 
 const checkoutTransaction = async () => {
@@ -71,11 +73,8 @@ const checkoutTransaction = async () => {
   try {
     await createTransaction()
     if (checkoutStatus.value === 'boleh') {
+      sessionStorage.clear()
       showTransactionGenerate()
-      // setTimeout(() => {
-      //   sessionStorage.clear()
-      //   location.reload()
-      // }, 500)
       assignAlert(true, 'Sukses', 'success', 'Transaksi berhasil dibuat!')
     }
     checkoutStatus.value = ''
@@ -86,20 +85,15 @@ const checkoutTransaction = async () => {
 const checkValidTransaction = () => {
   const invalid = []
 
+  if (!custName.value) invalid.push('Nama Pelanggan')
+  if (!custEmail.value) invalid.push('Email Pelanggan')
   if (isMancanegara.value) {
     if (!selectedNationality.value) {
       invalid.push('Kewarganegaraan')
     }
   }
-  if (!selectedDate.value) {
-    invalid.push(' Tanggal Pemesanan')
-  }
-
-  if (!paymentSelection.value) {
-    invalid.push(' Metode Pembayaran')
-  }
-
-  // Pastikan semua input telah diisi sesuai dengan kondisi
+  if (!selectedDate.value) invalid.push('Tanggal Pemesanan')
+  if (!paymentSelection.value) invalid.push('Metode Pembayaran')
   return invalid
 }
 
@@ -107,9 +101,6 @@ const checkValidTransaction = () => {
 const isTransactionGenerate = ref(false)
 const showTransactionGenerate = () => {
   isTransactionGenerate.value = true
-}
-const closeTransactionGenerate = () => {
-  isTransactionGenerate.value = false
 }
 
 onMounted(() => {
@@ -122,27 +113,43 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="checkout__container sm-sd-2">
+    <div class="checkout__container w-full flex align-items-f-start gap-4 sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
           <form>
-            <div class="order-details__checkout">
+            <div class="order-details__checkout flex fd-col gap[0.5]">
               <h4>Pemesanan Langsung</h4>
-              <div class="order-details__customer">
-                <div class="order-details__content">
-                  <ph-user :size="24" weight="bold" class="header-icons" />
-                  <p>Detail Pemesan</p>
+              <div class="order-details__cashier flex fd-col">
+                <div class="order-details__content w-full flex gap[0.5]">
+                  <ph-devices :size="24" weight="bold" class="header-icons" />
+                  <p>Detail Kasir</p>
                 </div>
-                <div class="order-details__content w-full">
+                <div class="order-details__content w-full flex gap[0.5] align-items-center">
                   <p class="fs-h5 fw-700">{{ userData.name }}</p>
                   <p>- ({{ userData.email }})</p>
                 </div>
-                <div class="order-details__dropdown" v-if="isMancanegara">
-                  <NationalityDropdown />
-                </div>
               </div>
-              <div class="order-details__ticket">
-                <div class="order-details__content">
+              <div class="order-details__dropdown" v-if="isMancanegara">
+                <NationalityDropdown />
+              </div>
+              <div class="order-details__customer">
+                <div class="order-details__content w-full flex gap[0.5]">
+                  <ph-user :size="24" weight="bold" class="header-icons" />
+                  <p>Detail Pelanggan</p>
+                </div>
+                  <div class="order-details__customer-input flex gap-1">
+                    <div class="customer-details__input-placeholder">
+                      <input type="text" required rows="1" v-model="custName" />
+                      <label>Nama Pelanggan</label>
+                    </div>
+                    <div class="customer-details__input-placeholder">
+                      <input type="email" required rows="1" v-model="custEmail" />
+                      <label>Email Pelanggan</label>
+                    </div>
+                  </div>
+              </div>
+              <div class="order-details__ticket flex fd-col gap[0.5]">
+                <div class="order-details__content w-full flex gap[0.5]">
                   <ph-ticket :size="24" weight="bold" class="header-icons" />
                   <p>Detail Tiket</p>
                 </div>
@@ -186,7 +193,7 @@ onMounted(() => {
                   <Slider v-model:targetValue="cashbackValue" />
                 </div>
               </div>
-              <div class="order-details__content">
+              <div class="order-details__content flex gap[0.5]">
                 <ph-wallet :size="24" weight="bold" class="header-icons" />
                 <p>Pilih Pembayaran</p>
               </div>
@@ -205,7 +212,7 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <div class="order-details__content sm-top-1">
+              <div class="order-details__content flex gap[0.5] sm-top-1">
                 <ph-binoculars :size="24" weight="bold" class="header-icons" />
                 <p>Pilih Guide</p>
               </div>
@@ -380,8 +387,8 @@ onMounted(() => {
                     <button @click="selectPayment('Kartu Kredit/Debit')">
                       <span
                         ><ph-credit-card :size="16" weight="bold" />
-                        <h6>Kartu Kredit/Debit</h6></span
-                      >
+                        <h6>Kartu Kredit/Debit</h6>
+                      </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                   </div>
@@ -489,59 +496,25 @@ main {
   font-family: 'Raleway';
 }
 
-.checkout__container {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 3rem;
-}
-
-.checkout__form-container {
-  width: 100%;
-}
-
 .header-icons {
   color: #e6be58;
   font-size: 24px;
-}
-
-.order-details__checkout {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.order-details__customer {
-  display: flex;
-  flex-direction: column;
-}
-.order-details__content {
-  display: flex;
-  flex-direction: row;
-  gap: 0.5rem;
-  align-items: center;
 }
 
 .order-details__dropdown {
   margin-top: 0.25rem;
 }
 
-.order-details__ticket {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 .ticket__input-date {
   font-family: Roboto;
 }
 
-.order-details__ticket-date input {
+.order-details__ticket-date input,
+.order-details__customer-input input {
   padding: 10px;
-  border: 3px solid rgba(0, 0, 0, 1) s;
+  border: 2px solid rgba(0, 0, 0, 1);
   outline: none;
   border-radius: 4px;
-  width: 50%;
 }
 
 .order-details__ticket-date p {
@@ -550,7 +523,8 @@ main {
   line-height: 16px;
 }
 
-.order-details__ticket-date label {
+.order-details__ticket-date label,
+.order-details__customer-input label {
   position: absolute;
   top: 1%;
   left: 8px;
@@ -561,15 +535,18 @@ main {
   font-size: 12px;
 }
 
-.order-details__ticket-date input:focus {
-  border: 3px solid rgba(218, 165, 32, 1);
+.order-details__ticket-date input:focus,
+.order-details__customer-input input:focus {
+  border: 2px solid rgba(218, 165, 32, 1);
 }
 
-.order-details__ticket-date input:focus + label {
+.order-details__ticket-date input:focus + label,
+.order-details__customer-input input:focus + label {
   color: rgba(218, 165, 32, 1);
 }
 
-.ticket__input-placeholder {
+.ticket__input-placeholder,
+.customer-details__input-placeholder {
   position: relative;
 }
 
@@ -613,6 +590,7 @@ main {
 .pricings-slider__container {
   font-family: 'Poppins';
 }
+
 .order-details__guide-select,
 .order-details__payment-select {
   width: 522px;
@@ -723,6 +701,7 @@ main {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 0.5rem;
 }
+
 .order-detail__guide-select-content_guide-selector .bg-yellow {
   background-color: #e6be58;
   border-radius: 0 0.5rem 0.5rem 0;
@@ -772,7 +751,7 @@ main {
 
 .guide-select_ticket-image {
   max-height: 70px;
-  max-width: 100px;
+  width: 100px;
 }
 
 .guide-select_ticket-btn {
@@ -860,6 +839,62 @@ main {
   line-height: 24px;
   font-weight: 500;
   text-decoration: line-through;
+}
+
+.overview-transaction-success_modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.overview-transaction-success_content {
+  background: white;
+  border-radius: 10px;
+  width: 30rem;
+  font-family: 'Raleway';
+  display: flex;
+  flex-direction: column;
+  height: 300px;
+  max-height: 80vh;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+.generate__btn {
+  width: 40%;
+  background-color: #ffdd8f;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  align-items: center;
+}
+
+.generate__btn:hover {
+  background-color: #e6be58;
+}
+
+@media (max-width: 1024px) {
+  .input_wrapper {
+    flex-direction: column;
+  }
+}
+
+.order-details__customer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .overview-transaction-success_modal {

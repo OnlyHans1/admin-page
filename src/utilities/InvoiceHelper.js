@@ -1,7 +1,7 @@
 import { ref } from 'vue'
 import GlobalHelper from './GlobalHelper'
 
-const { DB_BASE_URL, DETAILTRANS_BASE_URL, showLoader } = GlobalHelper
+const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader } = GlobalHelper
 
 /* InvoiceView Helper */
 const dataInvoice = ref([])
@@ -12,7 +12,7 @@ const getSearchQuery = (query) => {
 
 const fetchTransactionList = async () => {
   try {
-    let url = `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/transaction-invoice`
+    let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
     if (searchQuery.value) {
       url += `?search=${encodeURIComponent(searchQuery.value)}`
     }
@@ -20,12 +20,47 @@ const fetchTransactionList = async () => {
     if (!response.ok) {
       throw new Error('Failed to fetch data')
     }
-    const data = await response.json()
-    dataInvoice.value = data.data
+    const res = await response.json()
+    dataInvoice.value = res.data
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
   }
+}
+
+const mapInvoiceOrders = (data) => {
+  if (data.detailTrans.length > 0) {
+    return data.detailTrans
+      .map((item) => {
+        const orderName = item.order.name
+        const orderCategoryName = item.order.category.name
+
+        return `${orderName} (${orderCategoryName}) x ${item.amount}`
+      })
+      .join(', ')
+  }
+  return ''
+}
+const mapInvoiceDetails = (data) => {
+  if (data.detailTrans.length > 0) {
+    return data.detailTrans.map((item) => {
+      const orderName = item.order.name
+      const orderCategoryName = item.order.category.name
+      const guideName = item.guide ? item.guide.name : ''
+      const orderPrice = Number(item.order.price)  
+      const orderAmount = Number(item.amount)  
+      const totalPrice = Number(item.amount * item.order.price)  
+
+      return {
+        order: `${orderName} (${orderCategoryName}) : ${item.amount} Tiket`,
+        guide: guideName,
+        price: orderPrice,
+        amount: orderAmount,
+        totalPrice: totalPrice
+      }
+    })
+  }
+  return []
 }
 
 const searchQuery = ref(null)
@@ -89,13 +124,14 @@ const formatDate = (dateTime) => {
 
 const showDetail = (item) => {
   selectedItem.value = {
-    nama: item.transaction.user.name,
-    reservasi: `${item.order.name} (${item.order.category.name})`,
-    jadwal: formatDate(item.transaction.plannedDate),
-    ...(item.transaction.user.number != null && { 'no. telp': item.transaction.user.number }),
-    guide: item.guide.name,
-    pembayaran: capitalizeFirstLetter(item.transaction.method),
-    total: `Rp. ${Number(item.transaction.total).toLocaleString('id-ID')}`
+    cashier: `${item.user.name} (${item.user.email})`,
+    customer: `${item.custName} (${item.custEmail})`,
+    reservation: mapInvoiceDetails(item),
+    appointment: formatDate(item.plannedDate),
+    ...(item.user.number != null && { 'no. telp': item.user.number }),
+    qr: item.qr[0],
+    payment: capitalizeFirstLetter(item.method),
+    total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
   }
   showDetailPopup()
 }
@@ -121,6 +157,8 @@ export default {
   fetchTransactionList,
   searchQuery,
   resetSearch,
+  mapInvoiceOrders,
+  mapInvoiceDetails,
   selectedItem,
   splitDate,
   showDetail,
