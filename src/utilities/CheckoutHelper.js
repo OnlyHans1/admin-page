@@ -331,6 +331,9 @@ const addGuide = (index) => {
     guideSelection.value.splice(previousSelectionIndex, 1)
   }
   guideSelection.value.push({ ...selectedGuide.value })
+  guideSelectTicket.value = false
+  guideSelectBio.value = false
+  guideSelectors.value = true
 }
 
 const formattedGuideSelection = computed(() => {

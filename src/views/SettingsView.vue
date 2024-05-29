@@ -492,9 +492,9 @@ onMounted(() => {
                   v-model="formattedDate"
                   @input="updateGuideBirthdate"
                 />
-                <input type="text" name="email" placeholder="Masukan Email" v-model="guideEmail" />
+                <input type="text" name="email" placeholder="Email" v-model="guideEmail" required/>
               </div>
-              <textarea rows="1" v-model="guideDesc"></textarea>
+              <textarea rows="1" v-model="guideDesc" placeholder="Deskripsi"></textarea>
               <button
                 class="sv-guide sm-1"
                 @click="callAction('create')"

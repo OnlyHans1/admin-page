@@ -131,7 +131,7 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="checkout__container w-full flex align-items-f-start gap-4 sm-sd-2">
+    <div class="checkout__container w-full flex align-items-f-start justify-content-sb sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
           <form>
@@ -329,12 +329,14 @@ onMounted(() => {
                           </div>
                         </div>
 
-                        <div class="guide-select_biodata-information">
-                          <h6>
-                            {{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})
-                          </h6>
-                          <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
-                          <p>{{ selectedGuide.email }}</p>
+                        <div class="guide-select_biodata-information flex fd-col gap-1">
+                          <div>
+                            <h6>
+                              {{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})
+                            </h6>
+                            <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
+                            <p>{{ selectedGuide.email }}</p>
+                          </div>
                           <p>
                             {{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}
                           </p>
@@ -378,7 +380,6 @@ onMounted(() => {
                           <button
                             class="guide-select_ticket-btn flex align-items-center"
                             @click.prevent="addGuide(index)"
-                            @click="guideSelectPageTicket"
                           >
                             <ph-plus :size="16" weight="bold" />
                           </button>
@@ -627,7 +628,7 @@ input[type='number'] {
 
 .order-details__guide-select,
 .order-details__payment-select {
-  width: 522px;
+  width: 100%;
   height: 50px;
   border-radius: 0.6rem;
   padding: 0.8rem 1.25rem;
@@ -807,7 +808,7 @@ input[type='number'] {
 }
 
 .checkout__details-content {
-  width: 522px;
+  width: 80%;
 }
 
 .checkout__details-form {
@@ -841,7 +842,7 @@ input[type='number'] {
 }
 
 .checkout-btn {
-  width: 522px;
+  width: 80%;
 }
 
 .checkout__btn-order {
