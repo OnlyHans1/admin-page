@@ -54,7 +54,7 @@ onMounted(() => {
         <div
           v-for="(ticket, index) in ticketsData.detailTrans"
           :key="index"
-          class="generate-tickets__detail-transaction flex justify-content-sb sm-bottom-1"
+          class="generate-tickets__detail-transaction flex justify-content-sb"
         >
           <div class="flex gap-1">
             <img
@@ -92,7 +92,7 @@ onMounted(() => {
       </button>
     </div>
     <button
-      class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-4"
+      class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-2"
       @click="toHomepage"
     >
       <ph-caret-left :size="16" weight="bold" />
