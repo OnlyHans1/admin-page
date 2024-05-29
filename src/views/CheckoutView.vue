@@ -54,7 +54,7 @@ const {
   checkGuideAvailability
 } = CheckoutHelper
 
-const { assignAlert, getImageURL } = GlobalHelper
+const { grantAccessRoute, assignAlert, getImageURL } = GlobalHelper
 const { isMancanegara, saveToUserCarts, checkUserCarts } = DashboardHelper
 const { userData, userCarts } = LoginHelper
 
@@ -110,6 +110,11 @@ const updateAmount = (amount, index) => {
     userCarts.value[index].amount = amount
   }
   saveToUserCarts()
+}
+
+const toGenerateTickets = async () => {
+  grantAccessRoute(true)
+  await route.push({ name: 'generateTickets', params: { id: recentTransactionId.value } })
 }
 
 const fetchAllData = async () => {
@@ -496,12 +501,7 @@ onMounted(() => {
           <div class="overview-transaction-success_content">
             <ph-check-circle :size="100" color="green" />
             <p class="fw-700 fs-h6">Transaksi berhasil</p>
-            <button
-              class="generate__btn"
-              @click="route.push({ name: 'generateTickets', params: { id: recentTransactionId } })"
-            >
-              Generate Tickets
-            </button>
+            <button class="generate__btn" @click="toGenerateTickets()">Generate Tickets</button>
           </div>
         </div>
       </section>

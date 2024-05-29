@@ -43,12 +43,16 @@ const mapInvoiceOrders = (data) => {
 }
 const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
+    const formattedDiscount = parseInt(
+      data.discount.split("|")[1].trim().replace("%", "")
+    );
     return data.detailTrans.map((item) => {
       const orderName = item.order.name
       const orderCategoryName = item.order.category.name
       const guideName = item.guide ? item.guide.name : ''
       const orderPrice = Number(item.order.price)
       const orderAmount = Number(item.amount)
+      const orderDiscount = `Rp. ${Number(orderPrice * orderAmount * formattedDiscount / 100)},00 (${formattedDiscount}%)`
       const totalPrice = Number(item.amount * item.order.price)
 
       return {
@@ -56,6 +60,7 @@ const mapInvoiceDetails = (data) => {
         guide: guideName,
         price: orderPrice,
         amount: orderAmount,
+        discount: orderDiscount,
         totalPrice: totalPrice
       }
     })

@@ -58,7 +58,8 @@ const updateAmount = (amount) => {
 const closeCartOnClickOutside = (event) => {
   if (
     !event.target.closest('.dashboard-cart__button') &&
-    !event.target.closest('.dashboard-cart-popup__container')
+    !event.target.closest('.dashboard-cart-popup__container') &&
+    !event.target.closest('.popup-order__overlay')
   ) {
     showCartPopup.value = false
   }
@@ -95,8 +96,8 @@ onUnmounted(() => {
         <h6 class="fw-600">Cart</h6>
         <ph-x :size="24" weight="bold" @click="showCart()" class="cursor-pointer" />
       </div>
-      <div class="dashboard-cart-popup__content flex fd-col justify-content-center pd-1 gap[0.5]">
-        <div
+      <div class="dashboard-cart-popup__content h-full flex fd-col justify-content-sb">
+        <div class="dashboard-cart-popup__content-items-container pd-1 flex fd-col gap[0.5]"><div
           v-for="(item, index) in userCarts" :key="index" @click="handleItemClick(item)"
           class="dashboard-cart-popup__content-items flex align-items-center pd[0.5] gap[0.5]"
         >
@@ -107,13 +108,19 @@ onUnmounted(() => {
                 : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
             "
           />
-          <div class="dashboard-cart-popup__items-desc flex fd-col align-items-f-start pd[0.5]">
+          <div class="dashboard-cart-popup__items-desc flex fd-col align-items-f-start justify-content-sb pd[0.5]">
             <p class="to-ellipsis">{{ item.name }}</p>
             <p class="to-ellipsis">{{ item.category.name }}</p>
             <p class="to-ellipsis">
               Rp. {{ `${formatCurrency(item.price)} x ${item.amount} Tiket` }}
             </p>
           </div>
+        </div></div>
+        <div class="dashboard-cart-popup__checkout w-full flex justify-content-center pd-block-1">
+          <button type="submit" class="dashboard-cart-popup__checkout-btn" @click="router.push({ name:'checkout' })">
+            Go To Checkout
+            <ph-arrow-circle-right :size="20" weight="fill" />
+          </button>
         </div>
       </div>
     </div>
@@ -328,6 +335,12 @@ onUnmounted(() => {
 .dashboard-cart-popup__header {
   border-bottom: 2px solid black;
 }
+.dashboard-cart-popup__content {
+  overflow: auto;
+}
+.dashboard-cart-popup__content::-webkit-scrollbar {
+  width: 0px;
+}
 .dashboard-cart-popup__content-items {
   cursor: pointer;
   border-radius: 0.25rem;
@@ -341,6 +354,35 @@ onUnmounted(() => {
 }
 .dashboard-cart-popup__items-desc {
   width: 65%;
+}
+.dashboard-cart-popup__checkout {
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  backdrop-filter: blur(4px);
+}
+.dashboard-cart-popup__checkout-btn {
+  width: 80%;
+  background-color: #ffdd8f;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-cart-popup__checkout-btn:hover {
+  background-color: #e6be58;
+}
+
+.dashboard-cart-popup__checkout-btn i {
+  font-size: 20px;
 }
 .dashboard-header__container {
   gap: 2.5rem;

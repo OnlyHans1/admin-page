@@ -20,6 +20,11 @@ const alertTitle = ref('')
 const alertType = ref('')
 const alertMessage = ref('')
 
+const giveAccessRoute = ref(false)
+const grantAccessRoute = (value) => {
+  giveAccessRoute.value = value
+}
+
 const assignAlert = (show, title, type, message) => {
   showAlert.value = show
   alertTitle.value = title
@@ -53,6 +58,8 @@ export default {
   NATIONALITY_BASE_URL,
   LOGS_BASE_URL,
   EMAIL_BASE_URL,
+  giveAccessRoute,
+  grantAccessRoute,
   assignAlert,
   showLoader,
   showAlert,
