@@ -74,7 +74,6 @@ const selectItem = (item) => {
 
   item.selected = true
   selectedItems.value.push(item)
-  saveToUserCarts()
 }
 
 const saveToUserCarts = async () => {
@@ -93,7 +92,7 @@ const saveToUserCarts = async () => {
       }
     }
   })
-  if (storedItems.length > 0) await updateUserCarts(storedItems)
+  await updateUserCarts(storedItems)
   isMancanegara.value = false
   checkUserCarts()
 }
@@ -228,7 +227,7 @@ const deleteOrder = async () => {
       userCarts.value = {}
       closePopup()
       closeDeletePopup()
-      await location.reload()
+      fetchOrderList()
       assignAlert(
         true,
         'Sukses',

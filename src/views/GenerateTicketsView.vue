@@ -3,9 +3,11 @@ import { onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
+import DashboardHelper from '@/utilities/DashboardHelper'
+import LoginHelper from '@/utilities/LoginHelper'
 
 const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader, getImageURL } = GlobalHelper
-const { ticketsData, sendEmailToUser, printTickets } = CheckoutHelper
+const { ticketsData, emailCooldown, sendEmailToUser, printTickets } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -17,8 +19,9 @@ const calculateTotal = (price, amount) => {
   return formatCurrency(price * amount)
 }
 const toHomepage = async () => {
+  LoginHelper.userCarts.value = []
+  await DashboardHelper.saveToUserCarts()
   await router.replace('/')
-  location.reload()
 }
 
 const fetchTickets = async (id) => {
@@ -82,13 +85,21 @@ onMounted(() => {
     <div
       class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
     >
-      <button class="generate-tickets__btn-print" @click="printTickets">
-        Print Tickets
+      <button
+        class="generate-tickets__btn-print flex align-items-center gap[0.5]"
+        @click="printTickets"
+      >
+        <p class="fw-700">Print Tickets</p>
         <ph-printer :size="32" />
       </button>
-      <button class="generate-tickets__btn-email" @click="sendEmailToUser">
-        Send to Email
-        <ph-paper-plane-tilt :size="32" />
+      <button class="generate-tickets__btn-email">
+        <div v-if="!emailCooldown" @click="sendEmailToUser()" class="flex align-items-center gap[0.5]">
+          <p class="fw-700">Send to Email</p>
+          <ph-paper-plane-tilt :size="32" />
+        </div>
+        <div v-else>
+          <p class="fw-700">Sending Email<span class="send-email__text-cooldown"></span></p>
+        </div>
       </button>
     </div>
     <button
@@ -130,42 +141,38 @@ onMounted(() => {
   border-radius: 0.25rem;
 }
 
-.generate-tickets__btn-print {
-  width: 10rem;
+.generate-tickets__btn-print,
+.generate-tickets__btn-email  {
+  min-width: 12rem;
+  height: 5rem;
   border: 2px solid #e6be58;
   padding: 1rem 2rem;
   font-size: 1rem;
   cursor: pointer;
   border-radius: 5px;
   transition: background-color 0.3s ease;
-  font-weight: 700;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
 }
 
-.generate-tickets__btn-print:hover {
-  border-color: #ffdd8f;
-}
-
-.generate-tickets__btn-email {
-  width: 10rem;
-  border: 2px solid #e6be58;
-  padding: 1rem 2rem;
-  font-size: 1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-  font-weight: 700;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
+.generate-tickets__btn-print:hover,
 .generate-tickets__btn-email:hover {
   border-color: #ffdd8f;
+}
+
+.send-email__text-cooldown::after {
+  content: '.';
+  animation: loadingDots 1.5s infinite;
+}
+
+@keyframes loadingDots {
+  0% {
+    content: '.';
+  }
+  33% {
+    content: '..';
+  }
+  66% {
+    content: '...';
+  }
 }
 
 .send-email-overview__modal {

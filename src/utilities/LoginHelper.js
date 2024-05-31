@@ -15,7 +15,7 @@ const isAuthenticated = async () => {
   if (token) {
     try {
       const success = await authLogin(token)
-    
+
       if (success) {
         loggedIn.value = true
         return true
@@ -43,14 +43,21 @@ const authLogin = async (token) => {
     if (!response.ok) {
       const error = await response.json()
       showLoader.value = false
+      removeCookie('token')
+      return false
       throw new Error(error.message)
     }
 
     const res = await response.json()
-    userData.value = res.data
-    userCarts.value = Object.values(res.data.carts)
-    showLoader.value = false
-    return true
+    if (res.data) {
+      userData.value = res.data
+      userCarts.value = Object.values(res.data.carts)
+      showLoader.value = false
+      return true
+    } else {
+      removeCookie('token')
+      return false
+    }
   } catch (error) {
     console.error(error)
     return false
@@ -91,7 +98,9 @@ const userLogin = async () => {
 const userLogout = () => {
   removeCookie('token')
   loggedIn.value = false
-  userData.value ? assignAlert(true, 'Sukses', 'success', `${userData.value.name} berhasil logout!`) : null
+  userData.value
+    ? assignAlert(true, 'Sukses', 'success', `${userData.value.name} berhasil logout!`)
+    : null
   userData.value = []
 }
 const getCookie = (name) => {

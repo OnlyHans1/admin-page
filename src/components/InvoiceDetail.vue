@@ -12,59 +12,68 @@ const invoiceData = computed(() => selectedItem.value || {})
 
 <template>
   <div
-    class="invoice-detail__overlay w-full h-full overlay flex align-items-center justify-content-center"
+    class="invoice-detail__overlay w-full h-full overlay flex align-items-center justify-content-center pd-4"
     v-if="showPopup"
   >
-    <div class="invoice-detail__container-content flex fd-col align-items-center pd-0">
+    <div class="invoice-detail__container-content flex fd-col align-items-center">
       <div class="invoice-detail__content-header flex align-items-center">
         <div class="invoice-detail__header-img flex justify-content-center">
           <img src="../assets/images/Logo KKC.svg" alt="Logo Keraton Kasepuhan Cirebon" />
         </div>
-        <div class="invoice-detail__header-data">
+        <div class="invoice-detail__header-data flex fd-col">
           <h6 class="fw-600">Kasir</h6>
           <p>{{ invoiceData.cashier }}</p>
           <h6 class="fw-600">Pelanggan</h6>
           <p>{{ invoiceData.customer }}</p>
           <p>{{ invoiceData.number }}</p>
         </div>
-        <div class="invoice-detail__header-date">
-          <p class="">{{ invoiceData.appointment }}</p>
+        <div class="invoice-detail__header-date flex fd-col align-items-center">
+          <p class="fw-600">Jadwal Reservasi</p>
+          <p>{{ invoiceData.appointment }}</p>
           <img :src="invoiceData.qr ? getImageURL(invoiceData.qr) : null" alt="QR Code" />
         </div>
       </div>
-      <div class="invoice-detail__content-data">
-        <div class="invoice-detail__data-pesanan flex fd-col gap[0.5] pd-sd-2 sm-bottom-1">
-          <h6 class="fw-600">Reservasi</h6>
-          <div v-for="(reserve, index) in invoiceData.reservation" :key="index" class="pesanan-row">
-            <div class="pesanan-details">
-              <p>
-                {{ reserve.order }} <br />
-                Rp. {{ reserve.price }},00 x {{ reserve.amount }} <br/>
+      <div class="invoice-detail__content-data w-full sm-top-1 flex fd-col pd-sd-2">
+        <h6 class="fw-600">Reservasi</h6>
+        <div
+          class="invoice-detail__data-pesanan flex fd-col gap[0.5] sm-bottom-1"
+          :class="{ expand: invoiceData.reservation.length > 3 }"
+        >
+          <div
+            v-for="(reserve, index) in invoiceData.reservation"
+            :key="index"
+            :class="{ 'pd-right-1': invoiceData.reservation.length > 3 }"
+            class="flex align-items-center justify-content-sb"
+          >
+            <div class="flex fd-col">
+              <p class="to-overflow">
+                {{ reserve.order }}
               </p>
+              <p>Rp. {{ reserve.price }},00 x {{ reserve.amount }} Tiket</p>
               <p v-if="reserve.guide">Guide : {{ reserve.guide }}</p>
             </div>
             <div class="pesanan-harga flex fd-col align-items-f-end">
               <p>Rp. {{ reserve.totalPrice }},00</p>
-              <p>- {{ reserve.discount }}</p>
+              <p v-if="reserve.discountAmount > 0">- {{ reserve.discount }}</p>
             </div>
           </div>
         </div>
-        <div class="invoice-detail__data-layanan flex fd-col gap[0.25] pd-sd-2">
-          <div class="data-row">
+        <div class="invoice-detail__data-layanan flex fd-col gap[0.25] sm-top-1">
+          <div class="flex justify-content-sb">
             <h6 class="fw-600">Biaya Layanan</h6>
             <p>Rp. {{ biayaLayanan }},00</p>
           </div>
-          <div class="data-row">
+          <div class="flex justify-content-sb">
             <h6 class="fw-600">Biaya Jasa Aplikasi</h6>
             <p>Rp. {{ biayaJasa }},00</p>
           </div>
           <hr />
-          <div class="layanan-row">
-            <div class="layanan-item">
+          <div class="flex justify-content-sb">
+            <div class="flex fd-col align-items-center">
               <h6 class="fw-600">Pembayaran</h6>
               <p>{{ invoiceData.payment }}</p>
             </div>
-            <div class="layanan-item">
+            <div class="flex fd-col align-items-center">
               <h6 class="fw-600">Total</h6>
               <p>{{ invoiceData.total }},00</p>
             </div>
@@ -77,8 +86,9 @@ const invoiceData = computed(() => selectedItem.value || {})
 </template>
 
 <style scoped>
-h6, p {
-  cursor: default;  
+h6,
+p {
+  cursor: default;
 }
 
 .invoice-detail__container-content {
@@ -86,7 +96,6 @@ h6, p {
   border-radius: 10px;
   width: 900px;
   font-family: 'Poppins';
-  padding: 0;
 }
 
 .invoice-detail__content-header {
@@ -102,8 +111,6 @@ h6, p {
 }
 
 .invoice-detail__header-data {
-  display: flex;
-  flex-direction: column;
   margin-left: 2rem;
 }
 
@@ -112,9 +119,6 @@ h6, p {
 }
 
 .invoice-detail__header-date {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin-left: auto;
 }
 
@@ -123,33 +127,21 @@ h6, p {
   width: 100px;
 }
 
-.invoice-detail__content-data {
-  width: 100%;
-  margin-top: 20px;
+.invoice-detail__data-pesanan.expand {
+  max-height: 10rem;
+  overflow-y: scroll;
 }
-
-.data-row {
-  display: flex;
-  justify-content: space-between;
+.invoice-detail__data-pesanan::-webkit-scrollbar {
+  width: 4px;
 }
-
-.pesanan-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.invoice-detail__data-pesanan::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 2px;
 }
-
-.layanan-row {
-  display: flex;
-  justify-content: space-between;
+.invoice-detail__data-pesanan::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
-
-.layanan-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 .invoice-detail__button {
   background-color: #ffe29a;
   font-family: 'Poppins';

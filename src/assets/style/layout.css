@@ -103,6 +103,9 @@
 .justify-content-sa {
   justify-content: space-around;
 }
+.justify-content-se {
+  justify-content: space-evenly;
+}
 .text-align-center {
   text-align: center;
 }

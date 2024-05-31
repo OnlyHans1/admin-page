@@ -44,6 +44,8 @@ onMounted(() => {
         class="invoice-search__input-field"
         v-model="searchQuery"
         placeholder="Search..."
+        id="search"
+        autocomplete="search"
       />
       <ph-x v-if="searchQuery" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
     </div>

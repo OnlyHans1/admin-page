@@ -1,5 +1,6 @@
 import { ref } from 'vue'
 import GlobalHelper from './GlobalHelper'
+import CheckoutHelper from './CheckoutHelper'
 
 const {
   DB_BASE_URL,
@@ -138,9 +139,7 @@ const createOrderType = async (data) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Tipe!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchOrderType()
   } catch (error) {
     console.error('Error creating data:', error)
   }
@@ -162,9 +161,7 @@ const createOrderSubType = async (data) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Sub Tipe!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchOrderSubType()
   } catch (error) {
     console.error('Error creating data:', error)
   }
@@ -186,9 +183,7 @@ const createCategory = async (data) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Kategori!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchCategory()
   } catch (error) {
     console.error('Error creating data:', error)
   }
@@ -210,9 +205,7 @@ const createGuide = async (data) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menambahkan Guide!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    CheckoutHelper.fetchGuideData()
   } catch (error) {
     console.error('Error creating data:', error)
   }
@@ -234,9 +227,7 @@ const updateOrderType = async (data, id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Tipe!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchOrderType()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -258,9 +249,7 @@ const updateOrderSubType = async (data, id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Sub Tipe!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchOrderSubType()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -282,9 +271,7 @@ const updateCategory = async (data, id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Kategori!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchCategory()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -306,9 +293,7 @@ const updateGuide = async (data, id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil mengubah Guide!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    CheckoutHelper.fetchGuideData()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -329,9 +314,7 @@ const deleteGuide = async (id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Guide!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    CheckoutHelper.fetchGuideData()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -352,9 +335,7 @@ const deleteOrderType = async (id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Tipe!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchOrderType()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -375,9 +356,7 @@ const deleteOrderSubType = async (id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Sub Tipe!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchOrderSubType()
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -398,9 +377,7 @@ const deleteCategory = async (id) => {
     }
     showLoader.value = false
     assignAlert(true, 'Sukses', 'success', 'Berhasil menghapus Kategori!')
-    setTimeout(() => {
-      location.reload()
-    }, 1500)
+    fetchCategory()
   } catch (error) {
     console.error('Error fetching data:', error)
   }

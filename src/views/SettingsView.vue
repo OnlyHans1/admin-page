@@ -210,6 +210,7 @@ const callAction = async (action) => {
       deleteGuide(guideId.value)
       break
   }
+  hideGuideModal()
 }
 
 const formattedDate = ref(formatDate(guideBirthdate.value))
@@ -257,12 +258,12 @@ onMounted(() => {
       class="settings_modal-overla overlay w-full h-full"
       v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
     >
-      <div class="settings_modal-container">
+      <div class="settings_modal-container fee">
         <div class="settings__orders-content_modal-header">
           <h5 class="fw-600">Fees</h5>
           <ph-x :size="20" weight="bold" @click="toggleFeePage" />
         </div>
-        <div class="settings__fees-content_modal pd-1">
+        <div class="settings__fees-content_modal pd-1 flex fd-col gap-1">
           <div class="settings__fees-content_modal_input-group flex fd-col gap-1">
             <div class="fee">
               <p>Biaya Layanan</p>
@@ -273,8 +274,10 @@ onMounted(() => {
               <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
             </div>
           </div>
+          <div class="settings__fees-content_modal_cta-container flex align-content-center gap-1">
           <button class="save" @click="saveSettings">Simpan</button>
           <button class="reset" @click="resetSettings">Reset</button>
+        </div>
         </div>
       </div>
     </section>
@@ -523,7 +526,7 @@ body {
 }
 
 .input_biaya {
-  width: 20rem;
+  width: 100%;
   height: 2.5rem;
   font-size: 1rem;
   border-radius: 5px;
@@ -540,7 +543,6 @@ input:focus {
 .reset {
   width: 5.5rem;
   height: 2rem;
-  margin-top: 2rem;
   color: white;
   font-weight: bold;
   border-radius: 20px;
@@ -555,7 +557,6 @@ input:focus {
 }
 
 .reset {
-  margin-left: 1rem;
   background: #dc3545;
 }
 
@@ -622,7 +623,7 @@ input:focus {
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   width: 80vw;
-  min-height: 15rem;
+  min-height: 70vh;
   overflow: hidden;
   z-index: 100;
   position: relative;
@@ -698,7 +699,11 @@ input:focus {
   transform: translate(-50%, -50%);
   z-index: 900;
 }
+.settings_modal-container.fee {
 
+  width: 40vw;
+
+}
 .settings__orders-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));

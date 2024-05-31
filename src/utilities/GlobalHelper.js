@@ -11,9 +11,10 @@ const DETAILTRANS_BASE_URL = ref('keraton-pos/detail-trans')
 const GUIDE_BASE_URL = ref('keraton-pos/guide')
 const NATIONALITY_BASE_URL = ref('keraton-pos/nationality')
 const LOGS_BASE_URL = ref('keraton-pos/logs')
-const EMAIL_BASE_URL = ref('keraton-pos/email')
 
 const showLoader = ref(false)
+
+const sendQueue = ref([])
 
 const showAlert = ref(false)
 const alertTitle = ref('')
@@ -57,11 +58,11 @@ export default {
   GUIDE_BASE_URL,
   NATIONALITY_BASE_URL,
   LOGS_BASE_URL,
-  EMAIL_BASE_URL,
   giveAccessRoute,
   grantAccessRoute,
   assignAlert,
   showLoader,
+  sendQueue,
   showAlert,
   alertTitle,
   alertType,

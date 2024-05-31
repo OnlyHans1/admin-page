@@ -7,7 +7,8 @@ import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
-const route = useRouter()
+
+const router = useRouter()
 
 const {
   getUserCarts,
@@ -114,7 +115,7 @@ const updateAmount = (amount, index) => {
 
 const toGenerateTickets = async () => {
   grantAccessRoute(true)
-  await route.push({ name: 'generateTickets', params: { id: recentTransactionId.value } })
+  await router.push({ name: 'generateTickets', params: { id: recentTransactionId.value } })
 }
 
 const fetchAllData = async () => {
@@ -131,20 +132,20 @@ onMounted(() => {
 
 <template>
   <main>
-    <div class="checkout__container w-full flex align-items-f-start justify-content-sb sm-sd-2">
-      <div class="checkout__form-container">
+    <div class="checkout__container w-full flex align-items-f-start justify-content-sb sm-sd-2 gap-2">
+      <div class="checkout__form-container w-full">
         <div class="order-details__container">
           <form>
             <div class="order-details__checkout flex fd-col gap[0.5]">
               <h4>Pemesanan Langsung</h4>
               <div class="order-details__cashier flex fd-col">
                 <div class="order-details__content w-full flex gap[0.5]">
-                  <ph-devices :size="24" weight="bold" class="header-icons" />
+                  <ph-devices :size="24" weight="bold" color="#e6be58" />
                   <p>Detail Kasir</p>
                 </div>
                 <div class="order-details__content w-full flex gap[0.5] align-items-center">
                   <p class="fs-h5 fw-700">{{ userData.name }}</p>
-                  <p>- ({{ userData.email }})</p>
+                  <p>({{ userData.email }})</p>
                 </div>
               </div>
               <div class="order-details__dropdown" v-if="isMancanegara">
@@ -152,23 +153,23 @@ onMounted(() => {
               </div>
               <div class="order-details__customer">
                 <div class="order-details__content w-full flex gap[0.5]">
-                  <ph-user :size="24" weight="bold" class="header-icons" />
+                  <ph-user :size="24" weight="bold" color="#e6be58" />
                   <p>Detail Pelanggan</p>
                 </div>
                 <div class="order-details__customer-input flex gap-1">
                   <div class="customer-details__input-placeholder">
-                    <input type="text" required rows="1" v-model="custName" />
-                    <label>Nama Pelanggan</label>
+                    <input type="text" required rows="1" v-model="custName" id="name" autocomplete="name"/>
+                    <label for="name">Nama Pelanggan</label>
                   </div>
                   <div class="customer-details__input-placeholder">
-                    <input type="email" required rows="1" v-model="custEmail" />
-                    <label>Email Pelanggan</label>
+                    <input type="email" required rows="1" v-model="custEmail" id="email" autocomplete="email">
+                    <label for="email">Email Pelanggan</label>
                   </div>
                 </div>
               </div>
               <div class="order-details__ticket flex fd-col gap[0.5]">
                 <div class="order-details__content w-full flex gap[0.5]">
-                  <ph-ticket :size="24" weight="bold" class="header-icons" />
+                  <ph-ticket :size="24" weight="bold" color="#e6be58" />
                   <p>Detail Tiket</p>
                 </div>
                 <div class="order-details__ticket-date">
@@ -178,19 +179,20 @@ onMounted(() => {
                       class="ticket__input-date"
                       v-model="selectedDate"
                       @input="fetchUnavailableGuide()"
+                      id="date"
                     />
-                    <label>Tanggal Pemesanan</label>
+                    <label for="date">Tanggal Pemesanan</label>
                   </div>
                   <p>MM/DD/YYYY</p>
                 </div>
                 <div v-for="(item, index) in userCarts" :key="index">
                   <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
-                      <p>{{ item.name }} ({{ item.category.name }})</p>
-                      <span>{{ formatCurrency(item.price) }}</span>
+                      <h6>{{ item.name }} ({{ item.category.name }})</h6>
+                      <span class="fs-h6">{{ formatCurrency(item.price) }}</span>
                     </div>
-                    <div class="order-details__ticket-value">
-                      <button @click="reduceTicket(index)" type="button">
+                    <div class="order-details__ticket-value flex align-items-center gap-1">
+                      <button class="flex align-items-center justify-content-center" @click="reduceTicket(index)" type="button">
                         <ph-minus :size="14" weight="bold" />
                       </button>
                       <input
@@ -199,7 +201,7 @@ onMounted(() => {
                         v-model="userCarts[index].amount"
                         @input="updateAmount(userCarts[index].amount, index)"
                       />
-                      <button @click="addTicket(index)" type="button">
+                      <button class="flex align-items-center justify-content-center" @click="addTicket(index)" type="button">
                         <ph-plus :size="14" weight="bold" />
                       </button>
                     </div>
@@ -207,17 +209,17 @@ onMounted(() => {
                 </div>
               </div>
               <div class="pricings-slider__container">
-                <div class="discount__slider">
+                <div class="discount__slider flex fd-col">
                   <p class="fw-500">Diskon</p>
-                  <Slider v-model:targetValue="discountValue" />
+                  <Slider v-model:targetValue="discountValue" sliderWidth="216px" />
                 </div>
-                <div class="discount__slider">
+                <div class="discount__slider flex fd-col">
                   <p class="fw-500">Cashback</p>
-                  <Slider v-model:targetValue="cashbackValue" />
+                  <Slider v-model:targetValue="cashbackValue" sliderWidth="216px"/>
                 </div>
               </div>
               <div class="order-details__content flex gap[0.5]">
-                <ph-wallet :size="24" weight="bold" class="header-icons" />
+                <ph-wallet :size="24" weight="bold" color="#e6be58" />
                 <p>Pilih Pembayaran</p>
               </div>
               <div class="order-details__payment-select" @click="showPaymentSelect">
@@ -236,7 +238,7 @@ onMounted(() => {
               </div>
 
               <div class="order-details__content flex gap[0.5] sm-top-1">
-                <ph-binoculars :size="24" weight="bold" class="header-icons" />
+                <ph-binoculars :size="24" weight="bold" color="#e6be58" />
                 <p>Pilih Guide</p>
               </div>
               <div class="order-details__guide-select" @click="guideSelectPage">
@@ -257,9 +259,9 @@ onMounted(() => {
 
               <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
                 <div class="order-details__guide-select-content_modal sm-4">
-                  <div class="order-details__guide-select-content_modal-header">
+                  <div class="order-details__guide-select-content_modal-header flex align-items-center justify-content-sb pd-1">
                     <h5 class="fw-600">Guide</h5>
-                    <ph-x :size="20" weight="bold" @click="guideSelectPage" />
+                    <ph-x class="cursor-pointer" :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
                   <div
                     class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
@@ -396,10 +398,10 @@ onMounted(() => {
                     class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
                   >
                     <h5 class="fw-600">Pilih Metode Pembayaran</h5>
-                    <ph-x :size="20" weight="bold" @click="showPaymentSelect" />
+                    <ph-x class="cursor-pointer":size="20" weight="bold" @click="showPaymentSelect" />
                   </div>
                   <div
-                    class="order-details__payment-select-content_modal-content pd-bottom-2 pd-sd-1 pd-top-1"
+                    class="order-details__payment-select-content_modal-content flex fd-col gap[0.5] pd-bottom-2 pd-sd-1 pd-top-1"
                   >
                     <button @click="selectPayment('Cash')">
                       <span
@@ -422,8 +424,8 @@ onMounted(() => {
           </form>
         </div>
       </div>
-      <div class="checkout__details-container">
-        <div class="checkout__details-content">
+      <div class="checkout__details-container pd-2 w-full">
+        <div class="checkout__details-content w-full">
           <form class="checkout__details-form" @submit.prevent="submitRingkasan">
             <p class="fs-h5">Ringkasan Booking</p>
             <div class="checkout__details-pricing-container">
@@ -487,8 +489,8 @@ onMounted(() => {
             </div>
           </form>
         </div>
-        <div class="checkout-btn">
-          <button type="submit" class="checkout__btn-order" @click="checkoutTransaction">
+        <div class="checkout-btn w-full">
+          <button type="submit" class="checkout__btn-order w-full flex align-items-center justify-content-sb fw-700 cursor-pointer" @click="checkoutTransaction">
             Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
@@ -514,20 +516,12 @@ onMounted(() => {
 main {
   font-family: 'Raleway';
 }
-
-.header-icons {
-  color: #e6be58;
-  font-size: 24px;
-}
-
 .order-details__dropdown {
   margin-top: 0.25rem;
 }
-
 .ticket__input-date {
   font-family: Roboto;
 }
-
 .order-details__ticket-date input,
 .order-details__customer-input input {
   padding: 10px;
@@ -535,13 +529,11 @@ main {
   outline: none;
   border-radius: 4px;
 }
-
 .order-details__ticket-date p {
   padding: 0.25rem 1rem;
   font-size: 12px;
   line-height: 16px;
 }
-
 .order-details__ticket-date label,
 .order-details__customer-input label {
   position: absolute;
@@ -553,40 +545,22 @@ main {
   pointer-events: none;
   font-size: 12px;
 }
-
 .order-details__ticket-date input:focus,
 .order-details__customer-input input:focus {
   border: 2px solid rgba(218, 165, 32, 1);
 }
-
 .order-details__ticket-date input:focus + label,
 .order-details__customer-input input:focus + label {
   color: rgba(218, 165, 32, 1);
 }
-
 .ticket__input-placeholder,
 .customer-details__input-placeholder {
   position: relative;
 }
-
-.order-details__ticket-items {
-  font-size: 20px;
-  line-height: 28px;
-}
-
 .order-details__ticket-value {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 1rem;
-  font-weight: 500;
   font-family: 'Manrope';
 }
-
 .order-details__ticket-value button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 0.2rem;
   background-color: transparent;
   border: 1px solid black;
@@ -609,7 +583,6 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
@@ -625,7 +598,6 @@ input[type='number'] {
 .pricings-slider__container {
   font-family: 'Poppins';
 }
-
 .order-details__guide-select,
 .order-details__payment-select {
   width: 100%;
@@ -639,7 +611,6 @@ input[type='number'] {
   justify-content: space-between;
   cursor: pointer;
 }
-
 .order-details__guide-select-content,
 .order-details__payment-select-content {
   display: flex;
@@ -648,7 +619,6 @@ input[type='number'] {
   font-size: 14px;
   line-height: 22px;
 }
-
 .order-details__select-content_modal-overlay {
   position: fixed;
   top: 0;
@@ -658,7 +628,6 @@ input[type='number'] {
   background-color: rgb(0, 0, 0, 0.2);
   z-index: 999;
 }
-
 .order-details__payment-select-content_modal {
   position: fixed;
   top: 50%;
@@ -670,18 +639,9 @@ input[type='number'] {
   border-radius: 0.5rem;
   box-shadow: 0px 2px 2px 0 rgb(0, 0, 0, 0.2);
 }
-
-.order-details__payment-select-content_modal-header i {
-  cursor: pointer;
-}
-
 .order-details__payment-select-content_modal-content {
   border-top: 1px solid black;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
 }
-
 .order-details__payment-select-content_modal-content button {
   display: flex;
   gap: 0.5rem;
@@ -716,11 +676,6 @@ input[type='number'] {
 }
 
 .order-details__guide-select-content_modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  cursor: pointer;
-  padding: 1rem;
   border-bottom: 1px solid black;
 }
 
@@ -795,20 +750,22 @@ input[type='number'] {
   border-radius: 0.25rem;
 }
 
+.checkout__form-container {
+  min-width: 24rem;
+  max-width: 36rem;
+}
+
 .checkout__details-container {
+  min-width: 24rem;
+  max-width: 36rem;
   position: sticky;
   top: 5rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 2rem 0;
   width: 100%;
   gap: 1rem;
-}
-
-.checkout__details-content {
-  width: 80%;
 }
 
 .checkout__details-form {
@@ -841,24 +798,13 @@ input[type='number'] {
   padding: 0.5rem 0;
 }
 
-.checkout-btn {
-  width: 80%;
-}
-
 .checkout__btn-order {
-  width: 100%;
   background-color: #ffdd8f;
   border: none;
   padding: 10px 20px;
-  cursor: pointer;
   color: black;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  font-weight: 700;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .checkout__btn-order:hover {
