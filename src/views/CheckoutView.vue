@@ -10,8 +10,7 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 const route = useRouter()
 
 const {
-  getItemsFromSessionStorage,
-  items,
+  getUserCarts,
   paymentSelection,
   paymentSelect,
   showPaymentSelect,
@@ -55,9 +54,9 @@ const {
   checkGuideAvailability
 } = CheckoutHelper
 
-const { assignAlert, getImageURL } = GlobalHelper
-const { checkSessionStorage, isMancanegara } = DashboardHelper
-const { userData } = LoginHelper
+const { grantAccessRoute, assignAlert, getImageURL } = GlobalHelper
+const { isMancanegara, saveToUserCarts, checkUserCarts } = DashboardHelper
+const { userData, userCarts } = LoginHelper
 
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
@@ -103,17 +102,36 @@ const showTransactionGenerate = () => {
   isTransactionGenerate.value = true
 }
 
-onMounted(() => {
-  fetchGuideData()
-  getItemsFromSessionStorage()
-  checkSessionStorage()
+const updateAmount = (amount, index) => {
+  if (amount >= 80) {
+    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
+    userCarts.value[index].amount = 80
+  } else {
+    userCarts.value[index].amount = amount
+  }
+  saveToUserCarts()
+}
+
+const toGenerateTickets = async () => {
+  grantAccessRoute(true)
+  await route.push({ name: 'generateTickets', params: { id: recentTransactionId.value } })
+}
+
+const fetchAllData = async () => {
+  await fetchGuideData()
+  getUserCarts()
+  checkUserCarts()
   fetchFeeSettings()
+}
+
+onMounted(() => {
+  fetchAllData()
 })
 </script>
 
 <template>
   <main>
-    <div class="checkout__container w-full flex align-items-f-start gap-4 sm-sd-2">
+    <div class="checkout__container w-full flex align-items-f-start justify-content-sb sm-sd-2">
       <div class="checkout__form-container">
         <div class="order-details__container">
           <form>
@@ -137,16 +155,16 @@ onMounted(() => {
                   <ph-user :size="24" weight="bold" class="header-icons" />
                   <p>Detail Pelanggan</p>
                 </div>
-                  <div class="order-details__customer-input flex gap-1">
-                    <div class="customer-details__input-placeholder">
-                      <input type="text" required rows="1" v-model="custName" />
-                      <label>Nama Pelanggan</label>
-                    </div>
-                    <div class="customer-details__input-placeholder">
-                      <input type="email" required rows="1" v-model="custEmail" />
-                      <label>Email Pelanggan</label>
-                    </div>
+                <div class="order-details__customer-input flex gap-1">
+                  <div class="customer-details__input-placeholder">
+                    <input type="text" required rows="1" v-model="custName" />
+                    <label>Nama Pelanggan</label>
                   </div>
+                  <div class="customer-details__input-placeholder">
+                    <input type="email" required rows="1" v-model="custEmail" />
+                    <label>Email Pelanggan</label>
+                  </div>
+                </div>
               </div>
               <div class="order-details__ticket flex fd-col gap[0.5]">
                 <div class="order-details__content w-full flex gap[0.5]">
@@ -165,7 +183,7 @@ onMounted(() => {
                   </div>
                   <p>MM/DD/YYYY</p>
                 </div>
-                <div v-for="(item, index) in items" :key="index">
+                <div v-for="(item, index) in userCarts" :key="index">
                   <div class="order-details__ticket" v-if="item.amount > 0">
                     <div class="order-details__ticket-items">
                       <p>{{ item.name }} ({{ item.category.name }})</p>
@@ -175,7 +193,12 @@ onMounted(() => {
                       <button @click="reduceTicket(index)" type="button">
                         <ph-minus :size="14" weight="bold" />
                       </button>
-                      <p>{{ item.amount }}</p>
+                      <input
+                        type="number"
+                        class="order-details__ticket-input"
+                        v-model="userCarts[index].amount"
+                        @input="updateAmount(userCarts[index].amount, index)"
+                      />
                       <button @click="addTicket(index)" type="button">
                         <ph-plus :size="14" weight="bold" />
                       </button>
@@ -306,12 +329,14 @@ onMounted(() => {
                           </div>
                         </div>
 
-                        <div class="guide-select_biodata-information">
-                          <h6>
-                            {{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})
-                          </h6>
-                          <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
-                          <p>{{ selectedGuide.email }}</p>
+                        <div class="guide-select_biodata-information flex fd-col gap-1">
+                          <div>
+                            <h6>
+                              {{ selectedGuide.name }} ({{ formatGender(selectedGuide.gender) }})
+                            </h6>
+                            <p>{{ `${determineAge(selectedGuide.birthdate)} Tahun` }}</p>
+                            <p>{{ selectedGuide.email }}</p>
+                          </div>
                           <p>
                             {{ selectedGuide.desc ? selectedGuide.desc : 'Tidak ada deskripsi' }}
                           </p>
@@ -332,7 +357,7 @@ onMounted(() => {
                       </div>
 
                       <div
-                        v-for="(item, index) in items"
+                        v-for="(item, index) in userCarts"
                         :key="index"
                         class="guide-select_ticket flex justify-content-sb sm-bottom-1"
                       >
@@ -355,7 +380,6 @@ onMounted(() => {
                           <button
                             class="guide-select_ticket-btn flex align-items-center"
                             @click.prevent="addGuide(index)"
-                            @click="guideSelectPageTicket"
                           >
                             <ph-plus :size="16" weight="bold" />
                           </button>
@@ -404,14 +428,14 @@ onMounted(() => {
             <p class="fs-h5">Ringkasan Booking</p>
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
-              <div v-if="items.length > 1" v-for="(item, index) in items" :key="index">
+              <div v-if="userCarts.length > 1" v-for="(item, index) in userCarts" :key="index">
                 <div class="checkout__details-pricing" v-if="item.amount > 0">
                   <p>{{ item.name }} ({{ item.category.name }}) x {{ item.amount }}</p>
                   <p>{{ formatCurrency(item.price * item.amount) }}</p>
                 </div>
               </div>
               <div class="checkout__details-pricing">
-                <p v-if="items.length > 1">Total Tiket ({{ totalTicketCount }} Tiket)</p>
+                <p v-if="userCarts.length > 1">Total Tiket ({{ totalTicketCount }} Tiket)</p>
                 <p v-else>Jumlah Tiket ({{ totalTicketCount }} Tiket)</p>
                 <p>{{ formatCurrency(totalHarga) }}</p>
               </div>
@@ -478,12 +502,7 @@ onMounted(() => {
           <div class="overview-transaction-success_content">
             <ph-check-circle :size="100" color="green" />
             <p class="fw-700 fs-h6">Transaksi berhasil</p>
-            <button
-              class="generate__btn"
-              @click="route.push({ name: 'generateTickets', params: { id: recentTransactionId } })"
-            >
-              Generate Tickets
-            </button>
+            <button class="generate__btn" @click="toGenerateTickets()">Generate Tickets</button>
           </div>
         </div>
       </section>
@@ -580,20 +599,36 @@ main {
   cursor: pointer;
   font-size: 15px;
 }
-
 .order-details__ticket-value button:hover {
   background-color: black;
   color: #ced4da;
   border: 1.4px solid black;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+input[type='number'] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.order-details__ticket-input {
+  outline: none;
+  border: 2px solid black;
+  border-radius: 4px;
+  padding-block: 0.25rem;
+  text-align: center;
+  max-width: 40px;
+}
 .pricings-slider__container {
   font-family: 'Poppins';
 }
 
 .order-details__guide-select,
 .order-details__payment-select {
-  width: 522px;
+  width: 100%;
   height: 50px;
   border-radius: 0.6rem;
   padding: 0.8rem 1.25rem;
@@ -773,7 +808,7 @@ main {
 }
 
 .checkout__details-content {
-  width: 522px;
+  width: 80%;
 }
 
 .checkout__details-form {
@@ -807,7 +842,7 @@ main {
 }
 
 .checkout-btn {
-  width: 522px;
+  width: 80%;
 }
 
 .checkout__btn-order {

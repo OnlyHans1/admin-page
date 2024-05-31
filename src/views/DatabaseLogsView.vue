@@ -37,7 +37,6 @@ const toggleDropdown = () => {
 const selectOption = (action) => {
   isOpen.value = false
   selectedAction.value = action
-  console.log(selectedAction.value)
   fetchLogsData()
 }
 const resetFilter = () => {
@@ -53,16 +52,21 @@ const closeDropdownOnClickOutside = (event) => {
   }
 }
 
-const getDate = (dateTime) => {
+const splitDate = (dateTime) => {
   const parts = dateTime.split('T')
   const dateParts = parts[0].split('-')
+  const timeParts = parts[1].split(':')
 
   const day = dateParts[2]
   const month = dateParts[1]
   const year = dateParts[0]
   const formattedDate = `${day}/${month}/${year}`
 
-  return formattedDate
+  const hours = timeParts[0]
+  const minutes = timeParts[1]
+  const formattedTime = `${hours}:${minutes}`
+
+  return [formattedDate, formattedTime]
 }
 
 const fetchLogsData = async () => {
@@ -215,7 +219,7 @@ onUnmounted(() => {
               {{ logData.status }}
             </div>
           </td>
-          <td>{{ getDate(logData.createdAt) }}</td>
+          <td>{{ `${splitDate(logData.createdDate)[0]} | ${splitDate(logData.createdDate)[1]}` }}</td>
         </tr>
       </tbody>
     </table>
@@ -233,7 +237,7 @@ onUnmounted(() => {
           v-for="page in visiblePages"
           :key="page"
           @click="changePage(page)"
-          :class="{ active: page === currentPage.value }"
+          :class="{ active: page === currentPage }"
         >
           {{ page }}
         </button>

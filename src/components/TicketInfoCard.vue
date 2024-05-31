@@ -1,7 +1,7 @@
 <script setup>
 import 'swiper/swiper-bundle.css'
 import { onMounted } from 'vue'
-import { Virtual, Navigation, Pagination } from 'swiper/modules';
+import { Virtual, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import ReportHelper from '@/utilities/ReportHelper'
 
@@ -13,11 +13,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <Swiper :modules="[Virtual, Pagination, Navigation]" :slides-per-view="3" :space-between="10" pagination navigation virtual>
-    <SwiperSlide
-      v-for="(item, index) in orderInfoCardData"
-      :key="index"
-    >
+  <Swiper
+    :modules="[Virtual, Pagination, Navigation]"
+    :slides-per-view="3"
+    :space-between="10"
+    pagination
+    navigation
+    virtual
+  >
+    <SwiperSlide v-for="(item, index) in orderInfoCardData" :key="index">
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">{{ item.category }}</p>
         <span class="ticket-info-card__details align-self-center">{{ item.sum }}</span>
@@ -28,6 +32,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
+p,
+span {
+  cursor: default;
+}
+
 .ticket-info-card__container {
   height: 186px;
   background: linear-gradient(to bottom, rgba(255, 226, 154, 0.9), rgba(254, 209, 96, 0.9));

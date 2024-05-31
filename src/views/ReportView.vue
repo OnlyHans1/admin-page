@@ -303,6 +303,10 @@ onMounted(() => {
   border: 1px solid black;
 }
 
+.filter__input-dropdown input {
+  cursor: pointer;
+}
+
 input {
   appearance: none;
   -webkit-appearance: none;

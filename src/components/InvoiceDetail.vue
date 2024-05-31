@@ -39,12 +39,13 @@ const invoiceData = computed(() => selectedItem.value || {})
             <div class="pesanan-details">
               <p>
                 {{ reserve.order }} <br />
-                Rp. {{ reserve.price }},00 x {{ reserve.amount }}
+                Rp. {{ reserve.price }},00 x {{ reserve.amount }} <br/>
               </p>
               <p v-if="reserve.guide">Guide : {{ reserve.guide }}</p>
             </div>
-            <div class="pesanan-harga">
+            <div class="pesanan-harga flex fd-col align-items-f-end">
               <p>Rp. {{ reserve.totalPrice }},00</p>
+              <p>- {{ reserve.discount }}</p>
             </div>
           </div>
         </div>
@@ -76,6 +77,10 @@ const invoiceData = computed(() => selectedItem.value || {})
 </template>
 
 <style scoped>
+h6, p {
+  cursor: default;  
+}
+
 .invoice-detail__container-content {
   background-color: white;
   border-radius: 10px;

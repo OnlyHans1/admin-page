@@ -1,13 +1,18 @@
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import DashboardHelper from '@/utilities/DashboardHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
+import LoginHelper from '@/utilities/LoginHelper'
+import DashboardHelper from '@/utilities/DashboardHelper'
+import CheckoutHelper from '@/utilities/CheckoutHelper'
 
-const { showLoader, getImageURL } = GlobalHelper
+const { userCarts } = LoginHelper
+const { showLoader, assignAlert, getImageURL } = GlobalHelper
 const {
   selectedItems,
   showConfirmationPopup,
+  showCartPopup,
+  showCart,
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
   confirmDelete,
@@ -19,7 +24,7 @@ const {
   closeDeletePopup,
   increaseAmount,
   decreaseAmount,
-  saveToSessionStorage,
+  saveToUserCarts,
   handleItemClick,
   groupedItems
 } = DashboardHelper
@@ -32,30 +37,94 @@ const editOrder = () => {
   router.push({ name: 'edit', params: { id: id } })
 }
 
-watch(
-  selectedItems.value,
-  () => {
-    saveToSessionStorage()
-  },
-  { deep: true }
-)
-
 const checkData = async () => {
   try {
     showLoader.value = true
     await fetchOrderList()
+    await CheckoutHelper.getUserCarts()
   } catch (error) {
     console.error(error)
   }
 }
-
+const updateAmount = (amount) => {
+  if (amount >= 80) {
+    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
+    selectedItems.value[0].amount = 80
+  } else {
+  selectedItems.value[0].amount = amount
+  }
+  saveToUserCarts()
+}
+const closeCartOnClickOutside = (event) => {
+  if (
+    !event.target.closest('.dashboard-cart__button') &&
+    !event.target.closest('.dashboard-cart-popup__container') &&
+    !event.target.closest('.popup-order__overlay')
+  ) {
+    showCartPopup.value = false
+  }
+}
 onMounted(() => {
   checkData()
+  window.addEventListener('click', closeCartOnClickOutside)
+})
+onUnmounted(() => {
+  window.removeEventListener('click', closeCartOnClickOutside)
+
 })
 </script>
 
 <template>
   <div class="dashboard__container flex fd-col align-items-f-start gap[0.5] pd-sd-2 pd-top-2">
+    <div
+      :class="{ disabled: showCartPopup || showConfirmationPopup || showDeleteConfirmationPopup }"
+      class="dashboard-cart__button flex align-items-center justify-content-center pd-1"
+      @click="showCart"
+    >
+      <ph-shopping-cart :size="32" />
+      <span
+        class="dashboard-cart__button-counter flex align-items-center justify-content-center"
+        :class="{ 'long-text': userCarts.length >= 100 }"
+        >{{ userCarts.length }}</span
+      >
+    </div>
+    <div
+      class="dashboard-cart-popup__container h-full flex fd-col"
+      :class="{ active: showCartPopup }"
+    >
+      <div class="dashboard-cart-popup__header flex align-items-center justify-content-sb pd-1">
+        <h6 class="fw-600">Cart</h6>
+        <ph-x :size="24" weight="bold" @click="showCart()" class="cursor-pointer" />
+      </div>
+      <div class="dashboard-cart-popup__content h-full flex fd-col justify-content-sb">
+        <div class="dashboard-cart-popup__content-items-container pd-1 flex fd-col gap[0.5]"><div
+          v-for="(item, index) in userCarts" :key="index" @click="handleItemClick(item)"
+          class="dashboard-cart-popup__content-items flex align-items-center pd[0.5] gap[0.5]"
+        >
+          <img
+            :src="
+              item.image
+                ? getImageURL(item.image)
+                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+            "
+          />
+          <div class="dashboard-cart-popup__items-desc flex fd-col align-items-f-start justify-content-sb pd[0.5]">
+            <p class="to-ellipsis">{{ item.name }}</p>
+            <p class="to-ellipsis">{{ item.category.name }}</p>
+            <p class="to-ellipsis">
+              Rp. {{ `${formatCurrency(item.price)} x ${item.amount} Tiket` }}
+            </p>
+          </div>
+        </div></div>
+        <div class="dashboard-cart-popup__checkout w-full flex justify-content-center pd-block-1">
+          <button type="submit" class="dashboard-cart-popup__checkout-btn" @click="router.push({ name:'checkout' })">
+            Go To Checkout
+            <ph-arrow-circle-right :size="20" weight="fill" />
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
         <button class="dashboard-add__button" @click="navigateToAdd">
@@ -153,7 +222,7 @@ onMounted(() => {
                 <button @click.stop="decreaseAmount(selectedItems[0])">
                   <ph-minus-circle :size="24" />
                 </button>
-                <h4>{{ selectedItems[0].amount }}</h4>
+                <input type="number" class="popup-order__amount-input fs-h5" v-model="selectedItems[0].amount" @input="updateAmount(selectedItems[0].amount)"></input>
                 <button @click.stop="increaseAmount(selectedItems[0])">
                   <ph-plus-circle :size="24" />
                 </button>
@@ -220,16 +289,109 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.dashboard-cart__button {
+  position: fixed;
+  bottom: 6vh;
+  right: 4vw;
+  border-radius: 100%;
+  background: var(--color-primary);
+  box-shadow: -2px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  opacity: 1;
+  transition: opacity ease-in-out 0.6s;
+  cursor: pointer;
+}
+.dashboard-cart__button.disabled {
+  opacity: 0;
+}
+.dashboard-cart__button-counter {
+  position: absolute;
+  border-radius: 100%;
+  width: 16px;
+  height: 16px;
+  padding: 2px;
+  top: 5%;
+  right: 30%;
+  transform: translate(50%, 50%);
+  background: white;
+  font-size: 0.75em;
+}
+.dashboard-cart__button-counter.long-text {
+  font-size: 0.5em;
+}
+.dashboard-cart-popup__container {
+  position: fixed;
+  top: 0;
+  right: 0;
+  transform: translateX(120%);
+  min-width: 24vw;
+  width: 32vw;
+  background: white;
+  box-shadow: -2px 0 4px 2px rgba(0, 0, 0, 0.15);
+  transition: transform ease-in-out 0.6s;
+}
+.dashboard-cart-popup__container.active {
+  transform: translateX(0%);
+}
+.dashboard-cart-popup__header {
+  border-bottom: 2px solid black;
+}
+.dashboard-cart-popup__content {
+  overflow: auto;
+}
+.dashboard-cart-popup__content::-webkit-scrollbar {
+  width: 0px;
+}
+.dashboard-cart-popup__content-items {
+  cursor: pointer;
+  border-radius: 0.25rem;
+  box-shadow: -2px 2px 4px 2px rgba(0, 0, 0, 0.15);
+}
+.dashboard-cart-popup__content-items img {
+  max-height: 80px;
+  width: 120px;
+  border-radius: 0.25rem;
+  object-fit: cover;
+}
+.dashboard-cart-popup__items-desc {
+  width: 65%;
+}
+.dashboard-cart-popup__checkout {
+  position: sticky;
+  bottom: 0;
+  right: 0;
+  backdrop-filter: blur(4px);
+}
+.dashboard-cart-popup__checkout-btn {
+  width: 80%;
+  background-color: #ffdd8f;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  color: black;
+  border-radius: 6px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  font-weight: 700;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-cart-popup__checkout-btn:hover {
+  background-color: #e6be58;
+}
+
+.dashboard-cart-popup__checkout-btn i {
+  font-size: 20px;
+}
 .dashboard-header__container {
   gap: 2.5rem;
   white-space: nowrap;
   width: 100%;
 }
-
 .dashboard-add__container {
   transform: translateY(-25%);
 }
-
 .dashboard-add__button {
   background-color: #eeeded;
   flex-direction: column;
@@ -294,7 +456,6 @@ onMounted(() => {
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
 }
-
 .popup-order__overlay.active {
   opacity: 1;
   pointer-events: auto;
@@ -352,7 +513,23 @@ onMounted(() => {
   object-fit: cover;
   border-radius: 0.5rem;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
 
+input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.popup-order__amount-input {
+  outline: none;
+  border: 2px solid black;
+  border-radius: 4px;
+  text-align: center;
+  max-width: 60px;
+}
 .popup-order__remove-button {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;

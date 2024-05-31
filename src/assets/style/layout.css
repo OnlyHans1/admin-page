@@ -747,6 +747,13 @@
   background-color: rgba(0, 0, 0, 0.5);
 }
 
+.appearance-none {
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-progress-appearance: none;
+}
+
 .z-index-100{
   z-index: 100;
 }

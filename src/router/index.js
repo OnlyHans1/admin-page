@@ -9,8 +9,10 @@ import GenerateTicketsView from '@/views/GenerateTicketsView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import DatabaseLogsView from '@/views/DatabaseLogsView.vue'
 import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 
+const { giveAccessRoute, grantAccessRoute } = GlobalHelper
 const { isAuthenticated } = LoginHelper
 
 const router = createRouter({
@@ -49,6 +51,7 @@ const router = createRouter({
       path: '/checkout/generate-tickets/:id',
       name: 'generateTickets',
       component: GenerateTicketsView,
+      meta: { restrictAccess: true }
     },
     {
       path: '/invoice',
@@ -94,7 +97,10 @@ router.beforeEach(async (to, from, next) => {
       next('/login')
     } else if (to.path === '/login' && authenticated) {
       next(from)
+    } else if (to.meta.restrictAccess && !giveAccessRoute.value) {
+      next(from)
     } else {
+      if (to.meta.restrictAccess) grantAccessRoute(false)
       next()
     }
   } catch (error) {

@@ -5,7 +5,7 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 
 const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader, getImageURL } = GlobalHelper
-const { ticketsData, sendEmailToUser } = CheckoutHelper
+const { ticketsData, sendEmailToUser, printTickets } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
@@ -54,7 +54,7 @@ onMounted(() => {
         <div
           v-for="(ticket, index) in ticketsData.detailTrans"
           :key="index"
-          class="generate-tickets__detail-transaction flex justify-content-sb sm-bottom-1"
+          class="generate-tickets__detail-transaction flex justify-content-sb"
         >
           <div class="flex gap-1">
             <img
@@ -82,7 +82,7 @@ onMounted(() => {
     <div
       class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
     >
-      <button class="generate-tickets__btn-print">
+      <button class="generate-tickets__btn-print" @click="printTickets">
         Print Tickets
         <ph-printer :size="32" />
       </button>
@@ -92,7 +92,7 @@ onMounted(() => {
       </button>
     </div>
     <button
-      class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-4"
+      class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-2"
       @click="toHomepage"
     >
       <ph-caret-left :size="16" weight="bold" />

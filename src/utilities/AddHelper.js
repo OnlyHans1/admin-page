@@ -1,10 +1,8 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
-import DashboardHelper from '@/utilities/DashboardHelper'
 import SettingsHelper from '@/utilities/SettingsHelper'
 
-const { DB_BASE_URL, ORDERSUBTYPE_BASE_URL, assignAlert, showLoader } = GlobalHelper
-const { getImageURL } = DashboardHelper
+const { DB_BASE_URL, ORDERSUBTYPE_BASE_URL, assignAlert, showLoader, getImageURL } = GlobalHelper
 const { targetedData } = SettingsHelper
 
 const title = ref('')
@@ -15,7 +13,7 @@ const orderType = ref('')
 const orderTypeId = ref(null)
 const orderSubType = ref('')
 const orderSubTypeId = ref(null)
-const price = ref('')
+const price = ref(0)
 const imageName = ref('')
 const selectedImageURL = ref('')
 const selectedImage = ref(null)

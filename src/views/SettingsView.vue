@@ -391,7 +391,7 @@ onMounted(() => {
           <h5 class="fw-600">Guide</h5>
           <ph-x :size="20" weight="bold" @click="guideSelectPage" />
         </div>
-        <div class="order-details__content-container">
+        <div class="order-details__content-container flex fd-col gap-1 pd-1">
           <button
             class="addGuide flex justify-content-center align-items-center gap[0.5]"
             @click="showGuideModal('create')"
@@ -400,7 +400,7 @@ onMounted(() => {
             <ph-plus :size="16" weight="bold"></ph-plus>
           </button>
           <div
-            class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+            class="order-detail__guide-select-content_modal-content relative"
             :class="{ grid: guideSelectors }"
           >
             <div
@@ -430,7 +430,7 @@ onMounted(() => {
         class="order-details__select-content_modal-overlay overlay w-full h-full flex align-items-center justify-content-center"
         v-if="isGuideModalVisible"
       >
-        <div class="order-details__guide-select-content_modal w-full" @click.stop>
+        <div class="order-details__guide-select-content_modal" @click.stop>
           <div class="order-details__guide-select-content_modal-header">
             <h5 class="fw-600" v-if="isAddingGuideModalVisible">Tambah Guide</h5>
             <h5 class="fw-600" v-if="isEditGuideModalVisible">Edit Guide</h5>
@@ -445,9 +445,7 @@ onMounted(() => {
             <h6 weight="light">Kembali</h6>
           </div>
           <div class="flex gap-2 w-full">
-            <div
-              class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1"
-            >
+            <div class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1 gap-1">
               <div class="input-image-preview">
                 <div class="image-preview flex fd-col gap-1">
                   <h6 class="image-preview-label">Preview</h6>
@@ -494,9 +492,9 @@ onMounted(() => {
                   v-model="formattedDate"
                   @input="updateGuideBirthdate"
                 />
-                <input type="text" name="email" placeholder="Masukan Email" v-model="guideEmail" />
+                <input type="text" name="email" placeholder="Email" v-model="guideEmail" required/>
               </div>
-              <textarea rows="1" v-model="guideDesc"></textarea>
+              <textarea rows="1" v-model="guideDesc" placeholder="Deskripsi"></textarea>
               <button
                 class="sv-guide sm-1"
                 @click="callAction('create')"
@@ -567,7 +565,7 @@ input:focus {
 
 .settings__menu {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 170px));
   grid-gap: 1rem;
 }
 
@@ -595,8 +593,6 @@ input:focus {
   background: #e6be58;
   width: 10rem;
   height: 2rem;
-  margin-top: 1rem;
-  margin-left: 2.1rem;
   color: black;
   border-radius: 10px;
 }
@@ -625,7 +621,7 @@ input:focus {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  min-width: 514px;
+  width: 80vw;
   min-height: 15rem;
   overflow: hidden;
   z-index: 100;
@@ -646,6 +642,8 @@ input:focus {
 .order-details__content-container {
   height: 20rem;
   overflow-y: auto;
+  scrollbar-width: thin; /* For Firefox */
+  scrollbar-color: #ccc transparent;
 }
 
 .order-detail__guide-select-content_modal-content.grid {
@@ -691,7 +689,7 @@ input:focus {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  max-height: 80vh;
+  max-height: 100vh;
   width: 90vw;
   overflow: hidden;
   position: absolute;
@@ -703,10 +701,10 @@ input:focus {
 
 .settings__orders-content {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(450px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
   grid-gap: 1rem;
   overflow: auto;
-  height: 40rem;
+  height: 80vh;
   scrollbar-width: thin; /* For Firefox */
   scrollbar-color: #ccc transparent;
 }
@@ -715,8 +713,8 @@ input:focus {
   width: 80%;
 }
 
-.order-details__content-container::-webkit-scrollbar .settings__orders-content::-webkit-scrollbar {
-  width: 20px; /* Width of the scrollbar */
+.order-details__content-container::-webkit-scrollbar,
+.settings__orders-content::-webkit-scrollbar {
   border-radius: 10px; /* Border radius to match card */
 }
 

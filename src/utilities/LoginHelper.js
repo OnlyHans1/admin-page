@@ -8,6 +8,7 @@ const loggedIn = ref(false)
 const username = ref('')
 const password = ref('')
 const userData = ref([])
+const userCarts = ref([])
 
 const isAuthenticated = async () => {
   const token = getCookie('token')
@@ -47,6 +48,7 @@ const authLogin = async (token) => {
 
     const res = await response.json()
     userData.value = res.data
+    userCarts.value = Object.values(res.data.carts)
     showLoader.value = false
     return true
   } catch (error) {
@@ -115,6 +117,7 @@ export default {
   userLogin,
   userLogout,
   userData,
+  userCarts,
   getCookie,
   setCookie,
   removeCookie
