@@ -118,7 +118,7 @@ onUnmounted(() => {
         </div></div>
         <div class="dashboard-cart-popup__checkout w-full flex justify-content-center pd-block-1">
           <button type="submit" class="dashboard-cart-popup__checkout-btn flex align-items-center justify-content-sb fw-700 cursor-pointer" @click="router.push({ name:'checkout' })">
-            Go To Checkout
+            Pergi ke Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
         </div>

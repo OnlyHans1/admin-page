@@ -53,7 +53,7 @@ onMounted(() => {
     </div>
     <div class="generate-tickets__content pd-sd-2 pd-block-1">
       <div class="preview flex fd-col gap-1 pd-1">
-        <h5>Preview</h5>
+        <h5>Pratinjau</h5>
         <div
           v-for="(ticket, index) in ticketsData.detailTrans"
           :key="index"
@@ -94,11 +94,11 @@ onMounted(() => {
       </button>
       <button class="generate-tickets__btn-email">
         <div v-if="!emailCooldown" @click="sendEmailToUser()" class="flex align-items-center gap[0.5]">
-          <p class="fw-700">Send to Email</p>
+          <p class="fw-700">Kirim ke Email</p>
           <ph-paper-plane-tilt :size="32" />
         </div>
         <div v-else>
-          <p class="fw-700">Sending Email<span class="send-email__text-cooldown"></span></p>
+          <p class="fw-700">Mengirim Email<span class="send-email__text-cooldown"></span></p>
         </div>
       </button>
     </div>
@@ -107,7 +107,7 @@ onMounted(() => {
       @click="toHomepage"
     >
       <ph-caret-left :size="16" weight="bold" />
-      <p>Return to Homepage</p>
+      <p>Kembali ke Dashboard</p>
     </button>
   </div>
 </template>

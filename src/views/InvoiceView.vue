@@ -43,7 +43,7 @@ onMounted(() => {
         type="text"
         class="invoice-search__input-field"
         v-model="searchQuery"
-        placeholder="Search..."
+        placeholder="Cari..."
         id="search"
         autocomplete="search"
       />
@@ -55,7 +55,7 @@ onMounted(() => {
       <table>
         <thead>
           <tr class="invoice-table__row-header">
-            <th class="invoice-table__header">NO</th>
+            <th class="invoice-table__header">No.</th>
             <th class="invoice-table__header">Nama</th>
             <th class="invoice-table__header">Pembelian</th>
             <th class="invoice-table__header">Tanggal</th>
@@ -80,7 +80,7 @@ onMounted(() => {
             <td class="invoice-table__data">
               {{ item.customer ? item.customer.email : item.user.email }} <br />
               <button class="btn-primary invoice-table__button" @click="showDetail(item)">
-                detail
+                Detail
               </button>
             </td>
           </tr>

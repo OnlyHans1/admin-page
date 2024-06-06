@@ -92,7 +92,7 @@ onMounted(() => {
 <template>
   <div class="settings-popup-extension__container flex fd-col">
     <div class="settings-popup-extension__header flex align-items-center justify-content-sb pd-1">
-      <h6 class="fw-600">{{ modeExtension === 'update' ? 'Edit' : 'Add' }} {{ popupTitle }}</h6>
+      <h6 class="fw-600">{{ modeExtension === 'update' ? 'Edit' : 'Tambah' }} {{ popupTitle }}</h6>
       <ph-x :size="20" weight="bold" class="cursor-pointer" @click="closeExtension()" />
     </div>
     <div class="settings-popup-extension__content pd-1 flex fd-col gap[0.5]">

@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
-import DashboardHelper from './DashboardHelper'
 import LoginHelper from './LoginHelper'
 
 const {
@@ -105,9 +104,9 @@ const getUserCarts = () => {
 }
 
 function addTicket(index) {
-  if (userCarts.value[index].amount >= 80) {
-    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
-    userCarts.value[index].amount = 80
+  if (userCarts.value[index].amount >= maxTickets.value) {
+    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`)
+    userCarts.value[index].amount = maxTickets.value
   } else {
     userCarts.value[index].amount++
   }
@@ -130,15 +129,19 @@ const cashbackValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
+const maxTickets = ref(80)
 const fetchFeeSettings = () => {
   const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
   if (savedBiayaLayanan) {
     biayaLayanan.value = parseInt(savedBiayaLayanan)
   }
-
   const savedBiayaJasa = sessionStorage.getItem('biayaJasa')
   if (savedBiayaJasa) {
     biayaJasa.value = parseInt(savedBiayaJasa)
+  }
+  const savedMaxTickets = sessionStorage.getItem('maxTickets')
+  if (savedMaxTickets) {
+    maxTickets.value = parseInt(savedMaxTickets)
   }
 }
 
@@ -504,6 +507,7 @@ export default {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  maxTickets,
   fetchFeeSettings,
   formatCurrency,
   totalHarga,

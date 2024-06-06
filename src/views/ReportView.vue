@@ -226,7 +226,7 @@ onMounted(() => {
       >
         <span
           class="icons"
-          name="Take a Screenshot"
+          name="Screenshot Grafik"
           @click="takeScreenshot('report__screenshot-target')"
         >
           <ph-camera :size="32" weight="bold" />
@@ -234,7 +234,7 @@ onMounted(() => {
         <span class="icons" name="Print Data" @click="printData"
           ><ph-printer :size="32" weight="bold"
         /></span>
-        <span class="icons" name="Report to Excel" @click="generateExcel">
+        <span class="icons" name="Ekspor ke Excel" @click="generateExcel">
           <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
         </span>
       </div>

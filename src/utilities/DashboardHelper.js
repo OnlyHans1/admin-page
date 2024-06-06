@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 import SettingsHelper from './SettingsHelper'
 import LoginHelper from './LoginHelper'
+import CheckoutHelper from './CheckoutHelper'
 
 const { DB_BASE_URL, USER_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
 const { targetedData, fetchTargetedOrder } = SettingsHelper
@@ -46,9 +47,9 @@ const closePopup = () => {
 }
 
 const increaseAmount = (item) => {
-  if (item.amount >= 80) {
-    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
-    item.amount = 80
+  if (item.amount >= CheckoutHelper.maxTickets.value) {
+    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${CheckoutHelper.maxTickets.value} tiket!`)
+    item.amount = CheckoutHelper.maxTickets.value
   } else {
     item.amount++
   }

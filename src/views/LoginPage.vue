@@ -55,7 +55,15 @@ watch(loggedIn, (newValue) => {
       <div class="login-container__data w-full">
         <div class="txtLogin">LOGIN</div>
         <div class="login-textfield">
-          <input type="text" placeholder="Username" class="input-field" v-model="username" id="username"/>
+          <input
+            type="text"
+            placeholder="Username"
+            class="input-field"
+            v-model="username"
+            id="username"
+            required
+            autocomplete="username"
+          />
           <div class="password-input-container">
             <input
               :type="passwordFieldType"
@@ -63,6 +71,8 @@ watch(loggedIn, (newValue) => {
               class="input-field"
               v-model="password"
               id="password"
+              required
+              autocomplete="password"
             />
 
             <button @click="toggleShowPassword" class="password-toggle-btn">

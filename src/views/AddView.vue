@@ -243,7 +243,7 @@ onUnmounted(() => {
     </section>
 
     <section class="add__preview w-full sticky">
-      <h5>Preview</h5>
+      <h5>Pratinjau</h5>
       <div class="add__preview-card_container">
         <div class="flex gap[0.5]">
           <h6 class="add__preview-category">{{ category ? category : 'Kategori' }}</h6>

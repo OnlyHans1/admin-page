@@ -13,6 +13,7 @@ import TriSettingsPopup from '@/components/TriSettingsPopup.vue'
 const {
   biayaJasa,
   biayaLayanan,
+  maxTickets,
   fetchFeeSettings,
   guideSelectPage,
   guideData,
@@ -152,7 +153,6 @@ const hideSettingsPopup = () => {
   isPopupVisible.value = false
 }
 
-// Modal Fees
 const handleFileSelected = (file) => {
   const imageURL = URL.createObjectURL(file)
   guideSelectedImage.value = file
@@ -162,26 +162,32 @@ const handleFileSelected = (file) => {
 const saveSettings = () => {
   biayaLayanan.value = Number(newBiayaLayanan.value)
   biayaJasa.value = Number(newBiayaJasa.value)
+  maxTickets.value = Number(newMaxTickets.value)
   sessionStorage.setItem('biayaLayanan', biayaLayanan.value)
   sessionStorage.setItem('biayaJasa', biayaJasa.value)
+  sessionStorage.setItem('maxTickets', maxTickets.value)
 
-  assignAlert(true, 'Sukses', 'success', 'Biaya berhasil diubah!')
+  assignAlert(true, 'Sukses', 'success', 'Biaya dan Maks. Tiket berhasil diubah!')
   feePage.value = false
 }
 
 const resetSettings = () => {
   biayaLayanan.value = 2500
   biayaJasa.value = 1000
+  maxTickets.value = 80
   newBiayaLayanan.value = biayaLayanan.value
   newBiayaJasa.value = biayaJasa.value
+  newMaxTickets.value = maxTickets.value
   sessionStorage.setItem('biayaLayanan', biayaLayanan.value)
   sessionStorage.setItem('biayaJasa', biayaJasa.value)
+  sessionStorage.setItem('maxTickets', maxTickets.value)
 
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil di-reset!')
 }
 
 const newBiayaLayanan = ref(biayaLayanan.value)
 const newBiayaJasa = ref(biayaJasa.value)
+const newMaxTickets = ref(maxTickets.value)
 
 const checkSettingsData = async () => {
   try {
@@ -254,34 +260,6 @@ onMounted(() => {
 
     <h4 class="fw-600 sm-bottom-1">Pengaturan</h4>
 
-    <section
-      class="settings_modal-overla overlay w-full h-full"
-      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
-    >
-      <div class="settings_modal-container fee">
-        <div class="settings__orders-content_modal-header">
-          <h5 class="fw-600">Fees</h5>
-          <ph-x :size="20" weight="bold" @click="toggleFeePage" />
-        </div>
-        <div class="settings__fees-content_modal pd-1 flex fd-col gap-1">
-          <div class="settings__fees-content_modal_input-group flex fd-col gap-1">
-            <div class="fee">
-              <p>Biaya Layanan</p>
-              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
-            </div>
-            <div class="service">
-              <p>Biaya Jasa Aplikasi</p>
-              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
-            </div>
-          </div>
-          <div class="settings__fees-content_modal_cta-container flex align-content-center gap-1">
-          <button class="save" @click="saveSettings">Simpan</button>
-          <button class="reset" @click="resetSettings">Reset</button>
-        </div>
-        </div>
-      </div>
-    </section>
-
     <section class="admin">
       <div class="settings__menu">
         <button
@@ -290,15 +268,15 @@ onMounted(() => {
           v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
         >
           <ph-coins :size="48" color="var(--color-primary)" />
-          <span>Fees</span>
+          <span>Pembelian</span>
         </button>
         <button class="settings__menu-items" @click="guideSelectPage">
           <ph-binoculars :size="48" color="var(--color-primary)" weight="fill" />
-          <span>Guide</span>
+          <span>Pemandu</span>
         </button>
         <button class="settings__menu-items" @click="orderSelectPage">
           <ph-ticket :size="48" color="var(--color-primary)" />
-          <span>Orders</span>
+          <span>Pesanan</span>
         </button>
 
         <button
@@ -307,7 +285,7 @@ onMounted(() => {
           v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
         >
           <ph-squares-four :size="48" color="var(--color-primary)" />
-          <span>Category</span>
+          <span>Kategori</span>
         </button>
         <button
           class="settings__menu-items"
@@ -315,7 +293,7 @@ onMounted(() => {
           v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
         >
           <ph-folder :size="48" color="var(--color-primary)" />
-          <span>Type</span>
+          <span>Tipe</span>
         </button>
         <button
           class="settings__menu-items"
@@ -323,7 +301,7 @@ onMounted(() => {
           v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
         >
           <ph-folders :size="48" color="var(--color-primary)" />
-          <span>Sub Type</span>
+          <span>Sub Tipe</span>
         </button>
         <button
           class="settings__menu-items"
@@ -331,55 +309,38 @@ onMounted(() => {
           @click="router.push({ name: 'databaseLogs' })"
         >
           <ph-database :size="48" color="var(--color-primary)" />
-          <span>Database Logs</span>
+          <span>Catatan Basis Data</span>
         </button>
       </div>
     </section>
 
     <section
-      class="settings_modal-overlay overlay flex align-items-center justify-content-center w-full h-full"
-      v-if="orderSelect"
+      class="settings_modal-overla overlay w-full h-full"
+      v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN' && feePage"
     >
-      <div class="settings_modal-container">
-        <div class="settings__fees-content_modal-header">
-          <h5 class="fw-600">Orders</h5>
-          <ph-x :size="20" weight="bold" @click="orderSelectPage" />
+      <div class="settings_modal-container fee">
+        <div class="settings__orders-content_modal-header">
+          <h5 class="fw-600">Pembelian</h5>
+          <ph-x class="cursor-pointer" :size="20" weight="bold" @click="toggleFeePage" />
         </div>
-
-        <div class="settings__orders-content pd-1">
-          <div
-            class="settings__orders-content_item flex gap-1"
-            v-for="(item, index) in dataDashboard"
-            :key="index"
-          >
-            <img
-              :src="
-                item.image
-                  ? getImageURL(item.image)
-                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-              "
-            />
-            <div class="settings__orders-group-content flex fd-col justify-content-sb">
-              <div class="settings__orders-content_item-head">
-                <h6 class="to-ellipsis">{{ item.name }}</h6>
-                <p>Rp{{ formatCurrency(item.price) }}</p>
-                <p>{{ item.category.name }}</p>
-              </div>
-              <div class="settings__orders-content_item-cta flex justify-content-end gap-1">
-                <button
-                  class="settings-order__edit-button flex align-items-center justify-content-center gap[0.5]"
-                  @click="editOrder(item.id)"
-                >
-                  <ph-pencil-simple :size="16" weight="bold" />
-                </button>
-                <button
-                  class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
-                  @click="showDeleteConfirmation(item.id)"
-                >
-                  <ph-trash :size="16" weight="bold" />
-                </button>
-              </div>
+        <div class="settings__fees-content_modal pd-1 flex fd-col gap-1">
+          <div class="settings__fees-content_modal_input-group flex fd-col gap-1">
+            <div class="service">
+              <p>Biaya Layanan</p>
+              <input class="input_biaya" name="layanan" v-model="newBiayaLayanan" />
             </div>
+            <div class="service">
+              <p>Biaya Jasa Aplikasi</p>
+              <input class="input_biaya" name="jasa" v-model="newBiayaJasa" />
+            </div>
+            <div class="service">
+              <p>Maksimal Pembelian Tiket</p>
+              <input class="input_biaya" name="maks. tiket" v-model="newMaxTickets" />
+            </div>
+          </div>
+          <div class="settings__fees-content_modal_cta-container flex align-content-center gap-1">
+            <button class="save" @click="saveSettings">Simpan</button>
+            <button class="reset" @click="resetSettings">Reset</button>
           </div>
         </div>
       </div>
@@ -391,15 +352,15 @@ onMounted(() => {
     >
       <div class="order-details__guide-select-content_modal">
         <div class="order-details__guide-select-content_modal-header">
-          <h5 class="fw-600">Guide</h5>
-          <ph-x :size="20" weight="bold" @click="guideSelectPage" />
+          <h5 class="fw-600">Pemandu</h5>
+          <ph-x class="cursor-pointer" :size="20" weight="bold" @click="guideSelectPage" />
         </div>
         <div class="order-details__content-container flex fd-col gap-1 pd-1">
           <button
-            class="addGuide flex justify-content-center align-items-center gap[0.5]"
+            class="addGuide flex justify-content-center align-items-center gap[0.5] pd-1"
             @click="showGuideModal('create')"
           >
-            <p>Tambah Guide</p>
+            <p>Tambah Pemandu</p>
             <ph-plus :size="16" weight="bold"></ph-plus>
           </button>
           <div
@@ -448,10 +409,12 @@ onMounted(() => {
             <h6 weight="light">Kembali</h6>
           </div>
           <div class="flex gap-2 w-full">
-            <div class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1 gap-1">
+            <div
+              class="guide-select_ticket flex fd-col justify-content-sb align-items-center pd-1 gap-1"
+            >
               <div class="input-image-preview">
                 <div class="image-preview flex fd-col gap-1">
-                  <h6 class="image-preview-label">Preview</h6>
+                  <h6 class="image-preview-label">Pratinjau</h6>
                   <img
                     :src="
                       guideSelectedImageURL
@@ -495,7 +458,7 @@ onMounted(() => {
                   v-model="formattedDate"
                   @input="updateGuideBirthdate"
                 />
-                <input type="text" name="email" placeholder="Email" v-model="guideEmail" required/>
+                <input type="text" name="email" placeholder="Email" v-model="guideEmail" required />
               </div>
               <textarea rows="1" v-model="guideDesc" placeholder="Deskripsi"></textarea>
               <button
@@ -508,6 +471,55 @@ onMounted(() => {
               <div class="flex gap-1" v-if="isEditGuideModalVisible">
                 <button class="edit-guide" @click="callAction('update')">Edit</button>
                 <button class="delete-guide" @click="callAction('delete')">Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="settings_modal-overlay overlay flex align-items-center justify-content-center w-full h-full"
+      v-if="orderSelect"
+    >
+      <div class="settings_modal-container">
+        <div class="settings__fees-content_modal-header">
+          <h5 class="fw-600">Pesanan</h5>
+          <ph-x class="cursor-pointer" :size="20" weight="bold" @click="orderSelectPage" />
+        </div>
+
+        <div class="settings__orders-content align-items-center pd-1">
+          <div
+            class="settings__orders-content_item flex align-items-center gap-1 pd-1"
+            v-for="(item, index) in dataDashboard"
+            :key="index"
+          >
+            <img
+              :src="
+                item.image
+                  ? getImageURL(item.image)
+                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+              "
+            />
+            <div class="settings__orders-group-content h-full flex fd-col justify-content-sb">
+              <div class="settings__orders-content_item-head">
+                <h6 class="to-ellipsis">{{ item.name }}</h6>
+                <p>Rp{{ formatCurrency(item.price) }}</p>
+                <p>{{ item.category.name }}</p>
+              </div>
+              <div class="settings__orders-content_item-cta flex justify-content-end gap-1">
+                <button
+                  class="settings-order__edit-button flex align-items-center justify-content-center gap[0.5]"
+                  @click="editOrder(item.id)"
+                >
+                  <ph-pencil-simple :size="16" weight="bold" />
+                </button>
+                <button
+                  class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
+                  @click="showDeleteConfirmation(item.id)"
+                >
+                  <ph-trash :size="16" weight="bold" />
+                </button>
               </div>
             </div>
           </div>
@@ -592,7 +604,7 @@ input:focus {
 
 .addGuide {
   background: #e6be58;
-  width: 10rem;
+  max-width: 12rem;
   height: 2rem;
   color: black;
   border-radius: 10px;
@@ -635,7 +647,6 @@ input:focus {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  cursor: pointer;
   padding: 1rem;
   border-bottom: 1px solid black;
 }
@@ -700,13 +711,12 @@ input:focus {
   z-index: 900;
 }
 .settings_modal-container.fee {
-
   width: 40vw;
-
 }
 .settings__orders-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  grid-template-rows: repeat(auto-fit, minmax(160px, 170px));
   grid-gap: 1rem;
   overflow: auto;
   height: 80vh;
@@ -743,12 +753,12 @@ input:focus {
 }
 
 .settings__orders-content_item {
-  padding: 1rem;
+  height: 100%;
   box-shadow: 0 2px 10px rgb(0, 0, 0, 0.2);
   border-radius: 0.5rem;
 }
 .settings__orders-content_item img {
-  max-height: 100px;
+  height: 100%;
   width: 200px;
   object-fit: cover;
 }

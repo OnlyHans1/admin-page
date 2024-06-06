@@ -239,7 +239,7 @@ onMounted(() => {
 
               <div class="order-details__content flex gap[0.5] sm-top-1">
                 <ph-binoculars :size="24" weight="bold" color="#e6be58" />
-                <p>Pilih Guide</p>
+                <p>Pilih Pemandu</p>
               </div>
               <div class="order-details__guide-select" @click="guideSelectPage">
                 <div
@@ -252,15 +252,44 @@ onMounted(() => {
                 </div>
                 <div v-else class="order-details__guide-select-content else">
                   <ph-warning-octagon :size="16" weight="fill" color="red" />
-                  <p>Anda belum memilih guide</p>
+                  <p>Anda belum memilih pemandu</p>
                 </div>
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
+              <section class="order-details__select-content_modal-overlay" v-if="paymentSelect" @click="paymentSelect = false">
+                <div class="order-details__payment-select-content_modal">
+                  <div
+                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
+                  >
+                    <h5 class="fw-600">Pilih Metode Pembayaran</h5>
+                    <ph-x class="cursor-pointer":size="20" weight="bold" @click="showPaymentSelect" />
+                  </div>
+                  <div
+                    class="order-details__payment-select-content_modal-content flex fd-col gap[0.5] pd-bottom-2 pd-sd-1 pd-top-1"
+                  >
+                    <button @click="selectPayment('Cash')">
+                      <span
+                        ><ph-money :size="16" weight="bold" />
+                        <h6>Cash</h6>
+                      </span>
+                      <ph-caret-right :size="16" weight="bold" />
+                    </button>
+                    <button @click="selectPayment('Kartu Kredit/Debit')">
+                      <span
+                        ><ph-credit-card :size="16" weight="bold" />
+                        <h6>Kartu Kredit/Debit</h6>
+                      </span>
+                      <ph-caret-right :size="16" weight="bold" />
+                    </button>
+                  </div>
+                </div>
+              </section>
+
               <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
                 <div class="order-details__guide-select-content_modal sm-4">
                   <div class="order-details__guide-select-content_modal-header flex align-items-center justify-content-sb pd-1">
-                    <h5 class="fw-600">Guide</h5>
+                    <h5 class="fw-600">Pemandu</h5>
                     <ph-x class="cursor-pointer" :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
                   <div
@@ -388,35 +417,6 @@ onMounted(() => {
                         </div>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </section>
-
-              <section class="order-details__select-content_modal-overlay" v-if="paymentSelect">
-                <div class="order-details__payment-select-content_modal">
-                  <div
-                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
-                  >
-                    <h5 class="fw-600">Pilih Metode Pembayaran</h5>
-                    <ph-x class="cursor-pointer":size="20" weight="bold" @click="showPaymentSelect" />
-                  </div>
-                  <div
-                    class="order-details__payment-select-content_modal-content flex fd-col gap[0.5] pd-bottom-2 pd-sd-1 pd-top-1"
-                  >
-                    <button @click="selectPayment('Cash')">
-                      <span
-                        ><ph-money :size="16" weight="bold" />
-                        <h6>Cash</h6>
-                      </span>
-                      <ph-caret-right :size="16" weight="bold" />
-                    </button>
-                    <button @click="selectPayment('Kartu Kredit/Debit')">
-                      <span
-                        ><ph-credit-card :size="16" weight="bold" />
-                        <h6>Kartu Kredit/Debit</h6>
-                      </span>
-                      <ph-caret-right :size="16" weight="bold" />
-                    </button>
                   </div>
                 </div>
               </section>
