@@ -7,6 +7,11 @@ import ReportHelper from '@/utilities/ReportHelper'
 
 const { orderInfoCardData, fetchOrderInfoCardData } = ReportHelper
 
+const getSlidesView = () => {
+  const length = orderInfoCardData.value.length
+  if (length > 3) return 3
+  else return length
+}
 onMounted(() => {
   fetchOrderInfoCardData()
 })
@@ -15,7 +20,7 @@ onMounted(() => {
 <template>
   <Swiper
     :modules="[Virtual, Pagination, Navigation]"
-    :slides-per-view="3"
+    :slides-per-view="getSlidesView()"
     :space-between="10"
     pagination
     navigation

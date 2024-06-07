@@ -97,8 +97,8 @@ onUnmounted(() => {
         <ph-x :size="24" weight="bold" @click="showCart()" class="cursor-pointer" />
       </div>
       <div class="dashboard-cart-popup__content h-full flex fd-col justify-content-sb">
-        <div class="dashboard-cart-popup__content-items-container pd-1 flex fd-col gap[0.5]"><div
-          v-for="(item, index) in userCarts" :key="index" @click="handleItemClick(item)"
+        <div class="dashboard-cart-popup__content-items-container pd-1 flex fd-col gap[0.5]">
+          <div v-for="(item, index) in userCarts" :key="index" @click="handleItemClick(item)"
           class="dashboard-cart-popup__content-items flex align-items-center pd[0.5] gap[0.5]"
         >
           <img
@@ -117,8 +117,8 @@ onUnmounted(() => {
           </div>
         </div></div>
         <div class="dashboard-cart-popup__checkout w-full flex justify-content-center pd-block-1">
-          <button type="submit" class="dashboard-cart-popup__checkout-btn" @click="router.push({ name:'checkout' })">
-            Go To Checkout
+          <button type="submit" class="dashboard-cart-popup__checkout-btn flex align-items-center justify-content-sb fw-700 cursor-pointer" @click="router.push({ name:'checkout' })">
+            Pergi ke Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
         </div>
@@ -127,7 +127,7 @@ onUnmounted(() => {
 
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
-        <button class="dashboard-add__button" @click="navigateToAdd">
+        <button class="dashboard-add__button flex fd-col align-items-center justify-content-center" @click="navigateToAdd">
           <span class="dashboard-add__icon flex align-self-center">
             <ph-plus :size="32" weight="light" />
           </span>
@@ -137,7 +137,7 @@ onUnmounted(() => {
 
       <div class="dashboard-recent__container flex fd-col">
         <h6>Baru Ditambahkan</h6>
-        <div class="dashboard__card-container flex fd-row pd[0.5] vw-80">
+        <div class="dashboard__card-container flex fd-row pd[0.5] vw-80" :class="{expanded: dataDashboard.length > 5}">
           <div
             v-for="(item, index) in dataDashboard"
             :key="index"
@@ -167,7 +167,7 @@ onUnmounted(() => {
       :class="`dashboard-${category.toLowerCase()}__container w-full`"
     >
       <h4>{{ category }}</h4>
-      <div class="dashboard__card-container flex fd-row w-full pd-top-1 pd-sd-2">
+      <div class="dashboard__card-container flex fd-row w-full pd-top-1 pd-sd-2" :class="{expanded: items.length > 5}">
         <div
           v-for="(item, index) in items"
           :key="index"
@@ -291,7 +291,7 @@ onUnmounted(() => {
 <style scoped>
 .dashboard-cart__button {
   position: fixed;
-  bottom: 6vh;
+  bottom: 8vh;
   right: 4vw;
   border-radius: 100%;
   background: var(--color-primary);
@@ -353,7 +353,7 @@ onUnmounted(() => {
   object-fit: cover;
 }
 .dashboard-cart-popup__items-desc {
-  width: 65%;
+  max-width: 60%;
 }
 .dashboard-cart-popup__checkout {
   position: sticky;
@@ -366,15 +366,10 @@ onUnmounted(() => {
   background-color: #ffdd8f;
   border: none;
   padding: 10px 20px;
-  cursor: pointer;
   color: black;
   border-radius: 6px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   font-weight: 700;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .dashboard-cart-popup__checkout-btn:hover {
@@ -394,7 +389,6 @@ onUnmounted(() => {
 }
 .dashboard-add__button {
   background-color: #eeeded;
-  flex-direction: column;
   width: 120px;
   height: 120px;
   color: #000000;
@@ -405,37 +399,41 @@ onUnmounted(() => {
   cursor: pointer;
   transition: 0.2s;
   outline: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
-
 .dashboard-add__button:hover {
   background-color: #4f4f4f;
   border: 2px dashed #000000;
 }
-
 .dashboard-add__button:hover + ph-plus {
   background-color: #d9d9d9;
 }
-
 .dashboard__card-container {
   -ms-overflow-style: none;
-  scrollbar-width: none;
-  overflow-x: scroll;
   white-space: nowrap;
   padding: 0.5rem;
   gap: 1rem;
   flex: 1;
 }
-
+.dashboard__card-container.expanded {
+  overflow-x: scroll;
+}
+.dashboard__card-container::-webkit-scrollbar {
+  height: 4px;
+}
+.dashboard__card-container::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 2px;
+}
+.dashboard__card-container::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
 .dashboard__card {
   display: flex;
   flex-direction: column;
   width: 230px;
   cursor: pointer;
 }
-
 .dashboard__card > img {
   object-fit: cover;
   object-position: center;
@@ -445,11 +443,9 @@ onUnmounted(() => {
   overflow: hidden;
   box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
-
 .dashboard__card:hover img {
   outline: 4px solid rgba(255, 217, 120, 1);
 }
-
 .popup-order__overlay {
   background: rgba(0, 0, 0, 0.5);
   opacity: 0;
@@ -460,7 +456,6 @@ onUnmounted(() => {
   opacity: 1;
   pointer-events: auto;
 }
-
 .popup-order__container {
   background: #ffffff;
   border-radius: 0.5rem;
@@ -469,7 +464,6 @@ onUnmounted(() => {
   max-height: 80vh;
   overflow: hidden;
 }
-
 .popup-confirmation__overlay {
   position: fixed;
   top: 0;
@@ -479,12 +473,10 @@ onUnmounted(() => {
   transition: opacity 0.2s ease-in-out;
   pointer-events: none;
 }
-
 .popup-confirmation__overlay.active {
   opacity: 1;
   pointer-events: auto;
 }
-
 .popup-confirmation__container {
   background: #d9d9d9;
   padding: 1rem;
@@ -496,17 +488,14 @@ onUnmounted(() => {
   transform: translateY(0);
   transition: transform 0.3s ease;
 }
-
 .popup-confirmation_overlay.active .popup-confirmation_container {
   transform: translateY(50%);
 }
-
 .popup-confimation__button-confirmation button {
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
   color: white;
 }
-
 .popup-order__image {
   max-height: 32vh;
   width: 24vw;
@@ -539,7 +528,6 @@ input[type="number"] {
   font-weight: bold;
   margin-right: 0.5rem;
 }
-
 .popup-order__edit-button {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
@@ -548,19 +536,15 @@ input[type="number"] {
   color: #fff;
   font-weight: bold;
 }
-
 .popup-confimation__button-confirmation button:first-child {
   background: #28a745;
 }
-
 .popup-confimation__button-confirmation button:first-child:hover {
   background: #17b53caa;
 }
-
 .popup-confimation__button-confirmation button:last-child {
   background: #dc3545;
 }
-
 .popup-confimation__button-confirmation button:last-child:hover {
   background: #cd23349b;
 }

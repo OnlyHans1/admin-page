@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed } from 'vue'
+import { ref, watchEffect } from 'vue'
 import SettingsHelper from '@/utilities/SettingsHelper'
 
 import TriSettingsExtend from '@/components/TriSettingsExtend.vue'
@@ -69,15 +69,15 @@ const deleteItem = (id) => {
 watchEffect(() => {
   switch (modePopup.value) {
     case 'type':
-      popupTitle.value = 'Type'
+      popupTitle.value = 'Tipe'
       fetchOrderType()
       break
     case 'subtype':
-      popupTitle.value = 'Sub Type'
+      popupTitle.value = 'Sub Tipe'
       fetchOrderSubType()
       break
     case 'category':
-      popupTitle.value = 'Category'
+      popupTitle.value = 'Kategori'
       fetchCategory()
       break
   }

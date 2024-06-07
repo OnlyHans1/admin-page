@@ -28,7 +28,7 @@ const formatCurrency = (amount) => {
 }
 
 /* ReportView Helper */
-const incomeRevenue = ref([])
+const incomeRevenue = ref(0)
 
 const fetchIncomeRevenue = async () => {
   try {

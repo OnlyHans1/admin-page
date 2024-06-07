@@ -1,6 +1,5 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
-import DashboardHelper from './DashboardHelper'
 import LoginHelper from './LoginHelper'
 
 const {
@@ -9,11 +8,11 @@ const {
   NATIONALITY_BASE_URL,
   TRANSACTION_BASE_URL,
   DETAILTRANS_BASE_URL,
-  EMAIL_BASE_URL,
   showLoader,
+  sendQueue,
   assignAlert
 } = GlobalHelper
-const { saveToUserCarts, updateUserCarts } = DashboardHelper
+
 const { userData, userCarts } = LoginHelper
 
 /* NationalityDropdown Helper */
@@ -105,9 +104,9 @@ const getUserCarts = () => {
 }
 
 function addTicket(index) {
-  if (userCarts.value[index].amount >= 80) {
-    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
-    userCarts.value[index].amount = 80
+  if (userCarts.value[index].amount >= maxTickets.value) {
+    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`)
+    userCarts.value[index].amount = maxTickets.value
   } else {
     userCarts.value[index].amount++
   }
@@ -130,15 +129,19 @@ const cashbackValue = ref(0)
 
 const biayaLayanan = ref(2500)
 const biayaJasa = ref(1000)
+const maxTickets = ref(80)
 const fetchFeeSettings = () => {
   const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
   if (savedBiayaLayanan) {
     biayaLayanan.value = parseInt(savedBiayaLayanan)
   }
-
   const savedBiayaJasa = sessionStorage.getItem('biayaJasa')
   if (savedBiayaJasa) {
     biayaJasa.value = parseInt(savedBiayaJasa)
+  }
+  const savedMaxTickets = sessionStorage.getItem('maxTickets')
+  if (savedMaxTickets) {
+    maxTickets.value = parseInt(savedMaxTickets)
   }
 }
 
@@ -393,10 +396,18 @@ const checkGuideAvailability = (id) => {
 }
 
 const ticketsData = ref([])
+const emailCooldown = ref(false)
+
 const sendEmailToUser = async () => {
   try {
-    showLoader.value = true
-    let response = await fetch(`${DB_BASE_URL.value}/${EMAIL_BASE_URL.value}/email-transaction`, {
+    sendQueue.value.push({
+      uuid: ticketsData.value.id,
+      email: ticketsData.value.customer.email,
+      sent: false,
+      status: ''
+    })
+    emailCooldown.value = true
+    let response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/email-transaction`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -407,13 +418,39 @@ const sendEmailToUser = async () => {
     })
 
     if (!response.ok) {
-      showLoader.value = false
+      emailCooldown.value = false
+      const index = sendQueue.value.findIndex(
+        (queue) =>
+          queue.uuid === ticketsData.value.id && queue.email === ticketsData.value.customer.email
+      )
+      if (index !== -1) {
+        sendQueue.value[index] = { ...sendQueue.value[index], sent: true, status: 'failed' }
+      }
+      assignAlert(
+        true,
+        'Error',
+        'danger',
+        `Gagal mengirim email ke ${ticketsData.value.customer.email}!`
+      )
+
       throw new Error('Failed to send email!')
     }
 
     const res = await response.json()
-    showLoader.value = false
-    assignAlert(true, 'Success', 'success', `Berhasil mengirim email ke ${ticketsData.value.customer.email}!`)
+    emailCooldown.value = false
+    const index = sendQueue.value.findIndex(
+      (queue) =>
+        queue.uuid === ticketsData.value.id && queue.email === ticketsData.value.customer.email
+    )
+    if (index !== -1) {
+      sendQueue.value[index] = { ...sendQueue.value[index], sent: true, status: 'success' }
+    }
+    assignAlert(
+      true,
+      'Success',
+      'success',
+      `Berhasil mengirim email ke ${ticketsData.value.customer.email}!`
+    )
     console.log('Email sent successfully:', res.message)
   } catch (error) {
     console.error('Error sending email:', error)
@@ -421,27 +458,27 @@ const sendEmailToUser = async () => {
 }
 const printTickets = async () => {
   try {
-    let response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/print-transaction`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...ticketsData.value
-      })
-    })
+    let response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/print-transaction`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...ticketsData.value
+        })
+      }
+    )
 
     if (!response.ok) {
       showLoader.value = false
       throw new Error('Failed to print data!')
     }
-
-    const res = await response.json()
   } catch (error) {
     console.error('Error fetch data:', error)
   }
 }
-
 
 export default {
   selectedNationality,
@@ -470,6 +507,7 @@ export default {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  maxTickets,
   fetchFeeSettings,
   formatCurrency,
   totalHarga,
@@ -499,6 +537,7 @@ export default {
   unavailableGuideData,
   checkGuideAvailability,
   ticketsData,
+  emailCooldown,
   sendEmailToUser,
   printTickets
 }

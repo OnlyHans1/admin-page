@@ -64,7 +64,6 @@ const toggleYearDropdown = () => {
 const toggleMonthDropdown = () => {
   monthDropdownOpen.value = !monthDropdownOpen.value
 }
-
 const closeDropdownOnClickOutside = (event) => {
   if (
     !event.target.closest('.filter__input-dropdown') &&
@@ -74,7 +73,6 @@ const closeDropdownOnClickOutside = (event) => {
     monthDropdownOpen.value = false
   }
 }
-
 const selectYearOption = (year) => {
   changeSelectedYear(year)
   yearDropdownOpen.value = false
@@ -84,10 +82,8 @@ const selectMonthOption = (month) => {
   changeSelectedMonth(month)
   monthDropdownOpen.value = false
 }
-
 const takeScreenshot = async (elementId) => {
   const element = document.getElementById(elementId)
-
   try {
     const canvas = await html2canvas(element)
     canvas.toBlob((blob) => {
@@ -104,7 +100,18 @@ const takeScreenshot = async (elementId) => {
     console.error('Error saving screenshot as image file:', error)
   }
 }
-
+const incomeRevenueClass = () => {
+  const length = incomeRevenue.value.toString().length
+  if (length > 18) {
+    return 'fs-h5'
+  } else if (length > 15) {
+    return 'fs-h4'
+  } else if (length > 12) {
+    return 'fs-h3'
+  } else if (length > 9) {
+    return 'fs-h2'
+  }
+}
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdownOnClickOutside)
 })
@@ -124,7 +131,9 @@ onMounted(() => {
           <h5>Pendapatan hari ini</h5>
           <div class="report-information__income-text flex fd-row">
             <h5 class="fw-600">Rp</h5>
-            <span class="fs-display fw-600">{{ formatCurrency(incomeRevenue) }}</span>
+            <span class="fs-display fw-600" :class="incomeRevenueClass()">{{
+              formatCurrency(incomeRevenue)
+            }}</span>
           </div>
         </div>
         <div class="report-information__ticket-sold flex fd-col pd-2">
@@ -217,7 +226,7 @@ onMounted(() => {
       >
         <span
           class="icons"
-          name="Take a Screenshot"
+          name="Screenshot Grafik"
           @click="takeScreenshot('report__screenshot-target')"
         >
           <ph-camera :size="32" weight="bold" />
@@ -225,7 +234,7 @@ onMounted(() => {
         <span class="icons" name="Print Data" @click="printData"
           ><ph-printer :size="32" weight="bold"
         /></span>
-        <span class="icons" name="Report to Excel" @click="generateExcel">
+        <span class="icons" name="Ekspor ke Excel" @click="generateExcel">
           <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
         </span>
       </div>
@@ -302,11 +311,9 @@ onMounted(() => {
   position: relative;
   border: 1px solid black;
 }
-
 .filter__input-dropdown input {
   cursor: pointer;
 }
-
 input {
   appearance: none;
   -webkit-appearance: none;
@@ -318,28 +325,25 @@ input {
   padding: 0.5rem;
 }
 .filter__input-dropdown input:focus {
-  border-color: var(--color-primary); /* Change the border color to green */
-  outline: none; /* Remove the default focus outline */
-  box-shadow: 0 0 0 2px var(--color-primary); /* Add a green box-shadow to indicate focus */
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
 }
-
 .filter__input-dropdown .select-icon {
   position: absolute;
-  right: 10px; /* Adjust as needed based on select padding */
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
 }
 .arrow-icon {
   transition: all 300ms ease;
 }
-/* Rotate arrow icon when the card is expanded */
 .arrow-icon.active {
   transform: rotate(180deg);
 }
 .filter__input-dropdown .select-icon i {
-  font-size: 18px; /* Adjust icon size as needed */
+  font-size: 18px;
 }
-
 .filter__input-dropdown_menu {
   position: absolute;
   top: 2.6rem;

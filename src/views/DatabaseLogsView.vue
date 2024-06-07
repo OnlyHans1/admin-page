@@ -149,7 +149,7 @@ onUnmounted(() => {
     <ph-caret-left size="24" weight="bold" />
     <p>Kembali</p>
   </div>
-  <h5 class="fw-600 sm-top-1">Database Logs</h5>
+  <h5 class="fw-600 sm-top-1">Catatan Basis Data</h5>
 
   <div class="database-logs__content pd-right-1 sm-top-2">
     <div class="flex align-items-center justify-content-sb pd-sd-2">
@@ -163,7 +163,7 @@ onUnmounted(() => {
             type="text"
             class="database-logs-search__input-field"
             v-model="rawSearch"
-            placeholder="Search..."
+            placeholder="Cari..."
           />
           <ph-x v-if="rawSearch" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
         </div>
@@ -196,11 +196,11 @@ onUnmounted(() => {
     <table>
       <thead>
         <th>User</th>
-        <th>Action</th>
-        <th>Activity</th>
-        <th>Changed Page</th>
+        <th>Aksi</th>
+        <th>Aktivitas</th>
+        <th>Page</th>
         <th>Status</th>
-        <th>Date</th>
+        <th>Tanggal</th>
       </thead>
       <tbody>
         <tr v-for="logData in paginatedData" :key="logData.user">

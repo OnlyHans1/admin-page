@@ -43,24 +43,26 @@ const mapInvoiceOrders = (data) => {
 }
 const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
-    const formattedDiscount = parseInt(
-      data.discount.split("|")[1].trim().replace("%", "")
-    );
+    const discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
     return data.detailTrans.map((item) => {
       const orderName = item.order.name
       const orderCategoryName = item.order.category.name
       const guideName = item.guide ? item.guide.name : ''
-      const orderPrice = Number(item.order.price)
-      const orderAmount = Number(item.amount)
-      const orderDiscount = `Rp. ${Number(orderPrice * orderAmount * formattedDiscount / 100)},00 (${formattedDiscount}%)`
-      const totalPrice = Number(item.amount * item.order.price)
+      const orderPrice = Number(item.order.price).toLocaleString('id-ID')
+      const orderAmount = Number(item.amount).toLocaleString('id-ID')
+      const orderDiscount = Number(
+        (item.order.price * orderAmount * discountAmount) / 100
+      ).toLocaleString('id-ID')
+      const formattedDiscount = `Rp. ${orderDiscount},00 (${discountAmount}%)`
+      const totalPrice = Number(item.amount * item.order.price).toLocaleString('id-ID')
 
       return {
         order: `${orderName} (${orderCategoryName}) : ${item.amount} Tiket`,
         guide: guideName,
         price: orderPrice,
         amount: orderAmount,
-        discount: orderDiscount,
+        discountAmount: discountAmount,
+        discount: formattedDiscount,
         totalPrice: totalPrice
       }
     })
@@ -133,7 +135,11 @@ const showDetail = (item) => {
     customer: `${item.customer.name} (${item.customer.email})`,
     reservation: mapInvoiceDetails(item),
     appointment: formatDate(item.plannedDate),
-    number: item.customer.number ? item.customer.number : item.user.number ? item.user.number : null,
+    number: item.customer.number
+      ? item.customer.number
+      : item.user.number
+        ? item.user.number
+        : null,
     qr: item.qr[0],
     payment: capitalizeFirstLetter(item.method),
     total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
