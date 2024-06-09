@@ -14,11 +14,12 @@ const {
   desc,
   category,
   categoryId,
-  price,
+  orderPrice,
   selectedImageURL,
   defaultImageURL,
   submitAlert,
   confirmAlert,
+  updatePrice,
   resetData,
   createFormData,
   handleFileSelected,
@@ -237,7 +238,7 @@ onUnmounted(() => {
         <h6>Harga</h6>
         <div class="input-price">
           <p>Rp.</p>
-          <input type="number" name="" id="" v-model="price" />
+          <input type="number" name="price" id="price" v-model="orderPrice" @input="updatePrice(orderPrice)"/>
         </div>
       </div>
     </section>

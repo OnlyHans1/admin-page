@@ -25,6 +25,7 @@ const {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  maxTickets,
   fetchFeeSettings,
   formatCurrency,
   totalHarga,
@@ -104,9 +105,9 @@ const showTransactionGenerate = () => {
 }
 
 const updateAmount = (amount, index) => {
-  if (amount >= 80) {
-    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
-    userCarts.value[index].amount = 80
+  if (amount >= maxTickets.value) {
+    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`)
+    userCarts.value[index].amount = maxTickets.value
   } else {
     userCarts.value[index].amount = amount
   }

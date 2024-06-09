@@ -47,9 +47,9 @@ const checkData = async () => {
   }
 }
 const updateAmount = (amount) => {
-  if (amount >= 80) {
-    assignAlert(true, 'Error', 'danger', 'Maaf, tiket tidak bisa melebihi 80 tiket!')
-    selectedItems.value[0].amount = 80
+  if (amount >= CheckoutHelper.maxTickets.value) {
+    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${CheckoutHelper.maxTickets.value} tiket!`)
+    selectedItems.value[0].amount = CheckoutHelper.maxTickets.value
   } else {
   selectedItems.value[0].amount = amount
   }
@@ -66,6 +66,7 @@ const closeCartOnClickOutside = (event) => {
 }
 onMounted(() => {
   checkData()
+  CheckoutHelper.fetchFeeSettings()
   window.addEventListener('click', closeCartOnClickOutside)
 })
 onUnmounted(() => {

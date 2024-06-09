@@ -13,7 +13,7 @@ const orderType = ref('')
 const orderTypeId = ref(null)
 const orderSubType = ref('')
 const orderSubTypeId = ref(null)
-const price = ref(0)
+const orderPrice = ref(0)
 const imageName = ref('')
 const selectedImageURL = ref('')
 const selectedImage = ref(null)
@@ -22,6 +22,15 @@ const defaultImageURL = ref(
 )
 const submitAlert = ref(false)
 const confirmAlert = ref(false)
+
+const updatePrice = (amount) => {
+  if (amount >= 1000000000000) {
+    assignAlert(true, 'Error', 'danger', 'Maaf, harga tiket tidak bisa melebihi 1 Triliun Rupiah!')
+    orderPrice.value = 1000000000000
+  } else {
+    orderPrice.value = amount
+  }
+}
 
 const resetData = () => {
   title.value = ''
@@ -32,7 +41,7 @@ const resetData = () => {
   orderTypeId.value = null
   orderSubType.value = ''
   orderSubTypeId.value = null
-  price.value = ''
+  orderPrice.value = ''
   imageName.value = ''
   selectedImageURL.value = ''
   selectedImage.value = null
@@ -48,7 +57,7 @@ const createFormData = (action) => {
   formData.append('desc', desc.value ? desc.value : '')
   formData.append('categoryId', categoryId.value)
   formData.append('orderSubTypeId', orderSubTypeId.value)
-  formData.append('price', parseFloat(price.value))
+  formData.append('price', parseFloat(orderPrice.value))
   return formData
 }
 const handleFileSelected = (file) => {
@@ -58,7 +67,7 @@ const handleFileSelected = (file) => {
 }
 
 const formattedPrice = computed(() => {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(price.value)
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(orderPrice.value)
 })
 
 const updateCategory = (value) => {
@@ -77,7 +86,7 @@ const getEmptyFields = () => {
   if (!category.value.trim()) {
     emptyFields.push('Kategori')
   }
-  if (!String(price.value).trim()) {
+  if (!String(orderPrice.value).trim()) {
     emptyFields.push('Harga')
   }
   if (!String(orderType.value).trim()) {
@@ -166,7 +175,7 @@ const assignEditData = () => {
   const data = targetedData.value
   title.value = data.name
   desc.value = data.desc
-  price.value = data.price
+  orderPrice.value = data.price
   categoryId.value = data.category ? data.category.id : 0
   category.value = data.category ? data.category.name : ''
   orderTypeId.value = data.orderSubType ? data.orderSubType.orderType.id : 0
@@ -182,13 +191,14 @@ export default {
   desc,
   category,
   categoryId,
-  price,
+  orderPrice,
   imageName,
   selectedImageURL,
   selectedImage,
   defaultImageURL,
   submitAlert,
   confirmAlert,
+  updatePrice,
   resetData,
   createFormData,
   handleFileSelected,
