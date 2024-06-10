@@ -400,6 +400,20 @@ const emailCooldown = ref(false)
 
 const sendEmailToUser = async () => {
   try {
+    const queueExist = sendQueue.value.findIndex(
+      (queue) =>
+        queue.uuid === ticketsData.value.id && queue.email === ticketsData.value.customer.email
+    );
+    if (queueExist !== -1) {
+      sendQueue.value.splice(queueExist, 1);
+    }
+
+    sendQueue.value.push({
+      uuid: ticketsData.value.id,
+      email: ticketsData.value.customer.email,
+      sent: false,
+      status: ''
+    });
     sendQueue.value.push({
       uuid: ticketsData.value.id,
       email: ticketsData.value.customer.email,

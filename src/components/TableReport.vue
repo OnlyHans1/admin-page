@@ -5,7 +5,6 @@ import ReportHelper from '@/utilities/ReportHelper'
 const {
   activityReportData,
   fetchTableDataReport,
-  capitalizeFirstLetter,
   formatDate,
   formatCurrency
 } = ReportHelper
@@ -54,6 +53,7 @@ th, td {
 .report-activity__table {
   max-height: calc(374px - 2rem);
   overflow-y: overlay;
+  overflow-x: hidden;
 }
 .report-activity__table::-webkit-scrollbar {
   width: 4px;
@@ -93,7 +93,7 @@ th, td {
 }
 .report-activity__table-header th:nth-child(2),
 .report-activity__table-items td:nth-child(2) {
-  max-width: 24rem;
+  max-width: 20rem;
   text-align: start;
   padding-left: 2rem;
 }
