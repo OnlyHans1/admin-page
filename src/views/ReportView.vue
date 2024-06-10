@@ -364,9 +364,20 @@ input {
 
 .filter__input-dropdown_menu.active {
   max-height: 200px;
+  overflow-y: scroll;
   box-shadow: 0px 0px 10px 1px rgba(0, 0, 0, 0.2);
 }
-
+.filter__input-dropdown_menu.active::-webkit-scrollbar {
+  width: 4px;
+}
+.filter__input-dropdown_menu.active::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 2px;
+}
+.filter__input-dropdown_menu.active::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
 .filter__input-dropdown_menu p {
   padding: 0.3rem 0.6rem;
 }

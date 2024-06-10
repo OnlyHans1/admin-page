@@ -418,7 +418,7 @@ const fetchTableDataReport = async () => {
       throw new Error('Failed to fetch data Report')
     }
     const res = await response.json()
-    activityReportData.value = res.data
+    activityReportData.value = res.data.slice(0, 200)
   } catch (error) {
     console.error('Error fetching data Report:', error)
   }

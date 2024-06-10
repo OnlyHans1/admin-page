@@ -30,7 +30,11 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div v-if="sendQueue.length > 0" :class="{ active: showSendProgress, expanded: isExpanded }" class="send-progress__container pd-top-2">
+  <div
+    v-if="sendQueue.length > 0"
+    :class="{ active: showSendProgress, expanded: isExpanded }"
+    class="send-progress__container pd-top-2"
+  >
     <div
       class="send-progress__header flex align-items-center justify-content-sb"
       @click="toggleContent"
@@ -61,7 +65,12 @@ watchEffect(() => {
         <p class="to-ellipsis">{{ queue.email }}</p>
         <div class="send-progress__status flex fd-col align-items-f-end">
           <span v-if="queue.sent" class="flex align-items-center">
-            <ph-check-circle v-if="queue.status === 'success'" :size="24" color="#ffd978" weight="fill" />
+            <ph-check-circle
+              v-if="queue.status === 'success'"
+              :size="24"
+              color="#ffd978"
+              weight="fill"
+            />
             <ph-x-circle v-else :size="24" color="#ffd978" weight="fill" />
           </span>
           <span v-else class="send-progress__loading"></span>
@@ -107,7 +116,18 @@ watchEffect(() => {
 .send-progress__content {
   max-height: 20rem;
   background: white;
-  overflow-y: hidden;
+  overflow-y: scroll;
+}
+.send-progress__content::-webkit-scrollbar {
+  width: 4px;
+}
+.send-progress__content::-webkit-scrollbar-track {
+  background-color: lightgrey;
+  border-radius: 2px;
+}
+.send-progress__content::-webkit-scrollbar-thumb {
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 .send-progress__content-item {
   border-bottom: 1px solid black;
