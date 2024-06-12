@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 import LoginHelper from './LoginHelper'
+import DashboardHelper from './DashboardHelper'
 
 const {
   DB_BASE_URL,
@@ -105,19 +106,27 @@ const getUserCarts = () => {
 
 function addTicket(index) {
   if (userCarts.value[index].amount >= maxTickets.value) {
-    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`)
+    assignAlert(
+      true,
+      'Error',
+      'danger',
+      `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`
+    )
     userCarts.value[index].amount = maxTickets.value
   } else {
     userCarts.value[index].amount++
   }
-  saveToUserCarts()
+  DashboardHelper.saveToUserCarts()
 }
 
 function reduceTicket(index) {
   if (userCarts.value[index].amount > 0) {
     userCarts.value[index].amount--
-    saveToUserCarts()
+    if (userCarts.value[index].amount === 0) {
+      userCarts.value.splice(index, 1)
+    }
   }
+  DashboardHelper.saveToUserCarts()
 }
 
 const custName = ref('')
@@ -180,7 +189,7 @@ const totalTicketCount = computed(() => {
   for (const ticket of userCarts.value) {
     totalCount += ticket.amount
   }
-  return totalCount
+  return Number(totalCount)
 })
 
 //Payment Method Selection
@@ -403,9 +412,9 @@ const sendEmailToUser = async () => {
     const queueExist = sendQueue.value.findIndex(
       (queue) =>
         queue.uuid === ticketsData.value.id && queue.email === ticketsData.value.customer.email
-    );
+    )
     if (queueExist !== -1) {
-      sendQueue.value.splice(queueExist, 1);
+      sendQueue.value.splice(queueExist, 1)
     }
 
     sendQueue.value.push({
@@ -413,7 +422,7 @@ const sendEmailToUser = async () => {
       email: ticketsData.value.customer.email,
       sent: false,
       status: ''
-    });
+    })
     sendQueue.value.push({
       uuid: ticketsData.value.id,
       email: ticketsData.value.customer.email,
@@ -421,15 +430,18 @@ const sendEmailToUser = async () => {
       status: ''
     })
     emailCooldown.value = true
-    let response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/email-transaction`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        ...ticketsData.value
-      })
-    })
+    let response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/email-transaction`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          ...ticketsData.value
+        })
+      }
+    )
 
     if (!response.ok) {
       emailCooldown.value = false

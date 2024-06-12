@@ -81,7 +81,7 @@ const saveToUserCarts = async () => {
   const storedItems = userCarts.value || []
   selectedItems.value.forEach((item) => {
     const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
-    if (item.amount === 0) {
+    if (item.amount < 1) {
       if (existingItemIndex !== -1) {
         storedItems.splice(existingItemIndex, 1)
       }
