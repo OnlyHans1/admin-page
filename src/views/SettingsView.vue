@@ -716,7 +716,6 @@ input:focus {
 .settings__orders-content {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
-  grid-template-rows: repeat(auto-fit, minmax(160px, 170px));
   grid-gap: 1rem;
   overflow: auto;
   height: 80vh;
@@ -753,13 +752,13 @@ input:focus {
 }
 
 .settings__orders-content_item {
-  height: 100%;
+  height: 10rem;
   box-shadow: 0 2px 10px rgb(0, 0, 0, 0.2);
   border-radius: 0.5rem;
 }
 .settings__orders-content_item img {
   height: 100%;
-  width: 200px;
+  width: 12rem;
   object-fit: cover;
 }
 .settings__orders-content_item-head h6 {

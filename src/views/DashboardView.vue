@@ -46,12 +46,17 @@ const checkData = async () => {
     console.error(error)
   }
 }
+function selectAll(event) {
+  event.target.select()
+}
 const updateAmount = (amount) => {
   if (amount >= CheckoutHelper.maxTickets.value) {
     assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${CheckoutHelper.maxTickets.value} tiket!`)
     selectedItems.value[0].amount = CheckoutHelper.maxTickets.value
+  } else if(amount === ''){
+    selectedItems.value[0].amount = 1
   } else {
-  selectedItems.value[0].amount = amount
+    selectedItems.value[0].amount = amount
   }
   saveToUserCarts()
 }
@@ -223,7 +228,7 @@ onUnmounted(() => {
                 <button @click.stop="decreaseAmount(selectedItems[0])">
                   <ph-minus-circle :size="24" />
                 </button>
-                <input type="number" class="popup-order__amount-input fs-h5" v-model="selectedItems[0].amount" @input="updateAmount(selectedItems[0].amount)"></input>
+                <input type="number" class="popup-order__amount-input fs-h5" v-model="selectedItems[0].amount" @input="updateAmount(selectedItems[0].amount)" @focus="selectAll($event)"></input>
                 <button @click.stop="increaseAmount(selectedItems[0])">
                   <ph-plus-circle :size="24" />
                 </button>

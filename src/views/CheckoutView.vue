@@ -104,10 +104,23 @@ const showTransactionGenerate = () => {
   isTransactionGenerate.value = true
 }
 
+function selectAll(event) {
+  event.target.select()
+}
+
 const updateAmount = (amount, index) => {
   if (amount >= maxTickets.value) {
-    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`)
+    assignAlert(
+      true,
+      'Error',
+      'danger',
+      `Maaf, tiket tidak bisa melebihi ${maxTickets.value} tiket!`
+    )
     userCarts.value[index].amount = maxTickets.value
+  } else if (amount === '') {
+    userCarts.value[index].amount = 1
+  } else if (userCarts.value[index].amount === 0) {
+    userCarts.value.splice(index, 1)
   } else {
     userCarts.value[index].amount = amount
   }
@@ -132,8 +145,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <main>
-    <div class="checkout__container w-full flex align-items-f-start justify-content-sb sm-sd-2 gap-2">
+  <main class="pd-sd-2">
+    <div class="checkout__container w-full flex align-items-f-start justify-content-sb gap-2">
       <div class="checkout__form-container w-full">
         <div class="order-details__container">
           <form>
@@ -159,11 +172,25 @@ onMounted(() => {
                 </div>
                 <div class="order-details__customer-input flex gap-1">
                   <div class="customer-details__input-placeholder">
-                    <input type="text" required rows="1" v-model="custName" id="name" autocomplete="name"/>
+                    <input
+                      type="text"
+                      required
+                      rows="1"
+                      v-model="custName"
+                      id="name"
+                      autocomplete="name"
+                    />
                     <label for="name">Nama Pelanggan</label>
                   </div>
                   <div class="customer-details__input-placeholder">
-                    <input type="email" required rows="1" v-model="custEmail" id="email" autocomplete="email">
+                    <input
+                      type="email"
+                      required
+                      rows="1"
+                      v-model="custEmail"
+                      id="email"
+                      autocomplete="email"
+                    />
                     <label for="email">Email Pelanggan</label>
                   </div>
                 </div>
@@ -193,7 +220,11 @@ onMounted(() => {
                       <span class="fs-h6">{{ formatCurrency(item.price) }}</span>
                     </div>
                     <div class="order-details__ticket-value flex align-items-center gap-1">
-                      <button class="flex align-items-center justify-content-center" @click="reduceTicket(index)" type="button">
+                      <button
+                        class="flex align-items-center justify-content-center"
+                        @click="reduceTicket(index)"
+                        type="button"
+                      >
                         <ph-minus :size="14" weight="bold" />
                       </button>
                       <input
@@ -201,8 +232,14 @@ onMounted(() => {
                         class="order-details__ticket-input"
                         v-model="userCarts[index].amount"
                         @input="updateAmount(userCarts[index].amount, index)"
+                        @focus="selectAll($event)"
+                        min="1"
                       />
-                      <button class="flex align-items-center justify-content-center" @click="addTicket(index)" type="button">
+                      <button
+                        class="flex align-items-center justify-content-center"
+                        @click="addTicket(index)"
+                        type="button"
+                      >
                         <ph-plus :size="14" weight="bold" />
                       </button>
                     </div>
@@ -216,7 +253,7 @@ onMounted(() => {
                 </div>
                 <div class="discount__slider flex fd-col">
                   <p class="fw-500">Cashback</p>
-                  <Slider v-model:targetValue="cashbackValue" sliderWidth="216px"/>
+                  <Slider v-model:targetValue="cashbackValue" sliderWidth="216px" />
                 </div>
               </div>
               <div class="order-details__content flex gap[0.5]">
@@ -258,13 +295,22 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <section class="order-details__select-content_modal-overlay" v-if="paymentSelect" @click="paymentSelect = false">
+              <section
+                class="order-details__select-content_modal-overlay"
+                v-if="paymentSelect"
+                @click="paymentSelect = false"
+              >
                 <div class="order-details__payment-select-content_modal">
                   <div
                     class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
                   >
                     <h5 class="fw-600">Pilih Metode Pembayaran</h5>
-                    <ph-x class="cursor-pointer":size="20" weight="bold" @click="showPaymentSelect" />
+                    <ph-x
+                      class="cursor-pointer"
+                      :size="20"
+                      weight="bold"
+                      @click="showPaymentSelect"
+                    />
                   </div>
                   <div
                     class="order-details__payment-select-content_modal-content flex fd-col gap[0.5] pd-bottom-2 pd-sd-1 pd-top-1"
@@ -289,9 +335,16 @@ onMounted(() => {
 
               <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
                 <div class="order-details__guide-select-content_modal sm-4">
-                  <div class="order-details__guide-select-content_modal-header flex align-items-center justify-content-sb pd-1">
+                  <div
+                    class="order-details__guide-select-content_modal-header flex align-items-center justify-content-sb pd-1"
+                  >
                     <h5 class="fw-600">Pemandu</h5>
-                    <ph-x class="cursor-pointer" :size="20" weight="bold" @click="guideSelectPage" />
+                    <ph-x
+                      class="cursor-pointer"
+                      :size="20"
+                      weight="bold"
+                      @click="guideSelectPage"
+                    />
                   </div>
                   <div
                     class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
@@ -491,7 +544,11 @@ onMounted(() => {
           </form>
         </div>
         <div class="checkout-btn w-full">
-          <button type="submit" class="checkout__btn-order w-full flex align-items-center justify-content-sb fw-700 cursor-pointer" @click="checkoutTransaction">
+          <button
+            type="submit"
+            class="checkout__btn-order w-full flex align-items-center justify-content-sb fw-700 cursor-pointer"
+            @click="checkoutTransaction"
+          >
             Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
