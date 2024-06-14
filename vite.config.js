@@ -17,6 +17,7 @@ export default defineConfig({
     proxy: {
       '^/api/.*': {
         target: 'http://localhost:3000',
+        // target: 'https://api-prmn.curaweda.com:3031',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }

@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 
 const DB_BASE_URL = ref('http://localhost:3000')
+// const DB_BASE_URL = ref('https://api-prmn.curaweda.com:3031')
 const USER_BASE_URL = ref('keraton-pos/user')
 const ORDER_BASE_URL = ref('keraton-pos/order')
 const ORDERTYPE_BASE_URL = ref('keraton-pos/order-type')

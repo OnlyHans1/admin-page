@@ -495,6 +495,7 @@ onMounted(() => {
             :key="index"
           >
             <img
+              style="width: 6rem; height: 5rem;"
               :src="
                 item.image
                   ? getImageURL(item.image)
