@@ -116,7 +116,7 @@ onUnmounted(() => {
           />
           <div class="dashboard-cart-popup__items-desc flex fd-col align-items-f-start justify-content-sb pd[0.5]">
             <p class="to-ellipsis">{{ item.name }}</p>
-            <p class="to-ellipsis">{{ item.category.name }}</p>
+            <p class="to-ellipsis">{{ item.category?.name }}</p>
             <p class="to-ellipsis">
               Rp. {{ `${formatCurrency(item.price)} x ${item.amount} Tiket` }}
             </p>
