@@ -1,8 +1,14 @@
 <script setup>
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, ref } from 'vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
 import InvoiceHelper from '@/utilities/InvoiceHelper'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+
+// Akses rute saat ini
+const currentRoute = route.name
 
 const {
   dataInvoice,
@@ -36,18 +42,23 @@ onMounted(() => {
 
 <template>
   <div class="invoice-container">
-    <!-- Search -->
-    <div class="invoice-search flex align-items-center">
-      <i class="ri-search-line invoice-search__icon"></i>
-      <input
-        type="text"
-        class="invoice-search__input-field"
-        v-model="searchQuery"
-        placeholder="Cari..."
-        id="search"
-        autocomplete="search"
-      />
-      <ph-x v-if="searchQuery" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
+    <div style="justify-content: space-between; display: flex; width: 100%">
+      <div style="text-transform: capitalize; font-weight: 500; font-size: 1.875rem; width: 100%">
+        {{ currentRoute }}
+      </div>
+      <!-- Search -->
+      <div class="invoice-search flex align-items-center" style="width: 30%">
+        <i class="ri-search-line invoice-search__icon"></i>
+        <input
+          type="text"
+          class="invoice-search__input-field"
+          v-model="searchQuery"
+          placeholder="Cari..."
+          id="search"
+          autocomplete="search"
+        />
+        <ph-x v-if="searchQuery" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
+      </div>
     </div>
 
     <!-- Invoice -->
@@ -63,13 +74,9 @@ onMounted(() => {
             <th class="invoice-table__header">Email</th>
           </tr>
         </thead>
-        <tbody>
-          <tr
-            v-if="dataInvoice"
-            v-for="(item, index) in dataInvoice"
-            :key="index"
-            class="invoice-table__row-data"
-          >
+        <tbody v-if="dataInvoice.length > 0">
+          test
+          <tr v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
             <td class="invoice-table__data">{{ index + 1 }}</td>
             <td class="invoice-table__data">
               {{ item.customer ? item.customer.name : item.user.name }}
@@ -84,6 +91,9 @@ onMounted(() => {
               </button>
             </td>
           </tr>
+        </tbody>
+        <tbody v-else>
+          Data Tidak ada
         </tbody>
       </table>
     </div>
@@ -141,7 +151,7 @@ onMounted(() => {
 .invoice-table__header {
   padding: 7px;
   text-align: center;
-  font-size: 24px;
+  font-size: 20px;
 }
 .invoice-table__data:first-child,
 .invoice-table__header:first-child {

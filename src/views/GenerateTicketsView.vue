@@ -41,6 +41,7 @@ const fetchTickets = async (id) => {
     console.error('Error fetching data:', error)
   }
 }
+
 onMounted(() => {
   fetchTickets(route.params.id)
 })
@@ -93,7 +94,11 @@ onMounted(() => {
         <ph-printer :size="32" />
       </button>
       <button class="generate-tickets__btn-email">
-        <div v-if="!emailCooldown" @click="sendEmailToUser()" class="flex align-items-center gap[0.5]">
+        <div
+          v-if="!emailCooldown"
+          @click="sendEmailToUser()"
+          class="flex align-items-center gap[0.5]"
+        >
           <p class="fw-700">Kirim ke Email</p>
           <ph-paper-plane-tilt :size="32" />
         </div>
@@ -142,7 +147,7 @@ onMounted(() => {
 }
 
 .generate-tickets__btn-print,
-.generate-tickets__btn-email  {
+.generate-tickets__btn-email {
   min-width: 12rem;
   height: 5rem;
   border: 2px solid #e6be58;
