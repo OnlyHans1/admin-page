@@ -2,12 +2,7 @@
 import { onMounted } from 'vue'
 import ReportHelper from '@/utilities/ReportHelper'
 
-const {
-  activityReportData,
-  fetchTableDataReport,
-  formatDate,
-  formatCurrency
-} = ReportHelper
+const { activityReportData, fetchTableDataReport, formatDate, formatCurrency } = ReportHelper
 
 onMounted(() => {
   fetchTableDataReport()
@@ -46,7 +41,8 @@ onMounted(() => {
 </template>
 
 <style scoped>
-th, td {
+th,
+td {
   cursor: pointer;
 }
 

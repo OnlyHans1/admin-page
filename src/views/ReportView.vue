@@ -294,7 +294,7 @@ onMounted(() => {
   line-height: 28px;
 }
 .report-activity__table-container {
-  width: 1081px;
+  width: 1100px;
   height: 374px;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);

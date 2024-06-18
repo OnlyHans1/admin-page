@@ -51,7 +51,7 @@ onMounted(() => {
         {{ currentRoute }}
       </div>
       <!-- Search -->
-      <div class="invoice-search flex align-items-center" style="width: 30%">
+      <!-- <div class="invoice-search flex align-items-center" style="width: 30%">
         <i class="ri-search-line invoice-search__icon"></i>
         <input
           type="text"
@@ -62,7 +62,7 @@ onMounted(() => {
           autocomplete="search"
         />
         <ph-x v-if="searchQuery" class="cursor-pointer" @click="resetSearch()" :size="16"></ph-x>
-      </div>
+      </div> -->
     </div>
 
     <!-- Invoice -->
