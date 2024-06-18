@@ -14,9 +14,9 @@ const getSearchQuery = (query) => {
 const fetchTransactionList = async () => {
   try {
     let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
-    // if (searchQuery.value) {
-    //   url += `?search=${encodeURIComponent(searchQuery.value)}`
-    // }
+    if (searchQuery.value) {
+      url += `?search=${encodeURIComponent(searchQuery.value)}`
+    }
     const response = await fetch(url)
     if (!response.ok) {
       throw new Error('Failed to fetch data')

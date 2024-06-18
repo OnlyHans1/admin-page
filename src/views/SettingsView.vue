@@ -163,9 +163,9 @@ const saveSettings = () => {
   biayaLayanan.value = Number(newBiayaLayanan.value)
   biayaJasa.value = Number(newBiayaJasa.value)
   maxTickets.value = Number(newMaxTickets.value)
-  sessionStorage.setItem('biayaLayanan', biayaLayanan.value)
-  sessionStorage.setItem('biayaJasa', biayaJasa.value)
-  sessionStorage.setItem('maxTickets', maxTickets.value)
+  localStorage.setItem('biayaLayanan', biayaLayanan.value)
+  localStorage.setItem('biayaJasa', biayaJasa.value)
+  localStorage.setItem('maxTickets', maxTickets.value)
 
   assignAlert(true, 'Sukses', 'success', 'Biaya dan Maks. Tiket berhasil diubah!')
   feePage.value = false
@@ -178,9 +178,9 @@ const resetSettings = () => {
   newBiayaLayanan.value = biayaLayanan.value
   newBiayaJasa.value = biayaJasa.value
   newMaxTickets.value = maxTickets.value
-  sessionStorage.setItem('biayaLayanan', biayaLayanan.value)
-  sessionStorage.setItem('biayaJasa', biayaJasa.value)
-  sessionStorage.setItem('maxTickets', maxTickets.value)
+  localStorage.setItem('biayaLayanan', biayaLayanan.value)
+  localStorage.setItem('biayaJasa', biayaJasa.value)
+  localStorage.setItem('maxTickets', maxTickets.value)
 
   assignAlert(true, 'Sukses', 'success', 'Biaya berhasil di-reset!')
 }

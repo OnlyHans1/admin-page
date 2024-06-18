@@ -85,24 +85,24 @@ const selectMonthOption = (month) => {
   changeSelectedMonth(month)
   monthDropdownOpen.value = false
 }
-const takeScreenshot = async (elementId) => {
-  const element = document.getElementById(elementId)
-  try {
-    const canvas = await html2canvas(element)
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `Report Tahun ${selectedYear.value} Bulan ${selectedMonthName.value}.png`
-      document.body.appendChild(a)
-      a.click()
-      window.URL.revokeObjectURL(url)
-      console.log('Screenshot saved as image file!')
-    }, 'image/png')
-  } catch (error) {
-    console.error('Error saving screenshot as image file:', error)
-  }
-}
+// const takeScreenshot = async (elementId) => {
+//   const element = document.getElementById(elementId)
+//   try {
+//     const canvas = await html2canvas(element)
+//     canvas.toBlob((blob) => {
+//       const url = URL.createObjectURL(blob)
+//       const a = document.createElement('a')
+//       a.href = url
+//       a.download = `Report Tahun ${selectedYear.value} Bulan ${selectedMonthName.value}.png`
+//       document.body.appendChild(a)
+//       a.click()
+//       window.URL.revokeObjectURL(url)
+//       console.log('Screenshot saved as image file!')
+//     }, 'image/png')
+//   } catch (error) {
+//     console.error('Error saving screenshot as image file:', error)
+//   }
+// }
 const incomeRevenueClass = () => {
   const length = incomeRevenue.value.toString().length
   if (length > 18) {
@@ -256,13 +256,13 @@ onMounted(() => {
       <div
         class="report-revenue__icons flex fd-row align-self-f-end gap-1 pd-sd-1 pd-top-1 align-items-center"
       >
-        <span
+        <!-- <span
           class="icons"
           name="Screenshot Grafik"
           @click="takeScreenshot('report__screenshot-target')"
         >
           <ph-camera :size="32" weight="bold" />
-        </span>
+        </span> -->
         <span class="icons" name="Print Data" @click="printData"
           ><ph-printer :size="32" weight="bold"
         /></span>

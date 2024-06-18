@@ -141,19 +141,19 @@ const biayaJasa = ref(1500)
 const biayaJasaCard = ref(0.015)
 const maxTickets = ref(80)
 const fetchFeeSettings = () => {
-  const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
+  const savedBiayaLayanan = localStorage.getItem('biayaLayanan')
   if (savedBiayaLayanan) {
     biayaLayanan.value = parseInt(savedBiayaLayanan)
   }
-  const savedBiayaJasa = sessionStorage.getItem('biayaJasa')
+  const savedBiayaJasa = localStorage.getItem('biayaJasa')
   if (savedBiayaJasa) {
     biayaJasa.value = parseInt(savedBiayaJasa)
   }
-  const savedMaxTickets = sessionStorage.getItem('maxTickets')
+  const savedMaxTickets = localStorage.getItem('maxTickets')
   if (savedMaxTickets) {
     maxTickets.value = parseInt(savedMaxTickets)
   }
-  const savedBiayaJasaCard = sessionStorage.getItem('biayaJasaCard')
+  const savedBiayaJasaCard = localStorage.getItem('biayaJasaCard')
   if (savedBiayaJasaCard) {
     biayaJasaCard.value = parseInt(biayaJasaCard)
   }

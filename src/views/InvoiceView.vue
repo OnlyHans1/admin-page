@@ -32,7 +32,7 @@ watch(
       searchQuery.value = newValue.toLowerCase()
       getSearchQuery(searchQuery.value)
       fetchTransactionList()
-      searchList(searchQuery.value)
+      // searchList(searchQuery.value)
     }
   }
 )
