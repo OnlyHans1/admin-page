@@ -86,7 +86,7 @@ watchEffect(() => {
         <RouterLink to="/checkout" :class="{ active: activeLink === 3 }" name="Checkout">
           <ph-shopping-cart-simple :size="24" weight="bold" />
         </RouterLink>
-        <RouterLink
+        <!-- <RouterLink
           to="/report-curaweda"
           name="reportCuraweda"
           @click="reportCuraweda()"
@@ -97,7 +97,7 @@ watchEffect(() => {
             weight="bold"
             :class="{ hidden: userData.role !== 'SUPER_ADMIN' }"
           />
-        </RouterLink>
+        </RouterLink> -->
       </div>
       <div class="navbar-links__settings-container flex fd-col">
         <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 5 }">
