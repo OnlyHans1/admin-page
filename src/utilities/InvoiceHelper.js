@@ -5,6 +5,7 @@ const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader } = GlobalHelper
 
 /* InvoiceView Helper */
 const dataInvoice = ref([])
+const data = ref([])
 
 const getSearchQuery = (query) => {
   getSearchQuery.value = query
@@ -13,9 +14,9 @@ const getSearchQuery = (query) => {
 const fetchTransactionList = async () => {
   try {
     let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
-    if (searchQuery.value) {
-      url += `?search=${encodeURIComponent(searchQuery.value)}`
-    }
+    // if (searchQuery.value) {
+    //   url += `?search=${encodeURIComponent(searchQuery.value)}`
+    // }
     const response = await fetch(url)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
@@ -25,6 +26,23 @@ const fetchTransactionList = async () => {
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
+  }
+}
+
+const searchList = async (search) => {
+  let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Failed to fetch data')
+  }
+  const res = await response.json()
+  data.value = res.data
+  console.log(data.value)
+  if (search) {
+    data.value = res.data.filter(item => {
+      return item.customer.name.toLowerCase().includes(search.toLowerCase());
+    });
+    console.log(data.value)
   }
 }
 
@@ -45,7 +63,7 @@ const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
     const discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
     return data.detailTrans.map((item) => {
-      const orderName = item.order ? item.order.name : item.event.name 
+      const orderName = item.order ? item.order.name : item.event.name
       const orderCategoryName = item.order ? item.order.category.name : "Event"
       const guideName = item.guide ? item.guide.name : ''
       const orderPrice = Number(item.order.price).toLocaleString('id-ID')
@@ -71,6 +89,7 @@ const mapInvoiceDetails = (data) => {
 }
 
 const searchQuery = ref(null)
+console.log(searchQuery)
 const resetSearch = () => {
   searchQuery.value = ''
 }
@@ -167,6 +186,7 @@ export default {
   getSearchQuery,
   fetchTransactionList,
   searchQuery,
+  searchList,
   resetSearch,
   mapInvoiceOrders,
   mapInvoiceDetails,
@@ -174,6 +194,7 @@ export default {
   splitDate,
   showDetail,
   showPopup,
+  data,
   showDetailPopup,
   closeDetailPopup,
   capitalizeFirstLetter

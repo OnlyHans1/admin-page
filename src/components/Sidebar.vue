@@ -12,6 +12,7 @@ const route = useRoute()
 
 const determineActiveLink = () => {
   const path = route.path
+  const name = route.name
   if (path === '/') {
     activeLink.value = 0 // Home link active
   } else if (path.includes('/invoice')) {
@@ -20,13 +21,20 @@ const determineActiveLink = () => {
     activeLink.value = 2 // Report link active
   } else if (path.includes('/checkout')) {
     activeLink.value = 3
-  } else if (path.includes('/settings')) {
+  } else if (path.includes('settings')) {
+    activeLink.value = 5
+  } else if (path.includes('reportCuraweda')) {
     activeLink.value = 4
   } else {
     activeLink.value = -1 // No specific link active
   }
 }
 
+const reportCuraweda = () => {
+  if (userData.value.role === 'SUPER_ADMIN') {
+    router.push('/report-curaweda')
+  }
+}
 const toSettings = () => {
   if (userData.value.role === 'CASHIER') {
     GlobalHelper.assignAlert(
@@ -47,6 +55,8 @@ onMounted(() => {
   if (!userData.value) {
     userLogout()
     router.replace('/login')
+  } else {
+    determineActiveLink()
   }
 })
 watchEffect(() => {
@@ -76,9 +86,21 @@ watchEffect(() => {
         <RouterLink to="/checkout" :class="{ active: activeLink === 3 }" name="Checkout">
           <ph-shopping-cart-simple :size="24" weight="bold" />
         </RouterLink>
+        <RouterLink
+          to="/report-curaweda"
+          name="reportCuraweda"
+          @click="reportCuraweda()"
+          :class="{ active: activeLink === 4 }"
+        >
+          <ph-currency-circle-dollar
+            :size="24"
+            weight="bold"
+            :class="{ hidden: userData.role !== 'SUPER_ADMIN' }"
+          />
+        </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
-        <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 4 }">
+        <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 5 }">
           <ph-gear :size="24" weight="bold" :class="{ disabled: userData.role === 'CASHIER' }" />
         </a>
         <RouterLink to="/login" name="Logout" @click="userLogout(), router.replace('/login')">
@@ -117,6 +139,9 @@ nav {
 }
 .logo img {
   width: calc(100% - 2rem);
+}
+.hidden {
+  display: none;
 }
 
 .navbar-links {

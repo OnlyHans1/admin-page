@@ -9,6 +9,7 @@ import GenerateTicketsView from '@/views/GenerateTicketsView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import DatabaseLogsView from '@/views/DatabaseLogsView.vue'
 import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
+import reportCurawedaView from '@/views/ReportViewCuraweda.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 
@@ -27,6 +28,12 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: DashboardView,
+      meta: { protected: true }
+    },
+    {
+      path: '/report-curaweda',
+      name: 'reportCuraweda',
+      component: reportCurawedaView,
       meta: { protected: true }
     },
     {
@@ -82,6 +89,7 @@ const router = createRouter({
       name: 'after-checkout',
       component: AfterCheckoutView
     },
+
     {
       path: '/:pathMatch(.)',
       name: '404',

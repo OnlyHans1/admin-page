@@ -13,9 +13,11 @@ const currentRoute = route.name
 const {
   dataInvoice,
   getSearchQuery,
+  data,
   fetchTransactionList,
   searchQuery,
   resetSearch,
+  searchList,
   mapInvoiceOrders,
   selectedItem,
   splitDate,
@@ -30,6 +32,7 @@ watch(
       searchQuery.value = newValue.toLowerCase()
       getSearchQuery(searchQuery.value)
       fetchTransactionList()
+      searchList(searchQuery.value)
     }
   }
 )
@@ -37,6 +40,7 @@ watch(
 onMounted(() => {
   GlobalHelper.showLoader.value = true
   fetchTransactionList()
+  searchList()
 })
 </script>
 
@@ -75,8 +79,7 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody v-if="dataInvoice.length > 0">
-          test
-          <tr v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
+          <tr v-for="(item, index) in data" :key="index" class="invoice-table__row-data">
             <td class="invoice-table__data">{{ index + 1 }}</td>
             <td class="invoice-table__data">
               {{ item.customer ? item.customer.name : item.user.name }}

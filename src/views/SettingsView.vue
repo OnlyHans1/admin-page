@@ -172,8 +172,8 @@ const saveSettings = () => {
 }
 
 const resetSettings = () => {
-  biayaLayanan.value = 2500
-  biayaJasa.value = 1000
+  biayaLayanan.value = 0
+  biayaJasa.value = 1500
   maxTickets.value = 80
   newBiayaLayanan.value = biayaLayanan.value
   newBiayaJasa.value = biayaJasa.value
@@ -495,7 +495,7 @@ onMounted(() => {
             :key="index"
           >
             <img
-              style="width: 6rem; height: 5rem;"
+              style="width: 6rem; height: 5rem"
               :src="
                 item.image
                   ? getImageURL(item.image)

@@ -25,6 +25,7 @@ const {
   cashbackValue,
   biayaLayanan,
   biayaJasa,
+  biayaJasaCard,
   maxTickets,
   fetchFeeSettings,
   formatCurrency,
@@ -350,41 +351,41 @@ onMounted(() => {
                     class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
                     :class="{ grid: guideSelectors }"
                   >
-                    <div
-                      v-if="guideSelectors"
-                      v-for="(guide, index) in guideData"
-                      :key="index"
-                      class="order-detail__guide-select-content_guide-selector flex"
-                    >
-                      <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
-                        <div class="order-detail__guide-select-content_guide-selector_radio">
-                          <div v-if="isGuideChecked(guide.id)" class="selected"></div>
+                    <div v-if="guideSelectors">
+                      <div
+                        v-for="(guide, index) in guideData"
+                        :key="index"
+                        class="order-detail__guide-select-content_guide-selector flex"
+                      >
+                        <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
+                          <div class="order-detail__guide-select-content_guide-selector_radio">
+                            <div v-if="isGuideChecked(guide.id)" class="selected"></div>
+                          </div>
+                          <label :for="guide.name">{{ guide.name }}</label>
+                        </span>
+                        <div
+                          v-if="!checkGuideAvailability(guide.id)"
+                          class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                          @click="guideSelectPageBio(guide)"
+                        >
+                          <ph-caret-right :size="16" weight="bold" />
                         </div>
-                        <label :for="guide.name">{{ guide.name }}</label>
-                      </span>
-                      <div
-                        v-if="!checkGuideAvailability(guide.id)"
-                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                        @click="guideSelectPageBio(guide)"
-                      >
-                        <ph-caret-right :size="16" weight="bold" />
-                      </div>
-                      <div
-                        v-else
-                        class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                        @click="
-                          assignAlert(
-                            true,
-                            'Error',
-                            'danger',
-                            `Guide ${guide.name} tidak tersedia!`
-                          )
-                        "
-                      >
-                        <ph-caret-right :size="16" weight="bold" />
+                        <div
+                          v-else
+                          class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
+                          @click="
+                            assignAlert(
+                              true,
+                              'Error',
+                              'danger',
+                              `Guide ${guide.name} tidak tersedia!`
+                            )
+                          "
+                        >
+                          <ph-caret-right :size="16" weight="bold" />
+                        </div>
                       </div>
                     </div>
-
                     <div class="order-details__guide-select_biodata relative" v-if="guideSelectBio">
                       <div
                         class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
@@ -484,10 +485,12 @@ onMounted(() => {
             <p class="fs-h5">Ringkasan Booking</p>
             <div class="checkout__details-pricing-container">
               <p class="fw-700 fs-h6">Total Pemesanan</p>
-              <div v-if="userCarts.length > 1" v-for="(item, index) in userCarts" :key="index">
-                <div class="checkout__details-pricing" v-if="item.amount > 0">
-                  <p>{{ item.name }} ({{ item.category.name }}) x {{ item.amount }}</p>
-                  <p>{{ formatCurrency(item.price * item.amount) }}</p>
+              <div v-if="userCarts.length > 1">
+                <div v-for="(item, index) in userCarts" :key="index">
+                  <div class="checkout__details-pricing" v-if="item.amount > 0">
+                    <p>{{ item.name }} ({{ item.category.name }}) x {{ item.amount }}</p>
+                    <p>{{ formatCurrency(item.price * item.amount) }}</p>
+                  </div>
                 </div>
               </div>
               <div class="checkout__details-pricing">
@@ -504,7 +507,13 @@ onMounted(() => {
               </div>
               <div class="checkout__details-pricing">
                 <p>Biaya Jasa Aplikasi</p>
-                <p>{{ formatCurrency(biayaJasa) }}</p>
+                <p>
+                  {{
+                    paymentSelection == 'Cash'
+                      ? formatCurrency(biayaJasa)
+                      : biayaJasaCard * 100 + '%'
+                  }}
+                </p>
               </div>
             </div>
             <div

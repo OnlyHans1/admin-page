@@ -136,8 +136,9 @@ const selectedDate = ref(null)
 const discountValue = ref(0)
 const cashbackValue = ref(0)
 
-const biayaLayanan = ref(2500)
-const biayaJasa = ref(1000)
+const biayaLayanan = ref(0)
+const biayaJasa = ref(1500)
+const biayaJasaCard = ref(0.015)
 const maxTickets = ref(80)
 const fetchFeeSettings = () => {
   const savedBiayaLayanan = sessionStorage.getItem('biayaLayanan')
@@ -151,6 +152,10 @@ const fetchFeeSettings = () => {
   const savedMaxTickets = sessionStorage.getItem('maxTickets')
   if (savedMaxTickets) {
     maxTickets.value = parseInt(savedMaxTickets)
+  }
+  const savedBiayaJasaCard = sessionStorage.getItem('biayaJasaCard')
+  if (savedBiayaJasaCard) {
+    biayaJasaCard.value = parseInt(biayaJasaCard)
   }
 }
 
@@ -172,17 +177,18 @@ const totalHarga = computed(() => {
 })
 
 const totalBiaya = computed(() => {
-  return totalHarga.value + biayaLayanan.value + biayaJasa.value
+  const diskon = (totalHarga.value * discountValue.value) / 100;
+  const biayaJasaAplikasi = paymentSelection.value === 'Cash' ? biayaJasa.value : totalHarga.value * biayaJasaCard.value;
+  console.log(paymentSelection.value)
+  return totalHarga.value - diskon + biayaLayanan.value + biayaJasaAplikasi;
 })
 
 const totalTagihan = computed(() => {
-  return (
-    totalHarga.value -
-    (totalHarga.value * discountValue.value) / 100 +
-    biayaLayanan.value +
-    biayaJasa.value
-  )
-})
+  const diskon = (totalHarga.value * discountValue.value) / 100;
+  const biayaJasaAplikasi = paymentSelection.value === 'Cash' ? biayaJasa.value : totalHarga.value * biayaJasaCard.value;
+  console.log(paymentSelection.value)
+  return totalHarga.value - diskon + biayaLayanan.value + biayaJasaAplikasi;
+});
 
 const totalTicketCount = computed(() => {
   let totalCount = 0
@@ -244,7 +250,7 @@ const createTransaction = async () => {
           userId: userData.value.id,
           nationalityId: selectedNationality.value,
           plannedDate: selectedDate.value,
-          additionalFee: Number(biayaJasa.value + biayaLayanan.value),
+          additionalFee: Number(paymentSelection.value == 'Cash' ? biayaLayanan.value + biayaJasa.value : biayaJasaCard.value + biayaLayanan.value),
           total: totalTagihan.value.toFixed(2),
           method: paymentSelection.value.toUpperCase(),
           status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
@@ -565,5 +571,6 @@ export default {
   ticketsData,
   emailCooldown,
   sendEmailToUser,
-  printTickets
+  printTickets,
+  biayaJasaCard
 }
