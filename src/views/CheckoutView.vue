@@ -1,4 +1,4 @@
-  <script setup>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
@@ -212,7 +212,6 @@ onMounted(() => {
                     />
                     <label for="date">Tanggal Pemesanan</label>
                   </div>
-                  <p>MM/DD/YYYY</p>
                 </div>
                 <div v-for="(item, index) in userCarts" :key="index">
                   <div class="order-details__ticket" v-if="item.amount > 0">
@@ -351,13 +350,17 @@ onMounted(() => {
                     class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
                     :class="{ grid: guideSelectors }"
                   >
-                    <div v-if="guideSelectors">
+                    <div v-if="guideSelectors" style="display: flex; flex-wrap: wrap; gap: 1rem">
                       <div
                         v-for="(guide, index) in guideData"
                         :key="index"
                         class="order-detail__guide-select-content_guide-selector flex"
                       >
-                        <span class="flex align-items-center gap[0.5] pd[0.5]" @click.prevent>
+                        <span
+                          class="flex align-items-center gap[0.5] pd[0.5]"
+                          style="width: 10rem"
+                          @click.prevent
+                        >
                           <div class="order-detail__guide-select-content_guide-selector_radio">
                             <div v-if="isGuideChecked(guide.id)" class="selected"></div>
                           </div>
@@ -744,13 +747,6 @@ input[type='number'] {
 
 .order-details__guide-select-content_modal-header {
   border-bottom: 1px solid black;
-}
-
-.order-detail__guide-select-content_modal-content.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 1rem;
-  align-content: center;
 }
 
 .order-detail__guide-select-content_guide-selector {

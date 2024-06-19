@@ -128,11 +128,11 @@ nav {
   background-color: #ffd978;
   width: 103px;
   height: 100%;
-  opacity: 0.75;
   display: flex;
   flex-direction: column;
   padding: 1rem 0;
   padding-bottom: 2rem;
+  z-index: 1000000;
 }
 .logo {
   text-align: center;

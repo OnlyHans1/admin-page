@@ -55,12 +55,6 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="templateToPrint" style="display: none">
-    <!-- QR: ticketsData.value.BarcodeUsage[0].qrPath
-
-    v-for="(trans, i) in ticketsData.value.detailTrans" :key="i"
-    Name: trans.order ? trans.order.name || "Event" -->
-  </div>
   <div class="generate-tickets__container flex fd-col h-full">
     <div class="generate-tickets__header flex align-items-center pd-1">
       <h3 class="fw-600">Generate Tickets</h3>
@@ -92,9 +86,44 @@ onMounted(() => {
       </div>
     </div>
     <div>
-      <div ref="dataRef">
+    </div>
+
+    <div
+      class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
+    >
+      <button
+        class="generate-tickets__btn-print flex align-items-center gap[0.5]"
+        @click="generatePDF"
+      >
+        <p class="fw-700">Print Tickets</p>
+        <ph-printer :size="32" />
+      </button>
+      <button class="generate-tickets__btn-email">
+        <div
+          v-if="!emailCooldown"
+          @click="sendEmailToUser()"
+          class="flex align-items-center gap[0.5]"
+        >
+          <p class="fw-700">Kirim ke Email</p>
+          <ph-paper-plane-tilt :size="32" />
+        </div>
+        <div v-else>
+          <p class="fw-700">Mengirim Email<span class="send-email__text-cooldown"></span></p>
+        </div>
+      </button>
+    </div>
+    <button
+      class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-2"
+      @click="toHomepage"
+    >
+      <ph-caret-left :size="16" weight="bold" />
+      <p>Kembali ke Dashboard</p>
+    </button>
+  </div>
+  <div style="display: none;">
+    <div ref="dataRef" style="width: 100%;">
         <div class="ticket">
-          <div style="display: flex; white-space: nowrap; flex-wrap: nowrap; width: 100%">
+          <div style="display: flex; width: 100%; overflow-x: auto; flex-wrap: nowrap;">
             <div v-for="(ticket, index) in ticketsData.detailTrans" :key="index" class="tickets-container" >
               <div v-for="ticketAmount in ticket.amount" :key="ticketAmount">
                 <section class="ticket" >
@@ -160,39 +189,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
-    </div>
 
-    <div
-      class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
-    >
-      <button
-        class="generate-tickets__btn-print flex align-items-center gap[0.5]"
-        @click="generatePDF"
-      >
-        <p class="fw-700">Print Tickets</p>
-        <ph-printer :size="32" />
-      </button>
-      <button class="generate-tickets__btn-email">
-        <div
-          v-if="!emailCooldown"
-          @click="sendEmailToUser()"
-          class="flex align-items-center gap[0.5]"
-        >
-          <p class="fw-700">Kirim ke Email</p>
-          <ph-paper-plane-tilt :size="32" />
-        </div>
-        <div v-else>
-          <p class="fw-700">Mengirim Email<span class="send-email__text-cooldown"></span></p>
-        </div>
-      </button>
-    </div>
-    <button
-      class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-2"
-      @click="toHomepage"
-    >
-      <ph-caret-left :size="16" weight="bold" />
-      <p>Kembali ke Dashboard</p>
-    </button>
   </div>
 </template>
 
@@ -346,7 +343,7 @@ h6 {
   display: flex;
   min-width: fit-content;
   width: fit-content;
-  height: 150px;
+  /* height: 150px; */
   border-radius: 0.5rem;
   overflow: hidden;
   position: relative;

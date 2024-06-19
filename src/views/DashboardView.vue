@@ -51,9 +51,14 @@ function selectAll(event) {
 }
 const updateAmount = (amount) => {
   if (amount >= CheckoutHelper.maxTickets.value) {
-    assignAlert(true, 'Error', 'danger', `Maaf, tiket tidak bisa melebihi ${CheckoutHelper.maxTickets.value} tiket!`)
+    assignAlert(
+      true,
+      'Error',
+      'danger',
+      `Maaf, tiket tidak bisa melebihi ${CheckoutHelper.maxTickets.value} tiket!`
+    )
     selectedItems.value[0].amount = CheckoutHelper.maxTickets.value
-  } else if(amount === ''){
+  } else if (amount === '') {
     selectedItems.value[0].amount = 1
   } else {
     selectedItems.value[0].amount = amount
@@ -76,7 +81,6 @@ onMounted(() => {
 })
 onUnmounted(() => {
   window.removeEventListener('click', closeCartOnClickOutside)
-
 })
 </script>
 
@@ -104,26 +108,36 @@ onUnmounted(() => {
       </div>
       <div class="dashboard-cart-popup__content h-full flex fd-col justify-content-sb">
         <div class="dashboard-cart-popup__content-items-container pd-1 flex fd-col gap[0.5]">
-          <div v-for="(item, index) in userCarts" :key="index" @click="handleItemClick(item)"
-          class="dashboard-cart-popup__content-items flex align-items-center pd[0.5] gap[0.5]"
-        >
-          <img
-            :src="
-              item.image
-                ? getImageURL(item.image)
-                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-            "
-          />
-          <div class="dashboard-cart-popup__items-desc flex fd-col align-items-f-start justify-content-sb pd[0.5]">
-            <p class="to-ellipsis">{{ item.name }}</p>
-            <p class="to-ellipsis">{{ item.category?.name }}</p>
-            <p class="to-ellipsis">
-              Rp. {{ `${formatCurrency(item.price)} x ${item.amount} Tiket` }}
-            </p>
+          <div
+            v-for="(item, index) in userCarts"
+            :key="index"
+            @click="handleItemClick(item)"
+            class="dashboard-cart-popup__content-items flex align-items-center pd[0.5] gap[0.5]"
+          >
+            <img
+              :src="
+                item.image
+                  ? getImageURL(item.image)
+                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+              "
+            />
+            <div
+              class="dashboard-cart-popup__items-desc flex fd-col align-items-f-start justify-content-sb pd[0.5]"
+            >
+              <p class="to-ellipsis">{{ item.name }}</p>
+              <p class="to-ellipsis">{{ item.category?.name }}</p>
+              <p class="to-ellipsis">
+                Rp. {{ `${formatCurrency(item.price)} x ${item.amount} Tiket` }}
+              </p>
+            </div>
           </div>
-        </div></div>
+        </div>
         <div class="dashboard-cart-popup__checkout w-full flex justify-content-center pd-block-1">
-          <button type="submit" class="dashboard-cart-popup__checkout-btn flex align-items-center justify-content-sb fw-700 cursor-pointer" @click="router.push({ name:'checkout' })">
+          <button
+            type="submit"
+            class="dashboard-cart-popup__checkout-btn flex align-items-center justify-content-sb fw-700 cursor-pointer"
+            @click="router.push({ name: 'checkout' })"
+          >
             Pergi ke Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
@@ -133,7 +147,10 @@ onUnmounted(() => {
 
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
       <div class="dashboard-add__container">
-        <button class="dashboard-add__button flex fd-col align-items-center justify-content-center" @click="navigateToAdd">
+        <button
+          class="dashboard-add__button flex fd-col align-items-center justify-content-center"
+          @click="navigateToAdd"
+        >
           <span class="dashboard-add__icon flex align-self-center">
             <ph-plus :size="32" weight="light" />
           </span>
@@ -143,7 +160,11 @@ onUnmounted(() => {
 
       <div class="dashboard-recent__container flex fd-col">
         <h6>Baru Ditambahkan</h6>
-        <div class="dashboard__card-container flex fd-row pd[0.5] vw-80" :class="{expanded: dataDashboard.length > 5}">
+        <div
+          class="dashboard__card-container flex fd-row pd[0.5]"
+          :class="{ expanded: dataDashboard.length > 5 }"
+          style="width: 100vw"
+        >
           <div
             v-for="(item, index) in dataDashboard"
             :key="index"
@@ -173,7 +194,10 @@ onUnmounted(() => {
       :class="`dashboard-${category.toLowerCase()}__container w-full`"
     >
       <h4>{{ category }}</h4>
-      <div class="dashboard__card-container flex fd-row w-full pd-top-1 pd-sd-2" :class="{expanded: items.length > 5}">
+      <div
+        class="dashboard__card-container flex fd-row w-full pd-top-1 pd-sd-2"
+        :class="{ expanded: items.length > 5 }"
+      >
         <div
           v-for="(item, index) in items"
           :key="index"
@@ -228,7 +252,13 @@ onUnmounted(() => {
                 <button @click.stop="decreaseAmount(selectedItems[0])">
                   <ph-minus-circle :size="24" />
                 </button>
-                <input type="number" class="popup-order__amount-input fs-h5" v-model="selectedItems[0].amount" @input="updateAmount(selectedItems[0].amount)" @focus="selectAll($event)"></input>
+                <input
+                  type="number"
+                  class="popup-order__amount-input fs-h5"
+                  v-model="selectedItems[0].amount"
+                  @input="updateAmount(selectedItems[0].amount)"
+                  @focus="selectAll($event)"
+                />
                 <button @click.stop="increaseAmount(selectedItems[0])">
                   <ph-plus-circle :size="24" />
                 </button>
@@ -514,7 +544,7 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-input[type="number"] {
+input[type='number'] {
   appearance: textfield;
   -moz-appearance: textfield;
 }
