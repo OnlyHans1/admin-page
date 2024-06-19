@@ -183,7 +183,7 @@ const printData = () => {
     item.data.forEach((value, colIndex) => {
       rowData.push(`${value}`)
       total += value
-      monthlyTotals[colIndex] += value 
+      monthlyTotals[colIndex] += value
     })
     rowData.push(`${total}`)
     monthlyTableData.push(rowData)
@@ -230,11 +230,9 @@ const printData = () => {
   )
   win.document.write(monthContainer.outerHTML)
   win.document.write('</body></html>')
+  win.window.print()
   win.document.close()
 
-  win.onload = function () {
-    win.print()
-  }
 }
 
 
@@ -418,7 +416,7 @@ const fetchTableDataReport = async () => {
       throw new Error('Failed to fetch data Report')
     }
     const res = await response.json()
-    if(res.data) activityReportData.value = res.data.slice(0, 200)
+    if (res.data) activityReportData.value = res.data.slice(0, 200)
   } catch (error) {
     console.error('Error fetching data Report:', error)
   }
