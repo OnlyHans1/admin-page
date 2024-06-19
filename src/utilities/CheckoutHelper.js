@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import GlobalHelper from './GlobalHelper'
 import LoginHelper from './LoginHelper'
 import DashboardHelper from './DashboardHelper'
+import html2pdf from 'html2pdf.js';
 
 const {
   DB_BASE_URL,
@@ -489,27 +490,29 @@ const sendEmailToUser = async () => {
   }
 }
 const printTickets = async () => {
-  try {
-    let response = await fetch(
-      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/print-transaction`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...ticketsData.value
-        })
-      }
-    )
+  // try {
+  //   let response = await fetch(
+  //     `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/print-transaction`,
+  //     {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json'
+  //       },
+  //       body: JSON.stringify({
+  //         ...ticketsData.value
+  //       })
+  //     }
+  //   )
 
-    if (!response.ok) {
-      showLoader.value = false
-      throw new Error('Failed to print data!')
-    }
-  } catch (error) {
-    console.error('Error fetch data:', error)
-  }
+  //   if (!response.ok) {
+  //     showLoader.value = false
+  //     throw new Error('Failed to print data!')
+  //   }
+  // } catch (error) {
+  //   console.error('Error fetch data:', error)
+  // }
+
+
 }
 
 export default {
