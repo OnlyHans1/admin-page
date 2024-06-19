@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
@@ -48,6 +48,12 @@ onMounted(() => {
 </script>
 
 <template>
+  <div ref="templateToPrint" style="display: none;">
+    <!-- QR: ticketsData.value.BarcodeUsage[0].qrPath
+
+    v-for="(trans, i) in ticketsData.value.detailTrans" :key="i"
+    Name: trans.order ? trans.order.name || "Event" -->
+  </div>
   <div class="generate-tickets__container flex fd-col h-full">
     <div class="generate-tickets__header flex align-items-center pd-1">
       <h3 class="fw-600">Generate Tickets</h3>
@@ -55,20 +61,13 @@ onMounted(() => {
     <div class="generate-tickets__content pd-sd-2 pd-block-1">
       <div class="preview flex fd-col gap-1 pd-1">
         <h5>Pratinjau</h5>
-        <div
-          v-for="(ticket, index) in ticketsData.detailTrans"
-          :key="index"
-          class="generate-tickets__detail-transaction flex justify-content-sb"
-        >
+        <div v-for="(ticket, index) in ticketsData.detailTrans" :key="index"
+          class="generate-tickets__detail-transaction flex justify-content-sb">
           <div class="flex gap-1">
-            <img
-              :src="
-                ticket.order.image
-                  ? getImageURL(ticket.order.image)
-                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-              "
-              class="generate-tickets__detail-transaction-image"
-            />
+            <img :src="ticket.order.image
+          ? getImageURL(ticket.order.image)
+          : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+          " class="generate-tickets__detail-transaction-image" />
             <div class="flex fd-col">
               <p class="fw-600">{{ `${ticket.order.name} (${ticket.order.category.name})` }}</p>
               <p>{{ `${formatCurrency(ticket.order.price)} x ${ticket.amount} Tiket` }}</p>
@@ -83,22 +82,13 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div
-      class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
-    >
-      <button
-        class="generate-tickets__btn-print flex align-items-center gap[0.5]"
-        @click="printTickets"
-      >
+    <div class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1">
+      <button class="generate-tickets__btn-print flex align-items-center gap[0.5]" @click="printTickets">
         <p class="fw-700">Print Tickets</p>
         <ph-printer :size="32" />
       </button>
       <button class="generate-tickets__btn-email">
-        <div
-          v-if="!emailCooldown"
-          @click="sendEmailToUser()"
-          class="flex align-items-center gap[0.5]"
-        >
+        <div v-if="!emailCooldown" @click="sendEmailToUser()" class="flex align-items-center gap[0.5]">
           <p class="fw-700">Kirim ke Email</p>
           <ph-paper-plane-tilt :size="32" />
         </div>
@@ -109,13 +99,39 @@ onMounted(() => {
     </div>
     <button
       class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-2"
-      @click="toHomepage"
-    >
+      @click="toHomepage">
       <ph-caret-left :size="16" weight="bold" />
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
 </template>
+
+<script>
+import html2pdf from "html2pdf.js";
+export default {
+  data() {
+    return {
+      tiketDatas: ref([])
+    }
+  },
+  methods: {
+    generatePrintTiket() {
+      const element = this.$refs.templateToPrint
+      const options = {
+        jsPDF: {
+          unit: "mm",
+          format: "a4",
+          orientation: "portrait",
+        }
+      }
+      html2pdf().from(element).set(options).outputPdf().get('pdf').then(pdfObj => {
+        pdfObj.autoPrint();
+        window.open(pdfObj.output("bloburl"))
+      });
+    }
+  }
+}
+</script>
 
 <style scoped>
 .generate-tickets__return-btn {
@@ -172,9 +188,11 @@ onMounted(() => {
   0% {
     content: '.';
   }
+
   33% {
     content: '..';
   }
+
   66% {
     content: '...';
   }

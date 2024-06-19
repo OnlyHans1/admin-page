@@ -436,18 +436,7 @@ const sendEmailToUser = async () => {
       status: ''
     })
     emailCooldown.value = true
-    let response = await fetch(
-      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/email-transaction`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          ...ticketsData.value
-        })
-      }
-    )
+    let response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/generate-email-invoice/${ticketsData.value.id}`)
 
     if (!response.ok) {
       emailCooldown.value = false
@@ -469,6 +458,7 @@ const sendEmailToUser = async () => {
     }
 
     const res = await response.json()
+    console.log(res)
     emailCooldown.value = false
     const index = sendQueue.value.findIndex(
       (queue) =>
