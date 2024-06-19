@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, nextTick } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
@@ -80,6 +80,12 @@ onMounted(() => {
 </script>
 
 <template>
+  <div ref="templateToPrint" style="display: none">
+    <!-- QR: ticketsData.value.BarcodeUsage[0].qrPath
+
+    v-for="(trans, i) in ticketsData.value.detailTrans" :key="i"
+    Name: trans.order ? trans.order.name || "Event" -->
+  </div>
   <div class="generate-tickets__container flex fd-col h-full">
     <div class="generate-tickets__header flex align-items-center pd-1">
       <h3 class="fw-600">Generate Tickets</h3>
@@ -212,6 +218,38 @@ onMounted(() => {
   </div>
 </template>
 
+<script>
+import html2pdf from 'html2pdf.js'
+export default {
+  data() {
+    return {
+      tiketDatas: ref([])
+    }
+  },
+  methods: {
+    generatePrintTiket() {
+      const element = this.$refs.templateToPrint
+      const options = {
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait'
+        }
+      }
+      html2pdf()
+        .from(element)
+        .set(options)
+        .outputPdf()
+        .get('pdf')
+        .then((pdfObj) => {
+          pdfObj.autoPrint()
+          window.open(pdfObj.output('bloburl'))
+        })
+    }
+  }
+}
+</script>
+
 <style scoped>
 .generate-tickets__return-btn {
   background-color: var(--color-primary);
@@ -267,9 +305,11 @@ onMounted(() => {
   0% {
     content: '.';
   }
+
   33% {
     content: '..';
   }
+
   66% {
     content: '...';
   }

@@ -220,6 +220,7 @@ const printData = () => {
   yearContainer.appendChild(yearlyTable)
   monthContainer.appendChild(monthlyTable)
   const win = window.open('', '', 'fullscreen=yes')
+  console.log('Test')
   win.document.write('<html><head><title>Data Tingkat Keramaian</title></head><body>')
   win.document.write(
     `<h1 style="text-align: center;">Data Tingkat Keramaian Tahun ${selectedYear.value}</h1>`
