@@ -13,8 +13,6 @@ const { ticketsData, emailCooldown, sendEmailToUser } = CheckoutHelper
 const router = useRouter()
 const route = useRoute()
 
-const dataRef = ref(null) // Declare a ref for the element
-
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
 }
@@ -47,30 +45,7 @@ const fetchTickets = async (id) => {
   }
 }
 
-const generatePDF = () => {
-  const element = dataRef.value // Access the ref value
-
-  if (element) {
-    html2pdf(element, {
-      margin: 2,
-      filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2 },
-      jsPDF: {
-        unit: 'mm',
-        format: 'a4',
-        orientation: 'portrait',
-        putOnlyUsedFonts: true,
-        scale: 0.8
-      }
-    })
-  } else {
-    console.error('Element not found or not yet rendered')
-  }
-}
-
 const printTickets = async () => {
-  await nextTick() // Ensuring DOM updates
   generatePDF()
 }
 
@@ -116,9 +91,8 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    //desain ticket
     <div>
-      <div ref="dataRef">
+      <div ref="dataRef" style="display: none">
         <div class="ticket">
           <div>
             <div class="tickets-container" style="display: flex; flex-wrap: wrap; width: 100%">
@@ -141,9 +115,19 @@ onMounted(() => {
                           </div>
                           <h6 class="ticket_title">KERATON KASEPUHAN CIREBON</h6>
                           <div class="ticket-qr">
-                            <img src="../assets/images/logo.png" alt="Keraton Kasepuhan Cirebon" />
+                            <img
+                              src="../assets/images/testqr.jpg"
+                              alt="Keraton Kasepuhan Cirebon"
+                            />
 
-                            <!-- <img src="ticketQR[index]" alt="QR Code" /> -->
+                            <!-- <img
+                              :src="
+                                ticketsData.BarcodeUsage.length > 0
+                                  ? ticketsData.BarcodeUsage[0].qrPath
+                                  : '../assets/images/logo.png'
+                              "
+                              alt="QR Code"
+                            /> -->
                           </div>
                         </div>
                       </div>
@@ -158,13 +142,21 @@ onMounted(() => {
                     <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
                     <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
                     <div class="ticket-name_content">
-                      <div style="display: flex; justify-content: space-around; width: 60%">
+                      <div
+                        style="
+                          display: flex;
+                          justify-content: space-around;
+                          width: 60%;
+                          margin-bottom: 10px;
+                        "
+                      >
                         <img src="../assets/images/logo.png" alt="" class="logo-name" />
                         <span>wisata</span>
                       </div>
                       <h3
                         class="ticket-name_title"
                         :class="{ 'long-text': ticket.order.name.length > 20 }"
+                        style="line-height: 0.95; font-size: 18px"
                       >
                         {{ ticket.order.name }}
                       </h3>
@@ -175,11 +167,6 @@ onMounted(() => {
               </div>
             </div>
           </div>
-          <p>Nama Event:</p>
-          <p>Kategori:</p>
-          <p>Harga:</p>
-          <p>Jumlah:</p>
-          <p>Total:</p>
         </div>
       </div>
     </div>
@@ -189,7 +176,7 @@ onMounted(() => {
     >
       <button
         class="generate-tickets__btn-print flex align-items-center gap[0.5]"
-        @click="printTickets"
+        @click="generatePDF"
       >
         <p class="fw-700">Print Tickets</p>
         <ph-printer :size="32" />
@@ -227,24 +214,32 @@ export default {
     }
   },
   methods: {
-    generatePrintTiket() {
-      const element = this.$refs.templateToPrint
-      const options = {
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait'
-        }
-      }
-      html2pdf()
-        .from(element)
-        .set(options)
-        .outputPdf()
-        .get('pdf')
-        .then((pdfObj) => {
-          pdfObj.autoPrint()
-          window.open(pdfObj.output('bloburl'))
+    generatePDF() {
+      const element = this.$refs.dataRef
+
+      if (element) {
+        html2pdf(element, {
+          margin: 2,
+          filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
+          image: { type: 'jpeg', quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'landscape',
+            putOnlyUsedFonts: true,
+            scale: 0.8
+          }
         })
+          .outputPdf()
+          .get('pdf')
+          .then((pdfObj) => {
+            pdfObj.autoPrint()
+            window.open(pdfObj.output('bloburl'))
+          })
+      } else {
+        console.error('Element not found or not yet rendered')
+      }
     }
   }
 }
@@ -358,7 +353,7 @@ h6 {
 
 .ticket {
   display: flex;
-  min-width: 470px;
+  min-width: fit-content;
   width: fit-content;
   height: 150px;
   border-radius: 0.5rem;
@@ -429,7 +424,6 @@ img.bg-tiket {
 .ticket-main_content {
   display: flex;
   align-items: center;
-  gap: 0.2rem;
 }
 
 .ticket-logo img {
@@ -456,7 +450,7 @@ img.bg-tiket {
 
 .triangle-divider2 {
   position: absolute;
-  left: 348px;
+  left: 335px;
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
@@ -482,14 +476,14 @@ img.bg-tiket {
 }
 
 .ticket-name_container {
-  width: fit-content;
+  width: 130px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   height: 100%;
   align-items: center;
   border-left: 1px solid #ccc;
-  background-color: #eed184;
+  background-color: #e7c66e;
   position: relative;
   border-top-right-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
@@ -504,7 +498,6 @@ img.bg-tiket {
   justify-content: center;
   width: 7rem;
   height: 80%;
-  padding-top: 10px;
   border: 1px solid #000;
   border-radius: 0.3rem;
 }
@@ -538,24 +531,24 @@ img.logo-name {
 img.Decor1 {
   position: absolute;
   height: 100%;
-  width: 15rem;
+  width: 100%;
   object-fit: cover;
   mix-blend-mode: multiply;
-  opacity: 90%;
+  opacity: 100%;
 }
 
 .Decor1:nth-child(1) {
   bottom: 0;
   right: 0;
   border-bottom-right-radius: 0.8rem;
-  width: 5.5rem;
+  width: 100%;
 }
 
 .Decor1:nth-child(2) {
   top: 0;
   left: 0;
   transform: rotate(180deg);
-  width: 5.5rem;
+  width: 100%;
   border-bottom-right-radius: 1rem;
   border-bottom-left-radius: 2rem;
 }
