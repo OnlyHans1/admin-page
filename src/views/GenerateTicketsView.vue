@@ -92,12 +92,12 @@ onMounted(() => {
       </div>
     </div>
     <div>
-      <div ref="dataRef" style="display: none">
+      <div ref="dataRef">
         <div class="ticket">
-          <div>
-            <div class="tickets-container" style="display: flex; flex-wrap: wrap; width: 100%">
-              <div v-for="(ticket, index) in ticketsData.detailTrans" :key="index">
-                <section class="ticket">
+          <div style="display: flex; white-space: nowrap; flex-wrap: nowrap; width: 100%">
+            <div v-for="(ticket, index) in ticketsData.detailTrans" :key="index" class="tickets-container" >
+              <div v-for="ticketAmount in ticket.amount" :key="ticketAmount">
+                <section class="ticket" >
                   <div class="ticket-main_container">
                     <img
                       src="../assets/images/bg-keraton.png"
@@ -107,7 +107,7 @@ onMounted(() => {
                     <div class="ticket-padding">
                       <div class="ticket-content">
                         <div class="ticket-main_header">
-                          <p>Tiket Masuk / Entry Pass</p>
+                          <p>Tiket Masuk / Entry Pass {{ ticketAmount }}</p>
                         </div>
                         <div class="ticket-main_content">
                           <div class="ticket-logo">
@@ -119,15 +119,6 @@ onMounted(() => {
                               src="../assets/images/testqr.jpg"
                               alt="Keraton Kasepuhan Cirebon"
                             />
-
-                            <!-- <img
-                              :src="
-                                ticketsData.BarcodeUsage.length > 0
-                                  ? ticketsData.BarcodeUsage[0].qrPath
-                                  : '../assets/images/logo.png'
-                              "
-                              alt="QR Code"
-                            /> -->
                           </div>
                         </div>
                       </div>
