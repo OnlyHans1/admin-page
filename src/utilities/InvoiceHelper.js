@@ -61,16 +61,15 @@ const mapInvoiceOrders = (data) => {
 }
 const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
-    const discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
+    let discountAmount = 0
+    if(data.discount) discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
     return data.detailTrans.map((item) => {
       const orderName = item.order ? item.order.name : item.event.name
       const orderCategoryName = item.order ? item.order.category.name : "Event"
       const guideName = item.guide ? item.guide.name : ''
       const orderPrice = Number(item.order.price).toLocaleString('id-ID')
       const orderAmount = Number(item.amount).toLocaleString('id-ID')
-      const orderDiscount = Number(
-        (item.order.price * orderAmount * discountAmount) / 100
-      ).toLocaleString('id-ID')
+      const orderDiscount = Number((item.order.price * orderAmount * discountAmount) / 100).toLocaleString('id-ID')
       const formattedDiscount = `Rp. ${orderDiscount},00 (${discountAmount}%)`
       const totalPrice = Number(item.amount * (item.order ? item.order.price : item.event.price)).toLocaleString('id-ID')
 
@@ -149,21 +148,21 @@ const formatDate = (dateTime) => {
 }
 
 const showDetail = (item) => {
-  selectedItem.value = {
-    cashier: `${item.user.name} (${item.user.email})`,
-    customer: `${item.customer.name} (${item.customer.email})`,
-    reservation: mapInvoiceDetails(item),
-    appointment: formatDate(item.plannedDate),
-    number: item.customer.number
-      ? item.customer.number
-      : item.user.number
-        ? item.user.number
-        : null,
-    qr: item.qr[0],
-    payment: capitalizeFirstLetter(item.method),
-    total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
+  try{
+    selectedItem.value = {
+      cashier: `${item.user.name} (${item.user.email})`,
+      customer: `${item.customer?.name || item.user.name} (${item.customer?.email || item.user.email})`,
+      reservation: mapInvoiceDetails(item),
+      appointment: formatDate(item.plannedDate),
+      number: item.customer?.number ? item.customer.number : item.user.number,
+      qr: item.BarcodeUsage.length > 0 ? item.BarcodeUsage[0].qrPath : item.qr[0],
+      payment: capitalizeFirstLetter(item.method),
+      total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
+    }
+    showDetailPopup()
+  }catch(err){
+    console.log(err)
   }
-  showDetailPopup()
 }
 
 /* InvoiceDetail Helper */
