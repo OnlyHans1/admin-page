@@ -49,7 +49,7 @@ td {
 .report-activity__table {
   max-height: calc(374px - 2rem);
   overflow-y: overlay;
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 .report-activity__table::-webkit-scrollbar {
   width: 4px;
@@ -65,6 +65,7 @@ td {
 .report-activity__table-data {
   border-collapse: collapse;
   outline: 0;
+  overflow-x: auto;
   width: 100%;
 }
 .report-activity__table-header th {

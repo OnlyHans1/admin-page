@@ -255,7 +255,7 @@ onMounted(() => {
 
 <style scoped>
 .report-information__container {
-  width: 1085px;
+  width: 985px;
 }
 .report-information__income-revenue,
 .report-information__ticket-sold,
@@ -389,5 +389,160 @@ input {
 }
 .filter__input-dropdown_menu p:hover:last-child {
   border-radius: 0 0 0.5rem 0.5rem;
+}
+.report__container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.report-information__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.report-information__income-container,
+.report-information__ticketing-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-information__income-revenue,
+.report-information__ticket-sold,
+.report-information__ticketing-container {
+  border-radius: 20px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+  padding: 1rem;
+}
+
+.report-revenue__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.report-revenue__chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+@media (min-width: 1200px) {
+  .report-revenue__chart-container {
+    margin-left: 0px;
+  }
+}
+@media (max-width: 970px) {
+  .report-revenue__chart-container {
+    margin: 20px;
+  }
+}
+
+.report-revenue__icons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.report-activity__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-activity__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-activity__table-container {
+  width: 100%;
+  border-radius: 20px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+  padding: 1rem;
+}
+
+.filter__input-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  background-color: transparent;
+}
+
+.filter__input-dropdown input {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.filter__input-dropdown_menu {
+  position: absolute;
+  top: 2.6rem;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.filter__input-dropdown_menu.active {
+  display: block;
+}
+
+/* Responsive styles */
+/* @media (min-width: 768px) {
+  .report-information__container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .report-information__income-container,
+  .report-information__ticketing-container {
+    width: 90%;
+  }
+
+  .report-revenue__chart-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+} */
+
+@media (min-width: 1024px) {
+  .report-activity__table-container {
+    width: fit-content;
+  }
+  .report-information__container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .report-information__income-container,
+  .report-information__ticketing-container {
+    width: 50%;
+  }
+
+  .report-revenue__chart-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+@media (max-width: 704px) {
+  .fs-display {
+    font-size: xx-large;
+  }
 }
 </style>

@@ -18,7 +18,7 @@ const chartOptions = ref({
         zoomin: false,
         zoomout: false,
         pan: true,
-        reset: '<i class="ri-loop-left-line"></i>',
+        reset: '<i class="ri-loop-left-line"></i>'
       }
     },
     type: 'line',
@@ -34,7 +34,7 @@ const chartOptions = ref({
             min: dataCategory.length - 13,
             max: dataCategory.length
           }
-        };
+        }
       },
       beforeZoom: (chartContext, opts) => {
         return {
@@ -42,7 +42,7 @@ const chartOptions = ref({
             min: opts.xaxis.min < 0 ? 0 : opts.xaxis.min,
             max: opts.xaxis.max > dataCategory.length ? dataCategory.length : opts.xaxis.max
           }
-        };
+        }
       }
     }
   },
@@ -52,7 +52,7 @@ const chartOptions = ref({
   xaxis: {
     type: 'category',
     categories: dataCategory,
-    position: 'start',  
+    position: 'start',
     axisTicks: {
       show: false
     },
@@ -83,7 +83,7 @@ const chartOptions = ref({
       color: '#000000',
       height: 1,
       offsetX: 0,
-      offsetY: 0,
+      offsetY: 0
     },
     labels: {
       show: true,
@@ -103,9 +103,13 @@ const chartOptions = ref({
   }
 })
 
-watch(dataCategory, (newValue, oldValue) => {
-  chartOptions.value.xaxis.categories = newValue
-}, { immediate: true })
+watch(
+  dataCategory,
+  (newValue, oldValue) => {
+    chartOptions.value.xaxis.categories = newValue
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -116,7 +120,11 @@ watch(dataCategory, (newValue, oldValue) => {
         <p class="revenue-details__desc-subtitle">{{ targetDate }}</p>
       </div>
       <div class="revenue-details__legend">
-        <div class="revenue-details__legend-item flex align-items-center" v-for="(item, index) in dataSeries" :key="index">
+        <div
+          class="revenue-details__legend-item flex align-items-center"
+          v-for="(item, index) in dataSeries"
+          :key="index"
+        >
           <span
             class="revenue-details__legend-color"
             :style="{ backgroundColor: item.color }"
@@ -139,11 +147,42 @@ watch(dataCategory, (newValue, oldValue) => {
 
 <style>
 .revenue-details {
-  width: 531px;
+  width: 565px;
   padding: 1rem;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
   overflow-x: auto; /* Tambahkan overflow agar dapat digulir */
+}
+@media (max-width: 1400px) {
+  .revenue-details {
+    width: 525px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .revenue-details {
+    width: 500px;
+  }
+}
+@media (max-width: 1150px) {
+  .revenue-details {
+    width: 450px;
+  }
+}
+@media (max-width: 1100px) {
+  .revenue-details {
+    width: 420px;
+  }
+}
+@media (max-width: 1000px) {
+  .revenue-details {
+    width: 605px;
+  }
+}
+@media (max-width: 795px) {
+  .revenue-details {
+    width: 525px;
+  }
 }
 
 .revenue-details__desc-title {

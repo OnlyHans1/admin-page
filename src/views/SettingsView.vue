@@ -580,7 +580,7 @@ input:focus {
 .settings__menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 170px));
-  grid-gap: 1rem;
+  gap: 2.1rem;
 }
 
 .settings__menu-items {
@@ -635,10 +635,10 @@ input:focus {
   background: #ffffff;
   border-radius: 0.5rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 80vw;
+  width: 90vw;
   min-height: 70vh;
   overflow: hidden;
-  z-index: 100;
+  z-index: 9999;
   position: relative;
 }
 
