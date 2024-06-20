@@ -172,7 +172,7 @@ nav {
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
   cursor: pointer;
-  z-index: 999; /* Ensures it's above other elements */
+  z-index: 100; /* Ensures it's above other elements */
   transition: background-color 0.4s ease; /* Smooth transition for background color */
 }
 

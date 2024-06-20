@@ -153,35 +153,53 @@ watch(
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
   overflow-x: auto; /* Tambahkan overflow agar dapat digulir */
 }
+
+@media (min-width: 1500px) {
+  .revenue-details {
+    width: 565px;
+  }
+}
 @media (max-width: 1400px) {
   .revenue-details {
-    width: 525px;
+    width: 535px;
   }
 }
 
+@media (max-width: 1250px) {
+  .revenue-details {
+    width: 499px;
+  }
+}
 @media (max-width: 1200px) {
   .revenue-details {
-    width: 500px;
+    width: 665px;
   }
 }
-@media (max-width: 1150px) {
+
+@media (max-width: 924px) {
   .revenue-details {
-    width: 450px;
+    width: 720px;
   }
 }
-@media (max-width: 1100px) {
+@media (max-width: 900px) {
   .revenue-details {
-    width: 420px;
+    width: 665px;
   }
 }
-@media (max-width: 1000px) {
+@media (max-width: 828px) {
   .revenue-details {
-    width: 605px;
+    width: 565px;
   }
 }
-@media (max-width: 795px) {
+
+@media (max-width: 724px) {
   .revenue-details {
-    width: 525px;
+    width: 510px;
+  }
+}
+@media (max-width: 624px) {
+  .revenue-details {
+    width: 325px;
   }
 }
 

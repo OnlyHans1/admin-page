@@ -17,7 +17,6 @@ const {
   fetchTransactionList,
   searchQuery,
   resetSearch,
-  searchList,
   mapInvoiceOrders,
   selectedItem,
   splitDate,
@@ -30,9 +29,9 @@ watch(
   (newValue) => {
     if (typeof newValue === 'string') {
       searchQuery.value = newValue.toLowerCase()
-      getSearchQuery(searchQuery.value)
       fetchTransactionList()
-      searchList(searchQuery.value)
+      getSearchQuery(searchQuery.value)
+      // searchList(searchQuery.value)
     }
   }
 )
@@ -40,7 +39,6 @@ watch(
 onMounted(() => {
   GlobalHelper.showLoader.value = true
   fetchTransactionList()
-  searchList()
 })
 </script>
 
@@ -50,7 +48,6 @@ onMounted(() => {
       <div style="text-transform: capitalize; font-weight: 500; font-size: 1.875rem; width: 100%">
         {{ currentRoute }}
       </div>
-      <!-- Search -->
       <!-- <div class="invoice-search flex align-items-center" style="width: 30%">
         <i class="ri-search-line invoice-search__icon"></i>
         <input
@@ -66,7 +63,7 @@ onMounted(() => {
     </div>
 
     <!-- Invoice -->
-    <div class="invoice-table">
+    <div class="invoice-table" style="overflow-x: auto">
       <table>
         <thead>
           <tr class="invoice-table__row-header">
@@ -78,8 +75,8 @@ onMounted(() => {
             <th class="invoice-table__header">Email</th>
           </tr>
         </thead>
-        <tbody v-if="dataInvoice.length > 0">
-          <tr v-for="(item, index) in data" :key="index" class="invoice-table__row-data">
+        <tbody v-if="dataInvoice">
+          <tr v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
             <td class="invoice-table__data">{{ index + 1 }}</td>
             <td class="invoice-table__data">
               {{ item.customer ? item.customer.name : item.user.name }}

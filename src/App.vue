@@ -6,7 +6,7 @@ import LoginHelper from './utilities/LoginHelper'
 import WebLoader from './components/WebLoader.vue'
 import AlertCard from './components/AlertCard.vue'
 import Sidebar from './components/Sidebar.vue'
-import SendProgress from './components/SendProgress.vue'
+// import SendProgress from './components/SendProgress.vue'
 
 const { loggedIn, isAuthenticated } = LoginHelper
 
@@ -24,7 +24,7 @@ watchEffect(() => {
   </div>
   <AlertCard />
   <Sidebar v-if="loggedIn && showSidebar" />
-  <SendProgress v-if="loggedIn && showSidebar"/>
+  <!-- <SendProgress v-if="loggedIn && showSidebar"/> -->
   <div :class="[loggedIn ? 'pd-block-2' : 'no-pd-block', showSidebar ? 'pd-left-8' : 'no-pd-left']">
     <RouterView />
   </div>

@@ -14,9 +14,9 @@ const getSearchQuery = (query) => {
 const fetchTransactionList = async () => {
   try {
     let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
-    // if (searchQuery.value) {
-    //   url += `?search=${encodeURIComponent(searchQuery.value)}`
-    // }
+    if (searchQuery.value) {
+      url += `?search=${encodeURIComponent(searchQuery.value)}`
+    }
     const response = await fetch(url)
     if (!response.ok) {
       throw new Error('Failed to fetch data')
@@ -29,22 +29,22 @@ const fetchTransactionList = async () => {
   }
 }
 
-const searchList = async (search) => {
-  let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
-  const response = await fetch(url)
-  if (!response.ok) {
-    throw new Error('Failed to fetch data')
-  }
-  const res = await response.json()
-  data.value = res.data
-  console.log(data.value)
-  if (search) {
-    data.value = res.data.filter(item => {
-      return item.customer.name.toLowerCase().includes(search.toLowerCase());
-    });
-    console.log(data.value)
-  }
-}
+// const searchList = async (search) => {
+//   let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/detail-invoice`
+//   const response = await fetch(url)
+//   if (!response.ok) {
+//     throw new Error('Failed to fetch data')
+//   }
+//   const res = await response.json()
+//   data.value = res.data
+//   console.log(data.value)
+//   if (search) {
+//     data.value = res.data.filter(item => {
+//       return item.customer.name.toLowerCase().includes(search.toLowerCase());
+//     });
+//     console.log(data.value)
+//   }
+// }
 
 const mapInvoiceOrders = (data) => {
   if (data.detailTrans.length > 0) {
@@ -62,7 +62,7 @@ const mapInvoiceOrders = (data) => {
 const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
     let discountAmount = 0
-    if(data.discount) discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
+    if (data.discount) discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
     return data.detailTrans.map((item) => {
       const orderName = item.order ? item.order.name : item.event.name
       const orderCategoryName = item.order ? item.order.category.name : "Event"
@@ -148,19 +148,19 @@ const formatDate = (dateTime) => {
 }
 
 const showDetail = (item) => {
-  try{
+  try {
     selectedItem.value = {
       cashier: `${item.user.name} (${item.user.email})`,
       customer: `${item.customer?.name || item.user.name} (${item.customer?.email || item.user.email})`,
       reservation: mapInvoiceDetails(item),
       appointment: formatDate(item.plannedDate),
       number: item.customer?.number ? item.customer.number : item.user.number,
-      qr: item.BarcodeUsage.length > 0 ? item.BarcodeUsage[0].qrPath : item.qr[0],
-      payment: capitalizeFirstLetter(item.method),
+      qr: (Array.isArray(item.BarcodeUsage) && item.BarcodeUsage.length > 0) ? item.BarcodeUsage[0].qrPath : item.qr[0], payment: capitalizeFirstLetter(item.method),
       total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
     }
+    console.log(selectedItem)
     showDetailPopup()
-  }catch(err){
+  } catch (err) {
     console.log(err)
   }
 }
@@ -185,7 +185,6 @@ export default {
   getSearchQuery,
   fetchTransactionList,
   searchQuery,
-  searchList,
   resetSearch,
   mapInvoiceOrders,
   mapInvoiceDetails,

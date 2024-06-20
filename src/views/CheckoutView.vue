@@ -696,7 +696,7 @@ input[type='number'] {
   width: 100%;
   height: 100dvh;
   background-color: rgb(0, 0, 0, 0.2);
-  z-index: 999;
+  z-index: 200;
 }
 .order-details__payment-select-content_modal {
   position: fixed;
@@ -704,7 +704,7 @@ input[type='number'] {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 60%;
-  z-index: 100;
+  z-index: 300;
   background-color: rgb(245, 245, 245);
   border-radius: 0.5rem;
   box-shadow: 0px 2px 2px 0 rgb(0, 0, 0, 0.2);

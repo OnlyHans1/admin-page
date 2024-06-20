@@ -85,8 +85,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-    <div>
-    </div>
+    <div></div>
 
     <div
       class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
@@ -120,76 +119,76 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div style="display: none;">
-    <div ref="dataRef" style="width: 100%;">
-        <div class="ticket">
-          <div style="display: flex; width: 100%; overflow-x: auto; flex-wrap: nowrap;">
-            <div v-for="(ticket, index) in ticketsData.detailTrans" :key="index" class="tickets-container" >
-              <div v-for="ticketAmount in ticket.amount" :key="ticketAmount">
-                <section class="ticket" >
-                  <div class="ticket-main_container">
-                    <img
-                      src="../assets/images/bg-keraton.png"
-                      class="bg-tiket"
-                      alt="Background Keraton"
-                    />
-                    <div class="ticket-padding">
-                      <div class="ticket-content">
-                        <div class="ticket-main_header">
-                          <p>Tiket Masuk / Entry Pass {{ ticketAmount }}</p>
+  <div>
+    <div ref="dataRef" style="width: 100%">
+      <div>
+        <div style="display: flex; width: 100%; overflow-x: auto; flex-wrap: nowrap">
+          <div
+            v-for="(ticket, index) in ticketsData.detailTrans"
+            :key="index"
+            class="tickets-container"
+          >
+            <div v-for="ticketAmount in ticket.amount" :key="ticketAmount">
+              <section class="ticket">
+                <div class="ticket-main_container">
+                  <img
+                    src="../assets/images/bg-keraton.png"
+                    class="bg-tiket"
+                    alt="Background Keraton"
+                  />
+                  <div class="ticket-padding">
+                    <div class="ticket-content">
+                      <div class="ticket-main_header">
+                        <p>Tiket Masuk / Entry Pass {{ ticketAmount }}</p>
+                      </div>
+                      <div class="ticket-main_content">
+                        <div class="ticket-logo">
+                          <img src="../assets/images/logo.png" alt="Keraton Kasepuhan Cirebon" />
                         </div>
-                        <div class="ticket-main_content">
-                          <div class="ticket-logo">
-                            <img src="../assets/images/logo.png" alt="Keraton Kasepuhan Cirebon" />
-                          </div>
-                          <h6 class="ticket_title">KERATON KASEPUHAN CIREBON</h6>
-                          <div class="ticket-qr">
-                            <img
-                              src="../assets/images/testqr.jpg"
-                              alt="Keraton Kasepuhan Cirebon"
-                            />
-                          </div>
+                        <h6 class="ticket_title">KERATON KASEPUHAN CIREBON</h6>
+                        <div class="ticket-qr">
+                          <img src="../assets/images/testqr.jpg" alt="Keraton Kasepuhan Cirebon" />
                         </div>
                       </div>
                     </div>
                   </div>
-                  <div class="triangle-divider triangle-polygon1"></div>
-                  <div class="triangle-divider triangle-polygon2"></div>
-                  <div class="triangle-divider2 triangle-polygon1"></div>
-                  <div class="triangle-divider2 triangle-polygon2"></div>
-                  <div class="line-divider"></div>
-                  <div class="ticket-name_container">
-                    <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
-                    <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
-                    <div class="ticket-name_content">
-                      <div
-                        style="
-                          display: flex;
-                          justify-content: space-around;
-                          width: 60%;
-                          margin-bottom: 10px;
-                        "
-                      >
-                        <img src="../assets/images/logo.png" alt="" class="logo-name" />
-                        <span>wisata</span>
-                      </div>
-                      <h3
-                        class="ticket-name_title"
-                        :class="{ 'long-text': ticket.order.name.length > 20 }"
-                        style="line-height: 0.95; font-size: 18px"
-                      >
-                        {{ ticket.order.name }}
-                      </h3>
+                </div>
+                <div class="triangle-divider triangle-polygon1"></div>
+                <div class="triangle-divider triangle-polygon2"></div>
+                <div class="triangle-divider2 triangle-polygon1"></div>
+                <div class="triangle-divider2 triangle-polygon2"></div>
+                <div class="line-divider"></div>
+                <div class="ticket-name_container">
+                  <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
+                  <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
+                  <div class="ticket-name_content">
+                    <div
+                      style="
+                        display: flex;
+                        justify-content: space-around;
+                        width: 60%;
+                        margin-bottom: 10px;
+                      "
+                    >
+                      <img src="../assets/images/logo.png" alt="" class="logo-name" />
+                      <span>wisata</span>
                     </div>
+                    <h3
+                      class="ticket-name_title"
+                      :class="{ 'long-text': ticket.order.name.length > 20 }"
+                      style="line-height: 0.95; font-size: 18px"
+                    >
+                      {{ ticket.order.name }}
+                    </h3>
                   </div>
-                </section>
-                <div class="only-pdf"></div>
-              </div>
+                </div>
+              </section>
+              <div class="only-pdf"></div>
             </div>
           </div>
         </div>
       </div>
-
+    </div>
   </div>
 </template>
 

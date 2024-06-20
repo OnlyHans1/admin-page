@@ -638,7 +638,7 @@ input:focus {
   width: 90vw;
   min-height: 70vh;
   overflow: hidden;
-  z-index: 9999;
+  z-index: 100;
   position: relative;
 }
 

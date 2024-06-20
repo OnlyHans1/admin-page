@@ -294,7 +294,9 @@ onMounted(() => {
   line-height: 28px;
 }
 .report-activity__table-container {
-  width: 1100px;
+  width: 100%;
+  margin: auto;
+  padding: 1rem;
   height: 374px;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
@@ -435,6 +437,8 @@ input {
 }
 @media (min-width: 1200px) {
   .report-revenue__chart-container {
+    flex-direction: row;
+    justify-content: center;
     margin-left: 0px;
   }
 }
@@ -448,6 +452,7 @@ input {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  margin-right: 2rem;
 }
 
 .report-activity__container {
@@ -460,14 +465,9 @@ input {
 .report-activity__head {
   display: flex;
   align-items: center;
+  width: 95%;
+  margin: auto;
   justify-content: space-between;
-}
-
-.report-activity__table-container {
-  width: 100%;
-  border-radius: 20px;
-  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
-  padding: 1rem;
 }
 
 .filter__input-dropdown {
@@ -520,11 +520,17 @@ input {
     justify-content: center;
   }
 } */
-
-@media (min-width: 1024px) {
+@media (min-width: 1200px) {
   .report-activity__table-container {
-    width: fit-content;
+    width: 100%;
+    height: 374px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+    padding: 1rem;
   }
+}
+
+@media (min-width: 924px) {
   .report-information__container {
     flex-direction: row;
     justify-content: space-between;
@@ -534,10 +540,8 @@ input {
   .report-information__ticketing-container {
     width: 50%;
   }
-
-  .report-revenue__chart-container {
-    flex-direction: row;
-    justify-content: center;
+  .fs-display {
+    font-size: 50px;
   }
 }
 @media (max-width: 704px) {
