@@ -119,7 +119,7 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div>
+  <div style="display: none">
     <div ref="dataRef" style="width: 100%">
       <div>
         <div style="display: flex; width: 100%; overflow-x: auto; flex-wrap: nowrap">
@@ -467,7 +467,6 @@ img.bg-tiket {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  height: 100%;
   align-items: center;
   border-left: 1px solid #ccc;
   background-color: #e7c66e;
