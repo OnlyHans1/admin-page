@@ -119,7 +119,7 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div>
+  <div style="display: none">
     <div ref="dataRef" style="width: fit-content; height: fit-content">
       <div>
         <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
