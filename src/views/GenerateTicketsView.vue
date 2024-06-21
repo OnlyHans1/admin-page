@@ -119,16 +119,16 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div style="display: none">
-    <div ref="dataRef" style="width: 100%">
+  <div>
+    <div ref="dataRef" style="width: fit-content; height: fit-content">
       <div>
-        <div style="display: flex; width: 100%; overflow-x: auto; flex-wrap: nowrap">
+        <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
           <div
             v-for="(ticket, index) in ticketsData.detailTrans"
             :key="index"
             class="tickets-container"
           >
-            <div v-for="ticketAmount in ticket.amount" :key="ticketAmount">
+            <div v-for="ticketAmount in ticket.amount" :key="ticketAmount" style="margin: 5px">
               <section class="ticket">
                 <div class="ticket-main_container">
                   <img
@@ -203,7 +203,9 @@ export default {
   methods: {
     generatePDF() {
       const element = this.$refs.dataRef
-
+      // const elementheight = document.getElementById('ticket')
+      // const rect = elementheight.getBoundingClientRect()
+      // const height = rect.height * 0.264583
       if (element) {
         html2pdf(element, {
           margin: 2,
@@ -213,7 +215,7 @@ export default {
           jsPDF: {
             unit: 'mm',
             format: 'a4',
-            orientation: 'landscape',
+            orientation: 'portrait',
             putOnlyUsedFonts: true,
             scale: 0.8
           }
@@ -339,10 +341,11 @@ h6 {
 }
 
 .ticket {
+  /* transform: rotate(90deg); */
   display: flex;
   min-width: fit-content;
   width: fit-content;
-  /* height: 150px; */
+  height: 150px;
   border-radius: 0.5rem;
   overflow: hidden;
   position: relative;
@@ -477,7 +480,7 @@ img.bg-tiket {
 
 .ticket-name_content {
   position: relative;
-  transform: rotate(270deg);
+  transform: rotate(-90deg);
   display: flex;
   flex-direction: column;
   align-items: center;

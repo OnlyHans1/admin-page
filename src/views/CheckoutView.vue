@@ -95,11 +95,11 @@ const checkValidTransaction = () => {
       invalid.push('Kewarganegaraan')
     }
   }
-  if (isDomestik.value) {
-    if (!inputDomestik.value) {
-      invalid.push('Daerah')
-    }
-  }
+  // if (isDomestik.value) {
+  //   if (!inputDomestik.value) {
+  //     invalid.push('Daerah')
+  //   }
+  // }
   if (!selectedDate.value) invalid.push('Tanggal Pemesanan')
   if (!paymentSelection.value) invalid.push('Metode Pembayaran')
   return invalid
@@ -170,14 +170,15 @@ onMounted(() => {
                 </div>
               </div>
               <div style="display: flex">
-                <div class="order-details__dropdown" v-if="isMancanegara">
+                <div
+                  class="order-details__dropdown"
+                  v-if="isMancanegara"
+                  style="margin-right: 1rem"
+                >
                   <NationalityDropdown />
                 </div>
                 <div v-if="isDomestik">
-                  <div
-                    class="order-details__customer-input flex gap-1"
-                    style="margin-top: 0.2rem; margin-left: 1rem"
-                  >
+                  <div class="order-details__customer-input flex gap-1" style="margin-top: 0.2rem">
                     <div class="customer-details__input-placeholder">
                       <input
                         type="text"
