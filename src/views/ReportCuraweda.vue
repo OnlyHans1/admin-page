@@ -58,7 +58,24 @@
 
   <div style="margin-bottom: 1rem">
     <label for="filter-date" style="font-weight: bold; margin-right: 1rem">Filter by Date:</label>
-    <input type="date" id="filter-date" v-model="filterDate" @change="filterRecords" />
+    <div style="display: flex; align-items: center; gap: 1rem">
+      <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">From:</label>
+      <input
+        type="date"
+        id="filter-date-from"
+        v-model="filterDateFrom"
+        @change="filterRecords"
+        class="datepicker-input"
+      />
+      <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">To:</label>
+      <input
+        type="date"
+        id="filter-date-to"
+        v-model="filterDateTo"
+        @change="filterRecords"
+        class="datepicker-input"
+      />
+    </div>
   </div>
 
   <table class="history-report-table">
@@ -95,7 +112,8 @@ export default {
       revenueKeraton: ref({ CIH: 0, CIA: 0 }),
       revenueTotal: ref(0),
       historyRecords: ref([]),
-      filterDate: ref('')
+      filterDateFrom: ref(''),
+      filterDateTo: ref('')
     }
   },
   mounted() {
@@ -123,20 +141,21 @@ export default {
     },
 
     filterRecords() {
-      const date = new Date(this.filterDate.value)
+      const fromDate = new Date(this.filterDateFrom)
+      const toDate = new Date(this.filterDateTo)
       this.filteredRecords = this.historyRecords.filter((record) => {
         const recordDate = new Date(record.date)
-        return recordDate.toDateString() === date.toDateString()
+        return recordDate >= fromDate && recordDate <= toDate
       })
     }
   },
   computed: {
     filteredRecords() {
-      if (!this.filterDate) return this.historyRecords
-      const date = new Date(this.filterDate)
+      const fromDate = new Date(this.filterDateFrom)
+      const toDate = new Date(this.filterDateTo)
       return this.historyRecords.filter((record) => {
         const recordDate = new Date(record.date)
-        return recordDate.toDateString() === date.toDateString()
+        return recordDate >= fromDate && recordDate <= toDate
       })
     }
   }
@@ -174,6 +193,24 @@ span {
   line-height: 18px;
   position: relative;
   bottom: 20px;
+}
+
+.datepicker-input {
+  width: 200px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition:
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.datepicker-input:focus {
+  border-color: #66afe9;
+  outline: none;
+  box-shadow: 0 0 8px rgba(102, 175, 233, 0.6);
 }
 
 .history-report-table {
