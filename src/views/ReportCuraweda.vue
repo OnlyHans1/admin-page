@@ -89,7 +89,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="record in filteredRecords" :key="record.date">
+      <tr v-for="record in historyRecords" :key="record.date">
         <td>{{ record.date }}</td>
         <td>{{ formatCurrency(record.revenueKeraton.COH) }}</td>
         <td>{{ formatCurrency(record.revenueKeraton.CIA) }}</td>
@@ -118,6 +118,7 @@ export default {
   },
   mounted() {
     this.fetchData()
+    this.fetchTabel()
   },
   methods: {
     async fetchData() {
@@ -129,13 +130,45 @@ export default {
         const responseData = await response.json()
         this.revenueKeraton = responseData.data.revenueKeraton
         this.revenueCuraweda = responseData.data.revenueCuraweda
-        this.revenueTotal = responseData.data.revenueTotal
-        this.historyRecords = responseData.data.historyRecords
+        this.revenueTotal = responseData.data.total
       } catch (err) {
         console.log(err)
       }
     },
+    async fetchTabel(){
+      try{
+        let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue-tabel?`
+        if(this.filterDateFrom) url += `from=${this.filterDateFrom}`
+        if(this.filterDateTo) url += `to=${this.filterDateTo}`
+        const response = await fetch(url)
+        if (!response.ok) throw Error('Failed to fetch Data')
+        const responseData = await response.json()
+        this.historyRecords = this.formatTabelRecord(responseData.data)
+      }catch(err){
+        console.log(err)
+      }
+    },
 
+    formatTabelRecord(datas){
+      let tableRaw = {}
+      for(let data of datas){
+        const reservedDate = data.plannedDate.split('T')[0]
+        if(!tableRaw[reservedDate]) tableRaw[reservedDate] = {
+          date: reservedDate,
+          revenueKeraton: {
+            COH: 0,
+            CIA: 0
+          },
+          revenueCuraweda: 0,
+          totalRevenue: 0
+        }
+        tableRaw[reservedDate].revenueKeraton.COH += data.keratonIncome.COH
+        tableRaw[reservedDate].revenueKeraton.CIA += data.keratonIncome.CIA
+        tableRaw[reservedDate].revenueCuraweda += data.curawedaIncome.total
+        tableRaw[reservedDate].totalRevenue += data.total
+      }
+      return Object.values(tableRaw)
+    },
     formatCurrency(amount) {
       return Number(amount).toLocaleString('id-ID')
     },
