@@ -132,7 +132,7 @@ nav {
   flex-direction: column;
   padding: 1rem 0;
   padding-bottom: 2rem;
-  z-index: 1000000;
+  z-index: 999;
 }
 .logo {
   text-align: center;
@@ -172,7 +172,7 @@ nav {
   justify-content: center; /* Center horizontally */
   align-items: center; /* Center vertically */
   cursor: pointer;
-  z-index: 999; /* Ensures it's above other elements */
+  z-index: 100; /* Ensures it's above other elements */
   transition: background-color 0.4s ease; /* Smooth transition for background color */
 }
 
