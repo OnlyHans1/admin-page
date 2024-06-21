@@ -17,7 +17,7 @@ const {
 } = CheckoutHelper
 
 const props = defineProps({
-  nationalityWidth: { type: String, default: '17.75rem' }
+  nationalityWidth: { type: String, default: '11.8rem' }
 })
 
 watchEffect((onInvalidate) => {
@@ -59,7 +59,10 @@ onMounted(() => {
     >
       <div class="dropdown-nationality__result" :class="{ active: isNationalityDropdownOpen }">
         <div v-for="result in nationalityResult" :key="result.id">
-          <div class="nationality-item" @click="getNationality(result.id,result.name, result.code)">
+          <div
+            class="nationality-item"
+            @click="getNationality(result.id, result.name, result.code)"
+          >
             <img :src="getFlagImageUrl(result.code)" class="flag-icon" />
             <p class="dropdown-nationality__name">{{ result.name }}</p>
           </div>

@@ -17,6 +17,7 @@ const {
   showPaymentSelect,
   selectPayment,
   addTicket,
+  asalKota,
   reduceTicket,
   custName,
   custEmail,
@@ -36,6 +37,7 @@ const {
   recentTransactionId,
   createTransaction,
   selectedNationality,
+  inputDomestik,
   checkoutStatus,
   guideData,
   guideSelect,
@@ -58,9 +60,8 @@ const {
 } = CheckoutHelper
 
 const { grantAccessRoute, assignAlert, getImageURL } = GlobalHelper
-const { isMancanegara, saveToUserCarts, checkUserCarts } = DashboardHelper
+const { isMancanegara, isDomestik, saveToUserCarts, checkUserCarts } = DashboardHelper
 const { userData, userCarts } = LoginHelper
-
 const checkoutTransaction = async () => {
   const invalid = checkValidTransaction()
   if (totalTicketCount.value < 1) {
@@ -92,6 +93,11 @@ const checkValidTransaction = () => {
   if (isMancanegara.value) {
     if (!selectedNationality.value) {
       invalid.push('Kewarganegaraan')
+    }
+  }
+  if (isDomestik.value) {
+    if (!inputDomestik.value) {
+      invalid.push('Daerah')
     }
   }
   if (!selectedDate.value) invalid.push('Tanggal Pemesanan')
@@ -163,8 +169,28 @@ onMounted(() => {
                   <p>({{ userData.email }})</p>
                 </div>
               </div>
-              <div class="order-details__dropdown" v-if="isMancanegara">
-                <NationalityDropdown />
+              <div style="display: flex">
+                <div class="order-details__dropdown" v-if="isMancanegara">
+                  <NationalityDropdown />
+                </div>
+                <div v-if="isDomestik">
+                  <div
+                    class="order-details__customer-input flex gap-1"
+                    style="margin-top: 0.2rem; margin-left: 1rem"
+                  >
+                    <div class="customer-details__input-placeholder">
+                      <input
+                        type="text"
+                        required
+                        rows="1"
+                        v-model="asalKota"
+                        id="kota"
+                        autocomplete="Akota"
+                      />
+                      <label for="kota">Asal Kota</label>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div class="order-details__customer">
                 <div class="order-details__content w-full flex gap[0.5]">
@@ -694,9 +720,9 @@ input[type='number'] {
   top: 0;
   left: 0;
   width: 100%;
-  height: 100dvh;
+  height: 100vh;
   background-color: rgb(0, 0, 0, 0.2);
-  z-index: 200;
+  z-index: 999;
 }
 .order-details__payment-select-content_modal {
   position: fixed;
@@ -704,7 +730,7 @@ input[type='number'] {
   left: 50%;
   transform: translate(-50%, -50%);
   width: 60%;
-  z-index: 300;
+  z-index: 1000;
   background-color: rgb(245, 245, 245);
   border-radius: 0.5rem;
   box-shadow: 0px 2px 2px 0 rgb(0, 0, 0, 0.2);

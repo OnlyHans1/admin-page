@@ -173,7 +173,7 @@ const saveSettings = () => {
 
 const resetSettings = () => {
   biayaLayanan.value = 0
-  biayaJasa.value = 1500
+  biayaJasa.value = 0
   maxTickets.value = 80
   newBiayaLayanan.value = biayaLayanan.value
   newBiayaJasa.value = biayaJasa.value
@@ -262,14 +262,14 @@ onMounted(() => {
 
     <section class="admin">
       <div class="settings__menu">
-        <button
+        <!-- <button
           class="settings__menu-items"
           @click="toggleFeePage"
           v-if="LoginHelper.userData.value.role === 'SUPER_ADMIN'"
         >
           <ph-coins :size="48" color="var(--color-primary)" />
           <span>Pembelian</span>
-        </button>
+        </button> -->
         <button class="settings__menu-items" @click="guideSelectPage">
           <ph-binoculars :size="48" color="var(--color-primary)" weight="fill" />
           <span>Pemandu</span>

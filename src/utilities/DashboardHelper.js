@@ -16,8 +16,10 @@ const showConfirmationPopup = ref(false)
 const showDeleteConfirmationPopup = ref(false)
 
 const dataDashboard = ref([])
+// const hasDomestik = ref(false)
+// const hasMancanegara = ref(false)
 const isMancanegara = ref(false)
-
+const isDomestik = ref(false)
 const fetchOrderList = async () => {
   try {
     const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details`)
@@ -95,6 +97,8 @@ const saveToUserCarts = async () => {
   })
   await updateUserCarts(storedItems)
   isMancanegara.value = false
+  isDomestik.value = false
+
   checkUserCarts()
 }
 
@@ -119,21 +123,36 @@ const updateUserCarts = async (storedItems) => {
     console.error('Error updating carts data:', error)
   }
 }
-
 const checkUserCarts = () => {
   if (userCarts.value && userCarts.value.length > 0) {
+    let hasDomestik = false
+    let hasMancanegara = false
+
     for (const item of userCarts.value) {
-      if (item && item.category.name === 'Mancanegara') {
+      if (item && item.category && item.category.name === 'Mancanegara') {
+        hasMancanegara = true
+      } else if (item && item.category && item.category.name !== 'Mancanegara') {
+        hasDomestik = true
+      }
+
+      if (hasDomestik && hasMancanegara) {
+        isDomestik.value = true
         isMancanegara.value = true
-        return 'Mancanegara'
-      } else if (item && item.category.name !== 'Mancanegara') {
-        isMancanegara.value = false
-        return 'Not_Mancanegara'
+        return 'Domestik & Mancanegara'
       }
     }
-    return ''
+
+    if (hasMancanegara) {
+      isMancanegara.value = true
+      return 'Mancanegara'
+    } else if (hasDomestik) {
+      isDomestik.value = true
+      return 'Domestik'
+    }
   }
+  return ''
 }
+
 
 const handleCategorySelection = (filterCategory) => {
   if (filterCategory === 'Mancanegara') {
@@ -157,26 +176,26 @@ const handleCategorySelection = (filterCategory) => {
 
 const handleItemClick = (item) => {
   const filterCategory = ref(checkUserCarts())
-  handleCategorySelection(filterCategory.value)
-  if (item.disabled) {
-    if (filterCategory.value === 'Mancanegara') {
-      assignAlert(
-        true,
-        'Error',
-        'danger',
-        'Kamu tidak bisa memilih paket selain kategori mancanegara!'
-      )
-    } else {
-      assignAlert(
-        true,
-        'Error',
-        'danger',
-        'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!'
-      )
-    }
-  } else {
-    selectItem(item)
-  }
+  // handleCategorySelection(filterCategory.value)
+  // if (item.disabled) {
+  //   if (filterCategory.value === 'Mancanegara') {
+  //     assignAlert(
+  //       true,
+  //       'Error',
+  //       'danger',
+  //       'Kamu tidak bisa memilih paket selain kategori mancanegara!'
+  //     )
+  //   } else {
+  //     assignAlert(
+  //       true,
+  //       'Error',
+  //       'danger',
+  //       'Kamu tidak bisa memilih paket selain kategori umum atau pelajar!'
+  //     )
+  //   }
+  // } else {
+  // }
+  selectItem(item)
 }
 
 const showCart = () => {
@@ -277,6 +296,7 @@ export default {
   saveToUserCarts,
   handleItemClick,
   checkUserCarts,
+  isDomestik,
   updateUserCarts,
   groupedItems
 }
