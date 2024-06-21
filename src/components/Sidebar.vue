@@ -58,7 +58,7 @@ onMounted(() => {
     router.replace('/login')
   } else {
     console.log(userData.value)
-    isCurawedaAccount = userData.value.role ===  "CURAWEDA"
+    isCurawedaAccount = userData.value.role === 'CURAWEDA'
     determineActiveLink()
   }
 })
@@ -90,18 +90,9 @@ watchEffect(() => {
           <ph-shopping-cart-simple :size="24" weight="bold" />
         </RouterLink>
       </div>
-      <div class="navbar-links-container flex fd-col" v-else>
-        <RouterLink
-          to="/report-curaweda"
-          name="reportCuraweda"
-          @click="reportCuraweda()"
-          :class="{ active: activeLink === 4 }"
-        >
-          <ph-currency-circle-dollar
-            :size="24"
-            weight="bold"
-            :class="{ hidden: userData.role !== 'SUPER_ADMIN' }"
-          />
+      <div class="navbar-links-container flex fd-col" v-if="isCurawedaAccount">
+        <RouterLink to="/report-curaweda" :class="{ active: activeLink === 2 }" name="Report">
+          <ph-currency-circle-dollar :size="24" weight="bold" />
         </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">

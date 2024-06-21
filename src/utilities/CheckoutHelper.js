@@ -21,7 +21,6 @@ const { userData, userCarts } = LoginHelper
 const nationalityData = ref([])
 
 const selectedNationality = ref()
-const inputDomestik = ref()
 
 const fetchNationalityData = async () => {
   try {
@@ -138,6 +137,7 @@ const asalKota = ref('')
 const selectedDate = ref(null)
 const discountValue = ref(0)
 const cashbackValue = ref(0)
+const cityName = ref('')
 
 const biayaLayanan = ref(0)
 const biayaJasa = ref(0)
@@ -228,6 +228,7 @@ const createTransaction = async () => {
     .filter((item) => item.amount > 0)
     .map((item) => ({
       id: item.id,
+      price: item.price,
       amount: item.amount,
       guideId: item.guideId
     }))
@@ -235,8 +236,10 @@ const createTransaction = async () => {
   dateTime()
 
   try {
+    if (order.length < 1) throw Error('No Item To Checkout')
     showLoader.value = true
 
+    console.log(discountValue.value, cashbackValue.value)
     const response = await fetch(
       `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/create-transaction`,
       {
@@ -274,7 +277,7 @@ const createTransaction = async () => {
           },
           userId: userData.value.id,
           nationalityId: selectedNationality.value,
-          cityName: cityName.value.toUpperCase(),
+          cityName: asalKota.value.toUpperCase(),
           plannedDate: selectedDate.value,
           method: paymentSelection.value.toUpperCase(),
           status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
