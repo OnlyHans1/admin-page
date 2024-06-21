@@ -161,8 +161,9 @@ onUnmounted(() => {
       <div class="dashboard-recent__container flex fd-col">
         <h6>Baru Ditambahkan</h6>
         <div
-          class="dashboard__card-container flex fd-row pd[0.5] vw-80"
+          class="dashboard__card-container flex fd-row pd[0.5]"
           :class="{ expanded: dataDashboard.length > 5 }"
+          style="width: 100vw"
         >
           <div
             v-for="(item, index) in dataDashboard"
