@@ -21,6 +21,7 @@ const { userData, userCarts } = LoginHelper
 const nationalityData = ref([])
 
 const selectedNationality = ref()
+const inputDomestik = ref()
 
 const fetchNationalityData = async () => {
   try {
@@ -133,12 +134,13 @@ function reduceTicket(index) {
 const custName = ref('')
 const custEmail = ref('')
 const custNumber = ref('')
+const asalKota = ref('')
 const selectedDate = ref(null)
 const discountValue = ref(0)
 const cashbackValue = ref(0)
 
 const biayaLayanan = ref(0)
-const biayaJasa = ref(1500)
+const biayaJasa = ref(0)
 const biayaJasaCard = ref(0.015)
 const maxTickets = ref(80)
 const fetchFeeSettings = () => {
@@ -243,6 +245,28 @@ const createTransaction = async () => {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          // customer: {
+          //   name: custName.value,
+          //   email: custEmail.value,
+          //   number: custNumber.value
+          // },
+          // userId: userData.value.id,
+          // kotaPengunjung: asalKota.value,
+          // nationalityId: selectedNationality.value,
+          // plannedDate: selectedDate.value,
+          // additionalFee: Number(paymentSelection.value == 'Cash' ? biayaLayanan.value + biayaJasa.value : biayaJasaCard.value + biayaLayanan.value),
+          // total: totalTagihan.value.toFixed(2),
+          // method: paymentSelection.value.toUpperCase(),
+          // status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
+          // discount:
+          //   discountValue.value > 0
+          //     ? `${(totalHarga.value * discountValue.value) / 100} | ${discountValue.value}`
+          //     : '0 | 0%',
+          // cashback:
+          //   cashbackValue.value > 0
+          //     ? `${(totalTagihan.value * cashbackValue.value) / 100} | ${cashbackValue.value}`
+          //     : '0 | 0%',
+          // order: order
           customer: {
             name: custName.value,
             email: custEmail.value,
@@ -250,19 +274,12 @@ const createTransaction = async () => {
           },
           userId: userData.value.id,
           nationalityId: selectedNationality.value,
+          cityName: cityName.value.toUpperCase(),
           plannedDate: selectedDate.value,
-          additionalFee: Number(paymentSelection.value == 'Cash' ? biayaLayanan.value + biayaJasa.value : biayaJasaCard.value + biayaLayanan.value),
-          total: totalTagihan.value.toFixed(2),
           method: paymentSelection.value.toUpperCase(),
           status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
-          discount:
-            discountValue.value > 0
-              ? `${(totalHarga.value * discountValue.value) / 100} | ${discountValue.value}`
-              : '0 | 0%',
-          cashback:
-            cashbackValue.value > 0
-              ? `${(totalTagihan.value * cashbackValue.value) / 100} | ${cashbackValue.value}`
-              : '0 | 0%',
+          discount: +discountValue.value,
+          cashback: +cashbackValue.value,
           order: order
         })
       }
@@ -526,6 +543,7 @@ export default {
   addTicket,
   reduceTicket,
   custName,
+  asalKota,
   custEmail,
   selectedDate,
   discountValue,

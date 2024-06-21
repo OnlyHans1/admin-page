@@ -28,9 +28,9 @@ const {
   handleItemClick,
   groupedItems
 } = DashboardHelper
+const { userData, userLogout } = LoginHelper
 
 const router = useRouter()
-
 const editOrder = () => {
   const id = selectedItems.value[0].id
   closePopup()
@@ -146,7 +146,7 @@ onUnmounted(() => {
     </div>
 
     <div class="dashboard-header__container w-full flex fd-row align-items-center overflow-hidden">
-      <div class="dashboard-add__container">
+      <div class="dashboard-add__container" v-if="userData.role !== 'CASHIER'">
         <button
           class="dashboard-add__button flex fd-col align-items-center justify-content-center"
           @click="navigateToAdd"
@@ -267,7 +267,7 @@ onUnmounted(() => {
           </div>
           <div class="flex fd-col justify-content-sb h-full">
             <p>{{ selectedItems[0].desc }}</p>
-            <div class="flex fd-row justify-content-start">
+            <div class="flex fd-row justify-content-start" v-if="userData.role !== 'CASHIER'">
               <button
                 class="popup-order__remove-button flex align-items-center justify-content-center gap[0.5]"
                 @click="showDeleteConfirmation(selectedItems[0].id)"
@@ -447,6 +447,8 @@ onUnmounted(() => {
   -ms-overflow-style: none;
   white-space: nowrap;
   padding: 0.5rem;
+  width: 100%;
+  overflow-x: auto;
   gap: 1rem;
   flex: 1;
 }
