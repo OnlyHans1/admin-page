@@ -2,7 +2,7 @@
   <div>
     <P>Revenue Keraton</P>
     <p>{{"CIH: " + revenueKeraton.CIH }}</p>
-    <p>{{"CIO: " + revenueKeraton.CIO }}</p>
+    <p>{{"CIA: " + revenueKeraton.CIA }}</p>
   </div>
   <div>
     <P>Revenue Curaweda {{ revenueCuraweda }}</P>
@@ -11,6 +11,7 @@
 </template>
 <script>
 import GlobalHelper from '../utilities/GlobalHelper';
+import {ref} from 'vue'
 const { DB_BASE_URL, TRANSACTION_BASE_URL } = GlobalHelper
 export default {
   data(){
@@ -25,7 +26,7 @@ export default {
   methods: {
     async fetchData(){
       try{
-        const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue`)
+        const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue-curaweda`)
         if(!response.ok) throw Error('Failed to fetch Data')
         const responseData = await response.json()
         this.revenueKeraton = responseData.data.revenueKeraton,
