@@ -32,7 +32,7 @@
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Keraton "COH"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueKeraton.CIH)
+          formatCurrency(revenueKeraton.COH)
         }}</span>
       </div>
 
@@ -56,6 +56,11 @@
 
   <h2 style="font-weight: bold; text-align: center; margin-top: 10rem">History Report Curaweda</h2>
 
+  <div style="margin-bottom: 1rem">
+    <label for="filter-date" style="font-weight: bold; margin-right: 1rem">Filter by Date:</label>
+    <input type="date" id="filter-date" v-model="filterDate" @change="filterRecords" />
+  </div>
+
   <table class="history-report-table">
     <thead>
       <tr>
@@ -67,7 +72,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr v-for="record in historyRecords" :key="record.date">
+      <tr v-for="record in filteredRecords" :key="record.date">
         <td>{{ record.date }}</td>
         <td>{{ formatCurrency(record.revenueKeraton.COH) }}</td>
         <td>{{ formatCurrency(record.revenueKeraton.CIA) }}</td>
@@ -79,7 +84,7 @@
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import GlobalHelper from '../utilities/GlobalHelper'
 const { DB_BASE_URL, TRANSACTION_BASE_URL } = GlobalHelper
 
@@ -89,7 +94,8 @@ export default {
       revenueCuraweda: ref(0),
       revenueKeraton: ref({ CIH: 0, CIA: 0 }),
       revenueTotal: ref(0),
-      historyRecords: ref([])
+      historyRecords: ref([]),
+      filterDate: ref('')
     }
   },
   mounted() {
@@ -114,6 +120,24 @@ export default {
 
     formatCurrency(amount) {
       return Number(amount).toLocaleString('id-ID')
+    },
+
+    filterRecords() {
+      const date = new Date(this.filterDate.value)
+      this.filteredRecords = this.historyRecords.filter((record) => {
+        const recordDate = new Date(record.date)
+        return recordDate.toDateString() === date.toDateString()
+      })
+    }
+  },
+  computed: {
+    filteredRecords() {
+      if (!this.filterDate) return this.historyRecords
+      const date = new Date(this.filterDate)
+      return this.historyRecords.filter((record) => {
+        const recordDate = new Date(record.date)
+        return recordDate.toDateString() === date.toDateString()
+      })
     }
   }
 }
