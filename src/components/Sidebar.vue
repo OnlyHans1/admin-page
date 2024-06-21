@@ -9,6 +9,7 @@ const { userData, userLogout } = LoginHelper
 const activeLink = ref(0)
 const router = useRouter()
 const route = useRoute()
+let isCurawedaAccount = ref(false)
 
 const determineActiveLink = () => {
   const path = route.path
@@ -56,6 +57,8 @@ onMounted(() => {
     userLogout()
     router.replace('/login')
   } else {
+    console.log(userData.value)
+    isCurawedaAccount = userData.value.role ===  "CURAWEDA"
     determineActiveLink()
   }
 })
@@ -73,7 +76,7 @@ watchEffect(() => {
     </div>
     <div class="navbar-links">
       <!-- Menggunakan router-link dengan params -->
-      <div class="navbar-links-container flex fd-col">
+      <div class="navbar-links-container flex fd-col" v-if="!isCurawedaAccount">
         <RouterLink to="/" :class="{ active: activeLink === 0 }" name="Dashboard">
           <ph-house :size="24" weight="bold" />
         </RouterLink>
@@ -86,7 +89,9 @@ watchEffect(() => {
         <RouterLink to="/checkout" :class="{ active: activeLink === 3 }" name="Checkout">
           <ph-shopping-cart-simple :size="24" weight="bold" />
         </RouterLink>
-        <!-- <RouterLink
+      </div>
+      <div class="navbar-links-container flex fd-col" v-else>
+        <RouterLink
           to="/report-curaweda"
           name="reportCuraweda"
           @click="reportCuraweda()"
@@ -97,7 +102,7 @@ watchEffect(() => {
             weight="bold"
             :class="{ hidden: userData.role !== 'SUPER_ADMIN' }"
           />
-        </RouterLink> -->
+        </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
         <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 5 }">

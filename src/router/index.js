@@ -10,6 +10,7 @@ import SettingsView from '@/views/SettingsView.vue'
 import DatabaseLogsView from '@/views/DatabaseLogsView.vue'
 import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
 import reportCurawedaView from '@/views/ReportViewCuraweda.vue'
+import ReportCuraweda from '@/views/ReportCuraweda.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import LoginHelper from '@/utilities/LoginHelper'
 
@@ -33,7 +34,7 @@ const router = createRouter({
     {
       path: '/report-curaweda',
       name: 'reportCuraweda',
-      component: reportCurawedaView,
+      component: ReportCuraweda,
       meta: { protected: true }
     },
     {
