@@ -285,8 +285,9 @@ onMounted(() => {
                     :key="index"
                   >
                     <div style="display: flex; width: 100%">
+                      <!-- ticket.qrPath ? ticket.qrPath :  -->
                       <img
-                        :src="ticket.qrPath ? ticket.qrPath : ' ../assets/images/testqr.jpg'"
+                        :src="'../assets/images/testqr.jpg'"
                         style="
                           width: 200px;
                           height: 200px;
