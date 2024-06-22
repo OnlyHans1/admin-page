@@ -273,7 +273,7 @@ onMounted(() => {
                   </p>
                 </div>
                 <div style="width: 70%; margin: auto">
-                  <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5>
+                  <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
                   <h5 style="text-transform: uppercase">Enjoy The Tour !</h5>
                 </div>
                 <div
@@ -320,21 +320,25 @@ export default {
   methods: {
     generatePDF() {
       const element = this.$refs.dataRef
-      const elementheight = document.getElementById('ticket')
-      const rect = elementheight.getBoundingClientRect()
+
+      const rect = element.getBoundingClientRect()
       const height = rect.height
       if (element) {
+        const originalDisplay = element.style.display
+
+        // Tampilkan elemen
+        element.style.display = 'block'
         html2pdf(element, {
           margin: 2,
           filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
-          image: { type: 'jpeg', quality: 0.98 },
+          image: { type: 'jpeg', quality: 100 },
           html2canvas: { scale: 2 },
           jsPDF: {
             unit: 'px',
             format: [256, height],
             orientation: 'portrait',
             putOnlyUsedFonts: true,
-            scale: 0.8
+            scale: 1
           }
         })
           .outputPdf()
