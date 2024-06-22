@@ -309,8 +309,8 @@ onMounted(() => {
                           <option value="" disabled selected>Pilih Kebangsaan</option>
                           <option
                             v-for="result in cityName.kotaIndonesia"
-                            :key="result.id"
-                            :value="result.id"
+                            :key="result"
+                            :value="result"
                           >
                             {{ result }}
                           </option>
