@@ -19,7 +19,7 @@ const { userData, userCarts } = LoginHelper
 
 /* NationalityDropdown Helper */
 const nationalityData = ref([])
-
+const national = userData.item.nationalityId
 const selectedNationality = ref()
 
 const fetchNationalityData = async () => {
@@ -100,8 +100,8 @@ const getUserCarts = () => {
   if (userCarts.value) {
     for (let item of userCarts.value) {
       item.nationalityId = undefined,
-      item.cityName = undefined,
-      item.guideId = item.guideId || ''
+        item.cityName = undefined,
+        item.guideId = item.guideId || ''
       item.guideName = item.guideName || ''
     }
     console.log(userCarts.value)
