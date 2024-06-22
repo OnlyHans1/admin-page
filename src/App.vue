@@ -11,7 +11,9 @@ import Sidebar from './components/Sidebar.vue'
 const { loggedIn, isAuthenticated } = LoginHelper
 
 const route = useRoute()
-const showSidebar = computed(() => route.name !== 'generateTickets' && route.name !== 'login')
+const showSidebar = computed(
+  () => route.name !== 'generateTickets' && route.name !== 'login' && route.name !== 'Rekap'
+)
 
 watchEffect(() => {
   isAuthenticated()
