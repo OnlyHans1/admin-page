@@ -49,7 +49,6 @@ const currentPath = ref(route.name)
 const createOrder = async () => {
   try {
     showLoader.value = true
-
     const data = createFormData('create')
 
     const response = await fetch(
@@ -174,6 +173,7 @@ onUnmounted(() => {
   <main class="add pd-bottom-2">
     <section class="add__input">
       <InputFoto @file-selected="handleFileSelected" :selectedImageURL="selectedImageURL" />
+       <!-- <input type="file" v-model="image/"> -->
       <div class="add__input-card_title">
         <h6>Judul</h6>
         <div class="input_wrapper">

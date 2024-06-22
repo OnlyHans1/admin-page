@@ -10,6 +10,7 @@ today.setHours(7, 0, 0, 0)
 const currentYear = today.getFullYear()
 const currentMonth = today.getMonth() + 1
 const monthName = today.toLocaleString('id-ID', { month: 'long' })
+const revenueKeraton = ref()
 
 /* Report Global Helper */
 const capitalizeFirstLetter = (str) => {
@@ -30,18 +31,19 @@ const formatCurrency = (amount) => {
 /* ReportView Helper */
 const incomeRevenue = ref(0)
 
+
 const fetchIncomeRevenue = async () => {
   try {
     const response = await fetch(
-      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue`
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue-curaweda`
     )
-    if (!response.ok) {
-      throw new Error('Failed to fetch data')
-    }
-    const res = await response.json()
-    incomeRevenue.value = res.data
-  } catch (error) {
-    console.error('Error fetching data:', error)
+    if (!response.ok) throw Error('Failed to fetch Data')
+    const responseData = await response.json()
+    revenueKeraton.value = responseData.data.revenueKeraton
+    incomeRevenue.value = responseData.data.total
+    console.log(revenueKeraton)
+  } catch (err) {
+    console.log(err)
   }
 }
 
@@ -466,6 +468,7 @@ export default {
   monthlyData,
   changeSelectedMonth,
   fetchTargetMonths,
+  revenueKeraton,
   setMonthLocaleString,
   fetchMonthlyChartData,
   activityReportData,
