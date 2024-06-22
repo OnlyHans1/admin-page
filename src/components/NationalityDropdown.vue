@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, watchEffect } from 'vue'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
+import LoginHelper from '@/utilities/LoginHelper';
 
 const {
   fetchNationalityData,
@@ -15,10 +16,16 @@ const {
   getNationality,
   closeDropdownOutside
 } = CheckoutHelper
+const { userData, userCarts } = LoginHelper
 
 const props = defineProps({
-  nationalityWidth: { type: String, default: '11.8rem' }
+  nationalityWidth: { type: String, default: '11.8rem' },
+  itemIndex: { type: Number,  }
 })
+
+const chooseNationality = (data) =>  {
+  userCarts.value[props.itemIndex].nationalityId = data.id
+}
 
 watchEffect((onInvalidate) => {
   onInvalidate(() => {
@@ -61,7 +68,7 @@ onMounted(() => {
         <div v-for="result in nationalityResult" :key="result.id">
           <div
             class="nationality-item"
-            @click="getNationality(result.id, result.name, result.code)"
+            @click="chooseNationality(result)"
           >
             <img :src="getFlagImageUrl(result.code)" class="flag-icon" />
             <p class="dropdown-nationality__name">{{ result.name }}</p>

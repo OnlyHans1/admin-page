@@ -116,6 +116,18 @@ export default {
       filterDateTo: ref('')
     }
   },
+  watch: {
+    filterDateFrom: {
+      handler(){
+        this.fetchTabel()
+      }
+    },
+    filterDateFrom: {
+      handler(){
+        this.fetchTabel()
+      }
+    },
+  },
   mounted() {
     this.fetchData()
     this.fetchTabel()

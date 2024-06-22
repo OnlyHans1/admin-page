@@ -32,6 +32,7 @@ const fetchNationalityData = async () => {
     }
     const res = await response.json()
     nationalityData.value = res.data
+    console.log(nationalityData)
   } catch (error) {
     console.error('Error fetching data:', error)
   }
@@ -46,10 +47,11 @@ const selectedFlagImageUrl = ref('')
 const loadNationalityData = () => {
   if (nationalityQuery.value.trim() !== '') {
     isNationalityDropdownOpen.value = true
-
     const filteredData = nationalityData.value.filter((nationality) => {
       return nationality.name.toLowerCase().includes(nationalityQuery.value.trim().toLowerCase())
     })
+
+    console.log(filteredData)
     nationalityResult.value = filteredData
     isNationalityDropdownOpen.value = nationalityResult.value.length > 0
   } else {
@@ -97,9 +99,12 @@ const closeDropdownOutside = (event) => {
 const getUserCarts = () => {
   if (userCarts.value) {
     for (let item of userCarts.value) {
+      item.nationalityId = undefined,
+      item.cityName = undefined,
       item.guideId = item.guideId || ''
       item.guideName = item.guideName || ''
     }
+    console.log(userCarts.value)
     return userCarts.value
   }
   return []
@@ -228,6 +233,8 @@ const createTransaction = async () => {
     .filter((item) => item.amount > 0)
     .map((item) => ({
       id: item.id,
+      ...(item.nationalityId && { nationalityId: item.nationalityId }),
+      ...(item.cityName && { cityName: item.cityName }),
       price: item.price,
       amount: item.amount,
       guideId: item.guideId
@@ -238,8 +245,6 @@ const createTransaction = async () => {
   try {
     if (order.length < 1) throw Error('No Item To Checkout')
     showLoader.value = true
-
-    console.log(discountValue.value, cashbackValue.value)
     const response = await fetch(
       `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/create-transaction`,
       {
@@ -555,6 +560,7 @@ export default {
   biayaJasa,
   maxTickets,
   fetchFeeSettings,
+  nationalityData,
   formatCurrency,
   totalHarga,
   totalTagihan,
