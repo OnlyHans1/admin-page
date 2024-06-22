@@ -291,12 +291,32 @@ onMounted(() => {
                             </div>
                           </div>
                         </div> -->
-                        <div
-                          class="order-details__dropdown"
-                          v-if="item.category.name === 'Mancanegara'"
-                          style="margin-right: 1rem"
-                        >
-                          <select v-model="item.nationalityId">
+                        <div style="margin-right: 1rem; position: relative">
+                          <label
+                            for="nationality-select"
+                            style="
+                              position: absolute;
+                              top: -0.75rem;
+                              left: 0.5rem;
+                              background: white;
+                              padding: 0 0.25rem;
+                              font-size: 14px;
+                              color: #000;
+                            "
+                          >
+                            Pilih Kebangsaan
+                          </label>
+                          <select
+                            id="nationality-select"
+                            style="
+                              height: 2.2rem;
+                              border: 2px solid rgba(0, 0, 0, 1);
+                              border-radius: 0.2rem;
+                              padding-left: 0.5rem;
+                              width: 100%;
+                            "
+                            v-model="item.nationalityId"
+                          >
                             <option value="" disabled selected>Pilih Kebangsaan</option>
                             <option
                               v-for="result in nationalityData"
