@@ -7,7 +7,17 @@ import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import ReportHelper from '@/utilities/ReportHelper'
 import html2canvas from 'html2canvas'
-
+const {
+  DB_BASE_URL,
+  GUIDE_BASE_URL,
+  NATIONALITY_BASE_URL,
+  TRANSACTION_BASE_URL,
+  DETAILTRANS_BASE_URL,
+  showLoader,
+  TRANSFER_URL,
+  sendQueue,
+  assignAlert
+} = GlobalHelper
 const {
   incomeRevenue,
   fetchIncomeRevenue,
@@ -53,6 +63,7 @@ const checkData = async () => {
     console.error(error)
   }
 }
+const inputValue = ref('')
 const confirmAlert = ref(false)
 
 const showDetail = ref(false)
@@ -135,24 +146,25 @@ const confirm = () => {
 }
 const transfer = async () => {
   console.log('test')
+  showLoader.value = true
   try {
-    if (order.length < 1) throw Error('No Item To Checkout')
-    showLoader.value = true
-    const response = await fetch(
-      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/create-transaction`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          paymentAmount: 20000,
-          paymentMethod: 'COH'
-        })
-      }
-    )
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSFER_URL.value}/transfer`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        paymentAmount: inputValue.value,
+        paymentMethod: 'BJB'
+      })
+    })
+    if (!response.ok) {
+      throw new Error('Failed transfer')
+    }
   } catch (err) {
     console.error(err)
+  } finally {
+    showLoader.value = false
   }
 }
 const submitOrder = () => {
@@ -165,7 +177,13 @@ const submitOrder = () => {
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
     <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
       <div class="add__alert-confirmation">
-        <h2>Apakah yakin ingin memindahkan dari cash ke account?</h2>
+        <h5>Apakah yakin ingin memindahkan dari cash ke account?</h5>
+        <input
+          type="number"
+          v-model="inputValue"
+          style="border-width: 2px"
+          placeholder="Masukkan nominal..."
+        />
         <div class="button-group">
           <button @click="confirmAlert = false">Cancel</button>
           <button @click="submitOrder()">Yes</button>
@@ -177,7 +195,21 @@ const submitOrder = () => {
         <div class="report-information__income-revenue flex fd-col pd-2">
           <div style="justify-content: space-between; display: flex">
             <h5>Pendapatan hari ini</h5>
-            <button @click="showtransfer()"><ph-x :size="20" weight="bold" /></button>
+            <button @click="showtransfer()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="50"
+                height="50"
+                fill="currentColor"
+                class="bi bi-arrow-down"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M8 3.5a.5.5 0 0 0-.5-.5H5.707l-.354-.354a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0l3-3a.5.5 0 1 0-.708-.708l-.354.354H8.5a.5.5 0 0 0-.5.5z"
+                />
+              </svg>
+            </button>
           </div>
           <div class="report-information__income-text flex fd-row">
             <h5 class="fw-600">Rp</h5>
@@ -403,7 +435,7 @@ const submitOrder = () => {
   line-height: 28px;
 }
 .report-activity__table-container {
-  width: 1081px;
+  width: 100%;
   height: 374px;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
@@ -545,5 +577,192 @@ input {
   border-radius: 0.5rem;
   background-color: #8f8f8f;
   color: #ffffff;
+}
+
+.report__container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.report-information__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.report-information__income-container,
+.report-information__ticketing-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-information__income-revenue,
+.report-information__ticket-sold,
+.report-information__ticketing-container {
+  border-radius: 20px;
+  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+  padding: 1rem;
+}
+
+.report-revenue__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.report-revenue__chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+@media (min-width: 1200px) {
+  .report-revenue__chart-container {
+    flex-direction: row;
+    justify-content: center;
+    margin-left: 0px;
+  }
+}
+@media (max-width: 970px) {
+  .report-revenue__chart-container {
+    margin: 20px;
+  }
+}
+
+.report-revenue__icons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+  margin-right: 2rem;
+}
+
+.report-activity__container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.report-activity__head {
+  display: flex;
+  align-items: center;
+  width: 95%;
+  margin: auto;
+  justify-content: space-between;
+}
+
+.filter__input-dropdown {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  border: 1px solid black;
+  border-radius: 0.5rem;
+  background-color: transparent;
+}
+
+.filter__input-dropdown input {
+  width: 100%;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.filter__input-dropdown_menu {
+  position: absolute;
+  top: 2.6rem;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  max-height: 200px;
+  overflow-y: auto;
+  display: none;
+}
+
+.filter__input-dropdown_menu.active {
+  display: block;
+}
+
+/* Responsive styles */
+/* @media (min-width: 768px) {
+  .report-information__container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .report-information__income-container,
+  .report-information__ticketing-container {
+    width: 90%;
+  }
+
+  .report-revenue__chart-container {
+    flex-direction: row;
+    justify-content: center;
+  }
+} */
+@media (min-width: 1200px) {
+  .report-activity__table-container {
+    width: 100%;
+    height: 374px;
+    border-radius: 20px;
+    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
+    padding: 1rem;
+  }
+}
+
+@media (min-width: 924px) {
+  .report-information__container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .report-information__income-container,
+  .report-information__ticketing-container {
+    width: 50%;
+  }
+  .fs-display {
+    font-size: 50px;
+  }
+}
+@media (max-width: 704px) {
+  .fs-display {
+    font-size: xx-large;
+  }
+}
+@keyframes arrow-move {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* Tombol styling */
+.arrow-button {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  outline: none;
+  position: relative;
+}
+
+/* Ikona panah */
+.arrow-icon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 5px;
+  animation: arrow-move 0.5s infinite;
 }
 </style>
