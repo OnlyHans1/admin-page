@@ -7,6 +7,7 @@ import CategoryDropdown from '@/components/CategoryDropdown.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import ReportHelper from '@/utilities/ReportHelper'
 import html2canvas from 'html2canvas'
+import { useRouter, useRoute } from 'vue-router'
 const {
   DB_BASE_URL,
   GUIDE_BASE_URL,
@@ -64,9 +65,10 @@ const checkData = async () => {
     console.error(error)
   }
 }
+const isLoading = ref(false)
 const inputValue = ref('')
 const confirmAlert = ref(false)
-
+const router = useRouter()
 const showDetail = ref(false)
 const isShowChart = ref(false)
 const yearDropdownOpen = ref(false)
@@ -74,6 +76,11 @@ const monthDropdownOpen = ref(false)
 const showTransfer = ref(false)
 const toggleShow = () => {
   showDetail.value = !showDetail.value
+}
+const getPrint = async () => {
+  isLoading.value = true
+  await router.replace('/rekap')
+  isLoading.value = false
 }
 const toggleYearDropdown = () => {
   yearDropdownOpen.value = !yearDropdownOpen.value
@@ -347,6 +354,10 @@ const submitOrder = () => {
         >
           <ph-camera :size="32" weight="bold" />
         </span> -->
+        <span v-if="!isLoading" class="icons" name="Print Data" @click="getPrint">
+          <ph-printer :size="32" weight="bold" /> 
+        </span>
+        <span v-else>loading...</span>
         <span class="icons" name="Print Data" @click="printData"
           ><ph-printer :size="32" weight="bold"
         /></span>
