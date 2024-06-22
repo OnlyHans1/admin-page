@@ -12,11 +12,7 @@ const { ticketsData, emailCooldown, sendEmailToUser } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
-// const cashback = ticketsData.cashback ? ticketsData.cashback.split('|')[1] : ticketsData.cashback
-// const plannedDate = ticketsData.plannedDate
-//   ? ticketsData.plannedDate.split('T')[0]
-//   : ticketsData.plannedDate
-// const discount = ticketsData.discount ? ticketsData.discount.split('|')[1] : ticketsData.discount
+const generatePDFcooldown = ref(false)
 
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
@@ -50,8 +46,43 @@ const fetchTickets = async (id) => {
   }
 }
 
-const printTickets = async () => {
-  generatePDF()
+const generatePDF = () => {
+  const element = document.getElementById('ticket')
+
+  if (element) {
+    generatePDFcooldown.value = true
+    const rect = element.getBoundingClientRect()
+    const height = rect.height
+
+    const originalDisplay = element.style.display
+    element.style.display = 'block'
+
+    html2pdf(element, {
+      margin: 2,
+      filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
+      image: { type: 'jpeg', quality: 100 },
+      html2canvas: { scale: 2 },
+      jsPDF: {
+        unit: 'px',
+        format: [260, height],
+        orientation: 'portrait',
+        putOnlyUsedFonts: true,
+        scale: 1
+      }
+    })
+      .outputPdf()
+      .get('pdf')
+      .then((pdfObj) => {
+        pdfObj.autoPrint()
+        window.open(pdfObj.output('bloburl'))
+      })
+      .finally(() => {
+        generatePDFcooldown.value = false
+        element.style.display = originalDisplay
+      })
+  } else {
+    console.error('Element not found or not yet rendered')
+  }
 }
 
 onMounted(() => {
@@ -98,11 +129,14 @@ onMounted(() => {
       <button
         class="generate-tickets__btn-print flex align-items-center gap[0.5]"
         @click="generatePDF"
+        v-if="!generatePDFcooldown"
       >
         <p class="fw-700">Print Tickets</p>
         <ph-printer :size="32" />
       </button>
-
+      <div v-else>
+        <p class="fw-700">Generate PDF<span class="send-email__text-cooldown"></span></p>
+      </div>
       <button class="generate-tickets__btn-email">
         <div
           v-if="!emailCooldown"
@@ -312,51 +346,6 @@ onMounted(() => {
     </div>
   </div>
 </template>
-
-<script>
-import html2pdf from 'html2pdf.js'
-export default {
-  data() {
-    return {
-      tiketDatas: ref([])
-    }
-  },
-  methods: {
-    generatePDF() {
-      const element = this.$refs.dataRef
-
-      const rect = element.getBoundingClientRect()
-      const height = rect.height
-      if (element) {
-        const originalDisplay = element.style.display
-        // Tampilkan elemen
-        element.style.display = 'block'
-        html2pdf(element, {
-          margin: 2,
-          filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
-          image: { type: 'jpeg', quality: 100 },
-          html2canvas: { scale: 2 },
-          jsPDF: {
-            unit: 'px',
-            format: [260, height],
-            orientation: 'portrait',
-            putOnlyUsedFonts: true,
-            scale: 1
-          }
-        })
-          .outputPdf()
-          .get('pdf')
-          .then((pdfObj) => {
-            pdfObj.autoPrint()
-            window.open(pdfObj.output('bloburl'))
-          })
-      } else {
-        console.error('Element not found or not yet rendered')
-      }
-    }
-  }
-}
-</script>
 
 <style scoped>
 .generate-tickets__return-btn {
