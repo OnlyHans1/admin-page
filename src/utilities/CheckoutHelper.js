@@ -239,6 +239,8 @@ const createTransaction = async () => {
       guideId: item.guideId
     }))
 
+
+    console.log(order)
   dateTime()
 
   try {

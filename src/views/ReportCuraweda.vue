@@ -109,28 +109,6 @@
 
   <h2 style="font-weight: bold; text-align: center; margin-top: 10rem">History Transaction</h2>
 
-  <div style="margin-bottom: 1rem">
-    <label for="filter-date" style="font-weight: bold; margin-right: 1rem">Filter by Date:</label>
-    <div style="display: flex; align-items: center; gap: 1rem">
-      <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">From:</label>
-      <input
-        type="date"
-        id="filter-date-from"
-        v-model="filterDateFrom"
-        @change="filterRecords"
-        class="datepicker-input"
-      />
-      <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">To:</label>
-      <input
-        type="date"
-        id="filter-date-to"
-        v-model="filterDateTo"
-        @change="filterRecords"
-        class="datepicker-input"
-      />
-    </div>
-  </div>
-
   <table class="history-report-table">
     <thead>
       <tr>
