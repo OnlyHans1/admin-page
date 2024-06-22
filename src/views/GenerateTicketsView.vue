@@ -12,11 +12,11 @@ const { ticketsData, emailCooldown, sendEmailToUser } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
-const cashback = ticketsData.cashback ? ticketsData.cashback.split('|')[1] : ticketsData.cashback
-const plannedDate = ticketsData.plannedDate
-  ? ticketsData.plannedDate.split('T')[0]
-  : ticketsData.plannedDate
-const discount = ticketsData.discount ? ticketsData.discount.split('|')[1] : ticketsData.discount
+// const cashback = ticketsData.cashback ? ticketsData.cashback.split('|')[1] : ticketsData.cashback
+// const plannedDate = ticketsData.plannedDate
+//   ? ticketsData.plannedDate.split('T')[0]
+//   : ticketsData.plannedDate
+// const discount = ticketsData.discount ? ticketsData.discount.split('|')[1] : ticketsData.discount
 
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
@@ -143,12 +143,16 @@ onMounted(() => {
                       "
                     />
                   </div>
-                  <div style="width: 70%; margin: auto">
+                  <div style="width: 90%; margin: auto">
                     <h5>
                       Jl. Kasepuhan No.43, Kasepuhan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
                     </h5>
                     <p class="desc">Selamat datang di wisata Keraton Kesepuhan Cirebon</p>
-                    <p class="desc">{{ `${ticketsData.plannedDate}` }}</p>
+                    <p class="desc">
+                      {{
+                        `${ticketsData.plannedDate ? ticketsData.plannedDate.split('T')[0] : '0%'}`
+                      }}
+                    </p>
                   </div>
                   <section
                     class="separator"
@@ -224,7 +228,7 @@ onMounted(() => {
                         word-break: break-all;
                       "
                     >
-                      {{ `${ticketsData.discount}` }}
+                      {{ `${ticketsData.discount ? ticketsData.discount.split('|')[1] : '0%'}` }}
                     </p>
                   </div>
                   <div
@@ -246,7 +250,7 @@ onMounted(() => {
                         word-break: break-all;
                       "
                     >
-                      {{ `${ticketsData.cashback}` }}
+                      {{ `${ticketsData.cashback ? ticketsData.cashback.split('|')[1] : '0%'}` }}
                     </p>
                   </div>
                   <div
@@ -262,7 +266,7 @@ onMounted(() => {
                       class="descList"
                       style="
                         display: inline;
-                        max-width: 40%;
+                        max-width: 50%;
                         text-align: right;
                         height: fit-content;
                         word-break: break-all;
@@ -273,7 +277,7 @@ onMounted(() => {
                   </div>
                   <div style="width: 70%; margin: auto">
                     <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
-                    <h5 style="text-transform: uppercase">Enjoy The Tour !</h5>
+                    <h5 style="text-transform: uppercase; font-size: small">Enjoy The Tour !</h5>
                   </div>
                   <div
                     style="width: 90%; margin: auto"
@@ -333,7 +337,7 @@ export default {
           html2canvas: { scale: 2 },
           jsPDF: {
             unit: 'px',
-            format: [256, height],
+            format: [260, height],
             orientation: 'portrait',
             putOnlyUsedFonts: true,
             scale: 1
@@ -444,7 +448,7 @@ export default {
   font-size: medium;
   padding: 5px;
   font-size: small;
-  width: 70%;
+  width: 80%;
   margin: auto;
   line-height: 1.5;
 

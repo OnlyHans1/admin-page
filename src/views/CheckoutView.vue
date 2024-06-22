@@ -279,7 +279,7 @@ onMounted(() => {
                       </div> -->
                       <div
                         style="margin-right: 1rem; position: relative"
-                        v-if="item.category.name === 'Umum'"
+                        v-if="item.category.name === 'Umum' || item.category.name === 'Pelajar'"
                       >
                         <label
                           for="city-select"
