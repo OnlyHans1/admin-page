@@ -13,6 +13,7 @@ import reportCurawedaView from '@/views/ReportViewCuraweda.vue'
 import ReportCuraweda from '@/views/ReportCuraweda.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import LoginHelper from '@/utilities/LoginHelper'
+import RekapView from '@/views/RekapanView.vue'
 
 const { giveAccessRoute, grantAccessRoute } = GlobalHelper
 const { isAuthenticated } = LoginHelper
@@ -20,6 +21,12 @@ const { isAuthenticated } = LoginHelper
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
+    {
+      path: '/rekap',
+      name: 'Rekap',
+      component: RekapView,
+      meta: { protected: true }
+    },
     {
       path: '/login',
       name: 'login',
