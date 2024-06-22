@@ -152,11 +152,11 @@ const transfer = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        paymentAmount: inputValue.value,
-        paymentMethod: 'BJB'
-      })
+      }
+      // body: JSON.stringify({
+      //   paymentAmount: inputValue.value,
+      //   paymentMethod: 'BJB'
+      // })
     })
     if (!response.ok) {
       throw new Error('Failed transfer')
@@ -178,12 +178,12 @@ const submitOrder = () => {
     <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
       <div class="add__alert-confirmation">
         <h5>Apakah yakin ingin memindahkan dari cash ke account?</h5>
-        <input
+        <!-- <input
           type="number"
           v-model="inputValue"
           style="border-width: 2px"
           placeholder="Masukkan nominal..."
-        />
+        /> -->
         <div class="button-group">
           <button @click="confirmAlert = false">Cancel</button>
           <button @click="submitOrder()">Yes</button>
