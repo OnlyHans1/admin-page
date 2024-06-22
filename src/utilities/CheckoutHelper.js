@@ -19,7 +19,6 @@ const { userData, userCarts } = LoginHelper
 
 /* NationalityDropdown Helper */
 const nationalityData = ref([])
-const national = userData.item.nationalityId
 const selectedNationality = ref()
 
 const fetchNationalityData = async () => {
