@@ -12,6 +12,11 @@ const { ticketsData, emailCooldown, sendEmailToUser } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
+const cashback = ticketsData.cashback ? ticketsData.cashback.split('|')[1] : ticketsData.cashback
+const plannedDate = ticketsData.plannedDate
+  ? ticketsData.plannedDate.split('T')[0]
+  : ticketsData.plannedDate
+const discount = ticketsData.discount ? ticketsData.discount.split('|')[1] : ticketsData.discount
 
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
@@ -120,7 +125,7 @@ onMounted(() => {
     </button>
   </div>
   <div style="display: none">
-    <div ref="dataRef" style="width: fit-content; height: fit-content">
+    <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
       <div>
         <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
           <div style="gap: 5px">
@@ -290,8 +295,8 @@ onMounted(() => {
                     />
                   </div>
                 </div>
-                <div style="width: 70%; margin: auto">
-                  <h5>www.KeratonKesepuhanCirebon.com</h5>
+                <div style="width: 100%; margin: auto">
+                  <h5 style="font-size: 10px">www.KeratonKesepuhanCirebon.com</h5>
                 </div>
               </div>
             </section>
@@ -315,9 +320,9 @@ export default {
   methods: {
     generatePDF() {
       const element = this.$refs.dataRef
-      // const elementheight = document.getElementById('ticket')
-      // const rect = elementheight.getBoundingClientRect()
-      // const height = rect.height * 0.264583
+      const elementheight = document.getElementById('ticket')
+      const rect = elementheight.getBoundingClientRect()
+      const height = rect.height
       if (element) {
         html2pdf(element, {
           margin: 2,
@@ -326,7 +331,7 @@ export default {
           html2canvas: { scale: 2 },
           jsPDF: {
             unit: 'px',
-            format: [456, 1000],
+            format: [256, height],
             orientation: 'portrait',
             putOnlyUsedFonts: true,
             scale: 0.8
@@ -422,7 +427,7 @@ export default {
 }
 /* ticket design new */
 .ticket {
-  width: 456px;
+  width: 256px;
   height: fit-content;
 }
 .ticket h5 {
