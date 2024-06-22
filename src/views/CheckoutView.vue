@@ -155,6 +155,10 @@ const fetchAllData = async () => {
   console.log(nationalityResult.value)
 
 }
+const chooseNationality = (data, itemIndex) =>  {
+  userCarts.value[itemIndex].nationalityId = data.id
+}
+
 const chooseCity = (name, itemIndex) => {
   console.log(userCarts)
   userCarts.value[itemIndex].cityName = name
