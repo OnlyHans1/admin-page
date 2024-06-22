@@ -287,21 +287,24 @@ onMounted(() => {
                       >
                         <ph-plus :size="14" weight="bold" />
                       </button>
+
                       <div
-                        class="order-details__dropdown"
+                        class="customer-details__input-placeholder"
                         v-if="item.category.name === 'Umum'"
-                        style="margin-right: 1rem"
                       >
-                        <select v-model="item.cityName">
-                          <option value="" disabled selected>Pilih Kebangsaan</option>
-                          <option
-                            v-for="result in cityName.kotaIndonesia"
-                            :key="result.id"
-                            :value="result.id"
-                          >
-                            {{ result.name }}
-                          </option>
-                        </select>
+                        <input
+                          type="text"
+                          required
+                          rows="1"
+                          v-model="item.cityName"
+                          id="kota"
+                          autocomplete="Akota"
+                        />
+                        <div v-for="(name, i) in cityName.kotaIndonesia" :key="i">
+                          <div class="nationality-item" @click="chooseCity(name, index)">
+                            <p class="dropdown-nationality__name">{{ name }}</p>
+                          </div>
+                        </div>
                       </div>
                       <div>
                         <!-- <div
