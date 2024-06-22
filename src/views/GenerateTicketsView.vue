@@ -119,17 +119,96 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div style="display: none">
+  <div>
     <div ref="dataRef" style="width: fit-content; height: fit-content">
       <div>
         <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
-          <div
-            v-for="(ticket, index) in ticketsData.detailTrans"
-            :key="index"
-            class="tickets-container"
-          >
-            <div v-for="ticketAmount in ticket.amount" :key="ticketAmount" style="gap: 5px">
+          <div>
+            <!-- 
+                
+ v-for="ticketAmount in ticket.amount" :key="ticketAmount"
+             -->
+
+            <div style="gap: 5px">
               <section class="ticket">
+                <div style="display: block; width: 100%; justify-content: center">
+                  <div style="display: flex; width: 100%">
+                    <img
+                      src="../assets/images/logo.png"
+                      alt="Keraton Kasepuhan Cirebon"
+                      style="
+                        width: 150px;
+                        height: 150px;
+                        margin-inline: auto;
+                        margin-top: 10px;
+                        margin-bottom: 10px;
+                      "
+                    />
+                  </div>
+                  <div style="width: 70%; margin: auto">
+                    <h5>
+                      Jl. Kasepuhan No.43, Kasepuhan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
+                    </h5>
+                    <p class="desc">Selamat datang di wisata Keraton Kesepuhan Cirebon</p>
+                    <p class="desc">22/06/2024 12:30</p>
+                  </div>
+                  <section
+                    class="separator"
+                    style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
+                  ></section>
+                  <div
+                    style="width: 90%; margin: auto"
+                    v-for="(ticket, index) in ticketsData.detailTrans"
+                    :key="index"
+                  >
+                    <div style="display: flex; justify-content: space-between; width: 100%">
+                      <p class="descList">
+                        {{ ticket.order.name }}
+                      </p>
+                      <p
+                        class="descList"
+                        style="
+                          display: inline;
+                          max-width: 40%;
+                          text-align: right;
+                          height: fit-content;
+                          word-break: break-all;
+                        "
+                      >
+                        {{ ticket.order.price }}
+                      </p>
+                    </div>
+                  </div>
+                  <section
+                    class="separator"
+                    style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
+                  ></section>
+                  <div
+                    style="width: 90%; margin: auto"
+                    v-for="(ticket, index) in ticketsData.detailTrans"
+                    :key="index"
+                  >
+                    <div style="display: flex; justify-content: space-between; width: 100%">
+                      <p class="descList">
+                        {{ ticket.order.name }}
+                      </p>
+                      <p
+                        class="descList"
+                        style="
+                          display: inline;
+                          max-width: 40%;
+                          text-align: right;
+                          height: fit-content;
+                          word-break: break-all;
+                        "
+                      >
+                        {{ ticket.order.price }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+              <!-- <section class="ticket">
                 <div class="ticket-main_container">
                   <img
                     src="../assets/images/bg-keraton.png"
@@ -182,7 +261,7 @@ onMounted(() => {
                     </h3>
                   </div>
                 </div>
-              </section>
+              </section> -->
               <div class="only-pdf"></div>
             </div>
           </div>
@@ -308,245 +387,48 @@ export default {
   background: rgba(0, 0, 0, 0.5);
   z-index: 999;
 }
-
-/* desain */
-.bold {
-  font-weight: 600;
-}
-
-h6,
-p {
-  padding: 0;
-  margin: 0;
-}
-
-h6,
-h3 {
-  font-family: 'Times New Roman', Times, serif;
-}
-
-h6 {
-  font-size: 14px;
-  color: #dfb032;
-}
-
-.ticket-padding {
-  padding: 1rem;
-  height: 100%;
-  width: 100%;
-  /* position: absolute;
-      z-index: 10;
-      top: 0;
-      left: 0; */
-}
-
+/* ticket design new */
 .ticket {
-  /* transform: rotate(90deg); */
-  display: flex;
-  min-width: fit-content;
-  width: 470px;
-  height: 150px;
-  margin: 5px;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  position: relative;
-}
-
-.ticket_title {
-  width: 200px;
-}
-
-.ticket span {
-  font-family: 'Times New Roman', Times, serif;
-}
-
-.ticket-main_container {
-  position: relative;
-  width: 70%;
-  height: 100%;
-}
-
-img.bg-tiket {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #ffedbc;
-  opacity: 80%;
-  filter: sepia(0.5) hue-rotate(10deg) brightness(1.2) contrast(-36);
-  z-index: 1;
-}
-
-.image-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: #eed284bd;
-  z-index: 5;
-}
-
-.ticket-content {
-  position: relative;
-  width: 100%;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
+  width: 456px;
   height: fit-content;
-  gap: 0.1rem;
-  padding: 13px;
-  color: #000000;
-  border-radius: 0.5rem;
-  background-color: #f0f0f0eb;
+  background-color: #ccc;
 }
-
-.ticket-main_header p {
-  font-size: 18px;
-  border-bottom: 1px solid #000;
-  padding: 0;
-  padding-bottom: 0.5rem;
-  margin: 0;
-  font-family: 'Times New Roman', Times, serif;
-}
-
-.ticket-main_content {
-  display: flex;
-  align-items: center;
-}
-
-.ticket-logo img {
-  width: 40px;
-  height: 40px;
-}
-
-.ticket-qr img {
-  width: 45px;
-  height: 45px;
-  object-fit: contain;
-}
-
-.triangle-divider {
-  position: absolute;
-  left: 575px;
-  width: 0;
-  height: 0;
-  border-left: 10px solid transparent;
-  border-right: 10px solid transparent;
-  border-top: 10px solid #ffffff;
-  z-index: 10;
-}
-
-.triangle-divider2 {
-  position: absolute;
-  left: 328px;
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 8px solid #ffffff;
-  z-index: 10;
-}
-
-.triangle-polygon1 {
-  top: 0;
-}
-
-.triangle-polygon2 {
-  bottom: 0;
-  transform: rotate(180deg);
-}
-
-.line-divider {
-  border: 1px dashed #000;
-  height: 100%;
-  width: 1px;
-  margin-top: 0rem;
-}
-
-.ticket-name_container {
-  width: 130px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border-left: 1px solid #ccc;
-  background-color: #e7c66e;
-  position: relative;
-  border-top-right-radius: 0.5rem;
-  border-bottom-right-radius: 0.5rem;
-}
-
-.ticket-name_content {
-  position: relative;
-  transform: rotate(-90deg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  width: 7rem;
-  height: 80%;
-  border: 1px solid #000;
-  border-radius: 0.3rem;
-}
-
-img.logo-name {
-  width: 25px;
-  height: 25px;
-  top: 10px;
-  left: 10px;
-}
-
-.ticket-name_container span {
-  font-size: 1rem;
-  color: #000000c7;
-}
-
-.ticket-name_container h5 {
-  font-size: 1rem;
-  color: #6b4226;
-  text-transform: uppercase;
-  margin: 0;
+.ticket h5 {
+  font-size: small;
+  padding: 10px;
+  line-height: 1.5;
+  font-weight: 600;
   text-align: center;
 }
 
-.ticket-name_container h3.long-text {
-  font-size: 18px;
-  white-space: normal;
-  padding-inline: 10px;
+.ticket .desc {
+  font-size: medium;
+  padding: 5px;
+  font-size: small;
+  width: 70%;
+  margin: auto;
+  line-height: 1.5;
+
+  text-align: center;
 }
 
-img.Decor1 {
-  position: absolute;
-  height: 100%;
+.descList {
+  font-size: medium;
+  padding: 5px;
+  font-size: small;
   width: 100%;
-  object-fit: cover;
-  mix-blend-mode: multiply;
-  opacity: 100%;
+  margin: auto;
+  line-height: 1.5;
+  text-align: left;
 }
-
-.Decor1:nth-child(1) {
-  bottom: 0;
-  right: 0;
-  border-bottom-right-radius: 0.8rem;
-  width: 100%;
+.separator {
+  width: 90%;
+  border-top: 3px dashed #000;
+  margin: 20px 0;
 }
-
-.Decor1:nth-child(2) {
-  top: 0;
-  left: 0;
-  transform: rotate(180deg);
-  width: 100%;
-  border-bottom-right-radius: 1rem;
-  border-bottom-left-radius: 2rem;
-}
-
 .only-pdf {
   display: none;
 }
-
 @media print {
   .only-pdf {
     page-break-after: always;
