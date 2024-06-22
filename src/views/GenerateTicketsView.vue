@@ -119,7 +119,7 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div>
+  <div style="display: none">
     <div ref="dataRef" style="width: fit-content; height: fit-content">
       <div>
         <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
@@ -128,7 +128,7 @@ onMounted(() => {
             :key="index"
             class="tickets-container"
           >
-            <div v-for="ticketAmount in ticket.amount" :key="ticketAmount" style="margin: 5px">
+            <div v-for="ticketAmount in ticket.amount" :key="ticketAmount" style="gap: 5px">
               <section class="ticket">
                 <div class="ticket-main_container">
                   <img
@@ -344,8 +344,9 @@ h6 {
   /* transform: rotate(90deg); */
   display: flex;
   min-width: fit-content;
-  width: fit-content;
+  width: 470px;
   height: 150px;
+  margin: 5px;
   border-radius: 0.5rem;
   overflow: hidden;
   position: relative;
@@ -440,7 +441,7 @@ img.bg-tiket {
 
 .triangle-divider2 {
   position: absolute;
-  left: 335px;
+  left: 328px;
   width: 0;
   height: 0;
   border-left: 5px solid transparent;
