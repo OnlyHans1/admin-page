@@ -240,7 +240,7 @@ const createTransaction = async () => {
     }))
 
 
-    console.log(order)
+  console.log(order)
   dateTime()
 
   try {

@@ -12,6 +12,7 @@ const { ticketsData, emailCooldown, sendEmailToUser } = CheckoutHelper
 
 const router = useRouter()
 const route = useRoute()
+const generatePDFcooldown = ref(false)
 // const cashback = ticketsData.cashback ? ticketsData.cashback.split('|')[1] : ticketsData.cashback
 // const plannedDate = ticketsData.plannedDate
 //   ? ticketsData.plannedDate.split('T')[0]
@@ -98,10 +99,14 @@ onMounted(() => {
       <button
         class="generate-tickets__btn-print flex align-items-center gap[0.5]"
         @click="generatePDF"
+        v-if="!generatePDFcooldown"
       >
         <p class="fw-700">Print Tickets</p>
         <ph-printer :size="32" />
       </button>
+      <div v-else>
+        <p class="fw-700">Generate PDF<span class="send-email__text-cooldown"></span></p>
+      </div>
       <button class="generate-tickets__btn-email">
         <div
           v-if="!emailCooldown"
@@ -328,7 +333,7 @@ export default {
       const height = rect.height
       if (element) {
         const originalDisplay = element.style.display
-
+        generatePDFcooldown.value = true
         // Tampilkan elemen
         element.style.display = 'block'
         html2pdf(element, {
@@ -350,6 +355,7 @@ export default {
             pdfObj.autoPrint()
             window.open(pdfObj.output('bloburl'))
           })
+        generatePDFcooldown.value = false
       } else {
         console.error('Element not found or not yet rendered')
       }
