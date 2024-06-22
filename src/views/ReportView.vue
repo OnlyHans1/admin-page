@@ -53,11 +53,13 @@ const checkData = async () => {
     console.error(error)
   }
 }
+const confirmAlert = ref(false)
+
 const showDetail = ref(false)
 const isShowChart = ref(false)
 const yearDropdownOpen = ref(false)
 const monthDropdownOpen = ref(false)
-
+const showTransfer = ref(false)
 const toggleShow = () => {
   showDetail.value = !showDetail.value
 }
@@ -125,48 +127,98 @@ onMounted(() => {
   window.addEventListener('click', closeDropdownOnClickOutside)
   setMonthLocaleString()
 })
+const showtransfer = () => {
+  showTransfer.value = !showTransfer.value
+}
+const confirm = () => {
+  confirmAlert.value = !confirmAlert.value
+}
+const transfer = async () => {
+  console.log('test')
+  try {
+    if (order.length < 1) throw Error('No Item To Checkout')
+    showLoader.value = true
+    const response = await fetch(
+      `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/create-transaction`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          paymentAmount: 20000,
+          paymentMethod: 'COH'
+        })
+      }
+    )
+  } catch (err) {
+    console.error(err)
+  }
+}
+const submitOrder = () => {
+  confirmAlert.value = false
+  transfer()
+}
 </script>
 
 <template>
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
+    <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
+      <div class="add__alert-confirmation">
+        <h2>Apakah yakin ingin memindahkan dari cash ke account?</h2>
+        <div class="button-group">
+          <button @click="confirmAlert = false">Cancel</button>
+          <button @click="submitOrder()">Yes</button>
+        </div>
+      </div>
+    </div>
     <div class="report-information__container flex fd-row gap-2 justify-content-sb">
       <div class="report-information__income-container w-half flex fd-col gap-1">
-        <div class="report-information__income-revenue flex fd-col pd-2" @click="toggleShow">
-          <h5>Pendapatan hari ini</h5>
+        <div class="report-information__income-revenue flex fd-col pd-2">
+          <div style="justify-content: space-between; display: flex">
+            <h5>Pendapatan hari ini</h5>
+            <button @click="showtransfer()"><ph-x :size="20" weight="bold" /></button>
+          </div>
           <div class="report-information__income-text flex fd-row">
             <h5 class="fw-600">Rp</h5>
             <span class="fs-display fw-600" :class="incomeRevenueClass()">{{
               formatCurrency(incomeRevenue)
             }}</span>
           </div>
-          <transition name="jump">
-            <div v-if="showDetail" class="flex fd-row detail-section">
-              <div class="flex" style="width: 50%">
-                <div style="font-size: 20px; font-weight: 600">Rp</div>
-                <h3 class="fw-600" :class="incomeRevenueClass()">
-                  {{ formatCurrency(incomeRevenue) }}
-                </h3>
-              </div>
-              <div class="flex" style="width: 50%">
-                <div style="font-size: 20px; font-weight: 600">Rp</div>
-                <h3 class="fw-600" :class="incomeRevenueClass()">
-                  {{ formatCurrency(incomeRevenue) }}
-                </h3>
-              </div>
-              <q-btn
-                style="
-                  background-color: var(--color-primary);
-                  height: fit-content;
-                  border-radius: 5px;
-                  padding: 5px;
-                  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.062);
-                  margin: auto;
-                "
-                type="submit"
-                >Transfer</q-btn
-              >
+          <div v-if="showTransfer" class="block fd-row detail-section" style="padding-top: 10px">
+            <div style="font-weight: 700">Cash On Hand</div>
+            <div class="flex">
+              <div style="font-size: 20px; font-weight: 600">Rp</div>
+              <h3 class="fw-600" :class="incomeRevenueClass()">
+                {{ formatCurrency(incomeRevenue) }}
+              </h3>
             </div>
-          </transition>
+            <div style="font-weight: 700">Cash On Account</div>
+
+            <div class="flex" style="padding-top: 10px">
+              <div style="font-size: 20px; font-weight: 600">Rp</div>
+              <h3 class="fw-600" :class="incomeRevenueClass()">
+                {{ formatCurrency(incomeRevenue) }}
+              </h3>
+            </div>
+            <button
+              @click="confirm()"
+              weight="bold"
+              style="
+                background-color: var(--color-primary);
+                height: fit-content;
+                border-radius: 5px;
+                margin-top: 20px;
+                padding: 8px;
+                font-weight: 600;
+                box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.062);
+                margin-inline: auto;
+              "
+              type="submit"
+            >
+              Transfer
+            </button>
+          </div>
         </div>
         <div class="report-information__ticket-sold flex fd-col pd-2">
           <h5>Total tiket terjual</h5>
@@ -294,22 +346,23 @@ onMounted(() => {
   margin-top: 10px;
 }
 
-.jump-enter-active,
+/* .jump-enter-active,
 .jump-leave-active {
   transition: all 0.3s ease;
-}
-
+} */
+/* 
 .jump-enter-from,
 .jump-leave-to {
   transform: translateY(-10px);
   opacity: 0;
-}
+ } 
 
 .jump-enter-to,
 .jump-leave-from {
   transform: translateY(0);
   opacity: 1;
-}
+} 
+*/
 .report-information__container {
   width: 1085px;
 }
@@ -445,5 +498,52 @@ input {
 }
 .filter__input-dropdown_menu p:hover:last-child {
   border-radius: 0 0 0.5rem 0.5rem;
+}
+.add__alert-confirmation_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgb(0, 0, 0, 0.2);
+  z-index: 999;
+}
+
+.add__alert-confirmation {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translate(-50%);
+  background-color: #ffffff;
+  border: 1px solid rgba(255, 226, 154, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+.add__alert-confirmation .button-group {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: end;
+  margin-top: 1rem;
+}
+
+.add__alert-confirmation .button-group button {
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-primary);
+  filter: saturate(10);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.add__alert-confirmation .button-group button:first-child {
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #8f8f8f;
+  color: #ffffff;
 }
 </style>
