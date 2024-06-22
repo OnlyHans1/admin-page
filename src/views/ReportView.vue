@@ -354,11 +354,11 @@ const submitOrder = () => {
         >
           <ph-camera :size="32" weight="bold" />
         </span> -->
-        <span v-if="!isLoading" class="icons" name="Print Data" @click="getPrint">
-          <ph-printer :size="32" weight="bold" /> 
+        <span v-if="!isLoading" class="icons" name="Print Data Pengunjung" @click="getPrint">
+          <ph-printer :size="32" weight="bold" />
         </span>
         <span v-else>loading...</span>
-        <span class="icons" name="Print Data" @click="printData"
+        <span class="icons" name="Print Grafik Keramaian" @click="printData"
           ><ph-printer :size="32" weight="bold"
         /></span>
         <span class="icons" name="Ekspor ke Excel" @click="generateExcel">
