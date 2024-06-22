@@ -279,9 +279,7 @@ const createTransaction = async () => {
             email: custEmail.value,
             number: custNumber.value
           },
-          userId: userData.value.id,
-          nationalityId: selectedNationality.value,
-          cityName: asalKota.value.toUpperCase(),
+          user: { connect: { id: userData.value.id } },
           plannedDate: selectedDate.value,
           method: paymentSelection.value.toUpperCase(),
           status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',

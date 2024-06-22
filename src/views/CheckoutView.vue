@@ -96,11 +96,6 @@ const checkValidTransaction = () => {
 
   if (!custName.value) invalid.push('Nama Pelanggan')
   if (!custEmail.value) invalid.push('Email Pelanggan')
-  if (userData.nationalityId) {
-    if (!userData.nationalityId) {
-      invalid.push('Kewarganegaraan')
-    }
-  }
   // if (isDomestik.value) {
   //   if (!inputDomestik.value) {
   //     invalid.push('Daerah')
@@ -185,30 +180,6 @@ onMounted(() => {
                 <div class="order-details__content w-full flex gap[0.5] align-items-center">
                   <p class="fs-h5 fw-700">{{ userData.name }}</p>
                   <p>({{ userData.email }})</p>
-                </div>
-              </div>
-              <div style="display: flex">
-                <div
-                  class="order-details__dropdown"
-                  v-if="isMancanegara"
-                  style="margin-right: 1rem"
-                >
-                  <NationalityDropdown />
-                </div>
-                <div v-if="isDomestik">
-                  <div class="order-details__customer-input flex gap-1" style="margin-top: 0.2rem">
-                    <div class="customer-details__input-placeholder">
-                      <input
-                        type="text"
-                        required
-                        rows="1"
-                        v-model="asalKota"
-                        id="kota"
-                        autocomplete="Akota"
-                      />
-                      <label for="kota">Asal Kota</label>
-                    </div>
-                  </div>
                 </div>
               </div>
               <div class="order-details__customer">
