@@ -123,49 +123,75 @@ onMounted(() => {
       <ph-caret-left :size="16" weight="bold" />
       <p>Kembali ke Dashboard</p>
     </button>
-  </div>
-  <div style="display: none">
-    <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
-      <div>
-        <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
-          <div style="gap: 5px">
-            <section class="ticket">
-              <div style="display: block; width: 100%; justify-content: center">
-                <div style="display: flex; width: 100%">
-                  <img
-                    src="../assets/images/logo.png"
-                    alt="Keraton Kasepuhan Cirebon"
+    <div style="visibility: hidden">
+      <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
+        <div>
+          <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
+            <div style="gap: 5px">
+              <section class="ticket">
+                <div style="display: block; width: 100%; justify-content: center">
+                  <div style="display: flex; width: 100%">
+                    <img
+                      src="../assets/images/logo.png"
+                      alt="Keraton Kasepuhan Cirebon"
+                      style="
+                        width: 150px;
+                        height: 150px;
+                        margin-inline: auto;
+                        margin-top: 10px;
+                        margin-bottom: 10px;
+                      "
+                    />
+                  </div>
+                  <div style="width: 70%; margin: auto">
+                    <h5>
+                      Jl. Kasepuhan No.43, Kasepuhan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
+                    </h5>
+                    <p class="desc">Selamat datang di wisata Keraton Kesepuhan Cirebon</p>
+                    <p class="desc">{{ `${ticketsData.plannedDate}` }}</p>
+                  </div>
+                  <section
+                    class="separator"
+                    style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
+                  ></section>
+                  <div
+                    style="width: 90%; margin: auto"
+                    v-for="(ticket, index) in ticketsData.detailTrans"
+                    :key="index"
+                  >
+                    <div style="display: flex; justify-content: space-between; width: 100%">
+                      <p class="descList">
+                        {{
+                          `${ticket.order.name} (${ticket.order.category.name}) x ${ticket.amount} Tiket`
+                        }}
+                      </p>
+                      <p
+                        class="descList"
+                        style="
+                          display: inline;
+                          max-width: 40%;
+                          text-align: right;
+                          height: fit-content;
+                          word-break: break-all;
+                        "
+                      >
+                        {{ `Rp.${formatCurrency(ticket.order.price)}` }}
+                      </p>
+                    </div>
+                  </div>
+                  <section
+                    class="separator"
+                    style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
+                  ></section>
+                  <div
                     style="
-                      width: 150px;
-                      height: 150px;
+                      display: flex;
+                      justify-content: space-between;
+                      width: 90%;
                       margin-inline: auto;
-                      margin-top: 10px;
-                      margin-bottom: 10px;
                     "
-                  />
-                </div>
-                <div style="width: 70%; margin: auto">
-                  <h5>
-                    Jl. Kasepuhan No.43, Kasepuhan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
-                  </h5>
-                  <p class="desc">Selamat datang di wisata Keraton Kesepuhan Cirebon</p>
-                  <p class="desc">{{ `${ticketsData.plannedDate.split('T')[0]}` }}</p>
-                </div>
-                <section
-                  class="separator"
-                  style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
-                ></section>
-                <div
-                  style="width: 90%; margin: auto"
-                  v-for="(ticket, index) in ticketsData.detailTrans"
-                  :key="index"
-                >
-                  <div style="display: flex; justify-content: space-between; width: 100%">
-                    <p class="descList">
-                      {{
-                        `${ticket.order.name} (${ticket.order.category.name}) x ${ticket.amount} Tiket`
-                      }}
-                    </p>
+                  >
+                    <p class="descList">Pembayaran</p>
                     <p
                       class="descList"
                       style="
@@ -176,132 +202,104 @@ onMounted(() => {
                         word-break: break-all;
                       "
                     >
-                      {{ `Rp.${formatCurrency(ticket.order.price)}` }}
+                      {{ `${ticketsData.method}` }}
                     </p>
                   </div>
-                </div>
-                <section
-                  class="separator"
-                  style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
-                ></section>
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    width: 90%;
-                    margin-inline: auto;
-                  "
-                >
-                  <p class="descList">Pembayaran</p>
-                  <p
-                    class="descList"
+                  <div
                     style="
-                      display: inline;
-                      max-width: 40%;
-                      text-align: right;
-                      height: fit-content;
-                      word-break: break-all;
+                      display: flex;
+                      justify-content: space-between;
+                      width: 90%;
+                      margin-inline: auto;
                     "
                   >
-                    {{ `${ticketsData.method}` }}
-                  </p>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    width: 90%;
-                    margin-inline: auto;
-                  "
-                >
-                  <p class="descList">Potongan</p>
-                  <p
-                    class="descList"
-                    style="
-                      display: inline;
-                      max-width: 40%;
-                      text-align: right;
-                      height: fit-content;
-                      word-break: break-all;
-                    "
-                  >
-                    {{ `${ticketsData.discount.split('|')[1]}` }}
-                  </p>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    width: 90%;
-                    margin-inline: auto;
-                  "
-                >
-                  <p class="descList">Cashback</p>
-                  <p
-                    class="descList"
-                    style="
-                      display: inline;
-                      max-width: 40%;
-                      text-align: right;
-                      height: fit-content;
-                      word-break: break-all;
-                    "
-                  >
-                    {{ `${ticketsData.cashback.split('|')[1]}` }}
-                  </p>
-                </div>
-                <div
-                  style="
-                    display: flex;
-                    justify-content: space-between;
-                    width: 90%;
-                    margin-inline: auto;
-                  "
-                >
-                  <p class="descList">Total</p>
-                  <p
-                    class="descList"
-                    style="
-                      display: inline;
-                      max-width: 40%;
-                      text-align: right;
-                      height: fit-content;
-                      word-break: break-all;
-                    "
-                  >
-                    {{ `Rp.${formatCurrency(ticketsData.total)}` }}
-                  </p>
-                </div>
-                <div style="width: 70%; margin: auto">
-                  <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
-                  <h5 style="text-transform: uppercase">Enjoy The Tour !</h5>
-                </div>
-                <div
-                  style="width: 90%; margin: auto"
-                  v-for="(ticket, index) in ticketsData.BarcodeUsage"
-                  :key="index"
-                >
-                  <div style="display: flex; width: 100%">
-                    <img
-                      :src="ticket.qrPath ? ticket.qrPath : ' ../assets/images/testqr.jpg'"
+                    <p class="descList">Potongan</p>
+                    <p
+                      class="descList"
                       style="
-                        width: 200px;
-                        height: 200px;
-                        margin-inline: auto;
-                        margin-top: 10px;
-                        margin-bottom: 10px;
+                        display: inline;
+                        max-width: 40%;
+                        text-align: right;
+                        height: fit-content;
+                        word-break: break-all;
                       "
-                      alt="Keraton Kasepuhan Cirebon"
-                    />
+                    >
+                      {{ `${ticketsData.discount}` }}
+                    </p>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      width: 90%;
+                      margin-inline: auto;
+                    "
+                  >
+                    <p class="descList">Cashback</p>
+                    <p
+                      class="descList"
+                      style="
+                        display: inline;
+                        max-width: 40%;
+                        text-align: right;
+                        height: fit-content;
+                        word-break: break-all;
+                      "
+                    >
+                      {{ `${ticketsData.cashback}` }}
+                    </p>
+                  </div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      width: 90%;
+                      margin-inline: auto;
+                    "
+                  >
+                    <p class="descList">Total</p>
+                    <p
+                      class="descList"
+                      style="
+                        display: inline;
+                        max-width: 40%;
+                        text-align: right;
+                        height: fit-content;
+                        word-break: break-all;
+                      "
+                    >
+                      {{ `Rp.${formatCurrency(ticketsData.total)}` }}
+                    </p>
+                  </div>
+                  <div style="width: 70%; margin: auto">
+                    <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
+                    <h5 style="text-transform: uppercase">Enjoy The Tour !</h5>
+                  </div>
+                  <div
+                    style="width: 90%; margin: auto"
+                    v-for="(ticket, index) in ticketsData.BarcodeUsage"
+                    :key="index"
+                  >
+                    <div style="display: flex; width: 100%">
+                      <img
+                        :src="ticket.qrPath ? ticket.qrPath : ' ../assets/images/testqr.jpg'"
+                        style="
+                          width: 200px;
+                          height: 200px;
+                          margin-inline: auto;
+                          margin-top: 10px;
+                          margin-bottom: 10px;
+                        "
+                        alt="Keraton Kasepuhan Cirebon"
+                      />
+                    </div>
+                  </div>
+                  <div style="width: 100%; margin: auto">
+                    <h5 style="font-size: 10px">www.KeratonKesepuhanCirebon.com</h5>
                   </div>
                 </div>
-                <div style="width: 100%; margin: auto">
-                  <h5 style="font-size: 10px">www.KeratonKesepuhanCirebon.com</h5>
-                </div>
-              </div>
-            </section>
-
-            <div class="only-pdf"></div>
+              </section>
+            </div>
           </div>
         </div>
       </div>
@@ -467,9 +465,7 @@ export default {
   border-top: 3px dashed #000;
   margin: 20px 0;
 }
-.only-pdf {
-  display: none;
-}
+
 @media print {
   .only-pdf {
     page-break-after: always;
