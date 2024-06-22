@@ -11,6 +11,7 @@ import App from './App.vue'
 import VueApexCharts from 'vue3-apexcharts';
 import PhosphorIcons from "@phosphor-icons/vue"
 import router from './router'
+import './registerServiceWorker'
 
 const app = createApp(App)
 app.use(VueApexCharts);

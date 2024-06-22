@@ -233,9 +233,7 @@ const printData = () => {
   win.document.write('</body></html>')
   win.window.print()
   win.document.close()
-
 }
-
 
 /* ChartReport Helper*/
 const selectedYear = ref(0)

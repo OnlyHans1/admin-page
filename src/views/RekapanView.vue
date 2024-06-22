@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import Chart from '@/components/Chart.vue'
 import ReportHelper from '@/utilities/ReportHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
@@ -50,6 +50,7 @@ const checkData = async () => {
     console.error(error)
   }
 }
+
 const showDetail = ref(false)
 const isShowChart = ref(false)
 const yearDropdownOpen = ref(false)
@@ -82,24 +83,7 @@ const selectMonthOption = (month) => {
   changeSelectedMonth(month)
   monthDropdownOpen.value = false
 }
-// const takeScreenshot = async (elementId) => {
-//   const element = document.getElementById(elementId)
-//   try {
-//     const canvas = await html2canvas(element)
-//     canvas.toBlob((blob) => {
-//       const url = URL.createObjectURL(blob)
-//       const a = document.createElement('a')
-//       a.href = url
-//       a.download = `Report Tahun ${selectedYear.value} Bulan ${selectedMonthName.value}.png`
-//       document.body.appendChild(a)
-//       a.click()
-//       window.URL.revokeObjectURL(url)
-//       console.log('Screenshot saved as image file!')
-//     }, 'image/png')
-//   } catch (error) {
-//     console.error('Error saving screenshot as image file:', error)
-//   }
-// }
+
 const incomeRevenueClass = () => {
   const length = incomeRevenue.value.toString().length
   if (length > 18) {
@@ -112,6 +96,16 @@ const incomeRevenueClass = () => {
     return 'fs-h2'
   }
 }
+
+const yearlyTableData = computed(() => {
+  const data = printData()
+  return data.filter((item) => item.type === 'yearly')
+})
+
+const monthlyTableData = computed(() => {
+  const data = printData()
+  return data.filter((item) => item.type === 'monthly')
+})
 
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdownOnClickOutside)

@@ -308,6 +308,7 @@ onMounted(() => {
                           </label>
                           <select
                             id="nationality-select"
+                            v-if="item.category.name === 'Mancanegara'"
                             style="
                               height: 2.2rem;
                               border: 2px solid rgba(0, 0, 0, 1);
