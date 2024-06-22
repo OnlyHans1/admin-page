@@ -53,11 +53,14 @@ const checkData = async () => {
     console.error(error)
   }
 }
-
+const showDetail = ref(false)
 const isShowChart = ref(false)
 const yearDropdownOpen = ref(false)
 const monthDropdownOpen = ref(false)
 
+const toggleShow = () => {
+  showDetail.value = !showDetail.value
+}
 const toggleYearDropdown = () => {
   yearDropdownOpen.value = !yearDropdownOpen.value
 }
@@ -112,6 +115,7 @@ const incomeRevenueClass = () => {
     return 'fs-h2'
   }
 }
+
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdownOnClickOutside)
 })
@@ -127,7 +131,7 @@ onMounted(() => {
   <div class="report__container flex fd-col align-items-center justify-content-center gap[2.25]">
     <div class="report-information__container flex fd-row gap-2 justify-content-sb">
       <div class="report-information__income-container w-half flex fd-col gap-1">
-        <div class="report-information__income-revenue flex fd-col pd-2">
+        <div class="report-information__income-revenue flex fd-col pd-2" @click="toggleShow">
           <h5>Pendapatan hari ini</h5>
           <div class="report-information__income-text flex fd-row">
             <h5 class="fw-600">Rp</h5>
@@ -135,6 +139,34 @@ onMounted(() => {
               formatCurrency(incomeRevenue)
             }}</span>
           </div>
+          <transition name="jump">
+            <div v-if="showDetail" class="flex fd-row detail-section">
+              <div class="flex" style="width: 50%">
+                <div style="font-size: 20px; font-weight: 600">Rp</div>
+                <h3 class="fw-600" :class="incomeRevenueClass()">
+                  {{ formatCurrency(incomeRevenue) }}
+                </h3>
+              </div>
+              <div class="flex" style="width: 50%">
+                <div style="font-size: 20px; font-weight: 600">Rp</div>
+                <h3 class="fw-600" :class="incomeRevenueClass()">
+                  {{ formatCurrency(incomeRevenue) }}
+                </h3>
+              </div>
+              <q-btn
+                style="
+                  background-color: var(--color-primary);
+                  height: fit-content;
+                  border-radius: 5px;
+                  padding: 5px;
+                  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.062);
+                  margin: auto;
+                "
+                type="submit"
+                >Transfer</q-btn
+              >
+            </div>
+          </transition>
         </div>
         <div class="report-information__ticket-sold flex fd-col pd-2">
           <h5>Total tiket terjual</h5>
@@ -254,8 +286,32 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.report-information__income-revenue {
+  cursor: pointer;
+}
+
+.detail-section {
+  margin-top: 10px;
+}
+
+.jump-enter-active,
+.jump-leave-active {
+  transition: all 0.3s ease;
+}
+
+.jump-enter-from,
+.jump-leave-to {
+  transform: translateY(-10px);
+  opacity: 0;
+}
+
+.jump-enter-to,
+.jump-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}
 .report-information__container {
-  width: 985px;
+  width: 1085px;
 }
 .report-information__income-revenue,
 .report-information__ticket-sold,
@@ -294,9 +350,7 @@ onMounted(() => {
   line-height: 28px;
 }
 .report-activity__table-container {
-  width: 100%;
-  margin: auto;
-  padding: 1rem;
+  width: 1081px;
   height: 374px;
   border-radius: 20px;
   box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
@@ -391,162 +445,5 @@ input {
 }
 .filter__input-dropdown_menu p:hover:last-child {
   border-radius: 0 0 0.5rem 0.5rem;
-}
-.report__container {
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
-}
-
-.report-information__container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-}
-
-.report-information__income-container,
-.report-information__ticketing-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.report-information__income-revenue,
-.report-information__ticket-sold,
-.report-information__ticketing-container {
-  border-radius: 20px;
-  box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
-  padding: 1rem;
-}
-
-.report-revenue__container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.report-revenue__chart-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-}
-@media (min-width: 1200px) {
-  .report-revenue__chart-container {
-    flex-direction: row;
-    justify-content: center;
-    margin-left: 0px;
-  }
-}
-@media (max-width: 970px) {
-  .report-revenue__chart-container {
-    margin: 20px;
-  }
-}
-
-.report-revenue__icons {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-  margin-right: 2rem;
-}
-
-.report-activity__container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.report-activity__head {
-  display: flex;
-  align-items: center;
-  width: 95%;
-  margin: auto;
-  justify-content: space-between;
-}
-
-.filter__input-dropdown {
-  position: relative;
-  width: 100%;
-  max-width: 200px;
-  border: 1px solid black;
-  border-radius: 0.5rem;
-  background-color: transparent;
-}
-
-.filter__input-dropdown input {
-  width: 100%;
-  padding: 0.5rem;
-  border: none;
-  border-radius: 0.5rem;
-  cursor: pointer;
-}
-
-.filter__input-dropdown_menu {
-  position: absolute;
-  top: 2.6rem;
-  width: 100%;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  max-height: 200px;
-  overflow-y: auto;
-  display: none;
-}
-
-.filter__input-dropdown_menu.active {
-  display: block;
-}
-
-/* Responsive styles */
-/* @media (min-width: 768px) {
-  .report-information__container {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .report-information__income-container,
-  .report-information__ticketing-container {
-    width: 90%;
-  }
-
-  .report-revenue__chart-container {
-    flex-direction: row;
-    justify-content: center;
-  }
-} */
-@media (min-width: 1200px) {
-  .report-activity__table-container {
-    width: 100%;
-    height: 374px;
-    border-radius: 20px;
-    box-shadow: 0 0 15px 0 rgba(0, 0, 0, 0.25);
-    padding: 1rem;
-  }
-}
-
-@media (min-width: 924px) {
-  .report-information__container {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .report-information__income-container,
-  .report-information__ticketing-container {
-    width: 50%;
-  }
-  .fs-display {
-    font-size: 50px;
-  }
-}
-@media (max-width: 704px) {
-  .fs-display {
-    font-size: xx-large;
-  }
 }
 </style>

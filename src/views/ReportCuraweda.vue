@@ -46,7 +46,13 @@
     <div class="flex h-full" style="gap: 1rem">
       <div style="background: black; width: 0.1rem"></div>
       <div class="ticket-info-card__container flex fd-col pd-1">
-        <p class="ticket-info-card__title">Revenue Curaweda</p>
+        <p class="ticket-info-card__title">Revenue Curaweda "COH"</p>
+        <span class="ticket-info-card__details align-self-center">{{
+          formatCurrency(revenueCuraweda)
+        }}</span>
+      </div>
+      <div class="ticket-info-card__container flex fd-col pd-1">
+        <p class="ticket-info-card__title">Revenue Curaweda "CIA"</p>
         <span class="ticket-info-card__details align-self-center">{{
           formatCurrency(revenueCuraweda)
         }}</span>
@@ -55,6 +61,51 @@
   </div>
 
   <h2 style="font-weight: bold; text-align: center; margin-top: 10rem">History Report Curaweda</h2>
+
+  <div style="margin-bottom: 1rem">
+    <label for="filter-date" style="font-weight: bold; margin-right: 1rem">Filter by Date:</label>
+    <div style="display: flex; align-items: center; gap: 1rem">
+      <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">From:</label>
+      <input
+        type="date"
+        id="filter-date-from"
+        v-model="filterDateFrom"
+        @change="filterRecords"
+        class="datepicker-input"
+      />
+      <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">To:</label>
+      <input
+        type="date"
+        id="filter-date-to"
+        v-model="filterDateTo"
+        @change="filterRecords"
+        class="datepicker-input"
+      />
+    </div>
+  </div>
+
+  <table class="history-report-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Revenue Keraton "COH"</th>
+        <th>Revenue Keraton "CIA"</th>
+        <th>Revenue Curaweda</th>
+        <th>Total Revenue</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr v-for="record in historyRecords" :key="record.date">
+        <td>{{ record.date }}</td>
+        <td>{{ formatCurrency(record.revenueKeraton.COH) }}</td>
+        <td>{{ formatCurrency(record.revenueKeraton.CIA) }}</td>
+        <td>{{ formatCurrency(record.revenueCuraweda) }}</td>
+        <td>{{ formatCurrency(record.totalRevenue) }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2 style="font-weight: bold; text-align: center; margin-top: 10rem">History Transaction</h2>
 
   <div style="margin-bottom: 1rem">
     <label for="filter-date" style="font-weight: bold; margin-right: 1rem">Filter by Date:</label>
@@ -110,6 +161,7 @@ export default {
     return {
       revenueCuraweda: ref(0),
       revenueKeraton: ref({ CIH: 0, CIA: 0 }),
+      // revenueCuraweda: ref({ CIH: 0, CIA: 0 }),
       revenueTotal: ref(0),
       historyRecords: ref([]),
       filterDateFrom: ref(''),
@@ -135,33 +187,34 @@ export default {
         console.log(err)
       }
     },
-    async fetchTabel(){
-      try{
+    async fetchTabel() {
+      try {
         let url = `${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/income-revenue-tabel?`
-        if(this.filterDateFrom) url += `from=${this.filterDateFrom}`
-        if(this.filterDateTo) url += `to=${this.filterDateTo}`
+        if (this.filterDateFrom) url += `from=${this.filterDateFrom}`
+        if (this.filterDateTo) url += `to=${this.filterDateTo}`
         const response = await fetch(url)
         if (!response.ok) throw Error('Failed to fetch Data')
         const responseData = await response.json()
         this.historyRecords = this.formatTabelRecord(responseData.data)
-      }catch(err){
+      } catch (err) {
         console.log(err)
       }
     },
 
-    formatTabelRecord(datas){
+    formatTabelRecord(datas) {
       let tableRaw = {}
-      for(let data of datas){
+      for (let data of datas) {
         const reservedDate = data.plannedDate.split('T')[0]
-        if(!tableRaw[reservedDate]) tableRaw[reservedDate] = {
-          date: reservedDate,
-          revenueKeraton: {
-            COH: 0,
-            CIA: 0
-          },
-          revenueCuraweda: 0,
-          totalRevenue: 0
-        }
+        if (!tableRaw[reservedDate])
+          tableRaw[reservedDate] = {
+            date: reservedDate,
+            revenueKeraton: {
+              COH: 0,
+              CIA: 0
+            },
+            revenueCuraweda: 0,
+            totalRevenue: 0
+          }
         tableRaw[reservedDate].revenueKeraton.COH += data.keratonIncome.COH
         tableRaw[reservedDate].revenueKeraton.CIA += data.keratonIncome.CIA
         tableRaw[reservedDate].revenueCuraweda += data.curawedaIncome.total
