@@ -6,7 +6,7 @@
       justify-content: center;
       align-items: center;
     ">
-    <h2>Data Pembelian Tiket</h2>
+    <h2>Data Wisatawan Keraton</h2>
     <table class="history-report-table" style="margin-top: 2rem">
       <thead>
         <tr>

@@ -40,6 +40,7 @@ const fetchTickets = async (id) => {
     }
     const res = await response.json()
     ticketsData.value = res.data
+    console.log(ticketsData.value)
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
@@ -307,7 +308,7 @@ onMounted(() => {
                         word-break: break-all;
                       "
                     >
-                      {{ `Rp.${formatCurrency(ticketsData.total)}` }}
+                      {{ `Rp.${formatCurrency(+ticketsData.total + ticketsData.additionalFee)}` }}
                     </p>
                   </div>
                   <div style="width: 70%; margin: auto">
@@ -322,7 +323,7 @@ onMounted(() => {
                     <div style="display: flex; width: 100%">
                       <!-- ticket.qrPath ? ticket.qrPath :  -->
                       <img
-                        :src="'../assets/images/testqr.jpg'"
+                        src="../assets/images/testqr.jpg"
                         style="
                           width: 200px;
                           height: 200px;

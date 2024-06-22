@@ -159,11 +159,11 @@ const transfer = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
-      }
-      // body: JSON.stringify({
-      //   paymentAmount: inputValue.value,
-      //   paymentMethod: 'BJB'
-      // })
+      },
+      body: JSON.stringify({
+        // paymentAmount: inputValue.value,
+        paymentMethod: 'BJB'
+      })
     })
     if (!response.ok) {
       throw new Error('Failed transfer')

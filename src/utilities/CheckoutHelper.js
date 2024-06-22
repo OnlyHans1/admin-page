@@ -15,6 +15,7 @@ const {
   assignAlert
 } = GlobalHelper
 
+
 const { userData, userCarts } = LoginHelper
 
 /* NationalityDropdown Helper */
@@ -192,9 +193,14 @@ const totalBiaya = computed(() => {
 
 const totalTagihan = computed(() => {
   const diskon = (totalHarga.value * discountValue.value) / 100;
-  const biayaJasaAplikasi = paymentSelection.value === 'Cash' ? biayaJasa.value : totalHarga.value * biayaJasaCard.value;
-  console.log(paymentSelection.value)
-  return totalHarga.value - diskon + biayaLayanan.value + biayaJasaAplikasi;
+  let taxes = 0
+  const taxesIdentifier = paymentSelection != 'Cash' ? 'nonCash' : 'cash'
+  if(listOfTaxes[taxesIdentifier]){
+    for(let tax of listOfTaxes[taxesIdentifier]){
+      taxes += tax.multiply ? totalTagihan.value * tax.tax : totalTagihan.value + tax.tax
+    }
+  }
+  return totalHarga.value - diskon + biayaLayanan.value + taxes;
 });
 
 const totalTicketCount = computed(() => {
@@ -206,6 +212,7 @@ const totalTicketCount = computed(() => {
 })
 
 //Payment Method Selection
+const listOfTaxes = ref({})
 const paymentSelection = ref('')
 const paymentSelect = ref(false)
 const showPaymentSelect = () => {
@@ -214,6 +221,18 @@ const showPaymentSelect = () => {
 const selectPayment = (paymentMethod) => {
   paymentSelection.value = paymentMethod
   paymentSelect.value = false
+}
+
+const fetchTaxes = async () => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/list-tax`)
+    if (!response.ok) throw Error('Terjadi kesalahan')
+    const responseData = await response.json()
+    listOfTaxes.value.cash = responseData.data.data.cash.filter((tax) => tax.paidBy === "user")
+    listOfTaxes.value.nonCash = responseData.data.data.nonCash.filter((tax) => tax.paidBy === "user")
+  } catch (err) {
+    console.log(err)
+  }
 }
 
 //DateTime
@@ -239,9 +258,7 @@ const createTransaction = async () => {
       guideId: item.guideId
     }))
 
-
-  console.log(order)
-  dateTime()
+    dateTime()
 
   try {
     if (order.length < 1) throw Error('No Item To Checkout')
@@ -304,7 +321,7 @@ const createTransaction = async () => {
     checkoutStatus.value = 'boleh'
     showLoader.value = false
     userCarts.value = []
-    updateUserCarts(userCarts.value)
+    DashboardHelper.updateUserCarts(userCarts.value)
   } catch (error) {
     console.log(error)
   }
@@ -543,6 +560,8 @@ export default {
   getNationality,
   closeDropdownOutside,
   getUserCarts,
+  fetchTaxes,
+  listOfTaxes,
   paymentSelection,
   paymentSelect,
   showPaymentSelect,

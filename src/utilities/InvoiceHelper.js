@@ -67,9 +67,9 @@ const mapInvoiceDetails = (data) => {
       const orderName = item.order ? item.order.name : item.event.name
       const orderCategoryName = item.order ? item.order.category.name : "Event"
       const guideName = item.guide ? item.guide.name : ''
-      const orderPrice = Number(item.order.price).toLocaleString('id-ID')
+      const orderPrice = Number( item.order ? item.order.price : item.event.price).toLocaleString('id-ID')
       const orderAmount = Number(item.amount).toLocaleString('id-ID')
-      const orderDiscount = Number((item.order.price * orderAmount * discountAmount) / 100).toLocaleString('id-ID')
+      const orderDiscount = Number(((item.order ? item.order.price : item.event.price) * orderAmount * discountAmount) / 100).toLocaleString('id-ID')
       const formattedDiscount = `Rp. ${orderDiscount},00 (${discountAmount}%)`
       const totalPrice = Number(item.amount * (item.order ? item.order.price : item.event.price)).toLocaleString('id-ID')
 

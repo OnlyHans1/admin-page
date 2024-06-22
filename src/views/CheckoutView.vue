@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import Slider from '@/components/Slider.vue'
 import NationalityDropdown from '@/components/NationalityDropdown.vue'
@@ -32,6 +32,8 @@ const {
   maxTickets,
   getFlagImageUrl,
   fetchFeeSettings,
+  fetchTaxes,
+  listOfTaxes,
   formatCurrency,
   totalHarga,
   totalTagihan,
@@ -64,6 +66,7 @@ const {
   fetchUnavailableGuide,
   checkGuideAvailability
 } = CheckoutHelper
+
 
 const { grantAccessRoute, assignAlert, getImageURL } = GlobalHelper
 const { isMancanegara, isDomestik, saveToUserCarts, checkUserCarts } = DashboardHelper
@@ -142,26 +145,29 @@ const toGenerateTickets = async () => {
 
 const fetchAllData = async () => {
   await fetchGuideData()
+  await fetchTaxes()
   getUserCarts()
   checkUserCarts()
   fetchFeeSettings()
   fetchNationalityData()
   console.log(nationalityResult.value)
 }
-const chooseNationality = (data, itemIndex) => {
-  console.log(data, itemIndex)
-  userCarts.value[itemIndex].nationalityId = data.id
-  console.log(userCarts.value[itemIndex].nationalityId)
-}
 
-const chooseCity = (name, itemIndex) => {
-  console.log(userCarts)
-  userCarts.value[itemIndex].cityName = name
-}
+const formatTax = (tax) => {
+    console.log(tax)
+      return tax.multiply ? totalTagihan.value * tax.tax : totalTagihan.value + tax.tax
+    }
 
 onMounted(() => {
-  fetchAllData()
+  fetchAllData().then(() => {
+    const date = new Date();
+    date.setHours(date.getHours() + 1); // Add 1 hour to the current date and time
+    const offset = date.getTimezoneOffset();
+    const localDate = new Date(date.getTime() - (offset * 60 * 1000)); // Adjust for local timezone
+    selectedDate.value = localDate
+  })
 })
+
 </script>
 
 <template>
@@ -189,25 +195,11 @@ onMounted(() => {
                 </div>
                 <div class="order-details__customer-input flex gap-1">
                   <div class="customer-details__input-placeholder">
-                    <input
-                      type="text"
-                      required
-                      rows="1"
-                      v-model="custName"
-                      id="name"
-                      autocomplete="name"
-                    />
+                    <input type="text" required rows="1" v-model="custName" id="name" autocomplete="name" />
                     <label for="name">Nama Pelanggan</label>
                   </div>
                   <div class="customer-details__input-placeholder">
-                    <input
-                      type="email"
-                      required
-                      rows="1"
-                      v-model="custEmail"
-                      id="email"
-                      autocomplete="email"
-                    />
+                    <input type="email" required rows="1" v-model="custEmail" id="email" autocomplete="email" />
                     <label for="email">Email Pelanggan</label>
                   </div>
                 </div>
@@ -219,13 +211,8 @@ onMounted(() => {
                 </div>
                 <div class="order-details__ticket-date">
                   <div class="ticket__input-placeholder">
-                    <input
-                      type="datetime-local"
-                      class="ticket__input-date"
-                      v-model="selectedDate"
-                      @input="fetchUnavailableGuide()"
-                      id="date"
-                    />
+                    <input type="datetime-local" class="ticket__input-date" v-model="selectedDate"
+                      @input="fetchUnavailableGuide()" id="date" />
                     <label for="date">Tanggal Pemesanan</label>
                   </div>
                 </div>
@@ -236,26 +223,14 @@ onMounted(() => {
                       <span class="fs-h6">{{ formatCurrency(item.price) }}</span>
                     </div>
                     <div class="order-details__ticket-value flex align-items-center gap-1">
-                      <button
-                        class="flex align-items-center justify-content-center"
-                        @click="reduceTicket(index)"
-                        type="button"
-                      >
+                      <button class="flex align-items-center justify-content-center" @click="reduceTicket(index)"
+                        type="button">
                         <ph-minus :size="14" weight="bold" />
                       </button>
-                      <input
-                        type="number"
-                        class="order-details__ticket-input"
-                        v-model="userCarts[index].amount"
-                        @input="updateAmount(userCarts[index].amount, index)"
-                        @focus="selectAll($event)"
-                        min="1"
-                      />
-                      <button
-                        class="flex align-items-center justify-content-center"
-                        @click="addTicket(index)"
-                        type="button"
-                      >
+                      <input type="number" class="order-details__ticket-input" v-model="userCarts[index].amount"
+                        @input="updateAmount(userCarts[index].amount, index)" @focus="selectAll($event)" min="1" />
+                      <button class="flex align-items-center justify-content-center" @click="addTicket(index)"
+                        type="button">
                         <ph-plus :size="14" weight="bold" />
                       </button>
 
@@ -277,13 +252,9 @@ onMounted(() => {
                           </div>
                         </div>
                       </div> -->
-                      <div
-                        style="margin-right: 1rem; position: relative"
-                        v-if="item.category.name === 'Umum' || item.category.name === 'Pelajar'"
-                      >
-                        <label
-                          for="city-select"
-                          style="
+                      <div style="margin-right: 1rem; position: relative"
+                        v-if="item.category.name === 'Umum' || item.category.name === 'Pelajar'">
+                        <label for="city-select" style="
                             position: absolute;
                             top: -0.75rem;
                             left: 0.5rem;
@@ -291,27 +262,18 @@ onMounted(() => {
                             padding: 0 0.25rem;
                             font-size: 14px;
                             color: #000;
-                          "
-                        >
+                          ">
                           Pilih Kota Asal
                         </label>
-                        <select
-                          id="city-select"
-                          style="
+                        <select id="city-select" style="
                             height: 2.2rem;
                             border: 2px solid rgba(0, 0, 0, 1);
                             border-radius: 0.2rem;
                             padding-left: 0.5rem;
                             width: 100%;
-                          "
-                          v-model="item.cityName"
-                        >
+                          " v-model="item.cityName">
                           <option value="" disabled selected>Pilih Kebangsaan</option>
-                          <option
-                            v-for="result in cityName.kotaIndonesia"
-                            :key="result"
-                            :value="result"
-                          >
+                          <option v-for="result in cityName.kotaIndonesia" :key="result" :value="result">
                             {{ result }}
                           </option>
                         </select>
@@ -330,13 +292,8 @@ onMounted(() => {
                             </div>
                           </div>
                         </div> -->
-                        <div
-                          style="margin-right: 1rem; position: relative"
-                          v-if="item.category.name === 'Mancanegara'"
-                        >
-                          <label
-                            for="nationality-select"
-                            style="
+                        <div style="margin-right: 1rem; position: relative" v-if="item.category.name === 'Mancanegara'">
+                          <label for="nationality-select" style="
                               position: absolute;
                               top: -0.75rem;
                               left: 0.5rem;
@@ -344,27 +301,18 @@ onMounted(() => {
                               padding: 0 0.25rem;
                               font-size: 14px;
                               color: #000;
-                            "
-                          >
+                            ">
                             Pilih Kebangsaan
                           </label>
-                          <select
-                            id="nationality-select"
-                            style="
+                          <select id="nationality-select" style="
                               height: 2.2rem;
                               border: 2px solid rgba(0, 0, 0, 1);
                               border-radius: 0.2rem;
                               padding-left: 0.5rem;
                               width: 100%;
-                            "
-                            v-model="item.nationalityId"
-                          >
+                            " v-model="item.nationalityId">
                             <option value="" disabled selected>Pilih Kebangsaan</option>
-                            <option
-                              v-for="result in nationalityData"
-                              :key="result.id"
-                              :value="result.id"
-                            >
+                            <option v-for="result in nationalityData" :key="result.id" :value="result.id">
                               <img :src="getFlagImageUrl(result.code)" class="flag-icon" />
                               {{ result.name }}
                             </option>
@@ -409,10 +357,7 @@ onMounted(() => {
                 <p>Pilih Pemandu</p>
               </div>
               <div class="order-details__guide-select" @click="guideSelectPage">
-                <div
-                  v-if="guideSelection.length > 0"
-                  class="order-details__guide-select-content if"
-                >
+                <div v-if="guideSelection.length > 0" class="order-details__guide-select-content if">
                   <div class="flex align-items-center gap[0.5]">
                     {{ formattedGuideSelection }}
                   </div>
@@ -424,36 +369,24 @@ onMounted(() => {
                 <ph-caret-right :size="16" weight="bold" />
               </div>
 
-              <section
-                class="order-details__select-content_modal-overlay"
-                v-if="paymentSelect"
-                @click="paymentSelect = false"
-              >
+              <section class="order-details__select-content_modal-overlay" v-if="paymentSelect"
+                @click="paymentSelect = false">
                 <div class="order-details__payment-select-content_modal">
                   <div
-                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center"
-                  >
+                    class="order-details__payment-select-content_modal-header pd-1 flex justify-content-sb align-items-center">
                     <h5 class="fw-600">Pilih Metode Pembayaran</h5>
-                    <ph-x
-                      class="cursor-pointer"
-                      :size="20"
-                      weight="bold"
-                      @click="showPaymentSelect"
-                    />
+                    <ph-x class="cursor-pointer" :size="20" weight="bold" @click="showPaymentSelect" />
                   </div>
                   <div
-                    class="order-details__payment-select-content_modal-content flex fd-col gap[0.5] pd-bottom-2 pd-sd-1 pd-top-1"
-                  >
+                    class="order-details__payment-select-content_modal-content flex fd-col gap[0.5] pd-bottom-2 pd-sd-1 pd-top-1">
                     <button @click="selectPayment('Cash')">
-                      <span
-                        ><ph-money :size="16" weight="bold" />
+                      <span><ph-money :size="16" weight="bold" />
                         <h6>Cash</h6>
                       </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
                     <button @click="selectPayment('Kartu Kredit/Debit')">
-                      <span
-                        ><ph-credit-card :size="16" weight="bold" />
+                      <span><ph-credit-card :size="16" weight="bold" />
                         <h6>Kartu Kredit/Debit</h6>
                       </span>
                       <ph-caret-right :size="16" weight="bold" />
@@ -465,55 +398,34 @@ onMounted(() => {
               <section class="order-details__select-content_modal-overlay" v-if="guideSelect">
                 <div class="order-details__guide-select-content_modal sm-4">
                   <div
-                    class="order-details__guide-select-content_modal-header flex align-items-center justify-content-sb pd-1"
-                  >
+                    class="order-details__guide-select-content_modal-header flex align-items-center justify-content-sb pd-1">
                     <h5 class="fw-600">Pemandu</h5>
-                    <ph-x
-                      class="cursor-pointer"
-                      :size="20"
-                      weight="bold"
-                      @click="guideSelectPage"
-                    />
+                    <ph-x class="cursor-pointer" :size="20" weight="bold" @click="guideSelectPage" />
                   </div>
-                  <div
-                    class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
-                    :class="{ grid: guideSelectors }"
-                  >
+                  <div class="order-detail__guide-select-content_modal-content relative pd-sd-2 pd-top-2 pd-bottom-2"
+                    :class="{ grid: guideSelectors }">
                     <div v-if="guideSelectors" style="display: flex; flex-wrap: wrap; gap: 1rem">
-                      <div
-                        v-for="(guide, index) in guideData"
-                        :key="index"
-                        class="order-detail__guide-select-content_guide-selector flex"
-                      >
-                        <span
-                          class="flex align-items-center gap[0.5] pd[0.5]"
-                          style="width: 10rem"
-                          @click.prevent
-                        >
+                      <div v-for="(guide, index) in guideData" :key="index"
+                        class="order-detail__guide-select-content_guide-selector flex">
+                        <span class="flex align-items-center gap[0.5] pd[0.5]" style="width: 10rem" @click.prevent>
                           <div class="order-detail__guide-select-content_guide-selector_radio">
                             <div v-if="isGuideChecked(guide.id)" class="selected"></div>
                           </div>
                           <label :for="guide.name">{{ guide.name }}</label>
                         </span>
-                        <div
-                          v-if="!checkGuideAvailability(guide.id)"
+                        <div v-if="!checkGuideAvailability(guide.id)"
                           class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                          @click="guideSelectPageBio(guide)"
-                        >
+                          @click="guideSelectPageBio(guide)">
                           <ph-caret-right :size="16" weight="bold" />
                         </div>
-                        <div
-                          v-else
-                          class="bg-yellow flex align-items-center pd[0.5] cursor-pointer"
-                          @click="
-                            assignAlert(
-                              true,
-                              'Error',
-                              'danger',
-                              `Guide ${guide.name} tidak tersedia!`
-                            )
-                          "
-                        >
+                        <div v-else class="bg-yellow flex align-items-center pd[0.5] cursor-pointer" @click="
+                    assignAlert(
+                      true,
+                      'Error',
+                      'danger',
+                      `Guide ${guide.name} tidak tersedia!`
+                    )
+                    ">
                           <ph-caret-right :size="16" weight="bold" />
                         </div>
                       </div>
@@ -521,27 +433,19 @@ onMounted(() => {
                     <div class="order-details__guide-select_biodata relative" v-if="guideSelectBio">
                       <div
                         class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-                        @click="guideSelectPageBio"
-                      >
+                        @click="guideSelectPageBio">
                         <ph-caret-left :size="16" weight="bold" />
                         <h6>Kembali</h6>
                       </div>
 
                       <div class="guide-select_biodata-content flex gap-2">
                         <div class="">
-                          <img
-                            :src="
-                              selectedGuide.image
-                                ? getImageURL(selectedGuide.image)
-                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                            "
-                            class="guide-select_biodata-image"
-                          />
+                          <img :src="selectedGuide.image
+                    ? getImageURL(selectedGuide.image)
+                    : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                    " class="guide-select_biodata-image" />
                           <div class="flex justify-content-sb">
-                            <div
-                              class="guide-select_biodata_add-ticket w-full"
-                              @click="guideSelectPageTicket"
-                            >
+                            <div class="guide-select_biodata_add-ticket w-full" @click="guideSelectPageTicket">
                               Tambahkan Tiket<ph-caret-right :size="16" weight="bold" />
                             </div>
                           </div>
@@ -562,32 +466,21 @@ onMounted(() => {
                       </div>
                     </div>
 
-                    <div
-                      class="order-details__guide-select_ticket relative"
-                      v-if="guideSelectTicket"
-                    >
+                    <div class="order-details__guide-select_ticket relative" v-if="guideSelectTicket">
                       <div
                         class="order-details__guide-select_breadcrumb flex align-items-center gap-1 sm-bottom-1 cursor-pointer"
-                        @click="guideSelectPageTicket"
-                      >
+                        @click="guideSelectPageTicket">
                         <ph-caret-left :size="16" weight="bold" />
                         <h6>Kembali</h6>
                       </div>
 
-                      <div
-                        v-for="(item, index) in userCarts"
-                        :key="index"
-                        class="guide-select_ticket flex justify-content-sb sm-bottom-1"
-                      >
+                      <div v-for="(item, index) in userCarts" :key="index"
+                        class="guide-select_ticket flex justify-content-sb sm-bottom-1">
                         <div class="flex gap-1">
-                          <img
-                            :src="
-                              item.image
-                                ? getImageURL(item.image)
-                                : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-                            "
-                            class="guide-select_ticket-image"
-                          />
+                          <img :src="item.image
+                    ? getImageURL(item.image)
+                    : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+                    " class="guide-select_ticket-image" />
                           <div class="flex fd-col">
                             <p class="fw-600">{{ item.name }}</p>
                             <p>{{ formatCurrency(item.price) }}</p>
@@ -595,10 +488,8 @@ onMounted(() => {
                           </div>
                         </div>
                         <div class="guide-select_ticket-cta flex align-items-center">
-                          <button
-                            class="guide-select_ticket-btn flex align-items-center"
-                            @click.prevent="addGuide(index)"
-                          >
+                          <button class="guide-select_ticket-btn flex align-items-center"
+                            @click.prevent="addGuide(index)">
                             <ph-plus :size="16" weight="bold" />
                           </button>
                         </div>
@@ -631,27 +522,14 @@ onMounted(() => {
                 <p>{{ formatCurrency(totalHarga) }}</p>
               </div>
             </div>
-            <div class="checkout__details-pricing-container">
+            <div class="checkout__details-pricing-container" v-if="listOfTaxes[paymentSelection != 'Cash' ? 'nonCash' : 'cash'] ? listOfTaxes[paymentSelection != 'Cash' ? 'nonCash' : 'cash'].length > 0 : false">
               <p class="fw-700 fs-h6">Biaya Transaksi</p>
-              <div class="checkout__details-pricing">
-                <p>Biaya Layanan</p>
-                <p>{{ formatCurrency(biayaLayanan) }}</p>
-              </div>
-              <div class="checkout__details-pricing">
-                <p>Biaya Jasa Aplikasi</p>
-                <p>
-                  {{
-                    paymentSelection == 'Cash'
-                      ? formatCurrency(biayaJasa)
-                      : biayaJasaCard * 100 + '%'
-                  }}
-                </p>
+              <div class="checkout__details-pricing" v-for="(data, i) in listOfTaxes[paymentSelection != 'Cash' ? 'nonCash' : 'cash']" :key="i">
+                <p>{{ data.label }}</p>
+                <p>{{ formatCurrency(formatTax(data))}}</p>
               </div>
             </div>
-            <div
-              class="checkout__details-pricing-container"
-              v-if="discountValue > 0 || cashbackValue > 0"
-            >
+            <div class="checkout__details-pricing-container" v-if="discountValue > 0 || cashbackValue > 0">
               <p class="fw-700 fs-h6">Potongan Harga</p>
               <div class="checkout__details-pricing" v-if="discountValue > 0">
                 <p>Diskon</p>
@@ -669,12 +547,9 @@ onMounted(() => {
             <div class="checkout__details-total flex fd-row align-items-center justify-content-sb">
               <p class="fw-700 fs-h5">Total Tagihan</p>
               <div class="checkout__details-total--final flex fd-col align-items-f-end">
-                <p
-                  class="fw-700 fs-h6"
-                  :class="{
+                <p class="fw-700 fs-h6" :class="{
                     'checkout__details-total--strikethrough': discountValue > 0
-                  }"
-                >
+                  }">
                   {{ formatCurrency(totalBiaya) }}
                 </p>
                 <p class="fw-700 fs-h6" v-if="discountValue > 0">
@@ -685,21 +560,17 @@ onMounted(() => {
           </form>
         </div>
         <div class="checkout-btn w-full">
-          <button
-            type="submit"
+          <button type="submit"
             class="checkout__btn-order w-full flex align-items-center justify-content-sb fw-700 cursor-pointer"
-            @click="checkoutTransaction"
-          >
+            @click="checkoutTransaction">
             Checkout
             <ph-arrow-circle-right :size="20" weight="fill" />
           </button>
         </div>
       </div>
       <section>
-        <div
-          class="overview-transaction-success_modal w-full h-full flex align-items-center justify-content-center"
-          v-if="isTransactionGenerate"
-        >
+        <div class="overview-transaction-success_modal w-full h-full flex align-items-center justify-content-center"
+          v-if="isTransactionGenerate">
           <div class="overview-transaction-success_content">
             <ph-check-circle :size="100" color="green" />
             <p class="fw-700 fs-h6">Transaksi berhasil</p>
@@ -710,6 +581,36 @@ onMounted(() => {
     </div>
   </main>
 </template>
+
+<script>
+const { DB_BASE_URL, TRANSACTION_BASE_URL } = GlobalHelper
+export default {
+  data() {
+    return {
+      taxes: ref({
+        cash: [],
+        nonCash: []
+      }),
+    }
+  },
+  mounted(){
+    this.fetchTaxes()
+  },
+  methods: {
+    async fetchTaxes() {
+      try {
+        const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/list-tax`)
+        if (!response.ok) throw Error('Terjadi kesalahan')
+        const responseData = await response.json()
+        this.taxes.cash = responseData.data.data.cash.filter((tax) => tax.paidBy === "user")
+        this.taxes.nonCash = responseData.data.data.nonCash.filter((tax) => tax.paidBy === "user")
+      } catch (err) {
+        console.log(err)
+      }
+    }
+  }
+}
+</script>
 
 <style scoped>
 main {
@@ -755,8 +656,8 @@ main {
   border: 2px solid rgba(218, 165, 32, 1);
 }
 
-.order-details__ticket-date input:focus + label,
-.order-details__customer-input input:focus + label {
+.order-details__ticket-date input:focus+label,
+.order-details__customer-input input:focus+label {
   color: rgba(218, 165, 32, 1);
 }
 
@@ -919,7 +820,7 @@ input[type='number'] {
   padding: 0.1rem;
 }
 
-.order-detail__guide-select-content_guide-selector_radio > .selected {
+.order-detail__guide-select-content_guide-selector_radio>.selected {
   background-color: #e6be58;
   filter: blur(1px);
   border-radius: 100%;
