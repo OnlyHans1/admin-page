@@ -30,6 +30,7 @@ const {
   fetchTargetYears,
   changeSelectedYear,
   fetchYearlyChartData,
+  revenueKeraton,
   currentMonth,
   selectedMonth,
   selectedMonthName,
@@ -145,10 +146,9 @@ const confirm = () => {
   confirmAlert.value = !confirmAlert.value
 }
 const transfer = async () => {
-  console.log('test')
   showLoader.value = true
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/${TRANSFER_URL.value}/transfer`, {
+    const response = await fetch(`${DB_BASE_URL.value}/keraton-pos/curaweda-income/transfer`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -222,7 +222,7 @@ const submitOrder = () => {
             <div class="flex">
               <div style="font-size: 20px; font-weight: 600">Rp</div>
               <h3 class="fw-600" :class="incomeRevenueClass()">
-                {{ formatCurrency(incomeRevenue) }}
+                {{ formatCurrency(revenueKeraton.COH) }}
               </h3>
             </div>
             <div style="font-weight: 700">Cash On Account</div>
@@ -230,7 +230,7 @@ const submitOrder = () => {
             <div class="flex" style="padding-top: 10px">
               <div style="font-size: 20px; font-weight: 600">Rp</div>
               <h3 class="fw-600" :class="incomeRevenueClass()">
-                {{ formatCurrency(incomeRevenue) }}
+                {{ formatCurrency(revenueKeraton.CIA) }}
               </h3>
             </div>
             <button

@@ -67,6 +67,7 @@ const decreaseAmount = (item) => {
 
 const selectItem = (item) => {
   const storedItems = userCarts.value || []
+  console.log(storedItems)
   const existingItem = storedItems.find((i) => i.id === item.id)
 
   if (existingItem) {
@@ -81,7 +82,7 @@ const selectItem = (item) => {
 
 const saveToUserCarts = async () => {
   const storedItems = userCarts.value || []
-  selectedItems.value.forEach((item) => {
+selectedItems.value.forEach((item) => {
     const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
     if (item.amount < 1) {
       if (existingItemIndex !== -1) {

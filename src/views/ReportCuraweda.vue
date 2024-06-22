@@ -48,13 +48,13 @@
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Curaweda "COH"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueCuraweda)
+          formatCurrency(revenueCuraweda.COH)
         }}</span>
       </div>
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Curaweda "CIA"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueCuraweda)
+          formatCurrency(revenueCuraweda.CIA)
         }}</span>
       </div>
     </div>
@@ -90,7 +90,8 @@
         <th>Date</th>
         <th>Revenue Keraton "COH"</th>
         <th>Revenue Keraton "CIA"</th>
-        <th>Revenue Curaweda</th>
+        <th>Revenue Curaweda "COH"</th>
+        <th>Revenue Curaweda "CIA"</th>
         <th>Total Revenue</th>
       </tr>
     </thead>
@@ -99,7 +100,8 @@
         <td>{{ record.date }}</td>
         <td>{{ formatCurrency(record.revenueKeraton.COH) }}</td>
         <td>{{ formatCurrency(record.revenueKeraton.CIA) }}</td>
-        <td>{{ formatCurrency(record.revenueCuraweda) }}</td>
+        <td>{{ formatCurrency(record.revenueCuraweda.COH) }}</td>
+        <td>{{ formatCurrency(record.revenueCuraweda.CIA) }}</td>
         <td>{{ formatCurrency(record.totalRevenue) }}</td>
       </tr>
     </tbody>
@@ -133,19 +135,17 @@
     <thead>
       <tr>
         <th>Date</th>
-        <th>Revenue Keraton "COH"</th>
-        <th>Revenue Keraton "CIA"</th>
-        <th>Revenue Curaweda</th>
-        <th>Total Revenue</th>
+        <th>Time</th>
+        <th>Amount</th>
+        <th>Pay Method</th>
       </tr>
     </thead>
     <tbody>
-      <tr v-for="record in historyRecords" :key="record.date">
-        <td>{{ record.date }}</td>
-        <td>{{ formatCurrency(record.revenueKeraton.COH) }}</td>
-        <td>{{ formatCurrency(record.revenueKeraton.CIA) }}</td>
-        <td>{{ formatCurrency(record.revenueCuraweda) }}</td>
-        <td>{{ formatCurrency(record.totalRevenue) }}</td>
+      <tr v-for="(trans, i) in transactionRecords" :key="i">
+        <td>{{ trans.date }}</td>
+        <td>{{ trans.time }}</td>
+        <td>{{ formatCurrency(trans.paymentAmount) }}</td>
+        <td>{{ trans.paymentMethod }}</td>
       </tr>
     </tbody>
   </table>
@@ -164,6 +164,7 @@ export default {
       // revenueCuraweda: ref({ CIH: 0, CIA: 0 }),
       revenueTotal: ref(0),
       historyRecords: ref([]),
+      transactionRecords: ref([]),
       filterDateFrom: ref(''),
       filterDateTo: ref('')
     }
@@ -183,6 +184,7 @@ export default {
   mounted() {
     this.fetchData()
     this.fetchTabel()
+    this.fetchTabelTransaksi() 
   },
   methods: {
     async fetchData() {
@@ -212,7 +214,22 @@ export default {
         console.log(err)
       }
     },
-
+    async fetchTabelTransaksi(){
+      try {
+        const response = await fetch(
+          `${DB_BASE_URL.value}/keraton-pos/curaweda-income/`
+        )
+        if (!response.ok) throw Error('Failed to fetch Data')
+        const responseData = await response.json()
+        this.transactionRecords = responseData.data.map(trans => ({
+          date: trans.createdAt.split('T')[0],
+          time: trans.createdAt.split('T')[1],
+          ...trans
+        }))
+      } catch (err) {
+        console.log(err)
+      }
+    },
     formatTabelRecord(datas) {
       let tableRaw = {}
       for (let data of datas) {
@@ -224,13 +241,17 @@ export default {
               COH: 0,
               CIA: 0
             },
-            revenueCuraweda: 0,
+            revenueCuraweda: {
+              COH: 0,
+              CIA: 0
+            },
             totalRevenue: 0
           }
         tableRaw[reservedDate].revenueKeraton.COH += data.keratonIncome.COH
         tableRaw[reservedDate].revenueKeraton.CIA += data.keratonIncome.CIA
-        tableRaw[reservedDate].revenueCuraweda += data.curawedaIncome.total
-        tableRaw[reservedDate].totalRevenue += data.total
+        tableRaw[reservedDate].revenueCuraweda.COH += data.curawedaIncome.COH
+        tableRaw[reservedDate].revenueCuraweda.CIA += data.curawedaIncome.CIA
+        tableRaw[reservedDate].totalRevenue += +data.total
       }
       return Object.values(tableRaw)
     },
