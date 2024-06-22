@@ -15,10 +15,16 @@ const {
   getNationality,
   closeDropdownOutside
 } = CheckoutHelper
+const { userData, userCarts } = LoginHelper
 
 const props = defineProps({
-  nationalityWidth: { type: String, default: '11.8rem' }
+  nationalityWidth: { type: String, default: '11.8rem' },
+  itemIndex: { type: Number,  }
 })
+
+const chooseNationality = (data, itemIndex) =>  {
+  userCarts.value[props.itemIndex].nationalityId = data.code
+}
 
 watchEffect((onInvalidate) => {
   onInvalidate(() => {
