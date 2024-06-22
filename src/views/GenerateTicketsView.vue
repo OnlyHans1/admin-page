@@ -119,151 +119,184 @@ onMounted(() => {
       <p>Kembali ke Dashboard</p>
     </button>
   </div>
-  <div>
+  <div style="display: none">
     <div ref="dataRef" style="width: fit-content; height: fit-content">
       <div>
         <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
-          <div>
-            <!-- 
-                
- v-for="ticketAmount in ticket.amount" :key="ticketAmount"
-             -->
-
-            <div style="gap: 5px">
-              <section class="ticket">
-                <div style="display: block; width: 100%; justify-content: center">
+          <div style="gap: 5px">
+            <section class="ticket">
+              <div style="display: block; width: 100%; justify-content: center">
+                <div style="display: flex; width: 100%">
+                  <img
+                    src="../assets/images/logo.png"
+                    alt="Keraton Kasepuhan Cirebon"
+                    style="
+                      width: 150px;
+                      height: 150px;
+                      margin-inline: auto;
+                      margin-top: 10px;
+                      margin-bottom: 10px;
+                    "
+                  />
+                </div>
+                <div style="width: 70%; margin: auto">
+                  <h5>
+                    Jl. Kasepuhan No.43, Kasepuhan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
+                  </h5>
+                  <p class="desc">Selamat datang di wisata Keraton Kesepuhan Cirebon</p>
+                  <p class="desc">{{ `${ticketsData.plannedDate.split('T')[0]}` }}</p>
+                </div>
+                <section
+                  class="separator"
+                  style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
+                ></section>
+                <div
+                  style="width: 90%; margin: auto"
+                  v-for="(ticket, index) in ticketsData.detailTrans"
+                  :key="index"
+                >
+                  <div style="display: flex; justify-content: space-between; width: 100%">
+                    <p class="descList">
+                      {{
+                        `${ticket.order.name} (${ticket.order.category.name}) x ${ticket.amount} Tiket`
+                      }}
+                    </p>
+                    <p
+                      class="descList"
+                      style="
+                        display: inline;
+                        max-width: 40%;
+                        text-align: right;
+                        height: fit-content;
+                        word-break: break-all;
+                      "
+                    >
+                      {{ `Rp.${formatCurrency(ticket.order.price)}` }}
+                    </p>
+                  </div>
+                </div>
+                <section
+                  class="separator"
+                  style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
+                ></section>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    width: 90%;
+                    margin-inline: auto;
+                  "
+                >
+                  <p class="descList">Pembayaran</p>
+                  <p
+                    class="descList"
+                    style="
+                      display: inline;
+                      max-width: 40%;
+                      text-align: right;
+                      height: fit-content;
+                      word-break: break-all;
+                    "
+                  >
+                    {{ `${ticketsData.method}` }}
+                  </p>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    width: 90%;
+                    margin-inline: auto;
+                  "
+                >
+                  <p class="descList">Potongan</p>
+                  <p
+                    class="descList"
+                    style="
+                      display: inline;
+                      max-width: 40%;
+                      text-align: right;
+                      height: fit-content;
+                      word-break: break-all;
+                    "
+                  >
+                    {{ `${ticketsData.discount.split('|')[1]}` }}
+                  </p>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    width: 90%;
+                    margin-inline: auto;
+                  "
+                >
+                  <p class="descList">Cashback</p>
+                  <p
+                    class="descList"
+                    style="
+                      display: inline;
+                      max-width: 40%;
+                      text-align: right;
+                      height: fit-content;
+                      word-break: break-all;
+                    "
+                  >
+                    {{ `${ticketsData.cashback.split('|')[1]}` }}
+                  </p>
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    justify-content: space-between;
+                    width: 90%;
+                    margin-inline: auto;
+                  "
+                >
+                  <p class="descList">Total</p>
+                  <p
+                    class="descList"
+                    style="
+                      display: inline;
+                      max-width: 40%;
+                      text-align: right;
+                      height: fit-content;
+                      word-break: break-all;
+                    "
+                  >
+                    {{ `Rp.${formatCurrency(ticketsData.total)}` }}
+                  </p>
+                </div>
+                <div style="width: 70%; margin: auto">
+                  <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5>
+                  <h5 style="text-transform: uppercase">Enjoy The Tour !</h5>
+                </div>
+                <div
+                  style="width: 90%; margin: auto"
+                  v-for="(ticket, index) in ticketsData.BarcodeUsage"
+                  :key="index"
+                >
                   <div style="display: flex; width: 100%">
                     <img
-                      src="../assets/images/logo.png"
-                      alt="Keraton Kasepuhan Cirebon"
+                      :src="ticket.qrPath ? ticket.qrPath : ' ../assets/images/testqr.jpg'"
                       style="
-                        width: 150px;
-                        height: 150px;
+                        width: 200px;
+                        height: 200px;
                         margin-inline: auto;
                         margin-top: 10px;
                         margin-bottom: 10px;
                       "
+                      alt="Keraton Kasepuhan Cirebon"
                     />
                   </div>
-                  <div style="width: 70%; margin: auto">
-                    <h5>
-                      Jl. Kasepuhan No.43, Kasepuhan, Kec. Lemahwungkuk, Kota Cirebon, Jawa Barat
-                    </h5>
-                    <p class="desc">Selamat datang di wisata Keraton Kesepuhan Cirebon</p>
-                    <p class="desc">22/06/2024 12:30</p>
-                  </div>
-                  <section
-                    class="separator"
-                    style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
-                  ></section>
-                  <div
-                    style="width: 90%; margin: auto"
-                    v-for="(ticket, index) in ticketsData.detailTrans"
-                    :key="index"
-                  >
-                    <div style="display: flex; justify-content: space-between; width: 100%">
-                      <p class="descList">
-                        {{ ticket.order.name }}
-                      </p>
-                      <p
-                        class="descList"
-                        style="
-                          display: inline;
-                          max-width: 40%;
-                          text-align: right;
-                          height: fit-content;
-                          word-break: break-all;
-                        "
-                      >
-                        {{ ticket.order.price }}
-                      </p>
-                    </div>
-                  </div>
-                  <section
-                    class="separator"
-                    style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px"
-                  ></section>
-                  <div
-                    style="width: 90%; margin: auto"
-                    v-for="(ticket, index) in ticketsData.detailTrans"
-                    :key="index"
-                  >
-                    <div style="display: flex; justify-content: space-between; width: 100%">
-                      <p class="descList">
-                        {{ ticket.order.name }}
-                      </p>
-                      <p
-                        class="descList"
-                        style="
-                          display: inline;
-                          max-width: 40%;
-                          text-align: right;
-                          height: fit-content;
-                          word-break: break-all;
-                        "
-                      >
-                        {{ ticket.order.price }}
-                      </p>
-                    </div>
-                  </div>
                 </div>
-              </section>
-              <!-- <section class="ticket">
-                <div class="ticket-main_container">
-                  <img
-                    src="../assets/images/bg-keraton.png"
-                    class="bg-tiket"
-                    alt="Background Keraton"
-                  />
-                  <div class="ticket-padding">
-                    <div class="ticket-content">
-                      <div class="ticket-main_header">
-                        <p>Tiket Masuk / Entry Pass {{ ticketAmount }}</p>
-                      </div>
-                      <div class="ticket-main_content">
-                        <div class="ticket-logo">
-                          <img src="../assets/images/logo.png" alt="Keraton Kasepuhan Cirebon" />
-                        </div>
-                        <h6 class="ticket_title">KERATON KASEPUHAN CIREBON</h6>
-                        <div class="ticket-qr">
-                          <img src="../assets/images/testqr.jpg" alt="Keraton Kasepuhan Cirebon" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <div style="width: 70%; margin: auto">
+                  <h5>www.KeratonKesepuhanCirebon.com</h5>
                 </div>
-                <div class="triangle-divider triangle-polygon1"></div>
-                <div class="triangle-divider triangle-polygon2"></div>
-                <div class="triangle-divider2 triangle-polygon1"></div>
-                <div class="triangle-divider2 triangle-polygon2"></div>
-                <div class="line-divider"></div>
-                <div class="ticket-name_container">
-                  <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
-                  <img src="../assets/images/bg-decor.png" alt="" class="Decor1" />
-                  <div class="ticket-name_content">
-                    <div
-                      style="
-                        display: flex;
-                        justify-content: space-around;
-                        width: 60%;
-                        margin-bottom: 10px;
-                      "
-                    >
-                      <img src="../assets/images/logo.png" alt="" class="logo-name" />
-                      <span>wisata</span>
-                    </div>
-                    <h3
-                      class="ticket-name_title"
-                      :class="{ 'long-text': ticket.order.name.length > 20 }"
-                      style="line-height: 0.95; font-size: 18px"
-                    >
-                      {{ ticket.order.name }}
-                    </h3>
-                  </div>
-                </div>
-              </section> -->
-              <div class="only-pdf"></div>
-            </div>
+              </div>
+            </section>
+
+            <div class="only-pdf"></div>
           </div>
         </div>
       </div>
@@ -292,8 +325,8 @@ export default {
           image: { type: 'jpeg', quality: 0.98 },
           html2canvas: { scale: 2 },
           jsPDF: {
-            unit: 'mm',
-            format: 'a4',
+            unit: 'px',
+            format: [456, 1000],
             orientation: 'portrait',
             putOnlyUsedFonts: true,
             scale: 0.8
@@ -391,7 +424,6 @@ export default {
 .ticket {
   width: 456px;
   height: fit-content;
-  background-color: #ccc;
 }
 .ticket h5 {
   font-size: small;
