@@ -358,7 +358,7 @@ const submitOrder = () => {
           <ph-printer :size="32" weight="bold" />
         </span>
         <span v-else>loading...</span>
-        <span class="icons" name="Print Grafik Keramaian" @click="printData"
+        <span class="icons" name="Print Data Keramaian" @click="printData"
           ><ph-printer :size="32" weight="bold"
         /></span>
         <span class="icons" name="Ekspor ke Excel" @click="generateExcel">
