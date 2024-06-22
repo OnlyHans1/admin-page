@@ -259,7 +259,7 @@ onMounted(() => {
                         <ph-plus :size="14" weight="bold" />
                       </button>
 
-                      <div
+                      <!-- <div
                         class="customer-details__input-placeholder"
                         v-if="item.category.name === 'Umum'"
                       >
@@ -276,6 +276,45 @@ onMounted(() => {
                             <p class="dropdown-nationality__name">{{ name }}</p>
                           </div>
                         </div>
+                      </div> -->
+                      <div
+                        style="margin-right: 1rem; position: relative"
+                        v-if="item.category.name === 'Umum'"
+                      >
+                        <label
+                          for="city-select"
+                          style="
+                            position: absolute;
+                            top: -0.75rem;
+                            left: 0.5rem;
+                            background: white;
+                            padding: 0 0.25rem;
+                            font-size: 14px;
+                            color: #000;
+                          "
+                        >
+                          Pilih Kota Asal
+                        </label>
+                        <select
+                          id="city-select"
+                          style="
+                            height: 2.2rem;
+                            border: 2px solid rgba(0, 0, 0, 1);
+                            border-radius: 0.2rem;
+                            padding-left: 0.5rem;
+                            width: 100%;
+                          "
+                          v-model="item.cityName"
+                        >
+                          <option value="" disabled selected>Pilih Kebangsaan</option>
+                          <option
+                            v-for="result in cityName.kotaIndonesia"
+                            :key="result.id"
+                            :value="result.id"
+                          >
+                            {{ result }}
+                          </option>
+                        </select>
                       </div>
                       <div>
                         <!-- <div
@@ -291,7 +330,10 @@ onMounted(() => {
                             </div>
                           </div>
                         </div> -->
-                        <div style="margin-right: 1rem; position: relative">
+                        <div
+                          style="margin-right: 1rem; position: relative"
+                          v-if="item.category.name === 'Mancanegara'"
+                        >
                           <label
                             for="nationality-select"
                             style="
