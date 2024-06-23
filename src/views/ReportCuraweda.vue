@@ -1,15 +1,13 @@
 <template>
   <h2 style="font-weight: bold; text-align: center">Report Curaweda</h2>
-  <div
-    style="
+  <div style="
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
       gap: 1rem;
       margin-top: 1rem;
-    "
-  >
+    ">
     <div class="flex h-full" style="gap: 1rem">
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Total</p>
@@ -20,27 +18,25 @@
       <div style="background: black; width: 0.1rem"></div>
     </div>
 
-    <div
-      style="
+    <div style="
         display: flex;
         justify-content: center;
         align-items: center;
         gap: 1rem;
         flex-wrap: wrap;
-      "
-    >
+      ">
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Keraton "COH"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueKeraton.COH)
-        }}</span>
+            formatCurrency(revenueKeraton.COH)
+          }}</span>
       </div>
 
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Keraton "CIA"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueKeraton.CIA)
-        }}</span>
+            formatCurrency(revenueKeraton.CIA)
+          }}</span>
       </div>
     </div>
     <div class="flex h-full" style="gap: 1rem">
@@ -48,14 +44,14 @@
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Curaweda "COH"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueCuraweda.COH)
-        }}</span>
+            formatCurrency(revenueCuraweda.COH)
+          }}</span>
       </div>
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">Revenue Curaweda "CIA"</p>
         <span class="ticket-info-card__details align-self-center">{{
-          formatCurrency(revenueCuraweda.CIA)
-        }}</span>
+            formatCurrency(revenueCuraweda.CIA)
+          }}</span>
       </div>
     </div>
   </div>
@@ -66,21 +62,10 @@
     <label for="filter-date" style="font-weight: bold; margin-right: 1rem">Filter by Date:</label>
     <div style="display: flex; align-items: center; gap: 1rem">
       <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">From:</label>
-      <input
-        type="date"
-        id="filter-date-from"
-        v-model="filterDateFrom"
-        @change="filterRecords"
-        class="datepicker-input"
-      />
+      <input type="date" id="filter-date-from" v-model="filterDateFrom" @change="filterRecords"
+        class="datepicker-input" />
       <label for="filter-date" style="font-weight: bold; margin-right: 0.1rem">To:</label>
-      <input
-        type="date"
-        id="filter-date-to"
-        v-model="filterDateTo"
-        @change="filterRecords"
-        class="datepicker-input"
-      />
+      <input type="date" id="filter-date-to" v-model="filterDateTo" @change="filterRecords" class="datepicker-input" />
     </div>
   </div>
 
@@ -121,7 +106,7 @@
     <tbody>
       <tr v-for="(trans, i) in transactionRecords" :key="i">
         <td>{{ trans.date }}</td>
-        <td>{{ trans.time }}</td>
+        <td>{{ formatTimeString(trans.time) }}</td>
         <td>{{ formatCurrency(trans.paymentAmount) }}</td>
         <td>{{ trans.paymentMethod }}</td>
       </tr>
@@ -149,12 +134,12 @@ export default {
   },
   watch: {
     filterDateFrom: {
-      handler(){
+      handler() {
         this.fetchTabel()
       }
     },
     filterDateFrom: {
-      handler(){
+      handler() {
         this.fetchTabel()
       }
     },
@@ -162,7 +147,7 @@ export default {
   mounted() {
     this.fetchData()
     this.fetchTabel()
-    this.fetchTabelTransaksi() 
+    this.fetchTabelTransaksi()
   },
   methods: {
     async fetchData() {
@@ -192,7 +177,7 @@ export default {
         console.log(err)
       }
     },
-    async fetchTabelTransaksi(){
+    async fetchTabelTransaksi() {
       try {
         const response = await fetch(
           `${DB_BASE_URL.value}/keraton-pos/curaweda-income/`
@@ -207,6 +192,10 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    formatTimeString(timeString) {
+      const [hours, minutes] = timeString.split(':');
+      return `${hours}.${minutes}`;
     },
     formatTabelRecord(datas) {
       let tableRaw = {}
@@ -270,6 +259,7 @@ span {
   background: linear-gradient(to bottom, rgba(255, 226, 154, 0.9), rgba(254, 209, 96, 0.9));
   border-radius: 15px;
 }
+
 .ticket-info-card__title {
   font-size: 12px;
   line-height: 18px;
@@ -279,11 +269,13 @@ span {
   background-color: rgba(254, 209, 96, 1);
   mix-blend-mode: luminosity;
 }
+
 .ticket-info-card__details {
   font-size: 96px;
   font-weight: 500;
   line-height: 128px;
 }
+
 .ticket-info-card__desc {
   font-size: 12px;
   font-weight: 500;
