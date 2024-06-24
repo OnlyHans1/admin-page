@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
 
-const { targetDate, dataSeries, dataCategory } = defineProps([
+const { targetDate, dataSeries, dataCategory, widthcart } = defineProps([
   'targetDate',
   'dataSeries',
-  'dataCategory'
+  'dataCategory',
+  'widthcart'
 ])
 
 const chartOptions = ref({
@@ -137,7 +138,7 @@ watch(
       <apexchart
         type="line"
         height="240"
-        width="460"
+        :width="widthcart"
         :options="chartOptions"
         :series="dataSeries"
       ></apexchart>
