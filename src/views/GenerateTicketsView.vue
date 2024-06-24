@@ -24,11 +24,11 @@ const calculateTotal = (price, amount) => {
   return formatCurrency(price * amount)
 }
 
-// const toHomepage = async () => {
-//   LoginHelper.userCarts.value = []
-//   await DashboardHelper.saveToUserCarts()
-//   await router.replace('/')
-// }
+const toHomepage = async () => {
+  LoginHelper.userCarts.value = []
+  await DashboardHelper.saveToUserCarts()
+  await router.replace('/')
+}
 
 const fetchTickets = async (id) => {
   try {
@@ -49,30 +49,68 @@ const fetchTickets = async (id) => {
   }
 }
 
-
-const generatePDF = async () => {
+const generatePDF= () => {
   try{
-    const element = document.getElementById('ticket');
-    console.log(element)
-      const canvas = await html2canvas(element);
-      const imgData = canvas.toDataURL('image/png');
-      const canvasWidth = canvas.width;
-      const canvasHeight = canvas.height;
-
-      // Create a PDF with the same dimensions as the canvas
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'pt',
-        format: [canvasWidth, canvasHeight]
-      });
-
-      // Add the image to the PDF
-      pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight);
-      pdf.save('ticket.pdf');
+    const element = document.getElementById('ticket')
+    if (element) {
+      generatePDFcooldown.value = true
+      const rect = element.getBoundingClientRect()
+      const height = rect.height
+      const originalDisplay = element.style.display
+      element.style.display = 'block'
+      html2pdf(element, {
+        margin: 2,
+        filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
+        image: { type: 'jpeg', quality: 100 },
+        html2canvas: { scale: 2 },
+        jsPDF: {
+          unit: 'px',
+          format: [260, height], putOnlyUsedFonts: true,
+          scale: 1
+        }
+      })
+        .outputPdf()
+        .get('pdf')
+        .then((pdfObj) => {
+          pdfObj.autoPrint()
+          window.open(pdfObj.output('bloburl'))
+        })
+        .finally(() => {
+          generatePDFcooldown.value = false
+          element.style.display = originalDisplay
+        })
+    } else {
+      console.error('Element not found or not yet rendered')
+    }
   }catch(err){
     console.log(err)
   }
 }
+
+// const generatePDF = async () => {
+//   try{
+//     const element = document.getElementById('ticket');
+//     console.log(element)
+//       const canvas = await html2canvas(element);
+//       const imgData = canvas.toDataURL('image/png');
+//       const canvasWidth = canvas.width;
+//       const canvasHeight = canvas.height;
+
+//       // Create a PDF with the same dimensions as the canvas
+//       const pdf = new jsPDF({
+//         orientation: 'portrait',
+//         unit: 'pt',
+//         format: [canvasWidth, canvasHeight]
+//       });
+
+//       // Add the image to the PDF
+//       pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight);
+//       pdf.save('ticket.pdf')
+//       pdf.autoPrint()
+//   }catch(err){
+//     console.log(err)
+//   }
+// }
 
 onMounted(() => {
   fetchTickets(route.params.id)
@@ -273,7 +311,7 @@ onMounted(() => {
         </div>
       </div>
     </div> -->
-    <div>
+    <div style="visibility: hidden;">
       <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
         <div>
           <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">

@@ -124,9 +124,11 @@ const printData = () => {
   const maxYearColumns = yearlyCategory.value.length
   const maxMonthColumns = monthlyCategory.value.length
 
+  
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
   const monthlyTempData = JSON.parse(JSON.stringify(monthlyData.value))
-
+  
+  console.log(yearlyTempData, monthlyTempData)
   yearlyTempData.forEach((item) => {
     item.data = item.data.slice(1)
   })

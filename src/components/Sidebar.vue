@@ -96,7 +96,7 @@ watchEffect(() => {
         </RouterLink>
       </div>
       <div class="navbar-links__settings-container flex fd-col">
-        <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 5 }">
+        <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 5 }" v-if="!isCurawedaAccount">
           <ph-gear :size="24" weight="bold" :class="{ disabled: userData.role === 'CASHIER' }" />
         </a>
         <RouterLink to="/login" name="Logout" @click="userLogout(), router.replace('/login')">

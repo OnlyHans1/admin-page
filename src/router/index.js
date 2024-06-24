@@ -12,11 +12,12 @@ import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
 import reportCurawedaView from '@/views/ReportViewCuraweda.vue'
 import ReportCuraweda from '@/views/ReportCuraweda.vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
+import RekapKeramaianView from '@/views/RekapKeramaian.vue'
 import LoginHelper from '@/utilities/LoginHelper'
 import RekapView from '@/views/RekapanView.vue'
 
 const { giveAccessRoute, grantAccessRoute } = GlobalHelper
-const { isAuthenticated } = LoginHelper
+const { isAuthenticated, userData } = LoginHelper
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,7 +26,13 @@ const router = createRouter({
       path: '/rekap',
       name: 'Rekap',
       component: RekapView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
+    },
+    {
+      path: '/rekap-keramaian',
+      name: 'Rekap Keramaian',
+      component: RekapKeramaianView,
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/login',
@@ -36,7 +43,7 @@ const router = createRouter({
       path: '/',
       name: 'dashboard',
       component: DashboardView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/report-curaweda',
@@ -48,49 +55,49 @@ const router = createRouter({
       path: '/add',
       name: 'add',
       component: AddView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/edit/:id',
       name: 'edit',
       component: AddView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/checkout',
       name: 'checkout',
       component: CheckoutView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/checkout/generate-tickets/:id',
       name: 'generateTickets',
       component: GenerateTicketsView,
-      meta: { }
+      meta: { restrictCuraweda: true }
     },
     {
       path: '/invoice',
       name: 'invoice',
       component: InvoiceView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/report',
       name: 'report',
       component: ReportView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/settings',
       name: 'settings',
       component: SettingsView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/database-logs',
       name: 'databaseLogs',
       component: DatabaseLogsView,
-      meta: { protected: true }
+      meta: { protected: true, restrictCuraweda: true }
     },
     {
       path: '/after-checkout',
@@ -115,6 +122,9 @@ router.beforeEach(async (to, from, next) => {
       next(from)
     } else if (to.meta.restrictAccess && !giveAccessRoute.value) {
       next(from)
+    } else if (to.meta.restrictCuraweda){
+      if(userData.value.role != "CURAWEDA") return next()
+      next({ path: '/report-curaweda' })
     } else {
       if (to.meta.restrictAccess) grantAccessRoute(false)
       next()
