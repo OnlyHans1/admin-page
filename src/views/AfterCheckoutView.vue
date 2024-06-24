@@ -23,7 +23,6 @@ const {
 } = afterCheckoutFunc
 
 const tickets = getTickets()
-
 onMounted(() => {
   isLoading.value = true
   setTimeout(() => {
@@ -63,7 +62,9 @@ onMounted(() => {
             </div>
             <div class="after-checkout-content__payment fs-h5">
               <p style="color: rgba(94, 94, 94, 1)">Total Pembayaran</p>
-          <p>Rp. <span>{{totalPayment}}</span></p>
+              <p>
+                Rp. <span>{{ totalPayment }}</span>
+              </p>
             </div>
           </div>
         </div>
