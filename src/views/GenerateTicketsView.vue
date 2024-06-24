@@ -2,8 +2,8 @@
 import { onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import GlobalHelper from '@/utilities/GlobalHelper'
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
 import CheckoutHelper from '@/utilities/CheckoutHelper'
 import DashboardHelper from '@/utilities/DashboardHelper'
 import LoginHelper from '@/utilities/LoginHelper'
@@ -48,42 +48,50 @@ const fetchTickets = async (id) => {
     console.error('Error fetching data:', error)
   }
 }
-
-const generatePDF= () => {
-  try{
+const isLoading = ref(false)
+const generatePDF = async () => {
+  try {
     const element = document.getElementById('ticket')
-    if (element) {
-      generatePDFcooldown.value = true
-      const rect = element.getBoundingClientRect()
-      const height = rect.height
-      const originalDisplay = element.style.display
-      element.style.display = 'block'
-      html2pdf(element, {
-        margin: 2,
-        filename: `Report ${new Date().toISOString().split('T')[0]}.pdf`,
-        image: { type: 'jpeg', quality: 100 },
-        html2canvas: { scale: 2 },
-        jsPDF: {
-          unit: 'px',
-          format: [260, height], putOnlyUsedFonts: true,
-          scale: 1
-        }
-      })
-        .outputPdf()
-        .get('pdf')
-        .then((pdfObj) => {
-          pdfObj.autoPrint()
-          window.open(pdfObj.output('bloburl'))
-        })
-        .finally(() => {
-          generatePDFcooldown.value = false
-          element.style.display = originalDisplay
-        })
-    } else {
-      console.error('Element not found or not yet rendered')
+    console.log(element)
+    isLoading.value = true
+    element.style.display = 'block'
+
+    // Use html2canvas to capture the element
+    const canvas = await html2canvas(element)
+    const imgData = canvas.toDataURL('image/png')
+    const canvasWidth = canvas.width
+    const canvasHeight = canvas.height
+
+    // Create a PDF with the same dimensions as the canvas
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'pt',
+      format: [canvasWidth, canvasHeight]
+    })
+
+    // Add the image to the PDF
+    pdf.addImage(imgData, 'PNG', 0, 0, canvasWidth, canvasHeight)
+
+    // Auto print the PDF
+    pdf.autoPrint()
+
+    // Hide the element again
+    element.style.display = 'none'
+
+    // Get the PDF as a blob
+    const blob = pdf.output('blob')
+
+    // Open the PDF in a new tab and trigger the print dialog
+    const pdfUrl = URL.createObjectURL(blob)
+    const pdfWindow = window.open(pdfUrl)
+    pdfWindow.onload = function () {
+      pdfWindow.print()
     }
-  }catch(err){
+
+    isLoading.value = false
+  } catch (err) {
     console.log(err)
+    isLoading.value = false
   }
 }
 
@@ -114,7 +122,6 @@ const generatePDF= () => {
 
 onMounted(() => {
   fetchTickets(route.params.id)
-
 })
 </script>
 
@@ -126,13 +133,20 @@ onMounted(() => {
     <div class="generate-tickets__content pd-sd-2 pd-block-1">
       <div class="preview flex fd-col gap-1 pd-1">
         <h5>Pratinjau</h5>
-        <div v-for="(ticket, index) in ticketsData.detailTrans" :key="index"
-          class="generate-tickets__detail-transaction flex justify-content-sb">
+        <div
+          v-for="(ticket, index) in ticketsData.detailTrans"
+          :key="index"
+          class="generate-tickets__detail-transaction flex justify-content-sb"
+        >
           <div class="flex gap-1">
-            <img :src="ticket.order.image
-          ? getImageURL(ticket.order.image)
-          : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
-          " class="generate-tickets__detail-transaction-image" />
+            <img
+              :src="
+                ticket.order.image
+                  ? getImageURL(ticket.order.image)
+                  : 'https://www.signfix.com.au/wp-content/uploads/2017/09/placeholder-600x400.png'
+              "
+              class="generate-tickets__detail-transaction-image"
+            />
             <div class="flex fd-col">
               <p class="fw-600">{{ `${ticket.order.name} (${ticket.order.category.name})` }}</p>
               <p>{{ `${formatCurrency(ticket.order.price)} x ${ticket.amount} Tiket` }}</p>
@@ -144,9 +158,14 @@ onMounted(() => {
     </div>
     <div></div>
 
-    <div class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1">
-      <button class="generate-tickets__btn-print flex align-items-center gap[0.5]" @click="generatePDF"
-        v-if="!generatePDFcooldown">
+    <div
+      class="generate-tickets__cta-container flex align-items-center justify-content-center gap-1"
+    >
+      <button
+        class="generate-tickets__btn-print flex align-items-center gap[0.5]"
+        @click="generatePDF"
+        v-if="!generatePDFcooldown"
+      >
         <p class="fw-700">Print Tickets</p>
         <ph-printer :size="32" />
       </button>
@@ -154,7 +173,11 @@ onMounted(() => {
         <p class="fw-700">Generate PDF<span class="send-email__text-cooldown"></span></p>
       </div>
       <button class="generate-tickets__btn-email">
-        <div v-if="!emailCooldown" @click="sendEmailToUser()" class="flex align-items-center gap[0.5]">
+        <div
+          v-if="!emailCooldown"
+          @click="sendEmailToUser()"
+          class="flex align-items-center gap[0.5]"
+        >
           <p class="fw-700">Kirim ke Email</p>
           <ph-paper-plane-tilt :size="32" />
         </div>
@@ -165,10 +188,14 @@ onMounted(() => {
     </div>
     <button
       class="generate-tickets__return-btn flex align-self-center align-items-center justify-content-center gap[0.5] sm-top-2"
-      @click="toHomepage">
+      @click="toHomepage"
+    >
       <ph-caret-left :size="16" weight="bold" />
       <p>Kembali ke Dashboard</p>
     </button>
+    <div v-if="isLoading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+    </div>
     <!-- <div>
       <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
         <div>
@@ -319,13 +346,17 @@ onMounted(() => {
               <section class="ticket">
                 <div style="display: block; width: 100%; justify-content: center">
                   <div style="display: flex; width: 100%">
-                    <img src="../assets/images/logo.png" alt="Keraton Kasepuhan Cirebon" style="
-                        width: 150px;
-                        height: 150px;
+                    <img
+                      src="../assets/images/logo.png"
+                      alt="Keraton Kasepuhan Cirebon"
+                      style="
+                        width: 120px;
+                        height: 120px;
                         margin-inline: auto;
                         margin-top: 10px;
                         margin-bottom: 10px;
-                      " />
+                      "
+                    />
                   </div>
                   <div style="width: 90%; margin: auto">
                     <h5>
@@ -336,108 +367,143 @@ onMounted(() => {
                       {{ ticketsData.plannedDate ? ticketsData.plannedDate.split('T')[0] : '0%' }}
                     </p>
                   </div>
-                  <section class="separator" style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px">
-                  </section>
-                  <div style="width: 90%; margin: auto" v-for="(ticket, index) in ticketsData.detailTrans" :key="index">
+                  <section class="separator" style="margin-inline: auto; margin-top: 8px"></section>
+                  <div
+                    style="width: 95%; margin: auto"
+                    v-for="(ticket, index) in ticketsData.detailTrans"
+                    :key="index"
+                  >
                     <div style="display: flex; justify-content: space-between; width: 100%">
                       <p class="descList">
-                        {{ `${ticket.order.name} (${ticket.order.category.name}) x ${ticket.amount} Tiket` }}
+                        {{
+                          `${ticket.order.name} (${ticket.order.category.name}) x ${ticket.amount} Tiket`
+                        }}
                       </p>
-                      <p class="descList" style="
+                      <p
+                        class="descList"
+                        style="
                           display: inline;
-                          max-width: 40%;
+                          max-width: 45%;
                           text-align: right;
                           height: fit-content;
                           word-break: break-all;
-                        ">
+                        "
+                      >
                         {{ `Rp.${formatCurrency(ticket.order.price)}` }}
                       </p>
                     </div>
                   </div>
-                  <section class="separator" style="margin-inline: auto; margin-top: 20px; padding-bottom: 5px">
-                  </section>
-                  <div style="
+                  <section class="separator" style="margin-inline: auto; margin-top: 8px"></section>
+                  <div
+                    style="
                       display: flex;
                       justify-content: space-between;
-                      width: 90%;
+                      width: 95%;
                       margin-inline: auto;
-                    ">
+                    "
+                  >
                     <p class="descList">Pembayaran</p>
-                    <p class="descList" style="
+                    <p
+                      class="descList"
+                      style="
                         display: inline;
                         max-width: 40%;
                         text-align: right;
                         height: fit-content;
                         word-break: break-all;
-                      ">
+                      "
+                    >
                       {{ ticketsData.method }}
                     </p>
                   </div>
-                  <div style="
+                  <div
+                    style="
                       display: flex;
                       justify-content: space-between;
-                      width: 90%;
+                      width: 95%;
                       margin-inline: auto;
-                    ">
+                    "
+                  >
                     <p class="descList">Potongan</p>
-                    <p class="descList" style="
+                    <p
+                      class="descList"
+                      style="
                         display: inline;
                         max-width: 40%;
                         text-align: right;
                         height: fit-content;
                         word-break: break-all;
-                      ">
+                      "
+                    >
                       {{ ticketsData.discount ? ticketsData.discount.split('|')[1] : '0%' }}
                     </p>
                   </div>
-                  <div style="
+                  <div
+                    style="
                       display: flex;
                       justify-content: space-between;
-                      width: 90%;
+                      width: 95%;
                       margin-inline: auto;
-                    ">
+                    "
+                  >
                     <p class="descList">Cashback</p>
-                    <p class="descList" style="
+                    <p
+                      class="descList"
+                      style="
                         display: inline;
                         max-width: 40%;
                         text-align: right;
                         height: fit-content;
                         word-break: break-all;
-                      ">
+                      "
+                    >
                       {{ ticketsData.cashback ? ticketsData.cashback.split('|')[1] : '0%' }}
                     </p>
                   </div>
-                  <div style="
+                  <div
+                    style="
                       display: flex;
                       justify-content: space-between;
                       width: 90%;
                       margin-inline: auto;
-                    ">
+                    "
+                  >
                     <p class="descList">Total</p>
-                    <p class="descList" style="
+                    <p
+                      class="descList"
+                      style="
                         display: inline;
                         max-width: 50%;
                         text-align: right;
                         height: fit-content;
                         word-break: break-all;
-                      ">
+                      "
+                    >
                       {{ `Rp.${formatCurrency(+ticketsData.total + ticketsData.additionalFee)}` }}
                     </p>
                   </div>
                   <div style="width: 70%; margin: auto">
                     <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
-                    <h5 style="text-transform: uppercase; font-size: small">Enjoy The Tour !</h5>
+                    <h5 style="text-transform: uppercase; font-size: x-small">Enjoy The Tour !</h5>
                   </div>
-                  <div style="width: 90%; margin: auto" v-for="(ticket, index) in ticketsData.BarcodeUsage"
-                    :key="index">
+                  <div
+                    style="width: 90%; margin: auto"
+                    v-for="(ticket, index) in ticketsData.BarcodeUsage"
+                    :key="index"
+                  >
                     <div style="display: flex; width: 100%">
-                      <img id="qrImage" :src="ticketsData.qrImage" style="
-                          width: 200px;
-                          height: 200px;
+                      <img
+                        id="qrImage"
+                        :src="ticketsData.qrImage"
+                        style="
+                          width: 140px;
+                          height: 140px;
                           margin-inline: auto;
-                          margin-top: 10px;
-                          margin-bottom: 10px;
-                        " alt="Keraton Kasepuhan Cirebon" />
+                          margin-top: 5px;
+                          margin-bottom: 5px;
+                        "
+                        alt="Keraton Kasepuhan Cirebon"
+                      />
                     </div>
                   </div>
                   <div style="width: 100%; margin: auto">
@@ -534,17 +600,17 @@ onMounted(() => {
 }
 
 .ticket h5 {
-  font-size: small;
-  padding: 10px;
+  font-size: x-small;
+  padding: 5px;
   line-height: 1.5;
   font-weight: 600;
   text-align: center;
 }
 
 .ticket .desc {
-  font-size: medium;
-  padding: 5px;
   font-size: small;
+  padding: 5px;
+  font-size: x-small;
   width: 80%;
   margin: auto;
   line-height: 1.5;
@@ -553,9 +619,9 @@ onMounted(() => {
 }
 
 .descList {
-  font-size: medium;
-  padding: 5px;
   font-size: small;
+  padding: 5px;
+  font-size: x-small;
   width: 100%;
   margin: auto;
   line-height: 1.5;
@@ -564,14 +630,41 @@ onMounted(() => {
 
 .separator {
   width: 90%;
-  border-top: 3px dashed #000;
-  margin: 20px 0;
+  border-bottom: 2px dashed #000;
+  margin: 5px 0;
 }
 
 @media print {
   .only-pdf {
     page-break-after: always;
     display: block !important;
+  }
+}
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(255, 255, 255);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.loading-spinner {
+  border: 8px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #000;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>
