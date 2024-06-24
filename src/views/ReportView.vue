@@ -65,6 +65,8 @@ const checkData = async () => {
     console.error(error)
   }
 }
+
+const isLoadingKeramaian = ref(false)
 const isLoading = ref(false)
 const inputValue = ref('')
 const confirmAlert = ref(false)
@@ -81,6 +83,11 @@ const getPrint = async () => {
   isLoading.value = true
   await router.replace('/rekap')
   isLoading.value = false
+}
+const getPrintKeramaian = async () => {
+  isLoadingKeramaian.value = true
+  await router.replace('/rekap-keramaian')
+  isLoadingKeramaian.value = false
 }
 const toggleYearDropdown = () => {
   yearDropdownOpen.value = !yearDropdownOpen.value
@@ -354,13 +361,25 @@ const submitOrder = () => {
         >
           <ph-camera :size="32" weight="bold" />
         </span> -->
+        <span
+          v-if="!isLoadingKeramaian"
+          class="icons"
+          name="Print Data Penjualan Tiket"
+          @click="getPrintKeramaian"
+        >
+          <ph-printer :size="32" weight="bold" />
+        </span>
+        <span v-else>loading...</span>
+        <!-- <span class="icons" name="Print Data Keramaian" @click="printDataKeramaian"
+          ><ph-printer :size="32" weight="bold"
+        /></span> -->
         <span v-if="!isLoading" class="icons" name="Print Data Pengunjung" @click="getPrint">
           <ph-printer :size="32" weight="bold" />
         </span>
         <span v-else>loading...</span>
-        <span class="icons" name="Print Data Keramaian" @click="printData"
+        <!-- <span class="icons" name="Print Data Keramaian" @click="printData"
           ><ph-printer :size="32" weight="bold"
-        /></span>
+        /></span> -->
         <span class="icons" name="Ekspor ke Excel" @click="generateExcel">
           <ph-microsoft-excel-logo :size="32" weight="fill" fill="green" />
         </span>
