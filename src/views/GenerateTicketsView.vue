@@ -483,6 +483,7 @@ onMounted(() => {
                     </p>
                   </div>
                   <div style="width: 70%; margin: auto">
+                    <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
                     <h5 style="text-transform: uppercase; font-size: x-small">Enjoy The Tour !</h5>
                   </div>
                   <div
