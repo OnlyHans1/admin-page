@@ -66,7 +66,7 @@ const router = createRouter({
       path: '/checkout/generate-tickets/:id',
       name: 'generateTickets',
       component: GenerateTicketsView,
-      meta: { restrictAccess: true }
+      meta: { }
     },
     {
       path: '/invoice',
