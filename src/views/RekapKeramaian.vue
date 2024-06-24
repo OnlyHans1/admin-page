@@ -6,6 +6,11 @@
         justify-content: center;
         align-items: center;
       ">
+        <div>
+            <Chart :targetDate="currentYear" :dataSeries="yearlyData" :dataCategory="yearlyCategory" />
+            <Chart :targetDate="monthName" :dataSeries="monthlyData" :dataCategory="monthlyCategory" />
+        </div>
+
         <h2>Data Penjualan Tiket Tahun {{ currentYear }}</h2>
         <table class="history-report-table" style="margin-top: 2rem">
             <thead>
@@ -65,21 +70,27 @@
 </template>
 
 <script>
+import Chart from '@/components/Chart.vue';
 import GlobalHelper from '@/utilities/GlobalHelper';
 import { ref } from 'vue';
 const { DB_BASE_URL, TRANSACTION_BASE_URL, ORDER_BASE_URL, DETAILTRANS_BASE_URL, showLoader } = GlobalHelper
 
 export default {
+    components: {
+        Chart
+    },
     data() {
         return {
-            yearlyData: ref(),
-            yearlyCategory: ref(),
-            monthlyData: ref(),
+            yearlyData: ref([]),
+            yearlyCategory: ref([]),
+            monthlyData: ref([]),
+            monthlyCategoryDatas: ref([]),
             currentYear: ref(),
             currentMonth: ref(),
             monthName: ref(),
-            monthlyCategoryDatas: ref()
         }
+    },
+    beforeMount(){
     },
     mounted() {
         const today = new Date()
@@ -90,6 +101,7 @@ export default {
         this.fetchData().then(() => {
             // window.print()
         })
+        // window.location.reload()
     },
     methods: {
         async fetchData() {
