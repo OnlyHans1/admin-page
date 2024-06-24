@@ -338,7 +338,7 @@ onMounted(() => {
         </div>
       </div>
     </div> -->
-    <div style="visibility: hidden;">
+    <div style="visibility: hidden">
       <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
         <div>
           <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
@@ -483,7 +483,6 @@ onMounted(() => {
                     </p>
                   </div>
                   <div style="width: 70%; margin: auto">
-                    <!-- <h5>Total Items: {{ `${ticketsData.detailTrans.length}` }}</h5> -->
                     <h5 style="text-transform: uppercase; font-size: x-small">Enjoy The Tour !</h5>
                   </div>
                   <div
