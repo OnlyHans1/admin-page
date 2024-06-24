@@ -28,24 +28,24 @@
             </tbody>
         </table>
 
-        <h2>Data Penjualan Tiket Bulan {{ monthName }}</h2>
-        <table class="history-report-table" style="margin-top: 2rem">
-            <thead>
-                <tr>
-                    <th v-for="(header, i) in monthlyCategory" :key="i">{{ header }}</th>
-                    <th>Total</th>
-                    <!-- <th>Mancanegara 'Dalam Negri</th> -->
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(month, i) in monthlyData" :key="i">
-                    <td>{{ month.name }}</td>
-                    <td v-for="(monthData, i) in month.data">{{ monthData }}</td>
-                </tr>
-            </tbody>
-        </table>
+    <h2>Data Penjualan Tiket Bulan {{ monthName }}</h2>
+    <table class="history-report-table" style="margin-top: 2rem">
+      <thead>
+        <tr>
+          <th v-for="(header, i) in monthlyCategory" :key="i">{{ header }}</th>
+          <th>Total</th>
+          <!-- <th>Mancanegara 'Dalam Negri</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(month, i) in monthlyData" :key="i">
+          <td>{{ month.name }}</td>
+          <td v-for="(monthData, i) in month.data">{{ monthData }}</td>
+        </tr>
+      </tbody>
+    </table>
 
-        <!-- <h2 style="margin-top: 2rem">Data Tingkat Keramaian Bulan</h2>
+    <!-- <h2 style="margin-top: 2rem">Data Tingkat Keramaian Bulan</h2>
       <table class="history-report-table" style="margin-top: 2rem">
         <thead>
           <tr>
@@ -66,7 +66,7 @@
           </tr>
         </tbody>
       </table> -->
-    </div>
+  </div>
 </template>
 
 <script>
@@ -127,20 +127,20 @@ export default {
 
 <style scoped>
 .history-report-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
 }
 
 .history-report-table th,
 .history-report-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
 }
 
 .history-report-table th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+  background-color: #f2f2f2;
+  font-weight: bold;
 }
 </style>

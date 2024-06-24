@@ -12,7 +12,11 @@ const { loggedIn, isAuthenticated } = LoginHelper
 
 const route = useRoute()
 const showSidebar = computed(
-  () => route.name !== 'generateTickets' && route.name !== 'login' && route.name !== 'Rekap'
+  () =>
+    route.name !== 'generateTickets' &&
+    route.name !== 'login' &&
+    route.name !== 'Rekap' &&
+    route.name !== 'Rekap Keramaian'
 )
 
 watchEffect(() => {
