@@ -138,7 +138,7 @@ watch(
       <apexchart
         type="line"
         height="240"
-        :width="widthcart"
+        :width="400"
         :options="chartOptions"
         :series="dataSeries"
       ></apexchart>
