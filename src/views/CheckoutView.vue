@@ -468,6 +468,20 @@ onMounted(() => {
                       </span>
                       <ph-caret-right :size="16" weight="bold" />
                     </button>
+                    <button @click="selectPayment('Transfer')">
+                      <span
+                        ><ph-credit-card :size="16" weight="bold" />
+                        <h6>Transfer</h6>
+                      </span>
+                      <ph-caret-right :size="16" weight="bold" />
+                    </button>
+                    <button @click="selectPayment('Qode Qr')">
+                      <span
+                        ><ph-qr-code :size="16" weight="bold" />
+                        <h6>Code Qr</h6>
+                      </span>
+                      <ph-caret-right :size="16" weight="bold" />
+                    </button>
                   </div>
                 </div>
               </section>
