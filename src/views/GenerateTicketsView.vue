@@ -338,8 +338,8 @@ onMounted(() => {
         </div>
       </div>
     </div> -->
-    <div style="visibility: hidden">
-      <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content">
+    <div>
+      <div ref="dataRef" id="ticket" style="width: fit-content; height: fit-content; display: none">
         <div>
           <div style="display: grid; width: 100%; overflow-x: auto; flex-wrap: wrap">
             <div style="gap: 5px">

@@ -195,8 +195,8 @@ const totalTagihan = computed(() => {
   const diskon = (totalHarga.value * discountValue.value) / 100;
   let taxes = 0
   const taxesIdentifier = paymentSelection != 'Cash' ? 'nonCash' : 'cash'
-  if(listOfTaxes[taxesIdentifier]){
-    for(let tax of listOfTaxes[taxesIdentifier]){
+  if (listOfTaxes[taxesIdentifier]) {
+    for (let tax of listOfTaxes[taxesIdentifier]) {
       taxes += tax.multiply ? totalTagihan.value * tax.tax : totalTagihan.value + tax.tax
     }
   }
@@ -258,7 +258,7 @@ const createTransaction = async () => {
       guideId: item.guideId
     }))
 
-    dateTime()
+  dateTime()
 
   try {
     if (order.length < 1) throw Error('No Item To Checkout')
