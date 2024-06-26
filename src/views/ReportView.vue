@@ -39,6 +39,7 @@ const {
   monthlyCategory,
   monthlyData,
   fetchTargetMonths,
+  fetchOrderInfoCardData,
   setMonthLocaleString,
   changeSelectedMonth,
   fetchMonthlyChartData,
@@ -59,6 +60,7 @@ const checkData = async () => {
     selectedMonth.value = currentMonth
     setMonthLocaleString()
     await fetchYearlyChartData()
+    await fetchOrderInfoCardData()
     await fetchMonthlyChartData()
     isShowChart.value = true
   } catch (error) {

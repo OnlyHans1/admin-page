@@ -1,40 +1,73 @@
+666666666666665
 <script setup>
 import 'swiper/swiper-bundle.css'
 import { onMounted } from 'vue'
 import { Virtual, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import ReportHelper from '@/utilities/ReportHelper'
+import GlobalHelper from '@/utilities/GlobalHelper'
 
-const { orderInfoCardData, fetchOrderInfoCardData } = ReportHelper
 
-const getSlidesView = () => {
-  const length = orderInfoCardData.value.length
-  if (length > 3) return 3
-  else return length
-}
-onMounted(() => {
-  fetchOrderInfoCardData()
-})
+// const getSlidesView = () => {
+//   const length = orderInfoCardData.value.length
+//   if (length > 3) return 3
+//   else return length
+// }
 </script>
 
 <template>
-  <Swiper
-    :modules="[Virtual, Pagination, Navigation]"
-    :slides-per-view="getSlidesView()"
-    :space-between="10"
-    pagination
-    navigation
-    virtual
-  >
-    <SwiperSlide v-for="(item, index) in orderInfoCardData" :key="index">
+  <Swiper :modules="[Virtual, Pagination, Navigation]" :space-between="10" :slides-per-view="cardLength" pagination navigation
+    virtual>
+    <SwiperSlide v-for="(item, index) in infoCardDatas" :key="index">
       <div class="ticket-info-card__container flex fd-col pd-1">
-        <p class="ticket-info-card__title">{{ item.category }}</p>
+        <p class="ticket-info-card__title">{{ item.name }}</p>
         <span class="ticket-info-card__details align-self-center">{{ item.sum }}</span>
         <p class="ticket-info-card__desc align-self-f-end">/ tiket</p>
       </div>
     </SwiperSlide>
   </Swiper>
 </template>
+
+<script>
+const { DB_BASE_URL, DETAILTRANS_BASE_URL } = GlobalHelper
+import { ref } from 'vue'
+export default {
+  data() {
+    return {
+      infoCardDatas: ref([]),
+      cardLength: ref(0)
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  methods: {
+    async fetchData() {
+      try {
+        const response = await fetch(`${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/category-sell`)
+        if (!response.ok) throw Error('Gagal mem-fetch Data')
+        const repsonseData = await response.json()
+        this.infoCardDatas = this.formatToInfoCard(repsonseData.data)
+        console.log(this.infoCardDatas)
+        this.cardLength = this.infoCardDatas.length
+      } catch (err) {
+        console.log(err)
+      }
+    },
+    formatToInfoCard(datas) {
+      let infoCardData = {}
+      for(let data of datas){
+        const categoryName = data.order.category.name
+        if(!infoCardData[categoryName]) infoCardData[categoryName] = {
+          name: categoryName, sum: 0
+        }
+        infoCardData[categoryName].sum += data.amount
+      }
+      return Object.values(infoCardData)
+    }
+  }
+}
+</script>
 
 <style scoped>
 p,
@@ -47,6 +80,7 @@ span {
   background: linear-gradient(to bottom, rgba(255, 226, 154, 0.9), rgba(254, 209, 96, 0.9));
   border-radius: 15px;
 }
+
 .ticket-info-card__title {
   font-size: 12px;
   line-height: 18px;
@@ -56,11 +90,13 @@ span {
   background-color: rgba(254, 209, 96, 1);
   mix-blend-mode: luminosity;
 }
+
 .ticket-info-card__details {
   font-size: 96px;
   font-weight: 500;
   line-height: 128px;
 }
+
 .ticket-info-card__desc {
   font-size: 12px;
   font-weight: 500;

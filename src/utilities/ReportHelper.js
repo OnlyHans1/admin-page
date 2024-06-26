@@ -48,27 +48,17 @@ const fetchIncomeRevenue = async () => {
 }
 
 const generateExcel = () => {
-  const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
-  const monthlyTempData = JSON.parse(JSON.stringify(monthlyData.value))
-
-  yearlyTempData.forEach((item) => {
-    item.data = item.data.slice(1)
-  })
-
-  monthlyTempData.forEach((item) => {
-    item.data = item.data.slice(1)
-  })
+  let yearlyTempData = yearlyData.value
+  let monthlyTempData = monthlyData.value
 
   const wb = XLSX.utils.book_new()
 
-  const yearlyCategories = yearlyCategory.value.slice(1)
   const yearlySheetData = [
     [`Tabel Tingkat Keramaian ${selectedYear.value}`],
-    ['Bulan', ...yearlyCategories, 'Total']
+    ['Bulan', ...yearlyCategory.value, 'Total']
   ]
 
-  const yearlyTotals = new Array(yearlyCategories.length).fill(0)
-
+  const yearlyTotals = new Array(yearlyCategory.value.length).fill(0)
   yearlyTempData.forEach((item) => {
     const rowData = [item.name]
     let total = 0
@@ -87,14 +77,13 @@ const generateExcel = () => {
   yearlySheet['!cols'] = [{ wpx: 80 }]
   yearlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 13 } }]
   XLSX.utils.book_append_sheet(wb, yearlySheet, 'Yearly Data')
-
-  const monthlyCategories = monthlyCategory.value.slice(1)
+  
   const monthlySheetData = [
     [`Tabel Tingkat Keramaian Bulan ${selectedMonthName.value}`],
-    ['Tanggal', ...monthlyCategories, 'Total']
+    ['Tanggal', ...monthlyCategory.value, 'Total']
   ]
 
-  const monthlyTotals = new Array(monthlyCategories.length).fill(0)
+  const monthlyTotals = new Array(monthlyCategory.value.length).fill(0)
 
   monthlyTempData.forEach((item) => {
     const rowData = [item.name]
@@ -109,10 +98,9 @@ const generateExcel = () => {
   })
 
   monthlySheetData.push(['Total', ...monthlyTotals, monthlyTotals.reduce((a, b) => a + b, 0)])
-
   const monthlySheet = XLSX.utils.aoa_to_sheet(monthlySheetData)
-  monthlySheet['!cols'] = [{ wpx: 80 }]
-  monthlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 32 } }]
+  // monthlySheet['!cols'] = [{ wpx: 80 }]
+  // monthlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 32 } }]
   XLSX.utils.book_append_sheet(wb, monthlySheet, 'Monthly Data')
 
   XLSX.writeFile(wb, 'chart_report.xlsx')
@@ -431,7 +419,7 @@ const fetchTableDataReport = async () => {
 const orderInfoCardData = ref([])
 const totalSum = () => {
   return orderInfoCardData.value.reduce((total, item) => {
-    return total + item.sum
+    return total + item.amount
   }, 0)
 }
 
