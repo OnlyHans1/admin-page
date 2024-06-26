@@ -62,6 +62,20 @@ onMounted(() => {
     determineActiveLink()
   }
 })
+
+// const showTooltip = (event) => {
+//   const tooltip = document.getElementById('tooltip')
+//   tooltip.textContent = event.target.getAttribute('name')
+//   tooltip.style.display = 'block'
+//   tooltip.style.top = `${event.clientY + window.scrollY + 20}px`
+//   tooltip.style.left = `${event.clientX + window.scrollX + 20}px`
+// }
+
+// const hideTooltip = () => {
+//   const tooltip = document.getElementById('tooltip')
+//   tooltip.style.display = 'none'
+// }
+
 watchEffect(() => {
   if (!userData.value) {
     userLogout()
@@ -74,34 +88,97 @@ watchEffect(() => {
     <div class="logo">
       <img src="../assets/images/Logo KKC.svg" alt="" />
     </div>
-    <div class="navbar-links">
-      <!-- Menggunakan router-link dengan params -->
-      <div class="navbar-links-container flex fd-col" v-if="!isCurawedaAccount">
-        <RouterLink to="/" :class="{ active: activeLink === 0 }" name="Dashboard">
-          <ph-house :size="24" weight="bold" />
-        </RouterLink>
-        <RouterLink to="/invoice" :class="{ active: activeLink === 1 }" name="Invoice">
-          <ph-envelope-simple :size="24" weight="bold" />
-        </RouterLink>
-        <RouterLink to="/report" :class="{ active: activeLink === 2 }" name="Report">
-          <ph-currency-circle-dollar :size="24" weight="bold" />
-        </RouterLink>
-        <RouterLink to="/checkout" :class="{ active: activeLink === 3 }" name="Checkout">
-          <ph-shopping-cart-simple :size="24" weight="bold" />
-        </RouterLink>
-      </div>
-      <div class="navbar-links-container flex fd-col" v-if="isCurawedaAccount">
-        <RouterLink to="/report-curaweda" :class="{ active: activeLink === 2 }" name="Report">
-          <ph-currency-circle-dollar :size="24" weight="bold" />
-        </RouterLink>
-      </div>
-      <div class="navbar-links__settings-container flex fd-col">
-        <a name="Settings" @click="toSettings()" :class="{ active: activeLink === 5 }" v-if="!isCurawedaAccount">
-          <ph-gear :size="24" weight="bold" :class="{ disabled: userData.role === 'CASHIER' }" />
-        </a>
-        <RouterLink to="/login" name="Logout" @click="userLogout(), router.replace('/login')">
-          <ph-sign-out :size="24" weight="bold" mirrored="mirrored"
-        /></RouterLink>
+    <div
+      id="tooltip"
+      style="
+        position: absolute;
+        display: none;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        padding: 0.5rem;
+        border-radius: 0.5rem;
+        font-family: 'Poppins';
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 16px;
+        white-space: nowrap;
+        z-index: 9999;
+      "
+    ></div>
+    <div style="overflow-y: auto; overflow-x: hidden; height: 100%">
+      <div class="navbar-links">
+        <!-- Menggunakan router-link dengan params -->
+        <div class="navbar-links-container flex fd-col" v-if="!isCurawedaAccount">
+          <RouterLink
+            to="/"
+            :class="{ active: activeLink === 0 }"
+            name="Dashboard"
+            @mouseover="showTooltip"
+            @mouseleave="hideTooltip"
+          >
+            <ph-house :size="24" weight="bold" />
+          </RouterLink>
+          <RouterLink to="/invoice" :class="{ active: activeLink === 1 }">
+            <ph-envelope-simple
+              :size="24"
+              weight="bold"
+              name="Invoice"
+              @mouseover="showTooltip"
+              @mouseleave="hideTooltip"
+            />
+          </RouterLink>
+          <RouterLink to="/report" :class="{ active: activeLink === 2 }">
+            <ph-currency-circle-dollar
+              :size="24"
+              weight="bold"
+              name="Report"
+              @mouseover="showTooltip"
+              @mouseleave="hideTooltip"
+            />
+          </RouterLink>
+          <RouterLink to="/checkout" :class="{ active: activeLink === 3 }">
+            <ph-shopping-cart-simple
+              :size="24"
+              weight="bold"
+              name="Checkout"
+              @mouseover="showTooltip"
+              @mouseleave="hideTooltip"
+            />
+          </RouterLink>
+        </div>
+        <div class="navbar-links-container flex fd-col" v-if="isCurawedaAccount">
+          <RouterLink
+            to="/report-curaweda"
+            :class="{ active: activeLink === 2 }"
+            name="Report"
+            @mouseover="showTooltip"
+            @mouseleave="hideTooltip"
+          >
+            <ph-currency-circle-dollar :size="24" weight="bold" />
+          </RouterLink>
+        </div>
+        <div class="navbar-links__settings-container flex fd-col">
+          <a
+            @click="toSettings()"
+            :class="{ active: activeLink === 5 }"
+            v-if="!isCurawedaAccount"
+            style="cursor: pointer"
+            name="Settings"
+            @mouseover="showTooltip"
+            @mouseleave="hideTooltip"
+          >
+            <ph-gear :size="24" weight="bold" :class="{ disabled: userData.role === 'CASHIER' }" />
+          </a>
+          <RouterLink
+            to="/login"
+            name="Logout"
+            @click="userLogout(), router.replace('/login')"
+            @mouseover="showTooltip"
+            @mouseleave="hideTooltip"
+          >
+            <ph-sign-out :size="24" weight="bold" mirrored="mirrored"
+          /></RouterLink>
+        </div>
       </div>
     </div>
   </nav>
@@ -146,16 +223,17 @@ nav {
   flex-direction: column;
   justify-content: space-between;
   text-align: center;
-  margin-top: 3rem;
   align-items: center;
 }
 
 .navbar-links-container,
 .navbar-links__settings-container {
   display: flex;
+  margin-top: 30px;
   flex-direction: column;
   gap: 1.5rem;
   text-align: center;
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -187,6 +265,8 @@ a:hover::after {
   line-height: 16px;
   white-space: nowrap;
   z-index: 9999;
+  position: absolute;
+  display: none;
 }
 .active:hover::after {
   transform: translateX(15%);
