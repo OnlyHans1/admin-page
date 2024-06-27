@@ -92,6 +92,13 @@ onMounted(() => {
               <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                 Detail
               </button>
+              <button
+                class="btn-primary invoice-table__button"
+                style="margin: 0 0.5rem"
+                @click="deleteTransaction(item.id)"
+              >
+                Delete
+              </button>
             </td>
           </tr>
         </tbody>

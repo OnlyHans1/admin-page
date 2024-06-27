@@ -6,7 +6,7 @@ const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader } = GlobalHelper
 /* InvoiceView Helper */
 const dataInvoice = ref([])
 const data = ref([])
-const listOfTaxes = ref({cash: [], nonCash: []})
+const listOfTaxes = ref({ cash: [], nonCash: [] })
 
 const getSearchQuery = (query) => {
   getSearchQuery.value = query
@@ -52,8 +52,10 @@ const fetchTaxes = async () => {
     const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/list-tax`)
     if (!response.ok) throw Error('Terjadi kesalahan')
     const responseData = await response.json()
-    listOfTaxes.value.cash = responseData.data.data.cash.filter((tax) => tax.paidBy === "user")
-    listOfTaxes.value.nonCash = responseData.data.data.nonCash.filter((tax) => tax.paidBy === "user")
+    listOfTaxes.value.cash = responseData.data.data.cash.filter((tax) => tax.paidBy === 'user')
+    listOfTaxes.value.nonCash = responseData.data.data.nonCash.filter(
+      (tax) => tax.paidBy === 'user'
+    )
   } catch (err) {
     console.log(err)
   }
@@ -64,7 +66,7 @@ const mapInvoiceOrders = (data) => {
     return data.detailTrans
       .map((item) => {
         const orderName = item?.order ? item.order.name : item.event.name
-        const orderCategoryName = item.order ? item.order.category.name : "Event"
+        const orderCategoryName = item.order ? item.order.category.name : 'Event'
 
         return `${orderName} (${orderCategoryName}) x ${item.amount}`
       })
@@ -75,16 +77,23 @@ const mapInvoiceOrders = (data) => {
 const mapInvoiceDetails = (data) => {
   if (data.detailTrans.length > 0) {
     let discountAmount = 0
-    if (data.discount) discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
+    if (data.discount)
+      discountAmount = parseInt(data.discount.split('|')[1].trim().replace('%', ''))
     return data.detailTrans.map((item) => {
       const orderName = item.order ? item.order.name : item.event.name
-      const orderCategoryName = item.order ? item.order.category.name : "Event"
+      const orderCategoryName = item.order ? item.order.category.name : 'Event'
       const guideName = item.guide ? item.guide.name : ''
-      const orderPrice = Number( item.order ? item.order.price : item.event.price).toLocaleString('id-ID')
+      const orderPrice = Number(item.order ? item.order.price : item.event.price).toLocaleString(
+        'id-ID'
+      )
       const orderAmount = Number(item.amount).toLocaleString('id-ID')
-      const orderDiscount = Number(((item.order ? item.order.price : item.event.price) * orderAmount * discountAmount) / 100).toLocaleString('id-ID')
+      const orderDiscount = Number(
+        ((item.order ? item.order.price : item.event.price) * orderAmount * discountAmount) / 100
+      ).toLocaleString('id-ID')
       const formattedDiscount = `Rp. ${orderDiscount},00 (${discountAmount}%)`
-      const totalPrice = Number(item.amount * (item.order ? item.order.price : item.event.price)).toLocaleString('id-ID')
+      const totalPrice = Number(
+        item.amount * (item.order ? item.order.price : item.event.price)
+      ).toLocaleString('id-ID')
 
       return {
         order: `${orderName} (${orderCategoryName}) : ${item.amount} Tiket`,
@@ -169,7 +178,11 @@ const showDetail = (item) => {
       appointment: formatDate(item.plannedDate),
       paymentMethod: item.method,
       number: item.customer?.number ? item.customer.number : item.user.number,
-      qr: (Array.isArray(item.BarcodeUsage) && item.BarcodeUsage.length > 0) ? item.BarcodeUsage[0].qrPath : item.qr[0], payment: capitalizeFirstLetter(item.method),
+      qr:
+        Array.isArray(item.BarcodeUsage) && item.BarcodeUsage.length > 0
+          ? item.BarcodeUsage[0].qrPath
+          : item.qr[0],
+      payment: capitalizeFirstLetter(item.method),
       total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
     }
     console.log(selectedItem)
@@ -195,12 +208,12 @@ function capitalizeFirstLetter(str) {
 }
 
 const deleteTransaction = async (id) => {
-  try{
-    const response = await fetch(`${DB_BASE_URL}/${TRANSACTION_BASE_URL}/${id}`, {
-      method: "DELETE"
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/${id}`, {
+      method: 'GET'
     })
-    if(!response.ok) throw Error('Terjadi kesalahan saat melakukan fetching')
-  }catch(err){
+    if (!response.ok) throw Error('Terjadi kesalahan saat melakukan fetching')
+  } catch (err) {
     console.log(err)
   }
 }

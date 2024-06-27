@@ -392,10 +392,10 @@ const submitOrder = () => {
         <p class="report-activity__head-text">Aktivitas Terbaru</p>
         <div
           class="report-activity__head-dropdown-container"
-          style="display: flex; items-center; gap: 1rem"
+          style="display: flex; items-center; gap: 1rem; "
         >
-          <input type="date" v-model="filterByDate" />
-          <CategoryDropdown :categoryWidth="'300px'" @option-selected="updateCategory" />
+          <input type="date" v-model="filterByDate" style="width: 10rem" />
+          <CategoryDropdown :categoryWidth="'280px'" @option-selected="updateCategory" />
         </div>
       </div>
       <div class="report-activity__table-container">
