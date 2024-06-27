@@ -18,6 +18,7 @@ const {
   searchQuery,
   resetSearch,
   deleteTransaction,
+  getRowIndex,
   fetchTaxes,
   mapInvoiceOrders,
   selectedItem,
@@ -79,28 +80,30 @@ onMounted(() => {
           </tr>
         </thead>
         <tbody v-if="dataInvoice">
-          <tr v-for="(item, index) in dataInvoice" :key="index" class="invoice-table__row-data">
-            <td class="invoice-table__data">{{ index + 1 }}</td>
-            <td class="invoice-table__data">
-              {{ item.customer ? item.customer.name : item.user.name }}
-            </td>
-            <td class="invoice-table__data">{{ mapInvoiceOrders(item) }}</td>
-            <td class="invoice-table__data">{{ splitDate(item.plannedDate)[0] }}</td>
-            <td class="invoice-table__data">{{ splitDate(item.plannedDate)[1] }}</td>
-            <td class="invoice-table__data">
-              {{ item.customer ? item.customer.email : item.user.email }} <br />
-              <button class="btn-primary invoice-table__button" @click="showDetail(item)">
-                Detail
-              </button>
-              <button
-                class="btn-primary invoice-table__button"
-                style="margin: 0 0.5rem"
-                @click="deleteTransaction(item.id)"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
+          <template v-for="(item, index) in dataInvoice" :key="index">
+            <tr v-if="mapInvoiceOrders(item)" class="invoice-table__row-data">
+              <td class="invoice-table__data">{{ getRowIndex(item) + 1 }}</td>
+              <td class="invoice-table__data">
+                {{ item.customer ? item.customer.name : item.user.name }}
+              </td>
+              <td class="invoice-table__data">{{ mapInvoiceOrders(item) }}</td>
+              <td class="invoice-table__data">{{ splitDate(item.plannedDate)[0] }}</td>
+              <td class="invoice-table__data">{{ splitDate(item.plannedDate)[1] }}</td>
+              <td class="invoice-table__data">
+                {{ item.customer ? item.customer.email : item.user.email }} <br />
+                <button class="btn-primary invoice-table__button" @click="showDetail(item)">
+                  Detail
+                </button>
+                <button
+                  class="btn-primary invoice-table__button"
+                  style="margin: 0 0.5rem"
+                  @click="deleteTransaction(item.id)"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          </template>
         </tbody>
         <tbody v-else>
           Data Tidak ada
