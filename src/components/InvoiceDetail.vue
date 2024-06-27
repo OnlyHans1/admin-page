@@ -6,7 +6,7 @@ import { computed } from 'vue'
 
 const { getImageURL } = GlobalHelper
 const { showPopup, closeDetailPopup, selectedItem } = InvoiceHelper
-const { biayaJasa, biayaLayanan } = CheckoutHelper
+// const { biayaJasa, biayaLayanan } = CheckoutHelper
 const invoiceData = computed(() => selectedItem.value || {})
 </script>
 
@@ -58,15 +58,8 @@ const invoiceData = computed(() => selectedItem.value || {})
             </div>
           </div>
         </div>
+
         <div class="invoice-detail__data-layanan flex fd-col gap[0.25] sm-top-1">
-          <div class="flex justify-content-sb">
-            <h6 class="fw-600">Biaya Layanan</h6>
-            <p>Rp. {{ biayaLayanan }},00</p>
-          </div>
-          <div class="flex justify-content-sb">
-            <h6 class="fw-600">Biaya Jasa Aplikasi</h6>
-            <p>Rp. {{ biayaJasa }},00</p>
-          </div>
           <hr />
           <div class="flex justify-content-sb">
             <div class="flex fd-col align-items-center">
