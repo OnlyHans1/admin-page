@@ -38,7 +38,18 @@ watch(
     }
   }
 )
-
+const idData = ref(null)
+const name = ref(null)
+const confirmAlert = ref(false)
+const confirmDelete = (data) => {
+  idData.value = data.id
+  name.value = data.customer.name
+  confirmAlert.value = true
+}
+const confirm = () => {
+  confirmAlert.value = false
+  deleteTransaction(idData.value)
+}
 onMounted(() => {
   GlobalHelper.showLoader.value = true
   fetchTransactionList()
@@ -47,6 +58,21 @@ onMounted(() => {
 </script>
 
 <template>
+  <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
+    <div class="add__alert-confirmation">
+      <h5>Apakah yakin ingin menghapus invoice dengan nama {{ name }}?</h5>
+      <!-- <input
+        type="number"
+        v-model="inputValue"
+        style="border-width: 2px"
+        placeholder="Masukkan nominal..."
+      /> -->
+      <div class="button-group">
+        <button @click="confirmAlert = false">Cancel</button>
+        <button @click="confirm()">Yes</button>
+      </div>
+    </div>
+  </div>
   <div class="invoice-container">
     <div style="justify-content: space-between; display: flex; width: 100%">
       <div style="text-transform: capitalize; font-weight: 500; font-size: 1.875rem; width: 100%">
@@ -97,7 +123,7 @@ onMounted(() => {
                 <button
                   class="btn-primary invoice-table__button"
                   style="margin: 0 0.5rem"
-                  @click="deleteTransaction(item.id)"
+                  @click="confirmDelete(item)"
                 >
                   Delete
                 </button>
@@ -115,6 +141,54 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.add__alert-confirmation_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgb(0, 0, 0, 0.2);
+  z-index: 999;
+}
+
+.add__alert-confirmation {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translate(-50%);
+  background-color: #ffffff;
+  border: 1px solid rgba(255, 226, 154, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+.add__alert-confirmation .button-group {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: end;
+  margin-top: 1rem;
+}
+
+.add__alert-confirmation .button-group button {
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-primary);
+  filter: saturate(10);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.add__alert-confirmation .button-group button:first-child {
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #8f8f8f;
+  color: #ffffff;
+}
+
 .invoice-container {
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;

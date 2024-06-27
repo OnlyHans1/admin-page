@@ -213,6 +213,7 @@ const deleteTransaction = async (id) => {
       method: 'GET'
     })
     if (!response.ok) throw Error('Terjadi kesalahan saat melakukan fetching')
+    fetchTransactionList()
   } catch (err) {
     console.log(err)
   }
