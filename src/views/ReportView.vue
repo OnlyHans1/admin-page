@@ -390,8 +390,12 @@ const submitOrder = () => {
     <div class="report-activity__container flex fd-col gap-1">
       <div class="report-activity__head flex fd-row gap[1.5] align-items-center">
         <p class="report-activity__head-text">Aktivitas Terbaru</p>
-        <div class="report-activity__head-dropdown-container">
-          <CategoryDropdown :categoryWidth="'136px'" @option-selected="updateCategory" />
+        <div
+          class="report-activity__head-dropdown-container"
+          style="display: flex; items-center; gap: 1rem"
+        >
+          <input type="date" v-model="filterByDate" />
+          <CategoryDropdown :categoryWidth="'300px'" @option-selected="updateCategory" />
         </div>
       </div>
       <div class="report-activity__table-container">
@@ -402,6 +406,17 @@ const submitOrder = () => {
 </template>
 
 <style scoped>
+input[type='date'] {
+  border: 1px solid black;
+  border-radius: 8px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+  color: #7a7a7a;
+  background-color: #fff;
+  transition:
+    border-color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
+}
+
 .report-information__income-revenue {
   cursor: pointer;
 }
