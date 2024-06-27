@@ -18,7 +18,7 @@ const {
   showPaymentSelect,
   selectPayment,
   addTicket,
-  asalKota,
+asalKota,
   reduceTicket,
   custName,
   custEmail,

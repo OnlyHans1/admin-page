@@ -47,64 +47,135 @@ const fetchIncomeRevenue = async () => {
   }
 }
 
-const generateExcel = () => {
-  let yearlyTempData = yearlyData.value
-  let monthlyTempData = monthlyData.value
+const generateExcel = async () => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/table-data`);
+    if (!response.ok) throw new Error('Failed to fetch data');
 
-  const wb = XLSX.utils.book_new()
+    const responseData = await response.json();
+    const workbook = XLSX.utils.book_new();
+    const tableSheetData = [];
 
-  const yearlySheetData = [
-    [`Tabel Tingkat Keramaian ${selectedYear.value}`],
-    ['Bulan', ...yearlyCategory.value, 'Total']
-  ]
+    let rowIndex = 1;
+    let currentTransactionId;
 
-  const yearlyTotals = new Array(yearlyCategory.value.length).fill(0)
-  yearlyTempData.forEach((item) => {
-    const rowData = [item.name]
-    let total = 0
-    item.data.forEach((value, colIndex) => {
-      rowData.push(value)
-      total += value
-      yearlyTotals[colIndex] += value
-    })
-    rowData.push(total)
-    yearlySheetData.push(rowData)
-  })
+    // Adding headers to the sheet data
+    tableSheetData.push(["No.", "Tanggal", "Pelanggan", "Nama Tiket", "Jenis Tiket", "Pembayaran", "Jumlah", "Harga", "Total", "Total Dibayar"]);
 
-  yearlySheetData.push(['Total', ...yearlyTotals, yearlyTotals.reduce((a, b) => a + b, 0)])
+    responseData.data.forEach((data, i) => {
+      const row = [];
+      let numTabel = "", total = "";
 
-  const yearlySheet = XLSX.utils.aoa_to_sheet(yearlySheetData)
-  yearlySheet['!cols'] = [{ wpx: 80 }]
-  yearlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 13 } }]
-  XLSX.utils.book_append_sheet(wb, yearlySheet, 'Yearly Data')
-  
-  const monthlySheetData = [
-    [`Tabel Tingkat Keramaian Bulan ${selectedMonthName.value}`],
-    ['Tanggal', ...monthlyCategory.value, 'Total']
-  ]
+      // Check if it's a new transaction
+      if (data.transactionId !== currentTransactionId) {
+        numTabel = rowIndex;
+        total = +data.transaction.total;
+        rowIndex++;
+      }
 
-  const monthlyTotals = new Array(monthlyCategory.value.length).fill(0)
+      row.push(numTabel);
+      row.push(data.transaction.plannedDate.split('T')[0]);
+      row.push(data.transaction.customer?.name || data.transaction.user.name);
+      row.push(data.order.name);
+      row.push(data.order.category.name);
+      row.push(data.transaction.method);
+      row.push(data.amount);
+      row.push(formatCurrency(data.order.price));
+      row.push(formatCurrency(data.amount * data.order.price));
+      row.push(formatCurrency(total));
 
-  monthlyTempData.forEach((item) => {
-    const rowData = [item.name]
-    let total = 0
-    item.data.forEach((value, colIndex) => {
-      rowData.push(value)
-      total += value
-      monthlyTotals[colIndex] += value
-    })
-    rowData.push(total)
-    monthlySheetData.push(rowData)
-  })
+      currentTransactionId = data.transactionId;
+      tableSheetData.push(row);
+    });
 
-  monthlySheetData.push(['Total', ...monthlyTotals, monthlyTotals.reduce((a, b) => a + b, 0)])
-  const monthlySheet = XLSX.utils.aoa_to_sheet(monthlySheetData)
-  // monthlySheet['!cols'] = [{ wpx: 80 }]
-  // monthlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 32 } }]
-  XLSX.utils.book_append_sheet(wb, monthlySheet, 'Monthly Data')
+    // Create worksheet and add data to it
+    const worksheet = XLSX.utils.aoa_to_sheet(tableSheetData);
+    const range = XLSX.utils.decode_range(worksheet['!ref']);
 
-  XLSX.writeFile(wb, 'chart_report.xlsx')
+    // Auto size columns
+    const colWidths = tableSheetData[0].map((_, colIndex) => {
+      const colValues = tableSheetData.map(row => row[colIndex] ? row[colIndex].toString() : '');
+      const maxLength = Math.max(...colValues.map(val => val.length));
+      return { wch: maxLength + 2 }; // Adding padding for better spacing
+    });
+    worksheet['!cols'] = colWidths;
+
+    const currencyColumns = [7, 8, 9]; // Indices of the columns to be formatted as currency
+    currencyColumns.forEach(colIndex => {
+      for (let rowIndex = 1; rowIndex <= range.e.r; ++rowIndex) {
+        const cell_address = { c: colIndex, r: rowIndex };
+        const cell_ref = XLSX.utils.encode_cell(cell_address);
+        if (!worksheet[cell_ref]) continue;
+        if (!worksheet[cell_ref].s) worksheet[cell_ref].s = {};
+        worksheet[cell_ref].s.numFmt = '[$Rp-421]#,##0.00'; // Indonesian Rupiah currency format
+      }
+    });
+
+    // Append worksheet to workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Pendapatan Tiket Tahun 2024');
+
+    // Write workbook to file
+    XLSX.writeFile(workbook, 'Pendapatan_Tiket.xlsx');
+  } catch (err) {
+    console.error(err);
+  }
 }
+
+// let yearlyTempData = yearlyData.value
+// let monthlyTempData = monthlyData.value
+
+// const wb = XLSX.utils.book_new()
+
+// const yearlySheetData = [
+//   [`Tabel Tingkat Keramaian ${selectedYear.value}`],
+//   ['Bulan', ...yearlyCategory.value, 'Total']
+// ]
+
+// const yearlyTotals = new Array(yearlyCategory.value.length).fill(0)
+// yearlyTempData.forEach((item) => {
+//   const rowData = [item.name]
+//   let total = 0
+//   item.data.forEach((value, colIndex) => {
+//     rowData.push(value)
+//     total += value
+//     yearlyTotals[colIndex] += value
+//   })
+//   rowData.push(total)
+//   yearlySheetData.push(rowData)
+// })
+
+// yearlySheetData.push(['Total', ...yearlyTotals, yearlyTotals.reduce((a, b) => a + b, 0)])
+
+// const yearlySheet = XLSX.utils.aoa_to_sheet(yearlySheetData)
+// yearlySheet['!cols'] = [{ wpx: 80 }]
+// XLSX.utils.book_append_sheet(wb, yearlySheet, 'Yearly Data')
+
+// const monthlySheetData = [
+//   [`Tabel Tingkat Keramaian Bulan ${selectedMonthName.value}`],
+//   ['Tanggal', ...monthlyCategory.value, 'Total']
+// ]
+
+// const monthlyTotals = new Array(monthlyCategory.value.length).fill(0)
+
+// monthlyTempData.forEach((item) => {
+//   const rowData = [item.name]
+//   let total = 0
+//   item.data.forEach((value, colIndex) => {
+//     rowData.push(value)
+//     total += value
+//     monthlyTotals[colIndex] += value
+//   })
+//   rowData.push(total)
+//   monthlySheetData.push(rowData)
+// })
+
+// monthlySheetData.push(['Total', ...monthlyTotals, monthlyTotals.reduce((a, b) => a + b, 0)])
+// const monthlySheet = XLSX.utils.aoa_to_sheet(monthlySheetData)
+// // monthlySheet['!cols'] = [{ wpx: 80 }]
+// // monthlySheet['!merges'] = [{ s: { r: 0, c: 0 }, e: { r: 0, c: 32 } }]
+// XLSX.utils.book_append_sheet(wb, monthlySheet, 'Monthly Data')
+
+// XLSX.writeFile(wb, 'chart_report.xlsx')
 
 const printData = () => {
   const data = []
@@ -112,10 +183,10 @@ const printData = () => {
   const maxYearColumns = yearlyCategory.value.length
   const maxMonthColumns = monthlyCategory.value.length
 
-  
+
   const yearlyTempData = JSON.parse(JSON.stringify(yearlyData.value))
   const monthlyTempData = JSON.parse(JSON.stringify(monthlyData.value))
-  
+
   console.log(yearlyTempData, monthlyTempData)
   yearlyTempData.forEach((item) => {
     item.data = item.data.slice(1)

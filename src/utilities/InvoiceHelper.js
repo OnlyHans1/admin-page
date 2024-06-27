@@ -6,6 +6,7 @@ const { DB_BASE_URL, TRANSACTION_BASE_URL, showLoader } = GlobalHelper
 /* InvoiceView Helper */
 const dataInvoice = ref([])
 const data = ref([])
+const listOfTaxes = ref({cash: [], nonCash: []})
 
 const getSearchQuery = (query) => {
   getSearchQuery.value = query
@@ -45,6 +46,18 @@ const fetchTransactionList = async () => {
 //     console.log(data.value)
 //   }
 // }
+
+const fetchTaxes = async () => {
+  try {
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/list-tax`)
+    if (!response.ok) throw Error('Terjadi kesalahan')
+    const responseData = await response.json()
+    listOfTaxes.value.cash = responseData.data.data.cash.filter((tax) => tax.paidBy === "user")
+    listOfTaxes.value.nonCash = responseData.data.data.nonCash.filter((tax) => tax.paidBy === "user")
+  } catch (err) {
+    console.log(err)
+  }
+}
 
 const mapInvoiceOrders = (data) => {
   if (data.detailTrans.length > 0) {
@@ -154,6 +167,7 @@ const showDetail = (item) => {
       customer: `${item.customer?.name || item.user.name} (${item.customer?.email || item.user.email})`,
       reservation: mapInvoiceDetails(item),
       appointment: formatDate(item.plannedDate),
+      paymentMethod: item.method,
       number: item.customer?.number ? item.customer.number : item.user.number,
       qr: (Array.isArray(item.BarcodeUsage) && item.BarcodeUsage.length > 0) ? item.BarcodeUsage[0].qrPath : item.qr[0], payment: capitalizeFirstLetter(item.method),
       total: `Rp. ${Number(item.total).toLocaleString('id-ID')}`
@@ -180,6 +194,17 @@ function capitalizeFirstLetter(str) {
   return str.charAt(0).toUpperCase() + str.slice(1)
 }
 
+const deleteTransaction = async (id) => {
+  try{
+    const response = await fetch(`${DB_BASE_URL}/${TRANSACTION_BASE_URL}/${id}`, {
+      method: "DELETE"
+    })
+    if(!response.ok) throw Error('Terjadi kesalahan saat melakukan fetching')
+  }catch(err){
+    console.log(err)
+  }
+}
+
 export default {
   dataInvoice,
   getSearchQuery,
@@ -187,9 +212,12 @@ export default {
   searchQuery,
   resetSearch,
   mapInvoiceOrders,
+  fetchTaxes,
   mapInvoiceDetails,
   selectedItem,
+  deleteTransaction,
   splitDate,
+  listOfTaxes,
   showDetail,
   showPopup,
   data,

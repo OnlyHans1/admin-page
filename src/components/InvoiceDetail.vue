@@ -5,9 +5,14 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 import { computed } from 'vue'
 
 const { getImageURL } = GlobalHelper
-const { showPopup, closeDetailPopup, selectedItem } = InvoiceHelper
-// const { biayaJasa, biayaLayanan } = CheckoutHelper
+const { showPopup, closeDetailPopup, selectedItem, listOfTaxes } = InvoiceHelper
+const { biayaJasa, biayaLayanan } = CheckoutHelper
 const invoiceData = computed(() => selectedItem.value || {})
+const formatTax = (tax) => {
+  console.log(tax)
+  return tax.multiply ? invoiceData.total * tax.tax : invoiceData.total + tax.tax
+}
+
 </script>
 
 <template>
@@ -60,6 +65,10 @@ const invoiceData = computed(() => selectedItem.value || {})
         </div>
 
         <div class="invoice-detail__data-layanan flex fd-col gap[0.25] sm-top-1">
+          <div class="flex justify-content-sb" v-if="listOfTaxes[invoiceData.paymentMethod != 'Cash' ? 'cash' : 'nonCash'].length > 0">
+            <h6 class="fw-600" v-for="(tax, i) in listOfTaxes[invoiceData.paymentMethod != 'Cash' ? 'cash' : 'nonCash']">{{ tax.label }}</h6>
+            <p>Rp. {{ formatTax(tax) }}</p>
+          </div>
           <hr />
           <div class="flex justify-content-sb">
             <div class="flex fd-col align-items-center">

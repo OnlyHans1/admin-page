@@ -17,6 +17,8 @@ const {
   fetchTransactionList,
   searchQuery,
   resetSearch,
+  deleteTransaction,
+  fetchTaxes,
   mapInvoiceOrders,
   selectedItem,
   splitDate,
@@ -39,6 +41,7 @@ watch(
 onMounted(() => {
   GlobalHelper.showLoader.value = true
   fetchTransactionList()
+  fetchTaxes()
 })
 </script>
 
