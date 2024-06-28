@@ -159,18 +159,12 @@ const formatTax = (tax) => {
 
 onMounted(() => {
   const today = new Date()
-  today.setHours(today.getHours()) // Tambahkan 1 jam ke waktu saat ini
+  today.setHours(today.getHours() + 1) // Tambahkan 1 jam ke waktu saat ini
   const offset = today.getTimezoneOffset()
   const localDate = new Date(today.getTime() - offset * 60 * 1000) // Sesuaikan untuk zona waktu lokal
   selectedDate.value = localDate.toISOString().slice(0, 16)
 
-  fetchAllData().then(() => {
-    const date = new Date()
-    date.setHours(date.getHours()) // Add 1 hour to the current date and time
-    const offset = date.getTimezoneOffset()
-    const localDate = new Date(date.getTime() - offset * 60 * 1000) // Adjust for local timezone
-    selectedDate.value = localDate.toISOString().slice(0, 16) // Format as required by datetime-local input
-  })
+  fetchAllData()
 })
 </script>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, watch, onUnmounted } from 'vue'
 import Chart from '@/components/Chart.vue'
 import TicketInfoCard from '@/components/TicketInfoCard.vue'
 import TableReport from '@/components/TableReport.vue'
@@ -33,12 +33,14 @@ const {
   fetchYearlyChartData,
   revenueKeraton,
   currentMonth,
+  filterDate,
   selectedMonth,
   selectedMonthName,
   targetMonths,
   monthlyCategory,
   monthlyData,
   fetchTargetMonths,
+  fetchTableDataReport,
   fetchOrderInfoCardData,
   setMonthLocaleString,
   changeSelectedMonth,
@@ -146,6 +148,14 @@ const incomeRevenueClass = () => {
   }
 }
 
+watch(
+  () => filterDate.value,
+  (newVal) => {
+    filterDate.value = newVal
+    fetchTableDataReport()
+  }
+)
+
 onUnmounted(() => {
   window.removeEventListener('click', closeDropdownOnClickOutside)
 })
@@ -155,6 +165,7 @@ onMounted(() => {
   window.addEventListener('click', closeDropdownOnClickOutside)
   setMonthLocaleString()
 })
+
 const showtransfer = () => {
   showTransfer.value = !showTransfer.value
 }
@@ -394,7 +405,7 @@ const submitOrder = () => {
           class="report-activity__head-dropdown-container"
           style="display: flex; items-center; gap: 1rem; "
         >
-          <input type="date" v-model="filterByDate" style="width: 10rem" />
+          <input type="date" v-model="filterDate" style="width: 10rem" />
           <CategoryDropdown :categoryWidth="'280px'" @option-selected="updateCategory" />
         </div>
       </div>

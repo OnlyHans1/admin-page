@@ -6,6 +6,7 @@ const { DB_BASE_URL, TRANSACTION_BASE_URL, ORDER_BASE_URL, DETAILTRANS_BASE_URL,
   GlobalHelper
 
 const today = new Date()
+const filterDate = ref()
 today.setHours(7, 0, 0, 0)
 const currentYear = today.getFullYear()
 const currentMonth = today.getMonth() + 1
@@ -471,10 +472,11 @@ const updateCategory = (value) => {
 
 const fetchTableDataReport = async () => {
   try {
-    let url = `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/table-data`
+    let url = `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/table-data?`
     if (category.value && category.value !== '') {
-      url += `?category=${encodeURIComponent(category.value)}`
+      url += `category=${encodeURIComponent(category.value)}`
     }
+    if(filterDate.value) url += `date=${filterDate.value}`
     const response = await fetch(url)
     if (!response.ok) {
       throw new Error('Failed to fetch data Report')
@@ -527,6 +529,7 @@ export default {
   targetMonths,
   monthlyCategory,
   monthlyData,
+  filterDate,
   changeSelectedMonth,
   fetchTargetMonths,
   revenueKeraton,

@@ -235,13 +235,6 @@ const fetchTaxes = async () => {
   }
 }
 
-//DateTime
-const dateTime = () => {
-  const inputDate = new Date(selectedDate.value)
-  inputDate.setHours(inputDate.getHours() + 7)
-  selectedDate.value = inputDate
-}
-
 const checkoutStatus = ref('')
 const paymentStatus = ref('')
 const recentTransactionId = ref('')
@@ -258,7 +251,6 @@ const createTransaction = async () => {
       guideId: item.guideId
     }))
 
-  dateTime()
 
   try {
     if (order.length < 1) throw Error('No Item To Checkout')
@@ -299,7 +291,7 @@ const createTransaction = async () => {
             number: custNumber.value
           },
           user: { connect: { id: userData.value.id } },
-          plannedDate: selectedDate.value,
+          plannedDate: new Date(selectedDate.value),
           method: paymentSelection.value.toUpperCase(),
           status: paymentStatus.value ? paymentStatus.value : 'DAPAT_DIGUNAKAN',
           discount: +discountValue.value,
