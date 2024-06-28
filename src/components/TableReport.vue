@@ -29,11 +29,13 @@ onMounted(() => {
           :key="index"
         >
           <td>{{ index + 1 }}</td>
-          <td class="to-ellipsis">{{ item.order ? item.order.name : item.event.name  }}</td>
-          <td>{{ item.order ? item.order.category.name : "Event" }}</td>
+          <td class="to-ellipsis">{{ item.order ? item.order.name : item.event.name }}</td>
+          <td>{{ item.order ? item.order.category.name : 'Event' }}</td>
           <td>{{ formatDate(item.transaction.plannedDate) }}</td>
           <td>{{ item.amount }}</td>
-          <td>{{ formatCurrency((item.order ? item.order.price : item.event.price) * item.amount) }}</td>
+          <td>
+            {{ formatCurrency((item.order ? item.order.price : item.event.price) * item.amount) }}
+          </td>
         </tr>
       </tbody>
     </table>

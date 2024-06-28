@@ -117,16 +117,14 @@ onMounted(() => {
               <td class="invoice-table__data">{{ splitDate(item.plannedDate)[1] }}</td>
               <td class="invoice-table__data">
                 {{ item.customer ? item.customer.email : item.user.email }} <br />
-                <button class="btn-primary invoice-table__button" @click="showDetail(item)">
-                  Detail
-                </button>
-                <button
-                  class="btn-primary invoice-table__button"
-                  style="margin: 0 0.5rem"
-                  @click="confirmDelete(item)"
-                >
-                  Delete
-                </button>
+                <div style="display: flexbox; gap: 10px; justify-content: center">
+                  <button class="btn-primary invoice-table__button" @click="showDetail(item)">
+                    Detail
+                  </button>
+                  <button class="btn-primary invoice-table__button" @click="confirmDelete(item)">
+                    Delete
+                  </button>
+                </div>
               </td>
             </tr>
           </template>
