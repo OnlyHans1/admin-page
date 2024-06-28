@@ -12,6 +12,7 @@ const selectedItems = ref([])
 const selectedItemToDelete = ref('')
 
 const showCartPopup = ref(false)
+const alertDeleteValue = ref("Apakah Anda Yakin Ingin Mematikan Tiket?")
 const showConfirmationPopup = ref(false)
 const showDeleteConfirmationPopup = ref(false)
 
@@ -202,8 +203,9 @@ const handleItemClick = (item) => {
 const showCart = () => {
   showCartPopup.value = !showCartPopup.value
 }
-const showDeleteConfirmation = (id) => {
+const showDeleteConfirmation = (id, deleted) => {
   showDeleteConfirmationPopup.value = true
+  alertDeleteValue.value = deleted ? "Apakah Anda Yakin Ingin Mengaktifkan Tiket?" : "Apakah Anda Yakin Ingin Mematikan Tiket?"
   selectedItemToDelete.value = id
 }
 const closeDeletePopup = () => {
@@ -295,6 +297,7 @@ export default {
   increaseAmount,
   decreaseAmount,
   saveToUserCarts,
+  alertDeleteValue,
   handleItemClick,
   checkUserCarts,
   isDomestik,

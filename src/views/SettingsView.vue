@@ -29,6 +29,7 @@ const {
   showDeleteConfirmation,
   showDeleteConfirmationPopup,
   closeDeletePopup,
+  alertDeleteValue,
   confirmDelete,
   dataDashboard
 } = DashboardHelper
@@ -48,6 +49,8 @@ const {
   guideId,
   guideName,
   guideDesc,
+  fetchOrderData,
+  orderListData,
   guideBirthdate,
   guideGender,
   guideEmail,
@@ -192,7 +195,7 @@ const newMaxTickets = ref(maxTickets.value)
 const checkSettingsData = async () => {
   try {
     targetedData.value = []
-    await fetchOrderList()
+    await fetchOrderData()
     await fetchGuideData()
     await fetchOrderType()
     await fetchOrderSubType()
@@ -250,9 +253,9 @@ onMounted(() => {
         class="popup-confirmation__container flex fd-col gap-1 justify-content-center align-items-center"
         @click.stop
       >
-        <h5 class="text-align-center">Apakah Anda Yakin Ingin Menghapus Tiket?</h5>
+        <h5 class="text-align-center">{{ alertDeleteValue }}</h5>
         <div class="popup-confimation__button-confirmation w-full flex justify-content-sa">
-          <button @click="confirmDelete()">Hapus</button>
+          <button @click="confirmDelete()">Ya</button>
           <button @click="closeDeletePopup()">Batal</button>
         </div>
       </div>
@@ -491,7 +494,7 @@ onMounted(() => {
         <div class="settings__orders-content align-items-center pd-1">
           <div
             class="settings__orders-content_item flex align-items-center gap-1 pd-1"
-            v-for="(item, index) in dataDashboard"
+            v-for="(item, index) in orderListData"
             :key="index"
           >
             <img
@@ -517,10 +520,12 @@ onMounted(() => {
                 </button>
                 <button
                   class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
-                  @click="showDeleteConfirmation(item.id)"
+                  @click="showDeleteConfirmation(item.id, item.deleted)"
                 >
-                  <ph-trash :size="16" weight="bold" />
+                  <ph-eye :size="16" weight="bold" v-if="item.deleted"/>
+                  <ph-eye-closed :size="16" weight="bold" v-if="!item.deleted"/>
                 </button>
+                <input type="checkbox" v-model="item.deleted" disabled >
               </div>
             </div>
           </div>

@@ -29,6 +29,7 @@ const guideImageName = ref('')
 
 const targetedData = ref([])
 const popupData = ref([])
+const orderListData = ref([])
 const modePopup = ref('')
 const isPopupVisible = ref(false)
 const isSettingExtended = ref(false)
@@ -52,6 +53,16 @@ const fetchTargetedOrder = async (id) => {
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
+  }
+}
+const fetchOrderData = async () => {
+  const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-data-all`)
+  try {
+    if (!response.ok) throw Error('Failed to fetch order data')
+    const resData = await response.json()
+    orderListData.value = resData.data
+  } catch (err) {
+    console.log(err)
   }
 }
 const fetchTargetedGuide = async (id) => {
@@ -410,6 +421,8 @@ export default {
   fetchTargetedGuide,
   fetchOrderType,
   fetchOrderSubType,
+  fetchOrderData,
+  orderListData,
   fetchCategory,
   createGuide,
   createOrderType,
