@@ -209,7 +209,7 @@ function capitalizeFirstLetter(str) {
 
 const deleteTransaction = async (id) => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/${id}`, {
+    const response = await fetch(`${DB_BASE_URL.value}/${TRANSACTION_BASE_URL.value}/delete-transaction /${id}`, {
       method: 'GET'
     })
     if (!response.ok) throw Error('Terjadi kesalahan saat melakukan fetching')

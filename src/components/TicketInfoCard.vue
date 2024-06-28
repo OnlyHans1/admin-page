@@ -1,4 +1,3 @@
-666666666666665
 <script setup>
 import 'swiper/swiper-bundle.css'
 import { onMounted } from 'vue'
@@ -6,7 +5,6 @@ import { Virtual, Navigation, Pagination } from 'swiper/modules'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import ReportHelper from '@/utilities/ReportHelper'
 import GlobalHelper from '@/utilities/GlobalHelper'
-
 
 // const getSlidesView = () => {
 //   const length = orderInfoCardData.value.length
@@ -16,8 +14,14 @@ import GlobalHelper from '@/utilities/GlobalHelper'
 </script>
 
 <template>
-  <Swiper :modules="[Virtual, Pagination, Navigation]" :space-between="10" :slides-per-view="cardLength" pagination navigation
-    virtual>
+  <Swiper
+    :modules="[Virtual, Pagination, Navigation]"
+    :space-between="10"
+    :slides-per-view="cardLength"
+    pagination
+    navigation
+    virtual
+  >
     <SwiperSlide v-for="(item, index) in infoCardDatas" :key="index">
       <div class="ticket-info-card__container flex fd-col pd-1">
         <p class="ticket-info-card__title">{{ item.name }}</p>
@@ -44,7 +48,9 @@ export default {
   methods: {
     async fetchData() {
       try {
-        const response = await fetch(`${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/category-sell`)
+        const response = await fetch(
+          `${DB_BASE_URL.value}/${DETAILTRANS_BASE_URL.value}/category-sell`
+        )
         if (!response.ok) throw Error('Gagal mem-fetch Data')
         const repsonseData = await response.json()
         this.infoCardDatas = this.formatToInfoCard(repsonseData.data)
@@ -56,11 +62,13 @@ export default {
     },
     formatToInfoCard(datas) {
       let infoCardData = {}
-      for(let data of datas){
+      for (let data of datas) {
         const categoryName = data.order.category.name
-        if(!infoCardData[categoryName]) infoCardData[categoryName] = {
-          name: categoryName, sum: 0
-        }
+        if (!infoCardData[categoryName])
+          infoCardData[categoryName] = {
+            name: categoryName,
+            sum: 0
+          }
         infoCardData[categoryName].sum += data.amount
       }
       return Object.values(infoCardData)

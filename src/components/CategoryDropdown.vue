@@ -14,6 +14,7 @@ const fetchCategory = async () => {
     }
     const data = await response.json()
     categoryOptions.value = data.data
+    console.log(data)
     showLoader.value = false
   } catch (error) {
     console.error('Error fetching data:', error)
