@@ -3,6 +3,7 @@ import { onMounted, watch, ref } from 'vue'
 import GlobalHelper from '@/utilities/GlobalHelper'
 import InvoiceDetail from '@/components/InvoiceDetail.vue'
 import InvoiceHelper from '@/utilities/InvoiceHelper'
+import LoginHelper from '@/utilities/LoginHelper'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
@@ -26,6 +27,8 @@ const {
   detailPopup,
   showDetail
 } = InvoiceHelper
+
+const { userData, userLogout } = LoginHelper
 
 watch(
   () => searchQuery.value,
@@ -117,11 +120,15 @@ onMounted(() => {
               <td class="invoice-table__data">{{ splitDate(item.plannedDate)[1] }}</td>
               <td class="invoice-table__data">
                 {{ item.customer ? item.customer.email : item.user.email }} <br />
-                <div style="display: flexbox; gap: 10px; justify-content: center">
+                <div style="display: flex; gap: 10px; justify-content: center">
                   <button class="btn-primary invoice-table__button" @click="showDetail(item)">
                     Detail
                   </button>
-                  <button class="btn-primary invoice-table__button" @click="confirmDelete(item)">
+                  <button
+                    class="btn-primary invoice-table__button"
+                    @click="confirmDelete(item)"
+                    v-if="userData.role !== 'CASHIER'"
+                  >
                     Delete
                   </button>
                 </div>

@@ -61,6 +61,7 @@ const fetchOrderData = async () => {
     if (!response.ok) throw Error('Failed to fetch order data')
     const resData = await response.json()
     orderListData.value = resData.data
+    console.log(orderListData.value)
   } catch (err) {
     console.log(err)
   }

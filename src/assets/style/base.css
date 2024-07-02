@@ -13,7 +13,6 @@
 /* Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
 
-
 :root {
   --vt-c-white: #ffffff;
   --vt-c-white-soft: #f8f8f8;
@@ -36,12 +35,13 @@
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
 
   --color-primary: #ffd978;
-  --color-green-600 : #17b53caa;
-  --color-green-500 : #28a745;
+  --color-green-600: #17b53caa;
+  --color-green-500: #28a745;
   --color-red-700: #cd23349b;
   --color-red-600: #bf0e23;
-  --color-red-500 :#dc3545;
-  --color-yellow : #e6b400;
+  --color-red-500: #dc3545;
+  --color-yellow: #e6b400;
+  --color-grey-400: #9ca3af;
 }
 
 /* semantic color variables for this project */

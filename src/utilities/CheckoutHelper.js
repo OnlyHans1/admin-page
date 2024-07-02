@@ -512,6 +512,7 @@ const sendEmailToUser = async () => {
     console.error('Error sending email:', error)
   }
 }
+
 const printTickets = async () => {
   // try {
   //   let response = await fetch(

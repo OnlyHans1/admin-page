@@ -31,7 +31,8 @@ const {
   closeDeletePopup,
   alertDeleteValue,
   confirmDelete,
-  dataDashboard
+  dataDashboard,
+  updateStatus
 } = DashboardHelper
 
 const {
@@ -240,10 +241,38 @@ onMounted(() => {
   checkSettingsData()
   fetchFeeSettings()
 })
+const confirmAlert = ref(false)
+const status = ref(false)
+const idTrans = ref(null)
+
+const showConfirmation = (id, stats) => {
+  idTrans.value = id
+  status.value = stats
+  confirmAlert.value = true
+}
+const confirm = () => {
+  confirmAlert.value = false
+  updateStatus(idTrans.value, status.value)
+}
 </script>
 
 <template>
   <main>
+    <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
+      <div class="add__alert-confirmation">
+        <h5>Apakah yakin ingin mengubah status</h5>
+        <!-- <input
+        type="number"
+        v-model="inputValue"
+        style="border-width: 2px"
+        placeholder="Masukkan nominal..."
+      /> -->
+        <div class="button-group">
+          <button @click="confirmAlert = false">Cancel</button>
+          <button @click="confirm()">Yes</button>
+        </div>
+      </div>
+    </div>
     <div
       class="popup-confirmation__overlay w-full h-full flex justify-content-center"
       :class="{ active: showDeleteConfirmationPopup }"
@@ -520,12 +549,17 @@ onMounted(() => {
                 </button>
                 <button
                   class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
-                  @click="showDeleteConfirmation(item.id, item.deleted)"
+                  :style="{
+                    backgroundColor: !item.status
+                      ? 'var(--color-green-600)'
+                      : 'var(--color-grey-400)'
+                  }"
+                  @click="showConfirmation(item.id, true)"
                 >
-                  <ph-eye :size="16" weight="bold" v-if="item.deleted"/>
-                  <ph-eye-closed :size="16" weight="bold" v-if="!item.deleted"/>
+                  <ph-eye :size="16" weight="bold" v-if="!item.status" />
+                  <ph-eye-closed :size="16" weight="bold" v-if="item.status" />
                 </button>
-                <input type="checkbox" v-model="item.deleted" disabled >
+                <input type="checkbox" v-model="item.status" disabled />
               </div>
             </div>
           </div>
@@ -541,6 +575,54 @@ onMounted(() => {
 <style scoped>
 body {
   font-family: 'Raleway', sans-serif;
+}
+
+.add__alert-confirmation_overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100dvh;
+  background-color: rgb(0, 0, 0, 0.2);
+  z-index: 9999;
+}
+
+.add__alert-confirmation {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translate(-50%);
+  background-color: #ffffff;
+  border: 1px solid rgba(255, 226, 154, 0.9);
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+.add__alert-confirmation .button-group {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  justify-content: end;
+  margin-top: 1rem;
+}
+
+.add__alert-confirmation .button-group button {
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: var(--color-primary);
+  filter: saturate(10);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.add__alert-confirmation .button-group button:first-child {
+  border: 0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background-color: #8f8f8f;
+  color: #ffffff;
 }
 
 .input_biaya {
@@ -777,7 +859,6 @@ input:focus {
   padding: 0.5rem 1rem;
   border-radius: 0.5rem;
   width: 4rem;
-  background-color: var(--color-red-600);
   color: #fff;
   font-weight: bold;
   margin-right: 0.5rem;

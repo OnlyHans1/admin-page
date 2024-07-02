@@ -23,18 +23,24 @@ const isMancanegara = ref(false)
 const isDomestik = ref(false)
 const fetchOrderList = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details`)
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details`);
     if (!response.ok) {
-      showLoader.value = false
-      throw new Error('Failed to fetch data')
+      showLoader.value = false;
+      throw new Error('Failed to fetch data');
     }
-    const res = await response.json()
-    dataDashboard.value = res.data
-    showLoader.value = false
+    const res = await response.json();
+
+    const filteredData = res.data.filter(order => !order.status);
+    dataDashboard.value = filteredData;
+
+    console.log(dataDashboard.value);
+    showLoader.value = false;
   } catch (error) {
-    console.error('Error fetching data:', error)
+    console.error('Error fetching data:', error);
+    showLoader.value = false;
   }
-}
+};
+
 
 const formatCurrency = (amount) => {
   return Number(amount).toLocaleString('id-ID')
@@ -83,7 +89,7 @@ const selectItem = (item) => {
 
 const saveToUserCarts = async () => {
   const storedItems = userCarts.value || []
-selectedItems.value.forEach((item) => {
+  selectedItems.value.forEach((item) => {
     const existingItemIndex = storedItems.findIndex((i) => i.id === item.id)
     if (item.amount < 1) {
       if (existingItemIndex !== -1) {
@@ -232,6 +238,35 @@ const groupedItems = computed(() => {
 
   return sortedGrouped
 })
+const updateStatus = async (id, stats) => {
+  console.log(id, stats)
+  showLoader.value = true
+  try {
+    let response = await fetch(
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/updateStatus/${encodeURIComponent(id)}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          status: stats
+        })
+      }
+    )
+    if (response.ok) {
+      showLoader.value = false
+      location.reload();
+    }
+
+    if (!response.ok) {
+      showLoader.value = false
+      throw new Error('Failed to update status!')
+    }
+  } catch (error) {
+    console.error('Error fetch data:', error)
+  }
+}
 const deleteOrder = async () => {
   try {
     showLoader.value = true
@@ -279,6 +314,7 @@ const confirmDelete = async () => {
 }
 
 export default {
+  updateStatus,
   selectedItems,
   selectItem,
   showConfirmationPopup,
