@@ -1,149 +1,30 @@
-<script setup>
-import { ref, computed, onMounted, watchEffect, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import GlobalHelper from '@/utilities/GlobalHelper'
-
-const { DB_BASE_URL, LOGS_BASE_URL, showLoader } = GlobalHelper
-const router = useRouter()
-const logsData = ref([])
-const labels = ref(['User', 'Order', 'Events'])
-const searchQuery = ref('')
-const currentData = ref([])
-const headers = ref([])
-const rawSearch = ref('')
-const actionArray = ref([
-  {
-    action: 'CREATE'
-  },
-  {
-    action: 'UPDATE'
-  },
-  {
-    action: 'DELETE'
-  }
-])
-
-const activeLabel = ref('User')
-
-const fetchData = async (label) => {
-  activeLabel.value = label
-  try {
-    showLoader.value = true
-    let url = `${DB_BASE_URL.value}/${LOGS_BASE_URL.value}/database-logs`
-
-    switch (label) {
-      case 'User':
-        url = `${DB_BASE_URL.value}/${LOGS_BASE_URL.value}/database-logs?action=DELETE`
-        break
-      case 'Order':
-        url = `${DB_BASE_URL.value}/${LOGS_BASE_URL.value}/database-logs?action=CREATE`
-        break
-      case 'Events':
-        url = `${DB_BASE_URL.value}/${LOGS_BASE_URL.value}/database-logs?action=UPDATE`
-        break
-    }
-
-    const response = await fetch(url)
-    if (!response) {
-      throw new Error('Failed to fetch data')
-    }
-    const res = await response.json()
-    currentData.value = res.data
-    headers.value = res.data.length > 0 ? Object.keys(res.data[0]) : []
-
-    showLoader.value = false
-  } catch (error) {
-    console.error('Error fetching data:', error)
-  }
-}
-
-const confirmAlert = ref(false)
-//alert
-const showConfirmation = () => {
-  // idTrans.value = id
-  // status.value = stats
-  confirmAlert.value = true
-}
-const confirm = () => {
-  confirmAlert.value = false
-  // updateStatus(idTrans.value, status.value)
-}
-
-// Fetch default data (User) on component mount
-onMounted(() => {
-  fetchData(activeLabel.value)
-})
-// Pagination Start
-const rowsPerPage = 10
-const currentPage = ref(1)
-
-const paginatedData = computed(() => {
-  const start = (currentPage.value - 1) * rowsPerPage
-  const end = start + rowsPerPage
-  return currentData.value.slice(start, end)
-})
-const totalPages = computed(() => {
-  return Math.ceil(currentData.value.length / rowsPerPage)
-})
-const changePage = (page) => {
-  if (page > 0 && page <= totalPages.value) {
-    currentPage.value = page
-  }
-}
-const visiblePages = computed(() => {
-  const maxVisible = 3
-  let startPage = Math.max(currentPage.value - Math.floor(maxVisible / 2), 1)
-  let endPage = startPage + maxVisible - 1
-
-  if (endPage > totalPages.value) {
-    endPage = totalPages.value
-    startPage = Math.max(endPage - maxVisible + 1, 1)
-  }
-
-  const pages = []
-  for (let i = startPage; i <= endPage; i++) {
-    pages.push(i)
-  }
-  return pages
-})
-watchEffect(() => {})
-onUnmounted(() => {})
-</script>
-
 <template>
   <div class="add__alert-confirmation_overlay" v-if="confirmAlert">
     <div class="add__alert-confirmation">
-      <h5>Apakah yakin ingin mengubah status</h5>
+      <h5>Apakah anda akan membackup data sekarang?</h5>
       <!-- <input
         type="number"
         v-model="inputValue"
         style="border-width: 2px"
         placeholder="Masukkan nominal..."
-      /> -->
+        /> -->
       <div class="button-group">
         <button @click="confirmAlert = false">Cancel</button>
         <button @click="confirm()">Yes</button>
       </div>
     </div>
   </div>
-  <div
-    class="breadcrumb flex align-items-center gap[0.5] cursor-pointer"
-    @click="router.push('/settings')"
-  >
+  <div class="breadcrumb flex align-items-center gap[0.5] cursor-pointer" @click="router.push('/settings')">
     <ph-caret-left size="24" weight="bold" />
     <p>Kembali</p>
   </div>
   <h5 class="fw-600 sm-top-1"></h5>
   <div style="display: flex; width: 98%; justify-content: space-between; overflow-x: auto">
     <div>
-      <button
-        v-for="(label, index) in labels"
-        :key="index"
-        @click="fetchData(label)"
-        class="add__preview_button"
-        :style="{ backgroundColor: activeLabel === label ? 'lightblue' : '' }"
-      >
-        {{ label }}
+      <button v-for="(label, dataRefIndex) in listOfDataReference" :key="dataRefIndex"
+        @click="selectDataReferences(label.dataRef)" class="add__preview_button"
+        :style="{ backgroundColor: currentDataReference === label.dataRef ? 'lightblue' : '' }">
+        {{ label.label }}
       </button>
     </div>
     <div>
@@ -151,68 +32,109 @@ onUnmounted(() => {})
     </div>
   </div>
   <div class="database-logs__content pd-right-1 sm-top-2">
-    <table v-if="currentData.length > 0">
-      <thead>
-        <th>User</th>
-        <th>Aksi</th>
-        <th>Aktivitas</th>
-        <th>Page</th>
-        <th>Status</th>
-        <th>Tanggal</th>
+    <table v-if="tableDatas.row.length > 0">
+      <thead >
+        <th v-for="(col, i) in tableDatas.column" :key="i">{{ col }}</th>
       </thead>
       <tbody>
-        <template v-for="logData in paginatedData" :key="logData.user">
+        <template v-for="(row, rowIndex) in tableDatas.row" :key="rowIndex">
           <tr>
-            <td>{{ logData.user.email }}</td>
-            <td>{{ logData.action }}</td>
-            <td>{{ logData.activity }}</td>
-            <td>{{ logData.changedAt }}</td>
-            <td>
-              <div
-                class="logdata-status"
-                :class="{
-                  'status-success': logData.status === 'Success',
-                  'status-failed': logData.status === 'Failed'
-                }"
-              >
-                {{ logData.status }}
-              </div>
-            </td>
+            <td v-for="(colName, index) in tableDatas.column" :key="index">{{ row[colName] }}</td>
           </tr>
         </template>
       </tbody>
-      <tbody></tbody>
     </table>
     <div v-else>Data tidak ditemukan</div>
-
-    <div class="pagination-container">
-      <button
-        class="pagination-button"
-        @click="changePage(currentPage - 1)"
-        :class="{ invisible: currentPage === 1 }"
-      >
-        <ph-caret-left />
-      </button>
-      <div class="pagination-numbers">
-        <button
-          v-for="page in visiblePages"
-          :key="page"
-          @click="changePage(page)"
-          :class="{ active: page === currentPage }"
-        >
-          {{ page }}
-        </button>
-      </div>
-      <button
-        class="pagination-button"
-        @click="changePage(currentPage + 1)"
-        :class="{ invisible: currentPage === totalPages || currentPage === 1 }"
-      >
-        <ph-caret-right />
-      </button>
-    </div>
   </div>
 </template>
+
+<script>
+import { ref } from 'vue'
+import GlobalHelper from '@/utilities/GlobalHelper'
+const { DB_BASE_URL, showLoader } = GlobalHelper
+
+export default {
+  data() {
+    return {
+      listOfDataReference: ref([]),
+      selectedDataReferences: ref({}),
+      currentBackups: ref({
+        createdBy: "",
+        createdAt: new Date().toISOString(),
+        creatorData: window.navigator.userAgent,
+      }),
+      currentDataReference: ref(),
+      tableDatas: {
+        column: [],
+        row: []
+      }
+    }
+  },
+  mounted() {
+    this.fetchData()
+  },
+  methods: {
+    async fetchData() {
+      showLoader.value = true
+      try {
+        if (this.listOfDataReference.length < 1) {
+          const responseListDataRef = await fetch(`${DB_BASE_URL.value}/keraton-pos/backup/get-dataref`)
+          if (!responseListDataRef.ok) throw Error('Failed to fetch list Data Reference')
+          const responseData = await responseListDataRef.json()
+          this.listOfDataReference = this.formatToListDataRef(responseData.data)
+          this.currentDataReference = this.listOfDataReference[0].dataRef
+        }
+        if (this.currentDataReference) {
+          const responseDataRef = await fetch(`${DB_BASE_URL.value}/keraton-pos/backup/get-dataref/${this.currentDataReference}`)
+          if (!responseDataRef.ok) throw Error('Failed to fetch Data Reference')
+          const responseData = await responseDataRef.json()
+          if (responseData.data.length < 1) throw Error('No Data in this data reference')
+          this.tableDatas = this.formatToTableData(responseData.data)
+        }
+        showLoader.value = false
+      } catch (err) {
+        showLoader.value = false
+        console.log(err)
+      }
+    },
+    addToSelectedBackup(dataName) {
+      this.selecteDataReferences[dataName] = {
+        databaseReferenceTabel: dataName,
+        backupDatas: this.tableDatas.row
+      }
+    },
+    selectDataReferences(dataName){
+      this.currentDataReference = dataName
+      this.fetchData()
+    },
+    formatToListDataRef(arrayDatas) {
+      return arrayDatas.map(item => ({
+        label: item,
+        dataRef: item.charAt(0).toLowerCase() + item.slice(1)
+      }));
+    },
+    formatToTableData(arrayDatas) {
+      const firstReferenceData = arrayDatas[0]
+      if (!firstReferenceData) throw new Error('No Data to process')
+      const column = Object.keys(firstReferenceData)
+      return { column, row: arrayDatas }
+    },
+    backupData() {
+      const blob = new Blob([this.currentBackups], { type: 'application/json' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.href = url;
+      link.download = 'data.json';
+
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url)
+    }
+  }
+}
+</script>
 
 <style scoped>
 .add__alert-confirmation_overlay {
@@ -235,6 +157,7 @@ onUnmounted(() => {})
   padding: 1rem;
   border-radius: 0.5rem;
 }
+
 .add__alert-confirmation .button-group {
   display: flex;
   gap: 0.5rem;
@@ -284,9 +207,11 @@ onUnmounted(() => {})
   height: 2rem;
   border-radius: 0.5rem;
 }
+
 .database-logs__content_cta-search {
   width: 2rem;
 }
+
 .action-filter__input-dropdown {
   position: relative;
   height: 2rem;
@@ -366,20 +291,25 @@ table {
 border-top-right-radius: 0.5rem;  */
   padding: 1rem;
 }
+
 thead {
   border-bottom: 1px solid #000;
 }
+
 th {
   height: 3rem;
   font-weight: 600;
 }
+
 th:nth-child(3) {
   text-align: start;
   padding: 0 1rem;
 }
+
 tr {
   max-height: 2rem;
 }
+
 td {
   max-height: 1.5rem;
   height: 1.5rem;
@@ -399,18 +329,22 @@ td:nth-child(3) {
 td:nth-child(1) {
   max-width: 10rem;
 }
+
 td:nth-child(5) {
   max-width: 4.5rem;
 }
+
 td:hover:nth-child(1),
 td:hover:nth-child(3) {
   position: relative;
   overflow: visible;
   white-space: normal;
 }
+
 td:hover:nth-child(3) {
   padding: 0 1rem;
 }
+
 .logdata-status span {
   font-weight: 600;
   text-align: center;
@@ -425,12 +359,14 @@ td:hover:nth-child(3) {
   border-radius: 1rem;
   padding-inline: 4px;
 }
+
 .status-failed {
   color: #831d1d;
   background-color: #d636367a;
   border-radius: 1rem;
   padding-inline: 4px;
 }
+
 .pagination-container {
   display: flex;
   width: 100%;
