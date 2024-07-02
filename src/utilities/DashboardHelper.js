@@ -5,8 +5,8 @@ import LoginHelper from './LoginHelper'
 import CheckoutHelper from './CheckoutHelper'
 
 const { DB_BASE_URL, USER_BASE_URL, ORDER_BASE_URL, assignAlert, showLoader } = GlobalHelper
-const { targetedData, fetchTargetedOrder } = SettingsHelper
-const { userData, userCarts } = LoginHelper
+const { targetedData, fetchTargetedOrder, fetchOrderData } = SettingsHelper
+const { userData, userCarts, getCookie } = LoginHelper
 
 const selectedItems = ref([])
 const selectedItemToDelete = ref('')
@@ -23,17 +23,18 @@ const isMancanegara = ref(false)
 const isDomestik = ref(false)
 const fetchOrderList = async () => {
   try {
-    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-details`);
+    const response = await fetch(`${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-data-dashboard`, {
+      headers: {
+        Authorization: getCookie('token')
+      }
+    })
     if (!response.ok) {
       showLoader.value = false;
       throw new Error('Failed to fetch data');
     }
     const res = await response.json();
+    dataDashboard.value = res.data;
 
-    const filteredData = res.data.filter(order => !order.status);
-    dataDashboard.value = filteredData;
-
-    console.log(dataDashboard.value);
     showLoader.value = false;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -238,25 +239,22 @@ const groupedItems = computed(() => {
 
   return sortedGrouped
 })
-const updateStatus = async (id, stats) => {
-  console.log(id, stats)
+const updateStatusDeleted = async (id, deleted) => {
   showLoader.value = true
   try {
     let response = await fetch(
-      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/updateStatus/${encodeURIComponent(id)}`,
+      `${DB_BASE_URL.value}/${ORDER_BASE_URL.value}/order-action/update/${id}`,
       {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          status: stats
-        })
+        body: JSON.stringify({ deleted })
       }
     )
     if (response.ok) {
       showLoader.value = false
-      location.reload();
+      await fetchOrderData()
     }
 
     if (!response.ok) {
@@ -314,7 +312,7 @@ const confirmDelete = async () => {
 }
 
 export default {
-  updateStatus,
+  updateStatusDeleted,
   selectedItems,
   selectItem,
   showConfirmationPopup,

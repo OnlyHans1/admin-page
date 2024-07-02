@@ -35,6 +35,7 @@ asalKota,
   fetchTaxes,
   listOfTaxes,
   formatCurrency,
+  paymentTaxIdentifier,
   totalHarga,
   totalTagihan,
   totalBiaya,
@@ -652,15 +653,15 @@ onMounted(() => {
             <div
               class="checkout__details-pricing-container"
               v-if="
-                listOfTaxes[paymentSelection != 'Cash' ? 'nonCash' : 'cash']
-                  ? listOfTaxes[paymentSelection != 'Cash' ? 'nonCash' : 'cash'].length > 0
+                listOfTaxes[paymentTaxIdentifier]
+                  ? listOfTaxes[paymentTaxIdentifier].length > 0
                   : false
               "
             >
               <p class="fw-700 fs-h6">Biaya Transaksi</p>
               <div
                 class="checkout__details-pricing"
-                v-for="(data, i) in listOfTaxes[paymentSelection != 'Cash' ? 'nonCash' : 'cash']"
+                v-for="(data, i) in listOfTaxes[paymentTaxIdentifier]"
                 :key="i"
               >
                 <p>{{ data.label }}</p>
