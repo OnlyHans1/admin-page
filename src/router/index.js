@@ -8,6 +8,7 @@ import CheckoutView from '@/views/CheckoutView.vue'
 import GenerateTicketsView from '@/views/GenerateTicketsView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import DatabaseLogsView from '@/views/DatabaseLogsView.vue'
+import BackupView from '@/views/BackupView.vue'
 import AfterCheckoutView from '@/views/AfterCheckoutView.vue'
 import reportCurawedaView from '@/views/ReportViewCuraweda.vue'
 import ReportCuraweda from '@/views/ReportCuraweda.vue'
@@ -100,6 +101,12 @@ const router = createRouter({
       meta: { protected: true, restrictCuraweda: true }
     },
     {
+      path: '/backup',
+      name: 'databaseBackup',
+      component: BackupView,
+      meta: { protected: true, restrictCuraweda: true }
+    },
+    {
       path: '/after-checkout',
       name: 'after-checkout',
       component: AfterCheckoutView
@@ -122,8 +129,8 @@ router.beforeEach(async (to, from, next) => {
       next(from)
     } else if (to.meta.restrictAccess && !giveAccessRoute.value) {
       next(from)
-    } else if (to.meta.restrictCuraweda){
-      if(userData.value.role != "CURAWEDA") return next()
+    } else if (to.meta.restrictCuraweda) {
+      if (userData.value.role != "CURAWEDA") return next()
       next({ path: '/report-curaweda' })
     } else {
       if (to.meta.restrictAccess) grantAccessRoute(false)
