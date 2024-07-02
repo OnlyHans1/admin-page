@@ -247,7 +247,7 @@ const idTrans = ref(null)
 
 const showConfirmation = (id, stats) => {
   idTrans.value = id
-  deleted.value = stats
+deleted.value = stats
   confirmAlert.value = true
 }
 const confirm = () => {
