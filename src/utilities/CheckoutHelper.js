@@ -215,11 +215,20 @@ const totalTicketCount = computed(() => {
 const listOfTaxes = ref({})
 const paymentSelection = ref('')
 const paymentSelect = ref(false)
+const paymentTaxIdentifier = ref("cash")
 const showPaymentSelect = () => {
   paymentSelect.value = !paymentSelect.value
 }
 const selectPayment = (paymentMethod) => {
   paymentSelection.value = paymentMethod
+  switch(paymentMethod){
+    case "Kartu Kredit/Debit":
+      paymentTaxIdentifier.value = "nonCash"
+      break;
+    default:
+      paymentTaxIdentifier.value = "cash"
+      break;
+  }
   paymentSelect.value = false
 }
 
@@ -578,6 +587,7 @@ export default {
   totalBiaya,
   totalTicketCount,
   recentTransactionId,
+  paymentTaxIdentifier,
   createTransaction,
   checkoutStatus,
   guideData,

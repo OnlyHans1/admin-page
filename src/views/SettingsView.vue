@@ -32,7 +32,7 @@ const {
   alertDeleteValue,
   confirmDelete,
   dataDashboard,
-  updateStatus
+  updateStatusDeleted
 } = DashboardHelper
 
 const {
@@ -242,17 +242,17 @@ onMounted(() => {
   fetchFeeSettings()
 })
 const confirmAlert = ref(false)
-const status = ref(false)
+const deleted = ref(false)
 const idTrans = ref(null)
 
 const showConfirmation = (id, stats) => {
   idTrans.value = id
-  status.value = stats
+  deleted.value = stats
   confirmAlert.value = true
 }
 const confirm = () => {
   confirmAlert.value = false
-  updateStatus(idTrans.value, status.value)
+  updateStatusDeleted(idTrans.value, deleted.value)
 }
 </script>
 
@@ -550,16 +550,15 @@ const confirm = () => {
                 <button
                   class="settings-order__remove-button flex align-items-center justify-content-center gap[0.5]"
                   :style="{
-                    backgroundColor: !item.status
+                    backgroundColor: !item.deleted
                       ? 'var(--color-green-600)'
                       : 'var(--color-grey-400)'
                   }"
-                  @click="showConfirmation(item.id, true)"
+                  @click="showConfirmation(item.id, !item.deleted)"
                 >
                   <ph-eye :size="16" weight="bold" v-if="!item.status" />
                   <ph-eye-closed :size="16" weight="bold" v-if="item.status" />
                 </button>
-                <input type="checkbox" v-model="item.status" disabled />
               </div>
             </div>
           </div>
